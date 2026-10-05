@@ -83,6 +83,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     ['GET', /^\/api\/admin\/desafios$/, async () => ({
       hoy: fechaLocal(ahora(), config.zona),
       ia: contexto?.proveedor ? { nombre: contexto.proveedor.nombre, modelo: contexto.proveedor.modelo } : null,
+      bd: /^(libsql|https?|wss?):/.test(config.rutaBD) ? new URL(config.rutaBD).host : 'archivo local',
       desafios: await listarDesafios(db),
     }), { admin: true }],
     // Generar o regenerar un día a mano.

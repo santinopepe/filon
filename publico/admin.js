@@ -115,7 +115,8 @@ async function cargarDesafios() {
   $('estado-ia').replaceChildren(
     'IA: ',
     h('strong', {}, datos.ia ? `${datos.ia.modelo}` : 'sin configurar (solo reserva)'),
-    ` · hoy ${datos.hoy}`,
+    ` · hoy ${datos.hoy} · base `,
+    h('strong', {}, datos.bd || '—'),
   );
   if (!$('gen-fecha').value) $('gen-fecha').value = sumarDia(hoy);
 
