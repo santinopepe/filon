@@ -80,13 +80,6 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
     });
   }
 
-  function joyaDe(respuestas, aceptadaId) {
-    const otras = respuestas.filter((r) => r.id !== aceptadaId);
-    if (!otras.length) return null;
-    const mejor = otras.reduce((a, b) => (b.puntos > a.puntos ? b : a));
-    return { canonica: mejor.canonica, rareza: mejor.rareza, nombreRareza: RAREZAS[mejor.rareza].nombre, puntos: mejor.puntos };
-  }
-
   function respuestasPublicas(respuestas) {
     return respuestas
       .map((r) => ({ canonica: r.canonica, rareza: r.rareza, nombreRareza: RAREZAS[r.rareza].nombre, puntos: r.puntos }))
@@ -162,7 +155,6 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       if (r.estado !== 'caducada') {
         const todas = respuestasPorPregunta.get(p.id) || [];
         item.totalRespuestas = todas.length;
-        item.joya = joyaDe(todas, r.respuesta_id);
         item.intentos = intentosDe(p.posicion);
       }
       if (r.estado === 'acertada') {

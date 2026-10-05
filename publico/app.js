@@ -551,6 +551,70 @@ function negrita(texto) {
   return fuerte;
 }
 
+function botonRespuestas(r, texto) {
+  const boton = document.createElement('button');
+  boton.type = 'button';
+  boton.className = 'respuesta-abrir';
+  boton.textContent = texto;
+  boton.setAttribute('aria-label', `${texto}. Ver todas las respuestas válidas de la pregunta ${r.posicion}`);
+  boton.addEventListener('click', () => abrirRespuestas(r.posicion));
+  return boton;
+}
+
+function dibujarRespuestasValidas(r) {
+  const lista = $('lista-respuestas');
+  const fragmento = document.createDocumentFragment();
+  for (const respuesta of r.respuestasValidas || []) {
+    const li = document.createElement('li');
+    li.dataset.rareza = respuesta.rareza;
+    if (respuesta.canonica === r.respuesta?.canonica) li.classList.add('es-tuya');
+    const gema = document.createElement('span');
+    gema.className = 'piedra';
+    const nombre = document.createElement('span');
+    nombre.className = 'respuesta-nombre';
+    nombre.textContent = respuesta.canonica;
+    if (respuesta.canonica === r.respuesta?.canonica) {
+      const tuya = document.createElement('small');
+      tuya.textContent = 'Tu respuesta';
+      nombre.append(tuya);
+    }
+    const rareza = document.createElement('span');
+    rareza.className = 'respuesta-rareza';
+    rareza.textContent = respuesta.nombreRareza;
+    const puntos = document.createElement('strong');
+    puntos.className = 'respuesta-puntos';
+    puntos.textContent = `${respuesta.puntos} pts`;
+    li.append(gema, nombre, rareza, puntos);
+    fragmento.append(li);
+  }
+  lista.replaceChildren(fragmento);
+}
+
+async function abrirRespuestas(n) {
+  const r = ronda(n);
+  if (!r?.totalRespuestas) return;
+  $('respuestas-ronda').textContent = `Pregunta ${r.posicion} de 7 · ${r.categoria}`;
+  $('respuestas-pregunta').textContent = r.enunciado;
+  $('respuestas-ayuda').textContent = `${fmt(r.totalRespuestas)} respuestas, ordenadas de mayor a menor puntaje.`;
+  const dlg = $('dlg-respuestas');
+  if (!dlg.open) dlg.showModal();
+  if (r.respuestasValidas?.length) {
+    dibujarRespuestasValidas(r);
+    return;
+  }
+  const carga = document.createElement('li');
+  carga.className = 'respuestas-cargando';
+  carga.textContent = 'Extrayendo el catálogo de la veta…';
+  $('lista-respuestas').replaceChildren(carga);
+  try {
+    const datos = await api('GET', `/api/partidas/${estado.partida.id}/rondas/${n}/respuestas`);
+    r.respuestasValidas = datos.respuestas;
+    dibujarRespuestasValidas(r);
+  } catch (e) {
+    carga.textContent = e.message;
+  }
+}
+
 function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
   const r = ronda(n);
   detenerMecha();
@@ -588,14 +652,6 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
       decir(elegir(r.estado === 'pasada' ? FRASES.pasada : FRASES.vencida), 3000);
     }
   }
-  const joya = $('res-joya');
-  joya.replaceChildren();
-  if (r.joya) {
-    const fuerte = document.createElement('strong');
-    fuerte.textContent = r.joya.canonica;
-    joya.append(r.estado === 'acertada' ? 'Otra joya de esta veta: ' : `Una respuesta que valía ${r.joya.puntos} puntos: `, fuerte, ` (${r.joya.nombreRareza}).`);
-  }
-  joya.hidden = !r.joya;
   h.classList.remove('revelar');
   if (animar) {
     void h.offsetWidth;
@@ -738,9 +794,10 @@ function mostrarFinal({ completada = false } = {}) {
       cat.className = 'd-cat';
       cat.textContent = `${r.posicion}. ${r.categoria}`;
       const textoRespuesta = r.respuesta ? `${r.respuesta.canonica} · ${r.respuesta.nombreRareza}` : r.estado === 'pasada' ? 'Pasaste' : 'Sin respuesta';
-      const resp = document.createElement('span');
-      resp.className = 'd-resp';
-      resp.textContent = textoRespuesta;
+      // Al terminar, cada fila abre todas las respuestas válidas de esa pregunta.
+      const resp = r.totalRespuestas ? botonRespuestas(r, textoRespuesta) : document.createElement('span');
+      resp.classList.add('d-resp');
+      if (!r.totalRespuestas) resp.textContent = textoRespuesta;
       texto.append(cat, resp);
       const pts = document.createElement('span');
       pts.className = 'd-pts';

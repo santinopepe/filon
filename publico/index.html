@@ -178,7 +178,6 @@
         <p class="res-respuesta" id="res-respuesta"></p>
         <p class="res-explicacion" id="res-explicacion"></p>
         <p class="res-fuente" id="res-fuente-p"><a id="res-fuente" href="#" target="_blank" rel="noopener noreferrer"></a></p>
-        <p class="res-joya" id="res-joya"></p>
         <button type="button" class="boton principal" id="btn-siguiente">Seguir bajando</button>
         <button type="button" class="enlace" id="btn-reportar">¿Diste una respuesta válida que no aceptamos? Reportala</button>
       </div>
@@ -205,6 +204,7 @@
         <p class="rendimiento-nota" id="rendimiento-nota"></p>
       </section>
       <h3 class="desglose-titulo">Tus siete respuestas</h3>
+      <p class="desglose-ayuda">Tocá una para ver todas las respuestas válidas de esa pregunta.</p>
       <ol class="desglose" id="desglose"></ol>
       <button type="button" class="boton principal" id="btn-compartir">Compartir resultado</button>
       <p class="nota" id="final-guardado">Tu resultado quedó guardado en este dispositivo.</p>
@@ -238,6 +238,17 @@
       <p>No importan las mayúsculas, los espacios ni las tildes, pero la «ñ» sí cuenta: «año» no es «ano».</p>
       <p>Hay una partida por día. El desafío cambia a las 00:00 de Buenos Aires.</p>
       <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Entendido</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo respuestas-dialogo" id="dlg-respuestas" aria-labelledby="respuestas-titulo">
+    <form method="dialog">
+      <p class="respuestas-kicker" id="respuestas-ronda"></p>
+      <h2 id="respuestas-titulo">Todas las respuestas válidas</h2>
+      <p class="rep-pregunta" id="respuestas-pregunta"></p>
+      <p class="respuestas-ayuda" id="respuestas-ayuda">Ordenadas de mayor a menor puntaje.</p>
+      <ol class="lista-respuestas" id="lista-respuestas"></ol>
+      <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Cerrar</button></div>
     </form>
   </dialog>
 

@@ -160,7 +160,7 @@ test('el tiempo vence en el servidor: 25 s más un margen de red', async () => {
   assert.equal(tarde.resultado, 'vencida');
   assert.equal(tarde.partida.rondas[1].puntos, 0);
   assert.equal(tarde.partida.rondas[1].estado, 'vencida');
-  assert.ok(tarde.partida.rondas[1].joya, 'muestra una respuesta valiosa tras la ronda');
+  assert.equal(tarde.partida.rondas[1].joya, undefined, 'no revela la mejor respuesta de la ronda');
 });
 
 test('recargar no reinicia el reloj ni permite repetir rondas', async () => {

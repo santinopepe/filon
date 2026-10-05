@@ -624,12 +624,27 @@ body.en-excavacion .pantalla {
 .hallazgo.revelar .hallazgo-gema { animation: brillo 1.1s ease-out; }
 @keyframes brillo { 0% { transform: scale(.3) rotate(-30deg); filter: brightness(3); } 60% { transform: scale(1.15); } 100% { transform: none; } }
 .res-respuesta { font-size: 1.05rem; }
+.respuesta-abrir {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lampara-2);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: rgb(255 228 95 / .48);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.respuesta-abrir:hover { color: var(--lampara); text-decoration-color: currentColor; }
 .res-explicacion { color: var(--cal-2); }
 .res-fuente { font-size: .88rem; }
 .res-fuente a { color: var(--cal-2); text-underline-offset: 3px; }
 .res-fuente a:hover { color: var(--lampara-2); }
-.res-joya { font-size: .92rem; color: var(--cal-3); padding-top: 10px; border-top: 1px solid #3a2f27; }
-.res-joya strong { color: var(--cal-2); }
 #btn-siguiente { margin-top: 4px; }
 
 /* ───────── Final ───────── */
@@ -734,6 +749,27 @@ body.en-excavacion .pantalla {
 .rep-pregunta { font-weight: 700; color: var(--cal) !important; }
 .rep-nota { font-size: .85rem !important; color: var(--cal-3) !important; }
 .dialogo-acciones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.respuestas-dialogo { width: min(620px, calc(100vw - 32px)); max-height: min(82vh, 760px); }
+.respuestas-dialogo form { max-height: calc(min(82vh, 760px) - 52px); grid-template-rows: auto auto auto auto minmax(100px, 1fr) auto; }
+.respuestas-kicker { color: var(--cian) !important; font-family: var(--titulo); font-size: .78rem !important; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.respuestas-ayuda { color: var(--cal-3) !important; font-size: .82rem !important; }
+.lista-respuestas { list-style: none; min-height: 0; overflow-y: auto; margin: 2px -8px 0 0; padding: 0 8px 0 0; }
+.lista-respuestas li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 6px;
+  border-bottom: 1px solid #353650;
+}
+.lista-respuestas li.es-tuya { background: rgb(255 228 95 / .07); }
+.lista-respuestas .respuesta-nombre { min-width: 0; color: var(--cal); }
+.lista-respuestas .respuesta-nombre small { display: block; color: var(--lampara-2); font-size: .72rem; }
+.lista-respuestas .respuesta-rareza { color: var(--color-mineral); font-size: .82rem; }
+.lista-respuestas .respuesta-puntos { min-width: 48px; color: var(--cal-2); font-size: .86rem; text-align: right; font-variant-numeric: tabular-nums; }
+.lista-respuestas .respuestas-cargando { display: block; padding: 28px 6px; color: var(--cal-3); text-align: center; }
+.desglose-ayuda { margin-top: -8px; color: var(--cal-3); font-size: .85rem; }
+
 .aviso {
   position: fixed;
   left: 50%;
@@ -824,6 +860,8 @@ body.en-excavacion .pantalla {
   .pepitas li { width: 26px; height: 24px; }
 }
 @media (max-width: 380px) {
+  .lista-respuestas li { grid-template-columns: 16px minmax(0, 1fr) auto; }
+  .lista-respuestas .respuesta-rareza { display: none; }
   .form-respuesta { flex-direction: column; }
   .reglas { font-size: .9rem; }
 }
