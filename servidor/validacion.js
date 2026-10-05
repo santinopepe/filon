@@ -209,7 +209,8 @@ export function validarPregunta(entrada, { dominios = [], recientes = [], estric
   const rarezas = new Set(candidatas.map((r) => r.rareza));
   if (rarezas.size < 3) errores.push('Las respuestas deben repartirse en al menos 3 rarezas distintas.');
   if (!rarezas.has('grava') && !rarezas.has('cobre')) errores.push('Debe haber al menos una respuesta de Grava o Cobre (accesible para cualquiera).');
-  if (!rarezas.has('oro') && !rarezas.has('diamante')) errores.push('Debe haber al menos una respuesta de Oro o Diamante.');
+  // Sin Diamante no se puede llegar al máximo (7 × 100): cada pregunta necesita al menos una.
+  if (!rarezas.has('diamante')) errores.push('Debe haber al menos una respuesta Diamante (si no, el puntaje máximo es inalcanzable).');
 
   const enunciadoNorm = ` ${normalizar(p.enunciado)} `;
   for (const r of candidatas) {

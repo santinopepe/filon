@@ -20,7 +20,7 @@ function base(extra = {}) {
       { canonica: 'Saturno', variantes: [], rareza: 'cobre', explicacion: 'Famoso por sus anillos.' },
       { canonica: 'Mercurio', variantes: [], rareza: 'plata', explicacion: 'El más cercano al Sol.' },
       { canonica: 'Neptuno', variantes: [], rareza: 'plata', explicacion: 'El más lejano del Sol.' },
-      { canonica: 'Tierra', variantes: ['Planeta Tierra'], rareza: 'oro', explicacion: 'Nuestro planeta.' },
+      { canonica: 'Tierra', variantes: ['Planeta Tierra'], rareza: 'diamante', explicacion: 'Nuestro planeta.' },
     ],
     rechazos: [{ textos: ['Plutón'], motivo: 'Es un planeta enano.' }],
     ...extra,
@@ -31,8 +31,16 @@ test('una pregunta bien formada pasa y asigna puntos por rareza', () => {
   const r = validarPregunta(base(), { dominios });
   assert.ok(r.ok, r.errores.join(' '));
   const tierra = r.pregunta.respuestas.find((x) => x.canonica === 'Tierra');
-  assert.equal(tierra.puntos, 85);
+  assert.equal(tierra.puntos, 100);
   assert.deepEqual(tierra.formas.sort(), ['planeta tierra', 'tierra']);
+});
+
+test('sin una respuesta Diamante la pregunta no pasa (el máximo sería inalcanzable)', () => {
+  const p = base();
+  p.respuestas.find((x) => x.canonica === 'Tierra').rareza = 'oro';
+  const r = validarPregunta(p, { dominios });
+  assert.ok(!r.ok);
+  assert.ok(r.errores.some((e) => /Diamante/.test(e)), r.errores.join(' '));
 });
 
 test('detecta enunciados subjetivos', () => {

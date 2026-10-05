@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "revisado": "2026-10-05",
   "descripcion": "Banco de reserva curado a mano. Se usa cuando la generación con IA falla o no está configurada. Cada pregunta pasa la validación estricta (npm run validar-reserva) y sus datos se contrastaron con las fuentes indicadas.",
   "preguntas": [
@@ -159,7 +159,7 @@
         { "canonica": "Mercurio", "variantes": [], "rareza": "plata", "explicacion": "Es el más cercano al Sol y el más chico de los ocho." },
         { "canonica": "Urano", "variantes": [], "rareza": "plata", "explicacion": "Gira casi acostado: su eje está inclinado unos 98 grados." },
         { "canonica": "Neptuno", "variantes": [], "rareza": "plata", "explicacion": "Es el más lejano del Sol. Su existencia se predijo con cálculos antes de observarlo." },
-        { "canonica": "Tierra", "variantes": ["Planeta Tierra"], "rareza": "oro", "explicacion": "Es el tercer planeta desde el Sol y el único con vida conocida." }
+        { "canonica": "Tierra", "variantes": ["Planeta Tierra"], "rareza": "diamante", "explicacion": "Es el tercer planeta desde el Sol y el único con vida conocida." }
       ],
       "rechazos": [
         { "textos": ["Plutón"], "motivo": "Desde 2006 se lo clasifica como planeta enano." },
@@ -235,7 +235,7 @@
         { "canonica": "Francia", "variantes": [], "rareza": "cobre", "explicacion": "Campeona en 1998 y 2018." },
         { "canonica": "España", "variantes": [], "rareza": "cobre", "explicacion": "Campeona en 2010 y 2026." },
         { "canonica": "Uruguay", "variantes": [], "rareza": "plata", "explicacion": "Ganó el primer Mundial, en 1930, y el de 1950, con el Maracanazo." },
-        { "canonica": "Inglaterra", "variantes": [], "rareza": "oro", "explicacion": "Su único título fue en 1966, como local." }
+        { "canonica": "Inglaterra", "variantes": [], "rareza": "diamante", "explicacion": "Su único título fue en 1966, como local." }
       ],
       "rechazos": [
         { "textos": ["Países Bajos", "Holanda"], "motivo": "Jugó tres finales (1974, 1978 y 2010) y perdió las tres." },
@@ -370,7 +370,7 @@
         { "canonica": "La venganza de los Sith", "variantes": ["Episodio III", "Episodio 3", "Revenge of the Sith"], "rareza": "plata", "explicacion": "Episodio III (2005): narra cómo Anakin se convierte en Darth Vader." },
         { "canonica": "El despertar de la Fuerza", "variantes": ["Episodio VII", "Episodio 7", "The Force Awakens"], "rareza": "plata", "explicacion": "Episodio VII (2015), el primero producido tras la compra de Lucasfilm por Disney." },
         { "canonica": "Los últimos Jedi", "variantes": ["Episodio VIII", "Episodio 8", "The Last Jedi"], "rareza": "oro", "explicacion": "Episodio VIII (2017), dirigido por Rian Johnson." },
-        { "canonica": "El ascenso de Skywalker", "variantes": ["Episodio IX", "Episodio 9", "The Rise of Skywalker"], "rareza": "oro", "explicacion": "Episodio IX (2019), cierre de la saga Skywalker." }
+        { "canonica": "El ascenso de Skywalker", "variantes": ["Episodio IX", "Episodio 9", "The Rise of Skywalker"], "rareza": "diamante", "explicacion": "Episodio IX (2019), cierre de la saga Skywalker." }
       ],
       "rechazos": [
         { "textos": ["Rogue One", "Han Solo", "Solo"], "motivo": "Es una película derivada, no un episodio numerado." },
@@ -508,7 +508,7 @@
         { "canonica": "Harry Potter y las reliquias de la Muerte", "variantes": ["Las reliquias de la Muerte", "Reliquias de la Muerte", "Deathly Hallows", "Harry Potter 7"], "rareza": "cobre", "explicacion": "Séptima y última novela, de 2007." },
         { "canonica": "Harry Potter y el cáliz de fuego", "variantes": ["El cáliz de fuego", "Cáliz de fuego", "Goblet of Fire", "Harry Potter 4"], "rareza": "plata", "explicacion": "Cuarta novela (2000): gira en torno al Torneo de los Tres Magos." },
         { "canonica": "Harry Potter y la Orden del Fénix", "variantes": ["La Orden del Fénix", "Orden del Fénix", "Order of the Phoenix", "Harry Potter 5"], "rareza": "plata", "explicacion": "Quinta novela (2003) y la más extensa de la saga." },
-        { "canonica": "Harry Potter y el misterio del príncipe", "variantes": ["El misterio del príncipe", "Misterio del príncipe", "El príncipe mestizo", "Harry Potter y el príncipe mestizo", "Half-Blood Prince", "Harry Potter 6"], "rareza": "oro", "explicacion": "Sexta novela (2005). En inglés se titula Half-Blood Prince." }
+        { "canonica": "Harry Potter y el misterio del príncipe", "variantes": ["El misterio del príncipe", "Misterio del príncipe", "El príncipe mestizo", "Harry Potter y el príncipe mestizo", "Half-Blood Prince", "Harry Potter 6"], "rareza": "diamante", "explicacion": "Sexta novela (2005). En inglés se titula Half-Blood Prince." }
       ],
       "rechazos": [
         { "textos": ["Harry Potter y el legado maldito", "El legado maldito"], "motivo": "Es una obra de teatro de 2016, no una de las siete novelas." },

@@ -26,7 +26,8 @@ Reglas:
 7. El criterio expresado por el enunciado y el alcance debe coincidir exactamente con los triples y filtros de la consulta.
 8. Diseñá consultas eficientes. Evitá búsquedas de texto, REGEX sobre catálogos completos, caminos de propiedades innecesariamente amplios y conjuntos que representen una fracción enorme de Wikidata.
 9. Rechazos: hasta 6 errores frecuentes (respuestas plausibles que NO cumplen el criterio) con un motivo breve y verdadero.
-10. Exactitud y diversidad ante todo: si dudás del criterio o de que existan 1.000 resultados válidos, elegí otra pregunta.`;
+10. Exactitud y diversidad ante todo: si dudás del criterio o de que existan 1.000 resultados válidos, elegí otra pregunta.
+11. Rareza: Filón reparte las respuestas de Grava a Diamante según su popularidad. Toda pregunta necesita al menos una respuesta Diamante (si no, el puntaje máximo es inalcanzable), así que el conjunto debe tener una cola larga de respuestas válidas poco conocidas. Si entregás respuestas, incluí al menos una Diamante.`;
 
 export function mensajeGenerador({ categoria, cantidad, recientes, fecha }) {
   const lista = recientes.length
@@ -108,7 +109,7 @@ export const SISTEMA_REVISOR = `Sos verificador de datos de un juego de pregunta
 Para cada pregunta revisá:
 - que el enunciado sea claro, no subjetivo y defina un conjunto cerrado;
 - cada respuesta: si cumple de verdad el enunciado y el alcance, y si el dato de su explicación es correcto;
-- contradicciones entre respuestas, explicaciones, rarezas y alcance;
+- contradicciones entre respuestas, explicaciones, rarezas y alcance (toda pregunta debe tener al menos una respuesta Diamante);
 - respuestas válidas importantes que falten en el conjunto.
 Marcá «incorrecta» lo que es falso o no cumple el enunciado y «dudosa» lo que no podés confirmar con seguridad. Ante la duda, «dudosa».
 Una pregunta no es apta si es ambigua, subjetiva, depende de datos que cambian o le faltan respuestas importantes.`;
