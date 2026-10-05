@@ -178,6 +178,7 @@ Todas son opcionales; están documentadas en `.env.example`. Las principales:
 | `VERIFICAR_FUENTES` | `estricta` | `desactivada` solo para desarrollo sin internet |
 | `WIKIDATA_TIEMPO_LIMITE_MS` | `45000` | Límite por consulta al catálogo global |
 | `CONTACTO_FUENTES`, `URL_PUBLICA` | — | Identificación del verificador ante Wikipedia |
+| `BD_URL`, `BD_TOKEN` | — | Base principal (prioridad sobre `TURSO_*`) |
 | `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | — | Base Turso (en Vercel las inyecta la integración) |
 | `PUERTO`, `HOST`, `RUTA_BD` | `3000`, `0.0.0.0`, `datos/filon.db` | Servidor local y base en archivo |
 | `ZONA_HORARIA` | `America/Argentina/Buenos_Aires` | Cambio de desafío a las 00:00 |
@@ -197,6 +198,7 @@ Todo corre en Vercel: `publico/` lo sirve la CDN, `/api/*` es una función (`api
 
 1. `vercel link` (o importá el repositorio en vercel.com/new). No hace falta configurar framework ni comando de build.
 2. En el proyecto: **Storage → Create Database → Turso**, conectada a Production (y Preview si querés). Eso agrega `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`. Elegí la región de Turso cercana a la de las funciones (por defecto Vercel usa `iad1`, Washington → AWS `us-east-1`).
+   **Importante:** la integración puede crear una rama de la base por despliegue (el host empieza con `dpl-…`), que arranca vacía en cada deploy. Para Production cargá `BD_URL` y `BD_TOKEN` con la URL y el token de la base principal: tienen prioridad sobre las `TURSO_*`. El panel `/admin` muestra qué base está usando.
 3. **Settings → Environment Variables → Import .env** con el `.env` del proyecto (secretos ya generados; falta solo `ANTHROPIC_API_KEY` y, si querés, `CONTACTO_FUENTES`).
 4. `vercel --prod`. El esquema de la base se crea solo en la primera solicitud.
 5. Publicá el primer desafío sin esperar al cron: `curl -H "Authorization: Bearer $CRON_SECRET" https://<tu-dominio>/api/cron/hoy`.

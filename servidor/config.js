@@ -55,7 +55,9 @@ export function cargarConfig(sobrescrituras = {}) {
 
   // En Vercel: HTTPS, proxy delante y sin procesos permanentes (la tarea diaria la dispara Vercel Cron).
   const enVercel = Boolean(e.VERCEL);
-  const urlBD = e.TURSO_DATABASE_URL || e.BD_URL || '';
+  // BD_URL/BD_TOKEN fijan la base principal. Tienen prioridad sobre TURSO_*, que la integración de Turso
+  // en Vercel puede apuntar a una rama nueva (vacía) en cada despliegue.
+  const urlBD = e.BD_URL || e.TURSO_DATABASE_URL || '';
 
   const config = {
     enVercel,
@@ -63,7 +65,7 @@ export function cargarConfig(sobrescrituras = {}) {
     host: e.HOST || '0.0.0.0',
     // libsql://… (Turso) en producción; archivo local si no hay URL.
     rutaBD: urlBD || resolve(RAIZ, e.RUTA_BD || 'datos/filon.db'),
-    tokenBD: e.TURSO_AUTH_TOKEN || e.BD_TOKEN || '',
+    tokenBD: e.BD_URL ? e.BD_TOKEN || '' : e.TURSO_AUTH_TOKEN || '',
     rutaReserva: resolve(RAIZ, e.RUTA_RESERVA || 'datos/reserva.json'),
     zona: e.ZONA_HORARIA || 'America/Argentina/Buenos_Aires',
     segundosPorPregunta: num(e.SEGUNDOS_POR_PREGUNTA, 25),
