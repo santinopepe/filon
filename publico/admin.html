@@ -11,9 +11,18 @@
 </head>
 <body>
   <header class="barra">
-    <h1>Filón <span>administración</span></h1>
-    <p class="estado-ia" id="estado-ia"></p>
-    <button type="button" class="secundario" id="salir" hidden>Salir</button>
+    <p class="marca">Filón <span>admin</span></p>
+    <nav class="pestanas" role="tablist" aria-label="Secciones" id="nav" hidden>
+      <button type="button" role="tab" data-pestana="resumen" aria-selected="true">Resumen</button>
+      <button type="button" role="tab" data-pestana="desafios" aria-selected="false">Desafíos</button>
+      <button type="button" role="tab" data-pestana="crear" aria-selected="false">Crear</button>
+      <button type="button" role="tab" data-pestana="corridas" aria-selected="false">Corridas</button>
+      <button type="button" role="tab" data-pestana="reportes" aria-selected="false">Reportes <span class="insignia" id="insignia-reportes" hidden></span></button>
+    </nav>
+    <div class="barra-derecha">
+      <p class="estado-ia" id="estado-ia"></p>
+      <button type="button" class="secundario chico" id="salir" hidden>Salir</button>
+    </div>
   </header>
 
   <main>
@@ -26,8 +35,71 @@
     </form>
 
     <div id="panel" hidden>
+      <section id="pestana-resumen" class="pestana" aria-label="Resumen">
+        <div class="filtros">
+          <label class="filtro">Día <input type="date" id="est-fecha"></label>
+          <div class="segmentado" role="group" aria-label="Período del gráfico de jugadores">
+            <button type="button" data-rango="7" aria-pressed="false">7 días</button>
+            <button type="button" data-rango="30" aria-pressed="true">30 días</button>
+            <button type="button" data-rango="90" aria-pressed="false">90 días</button>
+          </div>
+          <p class="filtro-nota" id="est-nota"></p>
+        </div>
+        <div class="resumen" id="resumen">
+          <div class="kpis" id="kpis"></div>
+          <article class="tarjeta grafico">
+            <header class="tarjeta-cabecera">
+              <div><h2>Jugadores por día</h2><p class="sub" id="dias-sub"></p></div>
+              <ul class="leyenda" aria-hidden="true">
+                <li><i class="clave-barra s1"></i>Terminaron</li>
+                <li><i class="clave-barra s2"></i>Empezaron sin terminar</li>
+              </ul>
+            </header>
+            <div class="lienzo" id="graf-dias"></div>
+            <details class="ver-tabla"><summary>Ver como tabla</summary><div class="tabla-envoltura" id="tabla-dias"></div></details>
+          </article>
+          <div class="grilla-dos">
+            <article class="tarjeta grafico">
+              <header class="tarjeta-cabecera">
+                <div><h2>Distribución de profundidad</h2><p class="sub" id="campana-sub"></p></div>
+                <ul class="leyenda" aria-hidden="true">
+                  <li><i class="clave-barra s1"></i>Partidas terminadas</li>
+                  <li><i class="clave-linea s2"></i>Campana normal ajustada</li>
+                </ul>
+              </header>
+              <div class="lienzo" id="graf-campana"></div>
+              <details class="ver-tabla"><summary>Ver como tabla</summary><div class="tabla-envoltura" id="tabla-campana"></div></details>
+            </article>
+            <article class="tarjeta">
+              <header class="tarjeta-cabecera"><div><h2>El día en números</h2><p class="sub" id="numeros-sub"></p></div></header>
+              <dl class="numeros" id="numeros"></dl>
+            </article>
+          </div>
+          <article class="tarjeta">
+            <header class="tarjeta-cabecera">
+              <div><h2>Preguntas del día</h2><p class="sub">Cómo le fue a la gente en cada ronda. Los intentos fallidos repetidos pueden ser respuestas que faltan.</p></div>
+              <ul class="leyenda" aria-hidden="true">
+                <li><i class="clave-barra s1"></i>Acertó</li>
+                <li><i class="clave-barra s2"></i>Se apagó la mecha</li>
+                <li><i class="clave-barra s3"></i>Pasó</li>
+              </ul>
+            </header>
+            <div class="tabla-envoltura" id="tabla-preguntas"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="pestana-desafios" class="pestana" aria-label="Desafíos" hidden>
+        <article class="tarjeta">
+          <div class="tabla-envoltura"><table class="tabla" id="tabla-desafios"></table></div>
+        </article>
+        <div id="detalle"></div>
+      </section>
+
+      <section id="pestana-crear" class="pestana grilla-crear" aria-label="Crear" hidden>
       <section class="tarjeta">
-        <h2>Generar un día</h2>
+        <h2>Generar con IA o reserva</h2>
+        <p class="sub">Para un día nuevo o para regenerar uno existente.</p>
         <form class="generar" id="form-generar">
           <label>Fecha <input type="date" id="gen-fecha" required></label>
           <label>Modo
@@ -97,19 +169,11 @@
         <pre class="resultado" id="imp-resultado" hidden></pre>
       </section>
 
-      <nav class="pestanas" role="tablist">
-        <button type="button" role="tab" data-pestana="desafios" aria-selected="true">Desafíos</button>
-        <button type="button" role="tab" data-pestana="corridas" aria-selected="false">Corridas</button>
-        <button type="button" role="tab" data-pestana="reportes" aria-selected="false">Reportes</button>
-      </nav>
-
-      <section id="pestana-desafios" class="pestana">
-        <div class="tabla-envoltura"><table class="tabla" id="tabla-desafios"></table></div>
-        <div id="detalle"></div>
       </section>
-      <section id="pestana-corridas" class="pestana" hidden></section>
-      <section id="pestana-reportes" class="pestana" hidden></section>
+      <section id="pestana-corridas" class="pestana" aria-label="Corridas" hidden></section>
+      <section id="pestana-reportes" class="pestana" aria-label="Reportes" hidden></section>
     </div>
   </main>
+  <div class="tooltip" id="tooltip" role="status" hidden></div>
 </body>
 </html>

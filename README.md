@@ -219,12 +219,13 @@ La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (2
 
 ### Administración
 
-Panel web en **`/admin`** (pide el `TOKEN_ADMIN`; queda guardado solo en ese navegador): lista de desafíos con sus preguntas y respuestas; corridas de generación; reportes de jugadores; generación asistida; y carga manual de un día completo pegando o abriendo un JSON, sin usar IA.
+Panel web en **`/admin`** (pide el `TOKEN_ADMIN`; queda guardado solo en ese navegador). Abre en un **resumen** con estadísticas: jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: lista de desafíos con sus preguntas y respuestas; corridas de generación; reportes de jugadores; generación asistida; y carga manual de un día completo pegando o abriendo un JSON, sin usar IA.
 
 La misma API, con `Authorization: Bearer $TOKEN_ADMIN`:
 
 | Ruta | Qué hace |
 | --- | --- |
+| `GET /api/admin/estadisticas?fecha=…&desde=…&hasta=…` | Totales, serie diaria de jugadores y detalle del día (distribución de profundidad, resultados por pregunta e intentos fallidos frecuentes) |
 | `GET /api/admin/desafios` | Desafíos publicados, con cantidad de partidas |
 | `GET /api/admin/desafios/AAAA-MM-DD` | Banco completo de un día |
 | `POST /api/admin/desafios/AAAA-MM-DD/generar` | Genera o regenera un día (ver abajo) |

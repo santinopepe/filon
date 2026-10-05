@@ -13,6 +13,7 @@ import {
 } from './banco.js';
 import { esFechaValida, fechaLocal, sumarDias } from './tiempo.js';
 import { asegurarDesafio } from './generador/generar.js';
+import { estadisticasAdmin } from './estadisticas.js';
 import { validarPregunta, validarLote } from './validacion.js';
 
 const COOKIE = 'filon_id';
@@ -180,6 +181,18 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       const r = await asegurarDesafio({ db, config, fecha, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora });
       console.info(`[admin] generar ${fecha} (${modo}): ${JSON.stringify(r)}`);
       return r;
+    }, { admin: true }],
+    // Estadísticas: ?fecha=AAAA-MM-DD (día en detalle) &desde=…&hasta=… (serie diaria, hasta 366 días).
+    ['GET', /^\/api\/admin\/estadisticas$/, async ({ req }) => {
+      const q = new URL(req.url, 'http://local').searchParams;
+      const hoy = fechaLocal(ahora(), config.zona);
+      const fecha = q.get('fecha') || hoy;
+      const hasta = q.get('hasta') || hoy;
+      const desde = q.get('desde') || sumarDias(hasta, -29);
+      for (const f of [fecha, desde, hasta]) if (!esFechaValida(f)) throw new ErrorJuego(400, 'fecha_invalida', `Fecha inválida: ${f}`);
+      if (desde > hasta) throw new ErrorJuego(400, 'rango_invalido', 'El rango está invertido.');
+      if (sumarDias(desde, 366) < hasta) throw new ErrorJuego(400, 'rango_invalido', 'El rango no puede superar un año.');
+      return { hoy, ...(await estadisticasAdmin(db, { zona: config.zona, desde, hasta, fecha })) };
     }, { admin: true }],
     ['GET', /^\/api\/admin\/corridas$/, async () => ({
       corridas: (await db.all('SELECT id, fecha_objetivo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT 50'))

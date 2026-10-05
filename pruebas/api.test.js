@@ -241,3 +241,57 @@ test('administración: importa un desafío manual desde JSON sin usar IA', async
     await app.cerrar();
   }
 });
+
+test('administración: estadísticas de jugadores, distribución y preguntas del día', async () => {
+  const app = await levantar();
+  const admin = { authorization: 'Bearer secreto-admin' };
+  try {
+    const hoy = (await cliente(app.puerto).pedir('GET', '/api/salud')).datos.fecha;
+    const banco = (await cliente(app.puerto).pedir('GET', `/api/admin/desafios/${hoy}`, null, admin)).datos;
+    const masRara = (n) => [...banco.preguntas[n - 1].respuestas].sort((a, b) => b.puntos - a.puntos)[0];
+
+    // A acierta la más rara en las 7 · B pasa las 7 · C falla dos veces la 1 (mismo texto) y abandona
+    const jugar = async (accion) => {
+      const c = cliente(app.puerto);
+      const p = (await c.pedir('POST', '/api/partidas')).datos.partida;
+      for (let n = 1; n <= 7; n++) {
+        await c.pedir('POST', `/api/partidas/${p.id}/rondas/${n}/iniciar`);
+        if ((await accion(c, p, n)) === false) break;
+      }
+      return c;
+    };
+    await jugar((c, p, n) => c.pedir('POST', `/api/partidas/${p.id}/rondas/${n}/respuesta`, { texto: masRara(n).canonica }));
+    await jugar((c, p, n) => c.pedir('POST', `/api/partidas/${p.id}/rondas/${n}/pasar`));
+    const c = await jugar(async (c, p) => {
+      await c.pedir('POST', `/api/partidas/${p.id}/rondas/1/respuesta`, { texto: 'Inventado Pérez' });
+      await c.pedir('POST', `/api/partidas/${p.id}/rondas/1/respuesta`, { texto: 'inventado perez' });
+      return false;
+    });
+
+    assert.equal((await cliente(app.puerto).pedir('GET', '/api/admin/estadisticas')).estado, 401);
+    assert.equal((await c.pedir('GET', '/api/admin/estadisticas?fecha=2026-13-01', null, admin)).estado, 400);
+    const e = (await c.pedir('GET', `/api/admin/estadisticas?fecha=${hoy}&desde=${hoy}&hasta=${hoy}`, null, admin)).datos;
+
+    assert.equal(e.totales.jugadores, 3);
+    assert.ok(e.totales.visitantes >= 3, 'cuenta también a quien solo abrió la página');
+    assert.equal(e.serie.length, 1);
+    assert.equal(e.serie[0].jugadores, 3);
+    assert.equal(e.serie[0].terminadas, 2);
+    assert.equal(e.dia.terminadas, 2, 'A y B terminaron');
+    assert.equal(e.dia.enCurso, 1);
+    assert.deepEqual([...e.dia.metros].sort((x, y) => x - y), [0, 7000]);
+    assert.equal(e.dia.resumen.promedio, 3500);
+    assert.equal(e.dia.resumen.mediana, 3500);
+    const p1 = e.dia.preguntas[0];
+    assert.equal(p1.acertadas, 1);
+    assert.equal(p1.pasadas, 1);
+    assert.equal(p1.jugadas, 2, 'la ronda en curso de C no cuenta como jugada');
+    assert.equal(p1.enCurso, 1);
+    assert.equal(p1.rarezas.diamante, 1);
+    assert.equal(p1.topAceptadas[0].texto, masRara(1).canonica);
+    assert.equal(p1.topFallidas[0].veces, 2, 'las dos formas del mismo intento fallido se agrupan');
+    assert.equal(p1.promedioMetros, 500);
+  } finally {
+    await app.cerrar();
+  }
+});
