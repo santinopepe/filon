@@ -15,6 +15,6 @@ export default async function manejar(req, res) {
     if (!(await api(req, res, req.url))) enviarJson(res, 404, { error: 'no_encontrado' });
   } catch (e) {
     console.error('[vercel]', e);
-    if (!res.headersSent) enviarJson(res, 500, { error: 'interno' });
+    if (!res.headersSent) enviarJson(res, 500, { error: 'interno', mensaje: /TURSO_DATABASE_URL/.test(e.message) ? e.message : undefined });
   }
 }
