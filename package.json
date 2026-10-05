@@ -1,0 +1,22 @@
+{
+  "name": "filon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Filón: desafío diario de cultura general donde las respuestas raras te llevan más hondo en la mina.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning servidor/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch servidor/index.js",
+    "generar": "node --disable-warning=ExperimentalWarning scripts/generar-desafio.js",
+    "validar-reserva": "node --disable-warning=ExperimentalWarning scripts/validar-reserva.js",
+    "admin": "node --disable-warning=ExperimentalWarning scripts/admin.js",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 pruebas/*.test.js",
+    "test:navegador": "node --disable-warning=ExperimentalWarning pruebas/navegador/recorrido.mjs"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0"
+  }
+}

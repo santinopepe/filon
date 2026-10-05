@@ -1,0 +1,10 @@
+# /etc/systemd/system/filon-reserva.service — red de seguridad antes de medianoche
+[Unit]
+Description=Filón: completar mañana con la reserva si la IA no llegó
+
+[Service]
+Type=oneshot
+User=filon
+WorkingDirectory=/opt/filon
+EnvironmentFile=/opt/filon/.env
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning scripts/generar-desafio.js --manana

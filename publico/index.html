@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Filón · siete vetas por día</title>
+  <meta name="description" content="Siete preguntas por día. Encontrá la respuesta menos obvia y ayudá a Lito a atravesar las capas de la Tierra.">
+  <meta name="theme-color" content="#15152b">
+  <link rel="icon" href="/favicon-nuevo.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preload" href="/fuentes/big-shoulders-stencil-display-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/atkinson-hyperlegible-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/estilos.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body class="en-superficie">
+  <canvas id="escena" aria-hidden="true"></canvas>
+
+  <!-- Lito, el gusano explorador que abre camino entre los estratos -->
+  <div class="gusano" id="minero" aria-hidden="true">
+    <svg viewBox="0 0 120 224" width="120" height="224" focusable="false">
+      <defs>
+        <linearGradient id="g-cuerpo" x1=".1" y1="0" x2=".9" y2="1">
+          <stop offset="0" stop-color="#7d2f3b"/>
+          <stop offset=".22" stop-color="#c05652"/>
+          <stop offset=".52" stop-color="#d06d5e"/>
+          <stop offset=".78" stop-color="#963848"/>
+          <stop offset="1" stop-color="#4b2130"/>
+        </linearGradient>
+        <linearGradient id="g-clitelo" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#d58a72"/>
+          <stop offset=".5" stop-color="#b95f58"/>
+          <stop offset="1" stop-color="#71303b"/>
+        </linearGradient>
+        <radialGradient id="g-humedad" cx="35%" cy="25%" r="75%">
+          <stop offset="0" stop-color="#ffd1b0" stop-opacity=".78"/>
+          <stop offset=".28" stop-color="#f39b7f" stop-opacity=".28"/>
+          <stop offset="1" stop-color="#51212f" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="g-halo-tierra" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#ffb58b" stop-opacity=".2"/>
+          <stop offset="1" stop-color="#ff9a72" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="f-organico" x="-25%" y="-15%" width="150%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency=".025 .12" numOctaves="2" seed="11" result="ruido"/>
+          <feDisplacementMap in="SourceGraphic" in2="ruido" scale="1.8" xChannelSelector="R" yChannelSelector="B"/>
+        </filter>
+        <filter id="f-sombra" x="-50%" y="-30%" width="200%" height="170%">
+          <feGaussianBlur stdDeviation="4"/>
+        </filter>
+        <path id="forma-gusano" d="M56 7 C68 15 73 28 65 42 C55 57 45 67 54 84 C61 97 76 105 70 122 C66 136 48 143 44 159 C40 174 48 185 57 194 C65 202 68 212 62 219 C57 225 48 219 49 211 C50 200 43 193 36 184 C24 168 29 148 39 134 C48 121 52 110 43 99 C29 83 27 66 38 50 C48 36 58 27 50 18 C45 12 48 7 56 7 Z"/>
+        <clipPath id="clip-gusano"><use href="#forma-gusano"/></clipPath>
+      </defs>
+
+      <ellipse class="halo-organico" cx="56" cy="203" rx="54" ry="31" fill="url(#g-halo-tierra)"/>
+      <g class="gusano-cuerpo" filter="url(#f-organico)">
+        <use href="#forma-gusano" fill="#341923" opacity=".5" transform="translate(3 5)" filter="url(#f-sombra)"/>
+        <use href="#forma-gusano" fill="url(#g-cuerpo)"/>
+        <g clip-path="url(#clip-gusano)">
+          <ellipse class="clitelo" cx="44" cy="163" rx="18" ry="27" fill="url(#g-clitelo)" transform="rotate(-12 44 163)"/>
+          <g class="anillos" fill="none" stroke="#4b1d2a" stroke-width="1.25" opacity=".6">
+            <path d="M36 23 Q55 27 72 22"/><path d="M33 34 Q53 39 72 34"/>
+            <path d="M29 47 Q48 52 69 48"/><path d="M26 59 Q47 65 68 60"/>
+            <path d="M25 71 Q46 76 69 72"/><path d="M27 84 Q48 89 73 85"/>
+            <path d="M30 97 Q50 102 76 98"/><path d="M32 110 Q51 116 77 111"/>
+            <path d="M31 123 Q49 128 74 124"/><path d="M27 136 Q47 142 70 137"/>
+            <path d="M25 150 Q44 155 66 150"/><path d="M23 164 Q43 169 66 164"/>
+            <path d="M25 178 Q45 182 69 177"/><path d="M31 190 Q48 195 71 190"/>
+            <path d="M38 201 Q52 205 69 201"/><path d="M43 211 Q55 215 68 211"/>
+          </g>
+          <path class="brillo-piel" d="M51 14 C60 26 51 39 43 52 C35 66 37 78 46 89 M39 143 C34 158 37 174 47 184" fill="none" stroke="#ffd0ad" stroke-width="4" stroke-linecap="round" opacity=".42"/>
+          <path d="M64 48 C55 61 50 71 57 84" fill="none" stroke="#541d2b" stroke-width="5" stroke-linecap="round" opacity=".22"/>
+          <ellipse cx="55" cy="214" rx="8" ry="5" fill="url(#g-humedad)" opacity=".7"/>
+          <g class="textura-piel" fill="#5b2130" opacity=".3">
+            <circle cx="49" cy="55" r="1.2"/><circle cx="61" cy="92" r="1"/><circle cx="40" cy="119" r="1.3"/>
+            <circle cx="55" cy="138" r=".9"/><circle cx="37" cy="181" r="1.1"/><circle cx="58" cy="198" r="1"/>
+          </g>
+        </g>
+        <use href="#forma-gusano" fill="url(#g-humedad)" opacity=".32"/>
+      </g>
+    </svg>
+  </div>
+  <p class="burbuja" id="burbuja" aria-hidden="true" hidden></p>
+
+  <header class="barra">
+    <a class="marca" href="/" aria-label="Filón, volver al inicio">FILÓN</a>
+    <p class="hud" id="hud" hidden>
+      <span id="hud-ronda">Ronda 1 de 7</span>
+      <span class="hud-metros"><span id="hud-metros">0</span> m</span>
+    </p>
+    <div class="controles">
+      <button type="button" class="icono" id="btn-ayuda" aria-label="Cómo se juega">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17.4" r="1.1" fill="currentColor"/></svg>
+      </button>
+      <button type="button" class="icono" id="btn-movimiento" aria-pressed="false" aria-label="Reducir movimiento">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h3l2-5 3 10 2-5h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="onda"/><path d="M4 12h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="plano"/></svg>
+      </button>
+      <button type="button" class="icono" id="btn-sonido" aria-pressed="true" aria-label="Sonido">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="ondas"/><path d="M16 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="mudo"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <aside class="profundimetro" id="profundimetro" aria-hidden="true">
+    <div class="escala" id="escala"></div>
+    <div class="marcador" id="marcador"><span id="marcador-texto">0 m</span></div>
+  </aside>
+
+  <main class="panel" id="panel">
+    <section class="pantalla cargando" id="p-cargando">
+      <p>Encendiendo las lámparas…</p>
+    </section>
+
+    <section class="pantalla inicio" id="p-inicio" hidden aria-labelledby="t-inicio">
+      <h1 class="logo" id="t-inicio">FILÓN</h1>
+      <p class="bajada">Siete preguntas por día. Las respuestas que nadie dice te llevan más hondo.</p>
+      <ul class="reglas">
+        <li>Cada pregunta tiene muchas respuestas válidas. Escribí una antes de que se consuma la mecha: 25 segundos.</li>
+        <li>Si tu respuesta no está en la veta, probá otra mientras quede tiempo.</li>
+        <li>Cuanto más rara la respuesta, más puntos. Cada punto es un descenso de 10 metros; el fondo está a 7.000.</li>
+      </ul>
+      <ul class="minerales" aria-label="Rarezas y puntos">
+        <li class="mineral" data-rareza="grava"><span class="piedra"></span>Grava <b>10</b></li>
+        <li class="mineral" data-rareza="cobre"><span class="piedra"></span>Cobre <b>30</b></li>
+        <li class="mineral" data-rareza="plata"><span class="piedra"></span>Plata <b>60</b></li>
+        <li class="mineral" data-rareza="oro"><span class="piedra"></span>Oro <b>85</b></li>
+        <li class="mineral" data-rareza="diamante"><span class="piedra"></span>Diamante <b>100</b></li>
+      </ul>
+      <p class="nota">La rareza es una estimación editorial de qué tan conocida es cada respuesta, no un porcentaje de jugadores.</p>
+
+      <div class="pendiente" id="inicio-pendiente" hidden>
+        <p id="inicio-pendiente-texto"></p>
+        <button type="button" class="boton secundario" id="btn-retomar">Terminar esa excavación</button>
+      </div>
+      <p class="preparando" id="inicio-preparando" hidden>La expedición de hoy se está preparando. Probá de nuevo en unos minutos.</p>
+
+      <button type="button" class="boton principal" id="btn-comenzar">Comenzar excavación</button>
+      <p class="progreso-hoy" id="inicio-progreso" hidden></p>
+      <p class="cuenta">Próximo desafío en <time id="cuenta-inicio">--:--:--</time></p>
+      <p class="meta" id="inicio-meta"></p>
+    </section>
+
+    <div class="cabecera-partida" id="cabecera-partida" hidden>
+      <ol class="pepitas" id="pepitas" aria-label="Progreso de las 7 rondas"></ol>
+    </div>
+
+    <section class="pantalla ronda" id="p-ronda" hidden aria-labelledby="ronda-enunciado">
+      <p class="ronda-datos"><span id="ronda-num">Ronda 1 de 7</span><span class="categoria" id="ronda-categoria"></span></p>
+      <h2 class="enunciado" id="ronda-enunciado"></h2>
+      <p class="alcance" id="ronda-alcance"></p>
+      <div class="mecha" id="mecha" role="timer" aria-labelledby="mecha-seg">
+        <div class="mecha-cuerda"><div class="mecha-resto" id="mecha-resto"><span class="chispa"></span></div></div>
+        <span class="mecha-seg" id="mecha-seg"><span id="mecha-num">25</span> s</span>
+      </div>
+      <form class="form-respuesta" id="form-respuesta" autocomplete="off" novalidate>
+        <label for="campo-respuesta" class="solo-lector">Tu respuesta</label>
+        <input id="campo-respuesta" name="respuesta" type="text" maxlength="120" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Escribí tu respuesta">
+        <button type="submit" class="boton principal" id="btn-responder">Responder</button>
+      </form>
+      <p class="mensaje" id="ronda-mensaje" aria-live="polite"></p>
+      <ul class="intentos" id="ronda-intentos" aria-label="Respuestas que no estaban en la veta"></ul>
+      <button type="button" class="boton fantasma" id="btn-pasar">Pasar esta pregunta (0 puntos)</button>
+    </section>
+
+    <section class="pantalla resultado" id="p-resultado" hidden aria-labelledby="res-titulo">
+      <p class="ronda-datos"><span id="res-ronda"></span><span class="categoria" id="res-categoria"></span></p>
+      <p class="res-enunciado" id="res-enunciado"></p>
+      <div class="hallazgo" id="hallazgo" data-rareza="nada">
+        <span class="hallazgo-gema" aria-hidden="true"></span>
+        <div>
+          <h2 class="hallazgo-titulo" id="res-titulo" tabindex="-1"></h2>
+          <p class="hallazgo-puntos" id="res-puntos"></p>
+        </div>
+      </div>
+      <p class="res-respuesta" id="res-respuesta"></p>
+      <p class="res-explicacion" id="res-explicacion"></p>
+      <p class="res-fuente" id="res-fuente-p"><a id="res-fuente" href="#" target="_blank" rel="noopener noreferrer"></a></p>
+      <p class="res-joya" id="res-joya"></p>
+      <button type="button" class="boton principal" id="btn-siguiente">Seguir bajando</button>
+      <button type="button" class="enlace" id="btn-reportar">¿Diste una respuesta válida que no aceptamos? Reportala</button>
+    </section>
+
+    <section class="pantalla final" id="p-final" hidden aria-labelledby="final-titulo">
+      <p class="final-sobre" id="final-sobre"></p>
+      <h2 class="final-titulo" id="final-titulo" tabindex="-1"><span class="final-numero" id="final-metros">0</span> <span class="final-unidad">metros</span></h2>
+      <p class="final-estrato" id="final-estrato"></p>
+      <section class="rendimiento" id="rendimiento" aria-labelledby="rendimiento-titulo">
+        <div class="rendimiento-cabecera">
+          <div>
+            <p class="rendimiento-eyebrow">Tu lugar en la expedición</p>
+            <h3 id="rendimiento-titulo">Rendimiento de los jugadores</h3>
+          </div>
+          <p class="rendimiento-puesto" id="rendimiento-puesto"></p>
+        </div>
+        <p class="rendimiento-resumen" id="rendimiento-resumen"></p>
+        <svg class="campana" id="rendimiento-grafico" viewBox="0 0 520 210" role="img" aria-labelledby="rendimiento-grafico-titulo rendimiento-grafico-desc"></svg>
+        <div class="rendimiento-leyenda" aria-hidden="true">
+          <span><i class="leyenda-curva"></i>Campana estimada</span>
+          <span><i class="leyenda-tu"></i>Tu resultado</span>
+        </div>
+        <p class="rendimiento-nota" id="rendimiento-nota"></p>
+      </section>
+      <h3 class="desglose-titulo">Tus siete respuestas</h3>
+      <ol class="desglose" id="desglose"></ol>
+      <button type="button" class="boton principal" id="btn-compartir">Compartir resultado</button>
+      <p class="nota" id="final-guardado">Tu resultado quedó guardado en este dispositivo.</p>
+      <p class="cuenta">Próximo desafío en <time id="cuenta-final">--:--:--</time></p>
+      <button type="button" class="boton secundario" id="btn-hoy" hidden>Ir al desafío de hoy</button>
+    </section>
+  </main>
+
+  <dialog class="dialogo" id="dlg-reporte" aria-labelledby="rep-titulo">
+    <form method="dialog" id="form-reporte">
+      <h2 id="rep-titulo">Reportar una respuesta que falta</h2>
+      <p class="rep-pregunta" id="rep-pregunta"></p>
+      <label for="rep-texto">Respuesta que creés válida</label>
+      <input id="rep-texto" type="text" maxlength="120" required autocomplete="off">
+      <label for="rep-comentario">Comentario o fuente (opcional)</label>
+      <textarea id="rep-comentario" maxlength="300" rows="3"></textarea>
+      <p class="rep-nota">La revisamos a mano. Las puntuaciones de hoy no cambian.</p>
+      <div class="dialogo-acciones">
+        <button type="button" class="boton fantasma" value="cancelar" id="rep-cancelar">Cancelar</button>
+        <button type="submit" class="boton principal" value="enviar" id="rep-enviar">Enviar reporte</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo" id="dlg-ayuda" aria-labelledby="ayuda-titulo">
+    <form method="dialog">
+      <h2 id="ayuda-titulo">Cómo se juega</h2>
+      <p>Cada día hay siete preguntas, iguales para todos y en el mismo orden. Cada una admite muchas respuestas correctas: escribí una sola.</p>
+      <p>Tenés 25 segundos por pregunta. Si tu respuesta no está en la veta, podés probar otra mientras quede mecha. La primera respuesta aceptada cierra la ronda.</p>
+      <p>Las respuestas valen según su rareza estimada: Grava 10, Cobre 30, Plata 60, Oro 85 y Diamante 100. Cada punto es un descenso de 10 metros.</p>
+      <p>No importan las mayúsculas, los espacios ni las tildes, pero la «ñ» sí cuenta: «año» no es «ano».</p>
+      <p>Hay una partida por día. El desafío cambia a las 00:00 de Buenos Aires.</p>
+      <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Entendido</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="dialogo respuestas-dialogo" id="dlg-respuestas" aria-labelledby="respuestas-titulo">
+    <form method="dialog">
+      <p class="respuestas-kicker" id="respuestas-ronda"></p>
+      <h2 id="respuestas-titulo">Todas las respuestas válidas</h2>
+      <p class="rep-pregunta" id="respuestas-pregunta"></p>
+      <p class="respuestas-ayuda" id="respuestas-ayuda">Ordenadas de mayor a menor puntaje.</p>
+      <ol class="lista-respuestas" id="lista-respuestas"></ol>
+      <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Cerrar</button></div>
+    </form>
+  </dialog>
+
+  <div class="gema-vuela" id="gema-vuela" aria-hidden="true" hidden></div>
+  <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+  <p class="solo-lector" id="lector" aria-live="assertive"></p>
+  <noscript><p class="sin-js">Filón necesita JavaScript para funcionar.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "outputDirectory": "publico",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 300,
+      "includeFiles": "datos/reserva.json"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:ruta*",
+      "destination": "/api"
+    },
+    {
+      "source": "/((?!api/)[^.]*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/fuentes/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/manana-ia",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/manana",
+      "schedule": "30 1 * * *"
+    },
+    {
+      "path": "/api/cron/hoy",
+      "schedule": "5 3 * * *"
+    }
+  ]
+}

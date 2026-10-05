@@ -1,0 +1,550 @@
+{
+  "version": 1,
+  "revisado": "2026-10-05",
+  "descripcion": "Banco de reserva curado a mano. Se usa cuando la generación con IA falla o no está configurada. Cada pregunta pasa la validación estricta (npm run validar-reserva) y sus datos se contrastaron con las fuentes indicadas.",
+  "preguntas": [
+    {
+      "id": "geo-sudamerica",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país de América del Sur.",
+      "alcance": "Los 12 Estados soberanos de América del Sur. No cuentan los territorios que no son países, como la Guayana Francesa.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/América_del_Sur", "titulo": "América del Sur — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Argentina", "variantes": ["República Argentina"], "rareza": "grava", "explicacion": "Es el segundo país más extenso de Sudamérica, después de Brasil." },
+        { "canonica": "Brasil", "variantes": ["Brazil", "República Federativa del Brasil"], "rareza": "grava", "explicacion": "Ocupa casi la mitad del continente y es el único país sudamericano de habla portuguesa." },
+        { "canonica": "Chile", "variantes": ["República de Chile"], "rareza": "cobre", "explicacion": "Se extiende más de 4.000 km de norte a sur, entre los Andes y el Pacífico." },
+        { "canonica": "Uruguay", "variantes": ["República Oriental del Uruguay"], "rareza": "cobre", "explicacion": "Se llama República Oriental del Uruguay porque está al este del río Uruguay." },
+        { "canonica": "Perú", "variantes": ["República del Perú"], "rareza": "cobre", "explicacion": "Allí está Machu Picchu, la ciudadela inca del siglo XV." },
+        { "canonica": "Colombia", "variantes": ["República de Colombia"], "rareza": "cobre", "explicacion": "Es el único país sudamericano con costas en el Pacífico y en el Caribe." },
+        { "canonica": "Bolivia", "variantes": ["Estado Plurinacional de Bolivia"], "rareza": "plata", "explicacion": "Junto con Paraguay, es uno de los dos países sudamericanos sin salida al mar." },
+        { "canonica": "Paraguay", "variantes": ["República del Paraguay"], "rareza": "plata", "explicacion": "Tiene dos idiomas oficiales: el español y el guaraní." },
+        { "canonica": "Venezuela", "variantes": ["República Bolivariana de Venezuela"], "rareza": "plata", "explicacion": "Allí está el Salto Ángel, la cascada más alta del mundo, de casi 1.000 metros." },
+        { "canonica": "Ecuador", "variantes": ["República del Ecuador"], "rareza": "plata", "explicacion": "Toma su nombre de la línea del ecuador, que lo atraviesa. Incluye las islas Galápagos." },
+        { "canonica": "Guyana", "variantes": ["República Cooperativa de Guyana"], "rareza": "oro", "explicacion": "Es el único país de Sudamérica con el inglés como idioma oficial." },
+        { "canonica": "Surinam", "variantes": ["Suriname", "República de Surinam"], "rareza": "diamante", "explicacion": "Excolonia neerlandesa: es el país más chico de Sudamérica y su idioma oficial es el neerlandés." }
+      ],
+      "rechazos": [
+        { "textos": ["Guayana Francesa"], "motivo": "Es un departamento de ultramar de Francia, no un país soberano." },
+        { "textos": ["Panamá", "Costa Rica"], "motivo": "Está en América Central." },
+        { "textos": ["México"], "motivo": "Está en América del Norte." }
+      ]
+    },
+    {
+      "id": "geo-ecuador",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país cuyo territorio terrestre atraviese la línea del ecuador.",
+      "alcance": "Los 11 países en los que el ecuador cruza tierra firme o una isla; no cuentan aguas territoriales sin tierra atravesada.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Ecuador_terrestre", "titulo": "Ecuador terrestre — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Ecuador", "variantes": ["República del Ecuador"], "rareza": "grava", "explicacion": "El país toma su nombre de la línea ecuatorial que cruza su territorio." },
+        { "canonica": "Brasil", "variantes": ["República Federativa de Brasil"], "rareza": "cobre", "explicacion": "El ecuador atraviesa el norte del país y la desembocadura del Amazonas." },
+        { "canonica": "Colombia", "variantes": ["República de Colombia"], "rareza": "cobre", "explicacion": "La línea cruza el sur colombiano, cerca de la frontera con Ecuador." },
+        { "canonica": "Indonesia", "variantes": ["República de Indonesia"], "rareza": "cobre", "explicacion": "El ecuador atraviesa varias islas del archipiélago indonesio." },
+        { "canonica": "Kenia", "variantes": ["Kenya"], "rareza": "plata", "explicacion": "La línea ecuatorial atraviesa el centro del país en África oriental." },
+        { "canonica": "Uganda", "variantes": [], "rareza": "plata", "explicacion": "El ecuador cruza Uganda y pasa por el lago Victoria." },
+        { "canonica": "Somalia", "variantes": [], "rareza": "plata", "explicacion": "La línea atraviesa el sur del país antes de llegar al océano Índico." },
+        { "canonica": "Gabón", "variantes": ["Gabon"], "rareza": "oro", "explicacion": "El ecuador cruza su territorio boscoso de oeste a este." },
+        { "canonica": "República del Congo", "variantes": ["Congo-Brazzaville"], "rareza": "oro", "explicacion": "El ecuador atraviesa el norte de este país centroafricano." },
+        { "canonica": "República Democrática del Congo", "variantes": ["Congo-Kinsasa", "Congo-Kinshasa", "RDC"], "rareza": "oro", "explicacion": "La línea ecuatorial atraviesa la gran cuenca del Congo." },
+        { "canonica": "Santo Tomé y Príncipe", "variantes": ["São Tomé y Príncipe", "Sao Tomé y Príncipe"], "rareza": "diamante", "explicacion": "El ecuador cruza el islote de Rolas, al sur de la isla de Santo Tomé." }
+      ],
+      "rechazos": [
+        { "textos": ["Kiribati", "Maldivas"], "motivo": "El ecuador cruza sus aguas, pero no su territorio terrestre." },
+        { "textos": ["Perú"], "motivo": "Está completamente al sur de la línea ecuatorial." }
+      ]
+    },
+    {
+      "id": "geo-alemania",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país que limite con Alemania.",
+      "alcance": "Los 9 países que tienen frontera terrestre con Alemania.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Alemania", "titulo": "Alemania — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Francia", "variantes": ["France"], "rareza": "grava", "explicacion": "Parte de la frontera franco-alemana sigue el curso del Rin." },
+        { "canonica": "Austria", "variantes": [], "rareza": "cobre", "explicacion": "Es la frontera más larga de Alemania, y ambos países comparten el idioma." },
+        { "canonica": "Polonia", "variantes": ["Poland"], "rareza": "cobre", "explicacion": "Los ríos Óder y Neisse marcan gran parte de esa frontera." },
+        { "canonica": "Suiza", "variantes": ["Switzerland"], "rareza": "cobre", "explicacion": "El lago de Constanza queda entre Alemania, Suiza y Austria." },
+        { "canonica": "Países Bajos", "variantes": ["Holanda", "Netherlands"], "rareza": "plata", "explicacion": "Se lo suele llamar Holanda, aunque Holanda es solo una de sus regiones." },
+        { "canonica": "Bélgica", "variantes": ["Belgium"], "rareza": "plata", "explicacion": "Tiene una pequeña comunidad germanófona junto a la frontera alemana." },
+        { "canonica": "Dinamarca", "variantes": ["Denmark"], "rareza": "plata", "explicacion": "Es el único vecino de Alemania hacia el norte, en la península de Jutlandia." },
+        { "canonica": "República Checa", "variantes": ["Chequia", "Czechia"], "rareza": "oro", "explicacion": "Los montes Metálicos, ricos en minas, marcan parte de esa frontera." },
+        { "canonica": "Luxemburgo", "variantes": ["Luxembourg"], "rareza": "diamante", "explicacion": "Los ríos Mosela, Sûre y Our lo separan de Alemania." }
+      ],
+      "rechazos": [
+        { "textos": ["Italia"], "motivo": "No limita con Alemania: en el medio están Austria y Suiza." },
+        { "textos": ["Liechtenstein"], "motivo": "Limita con Suiza y con Austria, pero no con Alemania." },
+        { "textos": ["Hungría", "Eslovaquia"], "motivo": "No tiene frontera con Alemania." }
+      ]
+    },
+    {
+      "id": "his-maravillas",
+      "categoria": "historia",
+      "enunciado": "Nombrá una de las siete maravillas del mundo antiguo.",
+      "alcance": "La lista clásica de siete construcciones de la Antigüedad. No valen las «nuevas siete maravillas» elegidas en 2007.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Siete_maravillas_del_mundo_antiguo", "titulo": "Siete maravillas del mundo antiguo — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Gran Pirámide de Guiza", "variantes": ["Gran Pirámide de Giza", "Pirámide de Guiza", "Pirámide de Giza", "Pirámide de Keops", "Gran Pirámide", "Pirámides de Egipto", "Pirámides de Giza", "Pirámides de Guiza", "Pirámide de Egipto", "Pirámides", "Pirámide"], "rareza": "grava", "explicacion": "Es la única de las siete que sigue en pie. Se construyó hacia el 2560 a. C." },
+        { "canonica": "Jardines Colgantes de Babilonia", "variantes": ["Jardines de Babilonia", "Jardines colgantes", "Jardín colgante de Babilonia"], "rareza": "cobre", "explicacion": "Es la única maravilla cuya existencia no fue confirmada por la arqueología." },
+        { "canonica": "Coloso de Rodas", "variantes": ["Coloso"], "rareza": "plata", "explicacion": "Estatua de bronce del dios Helios. Un terremoto la derribó hacia el 226 a. C." },
+        { "canonica": "Faro de Alejandría", "variantes": ["Faro"], "rareza": "plata", "explicacion": "Estaba en la isla de Faros, cuyo nombre terminó designando a todos los faros." },
+        { "canonica": "Templo de Artemisa", "variantes": ["Templo de Artemisa en Éfeso", "Artemisión", "Templo de Diana", "Templo de Éfeso"], "rareza": "oro", "explicacion": "Estaba en Éfeso, en la actual Turquía. Eróstrato lo incendió en el 356 a. C." },
+        { "canonica": "Estatua de Zeus en Olimpia", "variantes": ["Estatua de Zeus", "Zeus de Olimpia", "Zeus Olímpico"], "rareza": "oro", "explicacion": "Obra del escultor Fidias, hecha de marfil y oro sobre una estructura de madera." },
+        { "canonica": "Mausoleo de Halicarnaso", "variantes": ["Mausoleo", "Tumba de Mausolo"], "rareza": "diamante", "explicacion": "Era la tumba del rey Mausolo: de su nombre viene la palabra «mausoleo»." }
+      ],
+      "rechazos": [
+        { "textos": ["Machu Picchu", "Coliseo", "Coliseo romano", "Cristo Redentor", "Chichén Itzá", "Taj Mahal", "Petra", "Gran Muralla China", "Muralla China"], "motivo": "Es una de las «nuevas siete maravillas» elegidas en 2007, no de las antiguas." },
+        { "textos": ["Esfinge", "Esfinge de Guiza"], "motivo": "Está junto a las pirámides, pero no integra la lista clásica." }
+      ]
+    },
+    {
+      "id": "his-emperadores",
+      "categoria": "historia",
+      "enunciado": "Nombrá un emperador romano que haya gobernado en el siglo I.",
+      "alcance": "Emperadores que reinaron en algún momento entre los años 1 y 100 d. C., de Augusto a Trajano.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Anexo:Emperadores_romanos", "titulo": "Anexo: Emperadores romanos — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Nerón", "variantes": [], "rareza": "grava", "explicacion": "Gobernó del 54 al 68. Reinaba cuando ocurrió el gran incendio de Roma, en el 64." },
+        { "canonica": "Augusto", "variantes": ["César Augusto", "Octavio", "Octavio Augusto", "Octaviano"], "rareza": "cobre", "explicacion": "Fue el primer emperador: gobernó del 27 a. C. al 14 d. C." },
+        { "canonica": "Calígula", "variantes": [], "rareza": "cobre", "explicacion": "Gobernó del 37 al 41. Los cronistas antiguos le atribuyeron excesos célebres." },
+        { "canonica": "Tiberio", "variantes": [], "rareza": "plata", "explicacion": "Sucedió a Augusto, gobernó del 14 al 37 y pasó sus últimos años en Capri." },
+        { "canonica": "Claudio", "variantes": [], "rareza": "plata", "explicacion": "Gobernó del 41 al 54 y emprendió la conquista de Britania." },
+        { "canonica": "Trajano", "variantes": [], "rareza": "plata", "explicacion": "Llegó al poder en el 98. Con él, el Imperio alcanzó su máxima extensión." },
+        { "canonica": "Vespasiano", "variantes": [], "rareza": "oro", "explicacion": "Gobernó del 69 al 79 y ordenó construir el Coliseo." },
+        { "canonica": "Tito", "variantes": [], "rareza": "oro", "explicacion": "Gobernó del 79 al 81. Durante su reinado, el Vesubio sepultó Pompeya." },
+        { "canonica": "Domiciano", "variantes": [], "rareza": "oro", "explicacion": "Hermano de Tito, gobernó del 81 al 96 y fue el último de la dinastía Flavia." },
+        { "canonica": "Nerva", "variantes": [], "rareza": "diamante", "explicacion": "Gobernó del 96 al 98 y abrió la serie de los «cinco buenos emperadores»." },
+        { "canonica": "Galba", "variantes": [], "rareza": "diamante", "explicacion": "Primer emperador del «año de los cuatro emperadores», el 69." },
+        { "canonica": "Otón", "variantes": ["Otho"], "rareza": "diamante", "explicacion": "Gobernó apenas tres meses, a comienzos del año 69." },
+        { "canonica": "Vitelio", "variantes": [], "rareza": "diamante", "explicacion": "Tercer emperador del año 69. Lo derrotaron las tropas de Vespasiano." }
+      ],
+      "rechazos": [
+        { "textos": ["Julio César", "César"], "motivo": "Nunca fue emperador: fue dictador de la República y murió en el 44 a. C." },
+        { "textos": ["Marco Aurelio", "Adriano", "Antonino Pío", "Cómodo"], "motivo": "Gobernó en el siglo II." },
+        { "textos": ["Constantino", "Diocleciano"], "motivo": "Gobernó varios siglos después." }
+      ]
+    },
+    {
+      "id": "his-secretarios-onu",
+      "categoria": "historia",
+      "enunciado": "Nombrá a una persona que haya ocupado la Secretaría General de las Naciones Unidas.",
+      "alcance": "Los 9 secretarios generales titulares de la ONU desde 1946; no cuentan quienes ejercieron el cargo de manera interina.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Secretario_general_de_las_Naciones_Unidas", "titulo": "Secretario general de las Naciones Unidas — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "António Guterres", "variantes": ["Antonio Guterres", "Guterres"], "rareza": "grava", "explicacion": "El diplomático portugués asumió como noveno secretario general en 2017." },
+        { "canonica": "Kofi Annan", "variantes": ["Annan"], "rareza": "cobre", "explicacion": "El diplomático ghanés dirigió la ONU entre 1997 y 2006." },
+        { "canonica": "Ban Ki-moon", "variantes": ["Ban Ki Moon", "Ban"], "rareza": "cobre", "explicacion": "El diplomático surcoreano ocupó el cargo entre 2007 y 2016." },
+        { "canonica": "Boutros Boutros-Ghali", "variantes": ["Boutros Ghali", "Butros Butros-Ghali"], "rareza": "plata", "explicacion": "El diplomático egipcio fue secretario general entre 1992 y 1996." },
+        { "canonica": "Dag Hammarskjöld", "variantes": ["Dag Hammarskjold", "Hammarskjöld"], "rareza": "plata", "explicacion": "El sueco murió en un accidente aéreo mientras ejercía el cargo en 1961." },
+        { "canonica": "U Thant", "variantes": ["Maha Thray Sithu U Thant"], "rareza": "oro", "explicacion": "El diplomático birmano dirigió la organización entre 1961 y 1971." },
+        { "canonica": "Javier Pérez de Cuéllar", "variantes": ["Pérez de Cuéllar"], "rareza": "oro", "explicacion": "El diplomático peruano fue secretario general entre 1982 y 1991." },
+        { "canonica": "Kurt Waldheim", "variantes": ["Waldheim"], "rareza": "diamante", "explicacion": "El diplomático austríaco ocupó el cargo durante dos mandatos, de 1972 a 1981." },
+        { "canonica": "Trygve Lie", "variantes": ["Trygve Halvdan Lie"], "rareza": "diamante", "explicacion": "El político noruego fue el primer secretario general, desde 1946 hasta 1952." }
+      ],
+      "rechazos": [
+        { "textos": ["Gladwyn Jebb", "Hubert Miles Gladwyn Jebb"], "motivo": "Fue secretario general interino antes de la designación del primer titular." },
+        { "textos": ["Nelson Mandela"], "motivo": "Fue presidente de Sudáfrica, no secretario general de la ONU." }
+      ]
+    },
+    {
+      "id": "cie-planetas",
+      "categoria": "ciencia",
+      "enunciado": "Nombrá un planeta del sistema solar.",
+      "alcance": "Los 8 planetas reconocidos por la Unión Astronómica Internacional desde 2006.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Sistema_solar", "titulo": "Sistema solar — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Marte", "variantes": [], "rareza": "grava", "explicacion": "El planeta rojo: su color se debe al óxido de hierro de la superficie." },
+        { "canonica": "Júpiter", "variantes": [], "rareza": "cobre", "explicacion": "Es el más grande: su masa supera la de todos los demás planetas juntos." },
+        { "canonica": "Saturno", "variantes": [], "rareza": "cobre", "explicacion": "Es famoso por sus anillos, formados sobre todo por hielo y fragmentos de roca." },
+        { "canonica": "Venus", "variantes": [], "rareza": "cobre", "explicacion": "Es el planeta más caliente, por su densa atmósfera de dióxido de carbono." },
+        { "canonica": "Mercurio", "variantes": [], "rareza": "plata", "explicacion": "Es el más cercano al Sol y el más chico de los ocho." },
+        { "canonica": "Urano", "variantes": [], "rareza": "plata", "explicacion": "Gira casi acostado: su eje está inclinado unos 98 grados." },
+        { "canonica": "Neptuno", "variantes": [], "rareza": "plata", "explicacion": "Es el más lejano del Sol. Su existencia se predijo con cálculos antes de observarlo." },
+        { "canonica": "Tierra", "variantes": ["Planeta Tierra"], "rareza": "oro", "explicacion": "Es el tercer planeta desde el Sol y el único con vida conocida." }
+      ],
+      "rechazos": [
+        { "textos": ["Plutón"], "motivo": "Desde 2006 se lo clasifica como planeta enano." },
+        { "textos": ["Ceres", "Eris"], "motivo": "Es un planeta enano." },
+        { "textos": ["Sol"], "motivo": "Es una estrella." },
+        { "textos": ["Luna"], "motivo": "Es el satélite natural de la Tierra." }
+      ]
+    },
+    {
+      "id": "cie-elementos-una-letra",
+      "categoria": "ciencia",
+      "enunciado": "Nombrá un elemento químico cuyo símbolo tenga una sola letra.",
+      "alcance": "Los 14 elementos de la tabla periódica cuyo símbolo químico es una sola letra.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Tabla_periódica_de_los_elementos", "titulo": "Tabla periódica de los elementos — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Oxígeno", "variantes": [], "rareza": "grava", "explicacion": "Símbolo O. Es el elemento más abundante de la corteza terrestre." },
+        { "canonica": "Hidrógeno", "variantes": [], "rareza": "grava", "explicacion": "Símbolo H. Es el elemento más abundante del universo." },
+        { "canonica": "Carbono", "variantes": [], "rareza": "cobre", "explicacion": "Símbolo C. El diamante y el grafito son carbono puro." },
+        { "canonica": "Nitrógeno", "variantes": [], "rareza": "cobre", "explicacion": "Símbolo N. Forma cerca del 78 % del aire." },
+        { "canonica": "Azufre", "variantes": [], "rareza": "plata", "explicacion": "Símbolo S, del latín sulphur. Abunda cerca de los volcanes." },
+        { "canonica": "Fósforo", "variantes": [], "rareza": "plata", "explicacion": "Símbolo P. El fósforo blanco brilla en la oscuridad al oxidarse." },
+        { "canonica": "Potasio", "variantes": [], "rareza": "plata", "explicacion": "Símbolo K, del latín kalium." },
+        { "canonica": "Flúor", "variantes": [], "rareza": "plata", "explicacion": "Símbolo F. Es el elemento más electronegativo de la tabla." },
+        { "canonica": "Uranio", "variantes": [], "rareza": "oro", "explicacion": "Símbolo U. Es el combustible de la mayoría de las centrales nucleares." },
+        { "canonica": "Yodo", "variantes": ["Iodo"], "rareza": "oro", "explicacion": "Símbolo I. Se agrega a la sal de mesa para prevenir el bocio." },
+        { "canonica": "Boro", "variantes": [], "rareza": "oro", "explicacion": "Símbolo B. Se usa en el vidrio borosilicatado, resistente al calor." },
+        { "canonica": "Vanadio", "variantes": [], "rareza": "diamante", "explicacion": "Símbolo V. Se agrega al acero para hacerlo más resistente." },
+        { "canonica": "Itrio", "variantes": ["Ytrio"], "rareza": "diamante", "explicacion": "Símbolo Y. Debe su nombre a Ytterby, un pueblo minero de Suecia." },
+        { "canonica": "Wolframio", "variantes": ["Tungsteno", "Volframio"], "rareza": "diamante", "explicacion": "Símbolo W. Es el metal con el punto de fusión más alto." }
+      ],
+      "rechazos": [
+        { "textos": ["Hierro"], "motivo": "Su símbolo es Fe: tiene dos letras." },
+        { "textos": ["Oro"], "motivo": "Su símbolo es Au: tiene dos letras." },
+        { "textos": ["Plata"], "motivo": "Su símbolo es Ag: tiene dos letras." },
+        { "textos": ["Sodio"], "motivo": "Su símbolo es Na: tiene dos letras." },
+        { "textos": ["Helio"], "motivo": "Su símbolo es He: tiene dos letras." },
+        { "textos": ["Calcio"], "motivo": "Su símbolo es Ca: tiene dos letras." },
+        { "textos": ["Cobre"], "motivo": "Su símbolo es Cu: tiene dos letras." }
+      ]
+    },
+    {
+      "id": "cie-gases-nobles",
+      "categoria": "ciencia",
+      "enunciado": "Nombrá un gas noble.",
+      "alcance": "Los 7 elementos del grupo 18 de la tabla periódica.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Gas_noble", "titulo": "Gas noble — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Helio", "variantes": [], "rareza": "grava", "explicacion": "Infla los globos que flotan porque es más liviano que el aire." },
+        { "canonica": "Neón", "variantes": [], "rareza": "cobre", "explicacion": "Dio nombre a los carteles luminosos, aunque solo el rojo anaranjado es neón puro." },
+        { "canonica": "Argón", "variantes": [], "rareza": "plata", "explicacion": "Es el gas noble más abundante en la atmósfera: casi el 1 % del aire." },
+        { "canonica": "Kriptón", "variantes": ["Criptón", "Krypton"], "rareza": "oro", "explicacion": "Su nombre viene del griego «oculto». La kriptonita de Superman es ficticia." },
+        { "canonica": "Xenón", "variantes": [], "rareza": "oro", "explicacion": "Se usa en faros de autos y también como anestésico." },
+        { "canonica": "Radón", "variantes": [], "rareza": "oro", "explicacion": "Es radiactivo y puede acumularse en sótanos y galerías de minas." },
+        { "canonica": "Oganesón", "variantes": ["Ununoctio"], "rareza": "diamante", "explicacion": "Elemento sintético 118, nombrado en 2016 en honor al físico Yuri Oganesián." }
+      ],
+      "rechazos": [
+        { "textos": ["Hidrógeno", "Oxígeno", "Cloro"], "motivo": "No es un gas noble: reacciona con facilidad." },
+        { "textos": ["Nitrógeno"], "motivo": "Es poco reactivo, pero no es un gas noble." },
+        { "textos": ["Kriptonita"], "motivo": "Es un mineral ficticio. El gas noble es el kriptón." }
+      ]
+    },
+    {
+      "id": "dep-mundial",
+      "categoria": "deportes",
+      "enunciado": "Nombrá una selección campeona de la Copa del Mundo de fútbol masculino.",
+      "alcance": "Las 8 selecciones que ganaron al menos un Mundial masculino, entre 1930 y 2026.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Copa_Mundial_de_la_FIFA", "titulo": "Copa Mundial de la FIFA — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Argentina", "variantes": [], "rareza": "grava", "explicacion": "Campeona en 1978, 1986 y 2022." },
+        { "canonica": "Brasil", "variantes": [], "rareza": "grava", "explicacion": "Es la más ganadora, con cinco títulos: 1958, 1962, 1970, 1994 y 2002." },
+        { "canonica": "Alemania", "variantes": ["Alemania Federal", "Alemania Occidental", "RFA"], "rareza": "cobre", "explicacion": "Ganó cuatro: 1954, 1974 y 1990 como Alemania Federal, y 2014." },
+        { "canonica": "Italia", "variantes": [], "rareza": "cobre", "explicacion": "Ganó cuatro: 1934, 1938, 1982 y 2006." },
+        { "canonica": "Francia", "variantes": [], "rareza": "cobre", "explicacion": "Campeona en 1998 y 2018." },
+        { "canonica": "España", "variantes": [], "rareza": "cobre", "explicacion": "Campeona en 2010 y 2026." },
+        { "canonica": "Uruguay", "variantes": [], "rareza": "plata", "explicacion": "Ganó el primer Mundial, en 1930, y el de 1950, con el Maracanazo." },
+        { "canonica": "Inglaterra", "variantes": [], "rareza": "oro", "explicacion": "Su único título fue en 1966, como local." }
+      ],
+      "rechazos": [
+        { "textos": ["Países Bajos", "Holanda"], "motivo": "Jugó tres finales (1974, 1978 y 2010) y perdió las tres." },
+        { "textos": ["Croacia"], "motivo": "Fue finalista en 2018, pero no campeona." },
+        { "textos": ["Reino Unido", "Gran Bretaña"], "motivo": "En los Mundiales compite Inglaterra, no el Reino Unido." }
+      ]
+    },
+    {
+      "id": "dep-sedes-olimpicas",
+      "categoria": "deportes",
+      "enunciado": "Nombrá una ciudad que haya sido sede de los Juegos Olímpicos de verano.",
+      "alcance": "Las 23 ciudades que organizaron los Juegos Olímpicos de verano entre 1896 y 2024. No cuentan las sedes futuras ni los Juegos de invierno.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Juegos_Olímpicos", "titulo": "Juegos Olímpicos — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Barcelona", "variantes": [], "rareza": "grava", "explicacion": "Sede en 1992. Esos Juegos transformaron su frente marítimo." },
+        { "canonica": "Río de Janeiro", "variantes": ["Río"], "rareza": "cobre", "explicacion": "En 2016 fue la primera sede sudamericana." },
+        { "canonica": "Londres", "variantes": ["London"], "rareza": "cobre", "explicacion": "Fue sede tres veces: 1908, 1948 y 2012." },
+        { "canonica": "París", "variantes": [], "rareza": "cobre", "explicacion": "Fue sede tres veces: 1900, 1924 y 2024." },
+        { "canonica": "Atenas", "variantes": ["Athens"], "rareza": "cobre", "explicacion": "Organizó los primeros Juegos modernos, en 1896, y volvió a hacerlo en 2004." },
+        { "canonica": "Pekín", "variantes": ["Beijing", "Peking"], "rareza": "cobre", "explicacion": "Sede en 2008. En 2022 también organizó los Juegos de invierno." },
+        { "canonica": "Tokio", "variantes": ["Tokyo"], "rareza": "cobre", "explicacion": "Sede en 1964 y en 2020, una edición que se disputó en 2021." },
+        { "canonica": "Los Ángeles", "variantes": [], "rareza": "plata", "explicacion": "Sede en 1932 y 1984. Volverá a serlo en 2028." },
+        { "canonica": "Sídney", "variantes": ["Sydney"], "rareza": "plata", "explicacion": "Sede en 2000. La antorcha llegó a recorrer la Gran Barrera de Coral bajo el agua." },
+        { "canonica": "Ciudad de México", "variantes": ["México", "México DF", "DF", "CDMX"], "rareza": "plata", "explicacion": "Sede en 1968: fueron los primeros Juegos en América Latina." },
+        { "canonica": "Atlanta", "variantes": [], "rareza": "plata", "explicacion": "Sede en 1996, en el centenario de los Juegos modernos." },
+        { "canonica": "Roma", "variantes": ["Rome"], "rareza": "plata", "explicacion": "Sede en 1960, cuando Abebe Bikila ganó el maratón descalzo." },
+        { "canonica": "Seúl", "variantes": ["Seoul"], "rareza": "plata", "explicacion": "Sede en 1988: fueron los primeros Juegos en Corea del Sur." },
+        { "canonica": "Moscú", "variantes": ["Moscow"], "rareza": "plata", "explicacion": "Sede en 1980, Juegos marcados por el boicot de Estados Unidos y otros países." },
+        { "canonica": "Múnich", "variantes": ["München"], "rareza": "oro", "explicacion": "Sede en 1972, Juegos marcados por el ataque contra la delegación israelí." },
+        { "canonica": "Montreal", "variantes": [], "rareza": "oro", "explicacion": "Sede en 1976. Allí Nadia Comăneci logró el primer 10 de la gimnasia olímpica." },
+        { "canonica": "Berlín", "variantes": [], "rareza": "oro", "explicacion": "Sede en 1936, cuando Jesse Owens ganó cuatro medallas de oro." },
+        { "canonica": "Ámsterdam", "variantes": [], "rareza": "oro", "explicacion": "Sede en 1928, la primera edición con pebetero encendido." },
+        { "canonica": "Melbourne", "variantes": [], "rareza": "oro", "explicacion": "Sede en 1956. La equitación se hizo en Estocolmo por la cuarentena animal australiana." },
+        { "canonica": "Helsinki", "variantes": [], "rareza": "diamante", "explicacion": "Sede en 1952. Le habían asignado los Juegos de 1940, que la guerra suspendió." },
+        { "canonica": "Estocolmo", "variantes": ["Stockholm"], "rareza": "diamante", "explicacion": "Sede en 1912, con el primer cronometraje eléctrico." },
+        { "canonica": "Amberes", "variantes": ["Antwerp", "Antwerpen"], "rareza": "diamante", "explicacion": "Sede en 1920, donde se izó por primera vez la bandera de los anillos." },
+        { "canonica": "San Luis", "variantes": ["Saint Louis", "St. Louis"], "rareza": "diamante", "explicacion": "Sede en 1904: fueron los primeros Juegos en Estados Unidos." }
+      ],
+      "rechazos": [
+        { "textos": ["Brisbane"], "motivo": "Será sede en 2032: todavía no lo fue." },
+        { "textos": ["Buenos Aires"], "motivo": "Organizó los Juegos Olímpicos de la Juventud 2018, no los de verano." },
+        { "textos": ["Sochi", "Milán", "Cortina", "Cortina d'Ampezzo", "Vancouver", "Turín"], "motivo": "Fue sede de Juegos Olímpicos de invierno." }
+      ]
+    },
+    {
+      "id": "dep-mundial-femenino",
+      "categoria": "deportes",
+      "enunciado": "Nombrá una selección campeona de la Copa Mundial Femenina de fútbol.",
+      "alcance": "Las 5 selecciones que ganaron al menos una edición de la Copa Mundial Femenina de la FIFA hasta 2023.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Copa_Mundial_Femenina_de_Fútbol", "titulo": "Copa Mundial Femenina de Fútbol — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Estados Unidos", "variantes": ["EE. UU.", "USA", "United States"], "rareza": "grava", "explicacion": "Ganó cuatro ediciones: 1991, 1999, 2015 y 2019." },
+        { "canonica": "Alemania", "variantes": ["Germany"], "rareza": "cobre", "explicacion": "Fue campeona en 2003 y 2007, las primeras ediciones consecutivas ganadas por una selección." },
+        { "canonica": "España", "variantes": ["Spain"], "rareza": "plata", "explicacion": "Ganó su primer título mundial femenino en 2023." },
+        { "canonica": "Japón", "variantes": ["Japan", "Nippon"], "rareza": "oro", "explicacion": "Fue campeona en 2011 tras vencer a Estados Unidos en la final." },
+        { "canonica": "Noruega", "variantes": ["Norway"], "rareza": "diamante", "explicacion": "Ganó la edición de 1995 disputada en Suecia." }
+      ],
+      "rechazos": [
+        { "textos": ["Brasil"], "motivo": "Fue subcampeona en 2007, pero todavía no ganó el torneo." },
+        { "textos": ["Suecia"], "motivo": "Llegó a la final de 2003, pero perdió ante Alemania." }
+      ]
+    },
+    {
+      "id": "cin-bond",
+      "categoria": "cine",
+      "enunciado": "Nombrá a un actor que haya interpretado a James Bond en la saga oficial.",
+      "alcance": "Los 6 actores que interpretaron a 007 en las películas de Eon Productions, desde 1962.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/James_Bond", "titulo": "James Bond — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Daniel Craig", "variantes": ["Craig"], "rareza": "grava", "explicacion": "Fue Bond en cinco películas, de Casino Royale (2006) a Sin tiempo para morir (2021)." },
+        { "canonica": "Sean Connery", "variantes": ["Connery"], "rareza": "grava", "explicacion": "Fue el primer Bond del cine, en Dr. No (1962)." },
+        { "canonica": "Pierce Brosnan", "variantes": ["Brosnan"], "rareza": "cobre", "explicacion": "Debutó como 007 en GoldenEye (1995)." },
+        { "canonica": "Roger Moore", "variantes": ["Moore"], "rareza": "plata", "explicacion": "Es quien hizo más películas oficiales como Bond: siete, entre 1973 y 1985." },
+        { "canonica": "Timothy Dalton", "variantes": ["Dalton"], "rareza": "oro", "explicacion": "Fue Bond en dos películas, estrenadas en 1987 y 1989." },
+        { "canonica": "George Lazenby", "variantes": ["Lazenby"], "rareza": "diamante", "explicacion": "Hizo una sola película como Bond: Al servicio secreto de Su Majestad (1969)." }
+      ],
+      "rechazos": [
+        { "textos": ["David Niven"], "motivo": "Hizo de Bond en la parodia Casino Royale de 1967, que no es de la saga oficial." },
+        { "textos": ["Idris Elba"], "motivo": "Sonó muchas veces como candidato, pero nunca interpretó a Bond." }
+      ]
+    },
+    {
+      "id": "cin-oscar-direccion",
+      "categoria": "cine",
+      "enunciado": "Nombrá a alguien que haya ganado más de una vez el Óscar a mejor dirección.",
+      "alcance": "Los 21 directores con dos o más premios de la Academia a mejor dirección, hasta la ceremonia de 2026.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Óscar_al_mejor_director", "titulo": "Óscar al mejor director — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Steven Spielberg", "variantes": ["Spielberg"], "rareza": "grava", "explicacion": "Ganó por La lista de Schindler (1993) y Rescatando al soldado Ryan (1998)." },
+        { "canonica": "Clint Eastwood", "variantes": ["Eastwood"], "rareza": "cobre", "explicacion": "Ganó por Los imperdonables (1992) y Million Dollar Baby (2004)." },
+        { "canonica": "Alejandro González Iñárritu", "variantes": ["Iñárritu", "Alejandro G. Iñárritu", "González Iñárritu"], "rareza": "cobre", "explicacion": "Ganó dos años seguidos, por Birdman (2014) y El renacido (2015)." },
+        { "canonica": "Alfonso Cuarón", "variantes": ["Cuarón"], "rareza": "cobre", "explicacion": "Ganó por Gravedad (2013) y Roma (2018)." },
+        { "canonica": "Ang Lee", "variantes": [], "rareza": "plata", "explicacion": "Ganó por Secreto en la montaña (2005) y Una aventura extraordinaria (2012)." },
+        { "canonica": "Oliver Stone", "variantes": [], "rareza": "plata", "explicacion": "Ganó por Pelotón (1986) y Nacido el 4 de julio (1989)." },
+        { "canonica": "Billy Wilder", "variantes": ["Wilder"], "rareza": "oro", "explicacion": "Ganó por The Lost Weekend (1945) y The Apartment (1960)." },
+        { "canonica": "Miloš Forman", "variantes": ["Forman"], "rareza": "oro", "explicacion": "Ganó por Atrapado sin salida (1975) y Amadeus (1984)." },
+        { "canonica": "John Ford", "variantes": [], "rareza": "oro", "explicacion": "Es el máximo ganador de la categoría, con cuatro premios." },
+        { "canonica": "Frank Capra", "variantes": ["Capra"], "rareza": "oro", "explicacion": "Ganó tres veces en la década de 1930, una de ellas por Sucedió una noche." },
+        { "canonica": "David Lean", "variantes": [], "rareza": "oro", "explicacion": "Ganó por El puente sobre el río Kwai (1957) y Lawrence de Arabia (1962)." },
+        { "canonica": "Elia Kazan", "variantes": ["Kazan"], "rareza": "oro", "explicacion": "Ganó por Gentleman's Agreement (1947) y On the Waterfront (1954)." },
+        { "canonica": "William Wyler", "variantes": ["Wyler"], "rareza": "diamante", "explicacion": "Ganó tres veces; la última, por Ben-Hur (1959)." },
+        { "canonica": "Robert Wise", "variantes": [], "rareza": "diamante", "explicacion": "Ganó por West Side Story (1961) y La novicia rebelde (1965)." },
+        { "canonica": "Fred Zinnemann", "variantes": ["Zinnemann", "Fred Zinneman"], "rareza": "diamante", "explicacion": "Ganó por From Here to Eternity (1953) y A Man for All Seasons (1966)." },
+        { "canonica": "Joseph L. Mankiewicz", "variantes": ["Mankiewicz", "Joseph Mankiewicz"], "rareza": "diamante", "explicacion": "Ganó dos años seguidos, por A Letter to Three Wives (1949) y All About Eve (1950)." },
+        { "canonica": "George Stevens", "variantes": [], "rareza": "diamante", "explicacion": "Ganó por A Place in the Sun (1951) y Giant (1956)." },
+        { "canonica": "Leo McCarey", "variantes": ["McCarey"], "rareza": "diamante", "explicacion": "Ganó por The Awful Truth (1937) y Going My Way (1944)." },
+        { "canonica": "Lewis Milestone", "variantes": ["Milestone"], "rareza": "diamante", "explicacion": "Ganó en la primera ceremonia y luego por Sin novedad en el frente (1930)." },
+        { "canonica": "Frank Borzage", "variantes": ["Borzage"], "rareza": "diamante", "explicacion": "Ganó en la primera ceremonia, por 7th Heaven, y luego por Bad Girl (1931)." },
+        { "canonica": "Frank Lloyd", "variantes": [], "rareza": "diamante", "explicacion": "Ganó por The Divine Lady (1929) y Cavalcade (1933)." }
+      ],
+      "rechazos": [
+        { "textos": ["Martin Scorsese", "Scorsese"], "motivo": "Ganó una sola vez, por Los infiltrados (2006)." },
+        { "textos": ["Christopher Nolan", "Nolan"], "motivo": "Ganó una sola vez, por Oppenheimer (2023)." },
+        { "textos": ["Guillermo del Toro", "Del Toro"], "motivo": "Ganó una sola vez, por La forma del agua (2017)." },
+        { "textos": ["Francis Ford Coppola", "Coppola"], "motivo": "Como director ganó una sola vez, por El padrino II." },
+        { "textos": ["James Cameron", "Cameron"], "motivo": "Ganó una sola vez, por Titanic (1997)." },
+        { "textos": ["Paul Thomas Anderson"], "motivo": "Ganó por primera vez en la ceremonia de 2026." }
+      ]
+    },
+    {
+      "id": "cin-star-wars",
+      "categoria": "cine",
+      "enunciado": "Nombrá una película de la saga principal de Star Wars.",
+      "alcance": "Los 9 episodios numerados de la saga Skywalker (1977–2019). No cuentan los derivados como Rogue One ni las series.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Star_Wars", "titulo": "Star Wars — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Una nueva esperanza", "variantes": ["Star Wars: Una nueva esperanza", "La guerra de las galaxias", "Star Wars", "Episodio IV", "Episodio 4", "A New Hope"], "rareza": "grava", "explicacion": "Episodio IV: fue la primera en estrenarse, en 1977." },
+        { "canonica": "El imperio contraataca", "variantes": ["Episodio V", "Episodio 5", "The Empire Strikes Back"], "rareza": "cobre", "explicacion": "Episodio V (1980), la de la célebre revelación de Darth Vader." },
+        { "canonica": "El regreso del Jedi", "variantes": ["El retorno del Jedi", "Episodio VI", "Episodio 6", "Return of the Jedi"], "rareza": "cobre", "explicacion": "Episodio VI (1983). En España se tituló El retorno del Jedi." },
+        { "canonica": "La amenaza fantasma", "variantes": ["Episodio I", "Episodio 1", "The Phantom Menace"], "rareza": "cobre", "explicacion": "Episodio I (1999), primera de la trilogía de precuelas." },
+        { "canonica": "El ataque de los clones", "variantes": ["Episodio II", "Episodio 2", "Attack of the Clones"], "rareza": "plata", "explicacion": "Episodio II (2002): muestra el comienzo de las Guerras Clon." },
+        { "canonica": "La venganza de los Sith", "variantes": ["Episodio III", "Episodio 3", "Revenge of the Sith"], "rareza": "plata", "explicacion": "Episodio III (2005): narra cómo Anakin se convierte en Darth Vader." },
+        { "canonica": "El despertar de la Fuerza", "variantes": ["Episodio VII", "Episodio 7", "The Force Awakens"], "rareza": "plata", "explicacion": "Episodio VII (2015), el primero producido tras la compra de Lucasfilm por Disney." },
+        { "canonica": "Los últimos Jedi", "variantes": ["Episodio VIII", "Episodio 8", "The Last Jedi"], "rareza": "oro", "explicacion": "Episodio VIII (2017), dirigido por Rian Johnson." },
+        { "canonica": "El ascenso de Skywalker", "variantes": ["Episodio IX", "Episodio 9", "The Rise of Skywalker"], "rareza": "oro", "explicacion": "Episodio IX (2019), cierre de la saga Skywalker." }
+      ],
+      "rechazos": [
+        { "textos": ["Rogue One", "Han Solo", "Solo"], "motivo": "Es una película derivada, no un episodio numerado." },
+        { "textos": ["The Mandalorian", "Andor", "The Clone Wars"], "motivo": "Es una serie, no un episodio de la saga principal." }
+      ]
+    },
+    {
+      "id": "mus-beatles",
+      "categoria": "musica",
+      "enunciado": "Nombrá a alguien que haya sido integrante de The Beatles.",
+      "alcance": "Los 6 integrantes oficiales que tuvo la banda en algún momento. No cuentan productores, mánagers ni músicos invitados.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/The_Beatles", "titulo": "The Beatles — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Paul McCartney", "variantes": ["McCartney", "Paul"], "rareza": "grava", "explicacion": "Bajista y compositor: firmó con Lennon buena parte del repertorio." },
+        { "canonica": "John Lennon", "variantes": ["Lennon", "John"], "rareza": "grava", "explicacion": "Fundó The Quarrymen, el grupo que dio origen a The Beatles." },
+        { "canonica": "Ringo Starr", "variantes": ["Ringo", "Starr", "Richard Starkey"], "rareza": "cobre", "explicacion": "Su nombre real es Richard Starkey. Entró como baterista en 1962." },
+        { "canonica": "George Harrison", "variantes": ["Harrison", "George"], "rareza": "cobre", "explicacion": "Guitarrista principal. Compuso Something y Here Comes the Sun." },
+        { "canonica": "Pete Best", "variantes": ["Best"], "rareza": "oro", "explicacion": "Fue el baterista entre 1960 y 1962, antes de la llegada de Ringo." },
+        { "canonica": "Stuart Sutcliffe", "variantes": ["Sutcliffe", "Stu Sutcliffe", "Stuart"], "rareza": "diamante", "explicacion": "Bajista de los primeros años: dejó la banda para dedicarse a la pintura." }
+      ],
+      "rechazos": [
+        { "textos": ["George Martin"], "motivo": "Fue su productor. Le dicen «el quinto Beatle», pero no integró la banda." },
+        { "textos": ["Brian Epstein"], "motivo": "Fue su mánager, no integrante." },
+        { "textos": ["Yoko Ono"], "motivo": "Artista y pareja de Lennon; no integró la banda." },
+        { "textos": ["Billy Preston"], "motivo": "Tocó con ellos en 1969 como músico invitado." }
+      ]
+    },
+    {
+      "id": "mus-verdi",
+      "categoria": "musica",
+      "enunciado": "Nombrá una ópera de Giuseppe Verdi.",
+      "alcance": "Las 28 óperas de Verdi, de Oberto (1839) a Falstaff (1893), con su título original o en español.",
+      "fuentes": [
+        { "url": "https://es.wikipedia.org/wiki/Giuseppe_Verdi", "titulo": "Giuseppe Verdi — Wikipedia" },
+        { "url": "https://en.wikipedia.org/wiki/List_of_compositions_by_Giuseppe_Verdi", "titulo": "List of compositions by Giuseppe Verdi — Wikipedia" }
+      ],
+      "respuestas": [
+        { "canonica": "Aida", "variantes": [], "rareza": "grava", "explicacion": "Se estrenó en El Cairo en 1871. Su marcha triunfal es famosísima." },
+        { "canonica": "La traviata", "variantes": [], "rareza": "grava", "explicacion": "Se estrenó en 1853 e incluye el célebre brindis «Libiamo»." },
+        { "canonica": "Rigoletto", "variantes": ["Rigoleto"], "rareza": "cobre", "explicacion": "Se estrenó en 1851. Allí está el aria «La donna è mobile»." },
+        { "canonica": "Nabucco", "variantes": ["Nabuco", "Nabucodonosor"], "rareza": "cobre", "explicacion": "Su coro «Va, pensiero» se volvió un himno no oficial de Italia." },
+        { "canonica": "Otello", "variantes": ["Otelo"], "rareza": "plata", "explicacion": "Basada en Shakespeare, se estrenó en 1887." },
+        { "canonica": "Il trovatore", "variantes": ["El trovador"], "rareza": "plata", "explicacion": "Se estrenó en 1853. Incluye el famoso coro de los yunques." },
+        { "canonica": "Falstaff", "variantes": [], "rareza": "plata", "explicacion": "Su última ópera y una de sus pocas comedias, de 1893." },
+        { "canonica": "Macbeth", "variantes": [], "rareza": "oro", "explicacion": "La primera de sus tres óperas basadas en Shakespeare, de 1847." },
+        { "canonica": "Don Carlos", "variantes": ["Don Carlo"], "rareza": "oro", "explicacion": "Se estrenó en París en 1867, en francés. Luego se adaptó al italiano como Don Carlo." },
+        { "canonica": "Un ballo in maschera", "variantes": ["Un baile de máscaras", "Ballo in maschera", "El baile de máscaras"], "rareza": "oro", "explicacion": "Se estrenó en 1859. La censura obligó a trasladar la trama a Boston." },
+        { "canonica": "La forza del destino", "variantes": ["La fuerza del destino"], "rareza": "oro", "explicacion": "Se estrenó en San Petersburgo en 1862." },
+        { "canonica": "Simon Boccanegra", "variantes": ["Simón Boccanegra"], "rareza": "oro", "explicacion": "Se estrenó en 1857 y fue revisada en 1881 con libreto de Arrigo Boito." },
+        { "canonica": "Luisa Miller", "variantes": [], "rareza": "diamante", "explicacion": "Basada en un drama de Schiller, se estrenó en Nápoles en 1849." },
+        { "canonica": "Ernani", "variantes": [], "rareza": "diamante", "explicacion": "Basada en Hernani, de Victor Hugo. Se estrenó en Venecia en 1844." },
+        { "canonica": "Attila", "variantes": ["Atila"], "rareza": "diamante", "explicacion": "Se estrenó en el teatro La Fenice de Venecia en 1846." },
+        { "canonica": "Oberto", "variantes": ["Oberto, conte di San Bonifacio"], "rareza": "diamante", "explicacion": "Fue su primera ópera, estrenada en La Scala de Milán en 1839." },
+        { "canonica": "Un giorno di regno", "variantes": ["Un día de reinado", "Il finto Stanislao"], "rareza": "diamante", "explicacion": "Comedia de 1840 que fracasó en su estreno." },
+        { "canonica": "I Lombardi alla prima crociata", "variantes": ["I Lombardi", "Los lombardos", "Los lombardos en la primera cruzada"], "rareza": "diamante", "explicacion": "Se estrenó en La Scala en 1843, tras el éxito de Nabucco." },
+        { "canonica": "I due Foscari", "variantes": ["Los dos Foscari"], "rareza": "diamante", "explicacion": "Basada en un poema dramático de Lord Byron. Se estrenó en 1844." },
+        { "canonica": "Giovanna d'Arco", "variantes": ["Juana de Arco"], "rareza": "diamante", "explicacion": "Basada en la obra de Schiller sobre Juana de Arco. Se estrenó en 1845." },
+        { "canonica": "Alzira", "variantes": [], "rareza": "diamante", "explicacion": "Ambientada en el Perú colonial, se estrenó en Nápoles en 1845." },
+        { "canonica": "I masnadieri", "variantes": ["Los bandidos"], "rareza": "diamante", "explicacion": "Se estrenó en Londres en 1847. Está basada en Los bandidos, de Schiller." },
+        { "canonica": "Jérusalem", "variantes": ["Jerusalén"], "rareza": "diamante", "explicacion": "Versión francesa de I Lombardi, estrenada en París en 1847." },
+        { "canonica": "Il corsaro", "variantes": ["El corsario"], "rareza": "diamante", "explicacion": "Basada en un poema de Byron, se estrenó en Trieste en 1848." },
+        { "canonica": "La battaglia di Legnano", "variantes": ["La batalla de Legnano"], "rareza": "diamante", "explicacion": "Ópera patriótica estrenada en Roma en 1849." },
+        { "canonica": "Stiffelio", "variantes": [], "rareza": "diamante", "explicacion": "Se estrenó en Trieste en 1850, con cortes impuestos por la censura." },
+        { "canonica": "Les vêpres siciliennes", "variantes": ["Las vísperas sicilianas", "I vespri siciliani", "Vísperas sicilianas"], "rareza": "diamante", "explicacion": "Escrita para la Ópera de París, donde se estrenó en 1855." },
+        { "canonica": "Aroldo", "variantes": [], "rareza": "diamante", "explicacion": "Revisión de Stiffelio, estrenada en Rímini en 1857." }
+      ],
+      "rechazos": [
+        { "textos": ["Carmen"], "motivo": "Es de Georges Bizet." },
+        { "textos": ["La bohème", "Tosca", "Madama Butterfly", "Turandot"], "motivo": "Es de Giacomo Puccini." },
+        { "textos": ["La flauta mágica", "Don Giovanni", "Las bodas de Fígaro"], "motivo": "Es de Mozart." },
+        { "textos": ["El barbero de Sevilla"], "motivo": "Es de Gioachino Rossini." }
+      ]
+    },
+    {
+      "id": "mus-carnaval-animales",
+      "categoria": "musica",
+      "enunciado": "Nombrá un animal que aparezca en el título de un movimiento de «El carnaval de los animales», de Saint-Saëns.",
+      "alcance": "Los animales nombrados en los títulos de los 14 movimientos de la suite de 1886.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/El_carnaval_de_los_animales", "titulo": "El carnaval de los animales — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "León", "variantes": ["Leones", "Marcha real del león"], "rareza": "grava", "explicacion": "Abre la obra: «Introducción y marcha real del león»." },
+        { "canonica": "Elefante", "variantes": ["Elefantes"], "rareza": "cobre", "explicacion": "Lo toca el contrabajo, que cita con humor a Berlioz y a Mendelssohn." },
+        { "canonica": "Cisne", "variantes": ["Cisnes"], "rareza": "cobre", "explicacion": "El movimiento más famoso: un solo de violonchelo que inspiró el ballet La muerte del cisne." },
+        { "canonica": "Tortuga", "variantes": ["Tortugas"], "rareza": "plata", "explicacion": "Saint-Saëns toca el cancán de Offenbach en cámara lenta." },
+        { "canonica": "Canguro", "variantes": ["Canguros"], "rareza": "plata", "explicacion": "Los pianos imitan los saltos con acordes cortos y ligeros." },
+        { "canonica": "Gallinas y gallos", "variantes": ["Gallina", "Gallinas", "Gallo", "Gallos"], "rareza": "plata", "explicacion": "Segundo movimiento: los instrumentos imitan el cacareo del gallinero." },
+        { "canonica": "Cuco", "variantes": ["Cucú", "Cuclillo"], "rareza": "oro", "explicacion": "Un clarinete repite el canto del cuco «en el fondo del bosque»." },
+        { "canonica": "Hemión", "variantes": ["Hemiones", "Asno salvaje", "Asnos salvajes", "Onagro"], "rareza": "diamante", "explicacion": "El hemión es un asno salvaje asiático. El movimiento lleva el subtítulo «animales veloces»." }
+      ],
+      "rechazos": [
+        { "textos": ["Pez", "Peces"], "motivo": "Ese movimiento se llama «Acuario»: el título no nombra a los peces." },
+        { "textos": ["Burro", "Burros", "Asno"], "motivo": "«Personajes de orejas largas» alude a los burros, pero el título no los nombra." },
+        { "textos": ["Pájaro", "Pájaros", "Aves"], "motivo": "Ese movimiento se llama «Pajarera»: el título nombra el lugar, no a las aves." }
+      ]
+    },
+    {
+      "id": "lit-nobel-espanol",
+      "categoria": "literatura",
+      "enunciado": "Nombrá a una persona que haya ganado el Premio Nobel de Literatura escribiendo en español.",
+      "alcance": "Los 11 autores en lengua española que recibieron el Nobel de Literatura hasta 2025.",
+      "fuentes": [
+        { "url": "https://es.wikipedia.org/wiki/Premio_Nobel_de_Literatura", "titulo": "Premio Nobel de Literatura — Wikipedia" },
+        { "url": "https://www.nobelprize.org/prizes/lists/all-nobel-prizes-in-literature/", "titulo": "All Nobel Prizes in Literature — NobelPrize.org" }
+      ],
+      "respuestas": [
+        { "canonica": "Gabriel García Márquez", "variantes": ["García Márquez", "Gabo"], "rareza": "grava", "explicacion": "Colombiano, Nobel en 1982. Escribió Cien años de soledad." },
+        { "canonica": "Pablo Neruda", "variantes": ["Neruda"], "rareza": "grava", "explicacion": "Chileno, Nobel en 1971. Su nombre real era Ricardo Eliécer Neftalí Reyes Basoalto." },
+        { "canonica": "Mario Vargas Llosa", "variantes": ["Vargas Llosa"], "rareza": "cobre", "explicacion": "Peruano, Nobel en 2010. Escribió La ciudad y los perros." },
+        { "canonica": "Octavio Paz", "variantes": [], "rareza": "plata", "explicacion": "Mexicano, Nobel en 1990. Escribió El laberinto de la soledad." },
+        { "canonica": "Gabriela Mistral", "variantes": ["Mistral"], "rareza": "plata", "explicacion": "Chilena, Nobel en 1945: fue la primera persona de América Latina en recibirlo." },
+        { "canonica": "Juan Ramón Jiménez", "variantes": [], "rareza": "oro", "explicacion": "Español, Nobel en 1956. Escribió Platero y yo." },
+        { "canonica": "Camilo José Cela", "variantes": [], "rareza": "oro", "explicacion": "Español, Nobel en 1989. Escribió La familia de Pascual Duarte." },
+        { "canonica": "Miguel Ángel Asturias", "variantes": [], "rareza": "oro", "explicacion": "Guatemalteco, Nobel en 1967. Escribió El señor Presidente." },
+        { "canonica": "Vicente Aleixandre", "variantes": ["Aleixandre"], "rareza": "diamante", "explicacion": "Poeta español de la Generación del 27, Nobel en 1977." },
+        { "canonica": "Jacinto Benavente", "variantes": ["Benavente"], "rareza": "diamante", "explicacion": "Dramaturgo español, Nobel en 1922. Escribió Los intereses creados." },
+        { "canonica": "José Echegaray", "variantes": ["Echegaray"], "rareza": "diamante", "explicacion": "Primer Nobel en lengua española, en 1904. También fue ingeniero y matemático." }
+      ],
+      "rechazos": [
+        { "textos": ["Jorge Luis Borges", "Borges"], "motivo": "Nunca recibió el Nobel: es una de las omisiones más comentadas del premio." },
+        { "textos": ["Julio Cortázar", "Cortázar", "Isabel Allende", "Ernesto Sabato", "Carlos Fuentes"], "motivo": "No recibió el Nobel de Literatura." },
+        { "textos": ["Miguel de Cervantes", "Cervantes"], "motivo": "Murió casi tres siglos antes de que existiera el premio." },
+        { "textos": ["Federico García Lorca", "García Lorca"], "motivo": "Murió en 1936 sin recibir el Nobel." }
+      ]
+    },
+    {
+      "id": "lit-harry-potter",
+      "categoria": "literatura",
+      "enunciado": "Nombrá un libro de la saga principal de Harry Potter.",
+      "alcance": "Las 7 novelas de J. K. Rowling publicadas entre 1997 y 2007, con su título en español o en inglés.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Harry_Potter", "titulo": "Harry Potter — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Harry Potter y la piedra filosofal", "variantes": ["La piedra filosofal", "Piedra filosofal", "Harry Potter and the Philosopher's Stone", "Philosopher's Stone", "Sorcerer's Stone", "Harry Potter 1"], "rareza": "grava", "explicacion": "Primera novela, publicada en 1997." },
+        { "canonica": "Harry Potter y la cámara secreta", "variantes": ["La cámara secreta", "Cámara secreta", "Chamber of Secrets", "Harry Potter 2"], "rareza": "cobre", "explicacion": "Segunda novela (1998): aparece el diario de Tom Riddle." },
+        { "canonica": "Harry Potter y el prisionero de Azkaban", "variantes": ["El prisionero de Azkaban", "Prisionero de Azkaban", "Prisoner of Azkaban", "Harry Potter 3"], "rareza": "cobre", "explicacion": "Tercera novela (1999): presenta a Sirius Black." },
+        { "canonica": "Harry Potter y las reliquias de la Muerte", "variantes": ["Las reliquias de la Muerte", "Reliquias de la Muerte", "Deathly Hallows", "Harry Potter 7"], "rareza": "cobre", "explicacion": "Séptima y última novela, de 2007." },
+        { "canonica": "Harry Potter y el cáliz de fuego", "variantes": ["El cáliz de fuego", "Cáliz de fuego", "Goblet of Fire", "Harry Potter 4"], "rareza": "plata", "explicacion": "Cuarta novela (2000): gira en torno al Torneo de los Tres Magos." },
+        { "canonica": "Harry Potter y la Orden del Fénix", "variantes": ["La Orden del Fénix", "Orden del Fénix", "Order of the Phoenix", "Harry Potter 5"], "rareza": "plata", "explicacion": "Quinta novela (2003) y la más extensa de la saga." },
+        { "canonica": "Harry Potter y el misterio del príncipe", "variantes": ["El misterio del príncipe", "Misterio del príncipe", "El príncipe mestizo", "Harry Potter y el príncipe mestizo", "Half-Blood Prince", "Harry Potter 6"], "rareza": "oro", "explicacion": "Sexta novela (2005). En inglés se titula Half-Blood Prince." }
+      ],
+      "rechazos": [
+        { "textos": ["Harry Potter y el legado maldito", "El legado maldito"], "motivo": "Es una obra de teatro de 2016, no una de las siete novelas." },
+        { "textos": ["Animales fantásticos", "Animales fantásticos y dónde encontrarlos"], "motivo": "Es un libro derivado, fuera de la saga principal." }
+      ]
+    },
+    {
+      "id": "lit-ficciones",
+      "categoria": "literatura",
+      "enunciado": "Nombrá un cuento del libro «Ficciones», de Jorge Luis Borges.",
+      "alcance": "Los 17 cuentos de la edición definitiva de 1956, en sus dos partes: «El jardín de senderos que se bifurcan» y «Artificios».",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Ficciones", "titulo": "Ficciones — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "La biblioteca de Babel", "variantes": [], "rareza": "grava", "explicacion": "Imagina el universo como una biblioteca infinita con todas las combinaciones de letras." },
+        { "canonica": "Funes el memorioso", "variantes": ["Funes"], "rareza": "cobre", "explicacion": "Un joven uruguayo que, tras un accidente, ya no puede olvidar nada." },
+        { "canonica": "El Sur", "variantes": [], "rareza": "cobre", "explicacion": "Borges lo consideraba quizá su mejor cuento. Se sumó en la edición de 1956." },
+        { "canonica": "El jardín de senderos que se bifurcan", "variantes": ["El jardín de los senderos que se bifurcan"], "rareza": "cobre", "explicacion": "Relato de espionaje en la Primera Guerra Mundial; da nombre a la primera parte del libro." },
+        { "canonica": "Tlön, Uqbar, Orbis Tertius", "variantes": ["Tlön", "Uqbar"], "rareza": "plata", "explicacion": "Abre el libro: un mundo inventado que empieza a filtrarse en la realidad." },
+        { "canonica": "Pierre Menard, autor del Quijote", "variantes": ["Pierre Menard", "Menard"], "rareza": "plata", "explicacion": "Un escritor se propone escribir el Quijote palabra por palabra, sin copiarlo." },
+        { "canonica": "Las ruinas circulares", "variantes": [], "rareza": "plata", "explicacion": "Un hombre sueña a otro hombre y descubre que él también es soñado." },
+        { "canonica": "La muerte y la brújula", "variantes": [], "rareza": "plata", "explicacion": "Policial ambientado en una Buenos Aires transfigurada, con el detective Lönnrot." },
+        { "canonica": "La lotería en Babilonia", "variantes": [], "rareza": "oro", "explicacion": "Una lotería que termina gobernando toda la vida de un pueblo." },
+        { "canonica": "El milagro secreto", "variantes": [], "rareza": "oro", "explicacion": "Un dramaturgo condenado a muerte recibe un año secreto para terminar su obra." },
+        { "canonica": "Tema del traidor y del héroe", "variantes": ["Tema del traidor y el héroe"], "rareza": "oro", "explicacion": "Un historiador descubre que un héroe irlandés fue también un traidor." },
+        { "canonica": "La forma de la espada", "variantes": [], "rareza": "oro", "explicacion": "Un irlandés con una cicatriz cuenta una historia de traición con un giro final." },
+        { "canonica": "Tres versiones de Judas", "variantes": [], "rareza": "diamante", "explicacion": "Un teólogo sueco reinterpreta la figura de Judas Iscariote." },
+        { "canonica": "Examen de la obra de Herbert Quain", "variantes": ["Herbert Quain"], "rareza": "diamante", "explicacion": "Reseña ficticia de la obra de un escritor inventado." },
+        { "canonica": "La secta del Fénix", "variantes": [], "rareza": "diamante", "explicacion": "Describe una secta cuyo rito secreto nunca se nombra." },
+        { "canonica": "El fin", "variantes": [], "rareza": "diamante", "explicacion": "Imagina el final del Martín Fierro: el duelo con el hermano del moreno." },
+        { "canonica": "El acercamiento a Almotásim", "variantes": ["Almotásim"], "rareza": "diamante", "explicacion": "Reseña de una novela imaginaria sobre la búsqueda de un hombre misterioso." }
+      ],
+      "rechazos": [
+        { "textos": ["El Aleph", "Emma Zunz", "El inmortal", "Los dos reyes y los dos laberintos", "La casa de Asterión"], "motivo": "Pertenece a otro libro: El Aleph (1949)." },
+        { "textos": ["El libro de arena"], "motivo": "Es otro libro de Borges, de 1975." },
+        { "textos": ["El hacedor"], "motivo": "Es otro libro de Borges, de 1960." }
+      ]
+    }
+  ]
+}

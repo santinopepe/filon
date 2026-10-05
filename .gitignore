@@ -1,0 +1,7 @@
+node_modules/
+.env
+datos/*.db
+datos/*.db-wal
+datos/*.db-shm
+capturas/
+.vercel

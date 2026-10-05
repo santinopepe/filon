@@ -1,0 +1,11 @@
+{
+  "name": "Filón",
+  "short_name": "Filón",
+  "description": "Siete preguntas por día. Las respuestas que nadie dice te llevan más hondo.",
+  "lang": "es-AR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#15152b",
+  "theme_color": "#15152b",
+  "icons": [{ "src": "/favicon-nuevo.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

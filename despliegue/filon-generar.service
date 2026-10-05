@@ -1,0 +1,13 @@
+# /etc/systemd/system/filon-generar.service — tarea diaria (solo si PROGRAMADOR_INTERNO=0)
+# Asegura el desafío de hoy (con reserva si la IA falla) y prepara mañana.
+[Unit]
+Description=Filón: generar desafío diario
+
+[Service]
+Type=oneshot
+User=filon
+WorkingDirectory=/opt/filon
+EnvironmentFile=/opt/filon/.env
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning scripts/generar-desafio.js
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning scripts/generar-desafio.js --manana --sin-reserva
+SuccessExitStatus=2
