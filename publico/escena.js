@@ -13,6 +13,35 @@ export const ESTRATOS = [
   { hasta: Infinity, nombre: 'la cámara de cristales', titulo: 'Cámara de cristales', base: [47, 34, 83], piedra: [85, 63, 127], acento: '#78edf2', cristales: true },
 ];
 
+// Minerales que aparecen a medida que se baja. Cada uno abunda alrededor de `pico` y se va
+// raleando hasta `desde`/`hasta`; `densidad` es la cantidad de yacimientos por bloque en el pico.
+// `tinte` colorea el terreno de la zona para que el cambio se note aunque no haya un yacimiento a la vista.
+export const MINERALES = [
+  { tipo: 'carbon', nombre: 'Carbón', desde: 120, pico: 750, hasta: 1700, densidad: 13, color: '#3a3440', tinte: [34, 28, 38] },
+  { tipo: 'hierro', nombre: 'Hierro', desde: 900, pico: 1850, hasta: 2900, densidad: 12, color: '#b5532f', tinte: [150, 52, 34] },
+  { tipo: 'cobre', nombre: 'Cobre', desde: 1800, pico: 2700, hasta: 3700, densidad: 11, color: '#e0874a', tinte: [176, 104, 56] },
+  { tipo: 'plata', nombre: 'Plata', desde: 2800, pico: 3550, hasta: 4400, densidad: 10, color: '#dfe7ee', tinte: [150, 160, 176] },
+  { tipo: 'oro', nombre: 'Oro', desde: 3600, pico: 4450, hasta: 5400, densidad: 10, color: '#ffd23f', tinte: [176, 140, 50] },
+  { tipo: 'esmeralda', nombre: 'Esmeraldas', desde: 4500, pico: 5350, hasta: 6300, densidad: 10, color: '#3ee08f', tinte: [30, 120, 80] },
+  { tipo: 'rubi', nombre: 'Rubíes', desde: 5300, pico: 6050, hasta: 6800, densidad: 9, color: '#ff4d6d', tinte: [130, 30, 52] },
+  { tipo: 'diamante', nombre: 'Diamantes', desde: 6000, pico: 6750, hasta: 9000, densidad: 11, color: '#bff8ff', tinte: [96, 170, 200] },
+];
+
+function pesoMineral(m, y) {
+  if (y < m.desde || y > m.hasta) return 0;
+  return y < m.pico ? (y - m.desde) / (m.pico - m.desde) : 1 - ((y - m.pico) / (m.hasta - m.pico)) * .85;
+}
+
+/** Color del terreno con el tinte de las zonas minerales que lo atraviesan. */
+function tenirPorMinerales(c, y) {
+  let r = c;
+  for (const m of MINERALES) {
+    const w = pesoMineral(m, y);
+    if (w > 0) r = mezcla(r, m.tinte, Math.min(.42, w * .42));
+  }
+  return r;
+}
+
 export const COLORES_RAREZA = { grava: '#b7b5bb', cobre: '#f18a52', plata: '#e5eff4', oro: '#ffe45f', diamante: '#78edf2' };
 
 export function estratoDe(m) {
@@ -67,27 +96,70 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
   let reloj = 0;
   let particulas = [];
   let claveDisposicion = '';
+  let objetivo = null; // posición de Lito hacia la que se desliza al cambiar de pantalla
   const bloques = new Map();
+  const yacimientos = new Map();
+
+  function aplicarAncla() {
+    const raiz = document.documentElement.style;
+    raiz.setProperty('--minero-x', `${anclaX.toFixed(1)}px`);
+    raiz.setProperty('--minero-y', `${anclaY.toFixed(1)}px`);
+    raiz.setProperty('--escala-minero', esc.toFixed(3));
+  }
 
   function disponer() {
     W = innerWidth;
     H = innerHeight;
     dpr = Math.min(devicePixelRatio || 1, 2);
     const z = zonaLibre();
-    const clave = [W, H, dpr, Math.round(z.izquierda), Math.round(z.derecha), Math.round(z.arriba), Math.round(z.abajo), z.movil].join(':');
+    const clave = [W, H, dpr, Math.round(z.izquierda), Math.round(z.derecha), Math.round(z.arriba), Math.round(z.abajo), z.movil, z.centrado].join(':');
     if (clave === claveDisposicion) return;
+    const primera = !claveDisposicion;
     claveDisposicion = clave;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    esc = z.movil ? limitar((z.abajo - z.arriba) / 250, 0.66, 0.82) : limitar(H / 900, 0.82, 1.08);
+    if (canvas.width !== Math.round(W * dpr) || canvas.height !== Math.round(H * dpr)) {
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+    }
     ppm = limitar(H / 126, 5.4, 8.6);
-    anclaX = (z.izquierda + z.derecha) / 2;
-    anclaY = z.movil ? z.abajo - 3 : z.arriba + (z.abajo - z.arriba) * 0.62;
-    const raiz = document.documentElement.style;
-    raiz.setProperty('--minero-x', `${anclaX}px`);
-    raiz.setProperty('--minero-y', `${anclaY}px`);
-    raiz.setProperty('--escala-minero', esc.toFixed(3));
-    bloques.clear();
+    let destino;
+    if (z.centrado) {
+      // Lito (224 px de alto a escala 1) queda centrado en el hueco entre la pregunta y la respuesta.
+      const hueco = Math.max(80, z.abajo - z.arriba);
+      const e = limitar((hueco - 16) / 236, z.movil ? 0.42 : 0.55, z.movil ? 0.8 : 1.05);
+      destino = { x: (z.izquierda + z.derecha) / 2, y: (z.arriba + z.abajo) / 2 + 112 * e, esc: e };
+    } else {
+      const e = z.movil ? limitar((z.abajo - z.arriba) / 250, 0.66, 0.82) : limitar(H / 900, 0.82, 1.08);
+      destino = { x: (z.izquierda + z.derecha) / 2, y: z.movil ? z.abajo - 3 : z.arriba + (z.abajo - z.arriba) * 0.62, esc: e };
+    }
+    objetivo = destino;
+    if (primera || reducido) {
+      anclaX = destino.x;
+      anclaY = destino.y;
+      esc = destino.esc;
+      aplicarAncla();
+    }
+  }
+
+  // Desliza a Lito (y con él todo el corte) hacia su nueva posición.
+  function acercarAncla(dt) {
+    if (!objetivo) return;
+    const dx = objetivo.x - anclaX;
+    const dy = objetivo.y - anclaY;
+    const de = objetivo.esc - esc;
+    if (Math.abs(dx) < .5 && Math.abs(dy) < .5 && Math.abs(de) < .002) {
+      if (dx || dy || de) {
+        anclaX = objetivo.x;
+        anclaY = objetivo.y;
+        esc = objetivo.esc;
+        aplicarAncla();
+      }
+      return;
+    }
+    const k = reducido ? 1 : 1 - Math.exp(-dt * 9);
+    anclaX += dx * k;
+    anclaY += dy * k;
+    esc += de * k;
+    aplicarAncla();
   }
 
   const sx = (x) => anclaX + x * ppm;
@@ -114,6 +186,213 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
     bloques.set(k, objetos);
     if (bloques.size > 90) bloques.delete(bloques.keys().next().value);
     return objetos;
+  }
+
+  function datosYacimientos(k) {
+    if (yacimientos.has(k)) return yacimientos.get(k);
+    const azar = generador(k * 9173 + 271);
+    const lista = [];
+    const centro = k * BLOQUE + BLOQUE / 2;
+    for (const m of MINERALES) {
+      const esperado = m.densidad * Math.max(pesoMineral(m, k * BLOQUE), pesoMineral(m, centro), pesoMineral(m, (k + 1) * BLOQUE));
+      if (esperado <= 0) continue;
+      const cantidad = Math.floor(esperado + azar());
+      for (let i = 0; i < cantidad; i++) {
+        const y = k * BLOQUE + azar() * BLOQUE;
+        if (azar() > pesoMineral(m, y) + .15) continue;
+        const piezas = [];
+        const n = m.tipo === 'carbon' ? 1 : 3 + Math.floor(azar() * 4);
+        for (let j = 0; j < n; j++) {
+          piezas.push({ dx: (azar() - .5) * 2, dy: (azar() - .5) * 2, tam: .8 + azar() * .9, giro: (azar() - .5) * 1.4, fase: azar() * 6.3 });
+        }
+        lista.push({ m, x: (azar() - .5) * 280, y, largo: 6 + azar() * 12, piezas, fase: azar() * 6.3, giro: (azar() - .5) * .5 });
+      }
+    }
+    yacimientos.set(k, lista);
+    if (yacimientos.size > 90) yacimientos.delete(yacimientos.keys().next().value);
+    return lista;
+  }
+
+  // Brillo de cuatro puntas (oro, plata, diamantes).
+  function destello(x, y, tam, fase, color = '#ffffff') {
+    const t = reducido ? .6 : (Math.sin(reloj * 3 + fase) + 1) / 2;
+    if (t < .35) return;
+    const s = tam * (.5 + t * .7);
+    ctx.save();
+    ctx.globalAlpha = t;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y - s);
+    ctx.lineTo(x + s * .2, y - s * .2);
+    ctx.lineTo(x + s, y);
+    ctx.lineTo(x + s * .2, y + s * .2);
+    ctx.lineTo(x, y + s);
+    ctx.lineTo(x - s * .2, y + s * .2);
+    ctx.lineTo(x - s, y);
+    ctx.lineTo(x - s * .2, y - s * .2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function pepita(r, colores, puntas = 7, semilla = 0) {
+    ctx.fillStyle = colores[0];
+    ctx.beginPath();
+    for (let i = 0; i < puntas; i++) {
+      const a = (i / puntas) * Math.PI * 2;
+      const rr = r * (.72 + .28 * Math.abs(Math.sin(i * 2.3 + semilla)));
+      i ? ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr * .8) : ctx.moveTo(Math.cos(a) * rr, Math.sin(a) * rr * .8);
+    }
+    ctx.closePath();
+    ctx.fill();
+    if (colores[1]) {
+      ctx.fillStyle = colores[1];
+      ctx.beginPath();
+      ctx.ellipse(-r * .25, -r * .25, r * .38, r * .22, -.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function cristal(alto, ancho, cara, luz, borde) {
+    ctx.fillStyle = cara;
+    ctx.beginPath();
+    ctx.moveTo(0, -alto);
+    ctx.lineTo(ancho, -alto * .55);
+    ctx.lineTo(ancho, alto * .25);
+    ctx.lineTo(0, alto * .45);
+    ctx.lineTo(-ancho, alto * .25);
+    ctx.lineTo(-ancho, -alto * .55);
+    ctx.closePath();
+    ctx.fill();
+    if (borde) {
+      ctx.strokeStyle = borde;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.fillStyle = luz;
+    ctx.beginPath();
+    ctx.moveTo(0, -alto);
+    ctx.lineTo(0, alto * .45);
+    ctx.lineTo(-ancho, alto * .25);
+    ctx.lineTo(-ancho, -alto * .55);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function dibujarYacimiento(d) {
+    const x = sx(d.x);
+    const y = sy(d.y);
+    const escala = (ppm / 7) * 1.7;
+    if (x < -120 || x > W + 120 || y < -60 || y > H + 60) return;
+    if (Math.abs(x - anclaX) < 62 + (d.m.tipo === 'carbon' || d.m.tipo === 'plata' || d.m.tipo === 'oro' ? d.largo * ppm * .5 : 0)) return;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(d.giro);
+    switch (d.m.tipo) {
+      case 'carbon': {
+        // Manto de carbón: lente negra y brillosa con vetas.
+        const l = d.largo * ppm * .5;
+        const g = 4 + d.piezas[0].tam * 5 * escala;
+        ctx.fillStyle = '#1f1b24';
+        ctx.beginPath();
+        ctx.moveTo(-l, 0);
+        ctx.bezierCurveTo(-l * .5, -g, l * .5, -g * 1.2, l, 0);
+        ctx.bezierCurveTo(l * .5, g, -l * .5, g * .9, -l, 0);
+        ctx.fill();
+        ctx.strokeStyle = 'rgb(160 170 200 / .28)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(-l * .6, -g * .25);
+        ctx.lineTo(l * .4, -g * .4);
+        ctx.moveTo(-l * .3, g * .3);
+        ctx.lineTo(l * .55, g * .15);
+        ctx.stroke();
+        break;
+      }
+      case 'plata':
+      case 'oro': {
+        // Veta metálica serpenteante con pepitas y destellos.
+        const oro = d.m.tipo === 'oro';
+        const l = d.largo * ppm * .5;
+        ctx.strokeStyle = oro ? '#f2b928' : '#c9d3dc';
+        ctx.lineWidth = 3 * escala;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        for (let t = -1; t <= 1.001; t += .125) {
+          const px = t * l;
+          const py = Math.sin(t * 5 + d.fase) * 4 * escala;
+          t === -1 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        if (oro) {
+          ctx.shadowColor = '#ffcf40';
+          ctx.shadowBlur = 8;
+        }
+        for (const p of d.piezas) {
+          ctx.save();
+          ctx.translate(p.dx * l * .45, Math.sin(p.dx * 2.2 + d.fase) * 4 * escala + p.dy * 2);
+          pepita(4.5 * p.tam * escala, oro ? ['#ffd23f', '#fff3b0'] : ['#e3eaf0', '#ffffff'], 7, p.fase);
+          ctx.restore();
+        }
+        ctx.shadowBlur = 0;
+        destello(l * .3, -5 * escala, 7 * escala, d.fase, oro ? '#fff7cf' : '#ffffff');
+        break;
+      }
+      case 'hierro':
+        // Nódulos de hierro oxidado con una mancha rojiza alrededor.
+        ctx.fillStyle = 'rgb(170 70 40 / .22)';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 22 * escala, 12 * escala, 0, 0, Math.PI * 2);
+        ctx.fill();
+        for (const p of d.piezas) {
+          ctx.save();
+          ctx.translate(p.dx * 9 * escala, p.dy * 7 * escala);
+          ctx.rotate(p.giro);
+          pepita(5 * p.tam * escala, ['#7a3524', '#c4643a'], 6, p.fase);
+          ctx.fillStyle = 'rgb(220 220 230 / .55)';
+          ctx.fillRect(-1, -1, 2, 2);
+          ctx.restore();
+        }
+        break;
+      case 'cobre':
+        // Cobre nativo con pátina verde de malaquita.
+        for (const p of d.piezas) {
+          ctx.save();
+          ctx.translate(p.dx * 9 * escala, p.dy * 7 * escala);
+          ctx.rotate(p.giro);
+          pepita(4.6 * p.tam * escala, ['#c8693a', '#f4a56a'], 8, p.fase);
+          ctx.fillStyle = '#3fbf9b';
+          ctx.beginPath();
+          ctx.arc(2.5 * escala, 2 * escala, 1.8 * escala * p.tam, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        break;
+      case 'esmeralda':
+      case 'rubi':
+      case 'diamante': {
+        const colores = {
+          esmeralda: ['#1fae6a', 'rgb(190 255 220 / .5)', '#3ee08f'],
+          rubi: ['#d61f45', 'rgb(255 200 210 / .5)', '#ff4d6d'],
+          diamante: ['#c9f6ff', 'rgb(255 255 255 / .75)', '#9ff3ff'],
+        }[d.m.tipo];
+        ctx.shadowColor = colores[2];
+        ctx.shadowBlur = reducido ? 8 : 9 + 5 * Math.sin(reloj * 1.6 + d.fase);
+        for (const p of d.piezas) {
+          ctx.save();
+          ctx.translate(p.dx * 8 * escala, p.dy * 5 * escala);
+          ctx.rotate(p.giro * .6);
+          const alto = (d.m.tipo === 'diamante' ? 8 : 11) * p.tam * escala;
+          const ancho = (d.m.tipo === 'esmeralda' ? 3.6 : 5) * p.tam * escala;
+          cristal(alto, ancho, colores[0], colores[1], d.m.tipo === 'diamante' ? 'rgb(120 220 255 / .8)' : null);
+          ctx.restore();
+        }
+        ctx.shadowBlur = 0;
+        if (d.m.tipo === 'diamante') destello(4 * escala, -9 * escala, 9 * escala, d.fase);
+        break;
+      }
+    }
+    ctx.restore();
   }
 
   function dibujarCielo(suelo) {
@@ -182,7 +461,10 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
     const paso = 3;
     for (let py = Math.max(0, sy(desde)); py < H + paso; py += paso) {
       const y = camY + (py - anclaY) / ppm;
-      ctx.fillStyle = rgb(colorDeTierra(Math.max(1, y)));
+      const c = tenirPorMinerales(colorDeTierra(Math.max(1, y)), y);
+      // Capas de sedimento: el color sube y baja un poco con la profundidad.
+      const f = 1 + Math.sin(y * .52) * .05 + Math.sin(y * .137 + 1.3) * .08 + Math.sin(y * .031 + 4) * .06;
+      ctx.fillStyle = rgb([c[0] * f, c[1] * f, c[2] * f]);
       ctx.fillRect(0, py, W, paso + 1);
     }
     for (let i = 1; i < ESTRATOS.length - 1; i++) {
@@ -400,35 +682,37 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
     ctx.restore();
   }
 
+  function rotulo(texto, yMetros, izquierda, acento, yTop, yBot) {
+    if (yMetros < yTop - 30 || yMetros > yBot + 30) return;
+    const y = sy(yMetros);
+    ctx.save();
+    ctx.font = `900 ${Math.round(limitar(ppm * 1.6, 12, 17))}px "Big Shoulders Stencil Display", Impact, sans-serif`;
+    const ancho = ctx.measureText(texto).width + 22;
+    // Cerca de los bordes, pero sin tapar el túnel ni la barra de profundidad.
+    const x = izquierda ? Math.max(ancho / 2 + 96, anclaX - 150 - ancho / 2) : Math.min(W - ancho / 2 - 24, anclaX + 150 + ancho / 2);
+    if ((izquierda && x + ancho / 2 > anclaX - 60) || (!izquierda && x - ancho / 2 < anclaX + 60)) return ctx.restore();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgb(24 22 47 / .7)';
+    ctx.beginPath();
+    ctx.roundRect(x - ancho / 2, y - 13, ancho, 26, 8);
+    ctx.fill();
+    ctx.strokeStyle = acento;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#fff8dc';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(texto, x, y + 1);
+    ctx.restore();
+  }
+
   function dibujarRotulos(yTop, yBot) {
     let desde = 0;
     for (let i = 1; i < ESTRATOS.length; i++) {
       const e = ESTRATOS[i];
-      if (desde >= yTop - 30 && desde <= yBot + 30) {
-        const y = sy(desde + 12);
-        const izquierda = i % 2 === 0;
-        const x = izquierda ? 74 : W - 74;
-        if (x > 110 && (!izquierda || x < anclaX - 90) && (izquierda || x > anclaX + 90)) {
-          ctx.save();
-          ctx.textAlign = 'center';
-          ctx.font = `900 ${Math.round(limitar(ppm * 1.6, 12, 17))}px "Big Shoulders Stencil Display", Impact, sans-serif`;
-          const texto = e.titulo.toUpperCase();
-          const ancho = ctx.measureText(texto).width + 22;
-          ctx.fillStyle = 'rgb(24 22 47 / .68)';
-          ctx.beginPath();
-          ctx.roundRect(x - ancho / 2, y - 13, ancho, 26, 8);
-          ctx.fill();
-          ctx.strokeStyle = e.acento;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          ctx.fillStyle = '#fff8dc';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(texto, x, y + 1);
-          ctx.restore();
-        }
-      }
+      rotulo(e.titulo.toUpperCase(), desde + 12, i % 2 === 0, e.acento, yTop, yBot);
       desde = Math.min(e.hasta, 7000);
     }
+    MINERALES.forEach((m, i) => rotulo(`◆ ${m.nombre.toUpperCase()}`, m.pico, i % 2 === 1, m.color, yTop, yBot));
   }
 
   function dibujarIluminacion() {
@@ -493,6 +777,7 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
     const dt = Math.min(.05, (ahora - ultimo) / 1000);
     ultimo = ahora;
     reloj += dt;
+    acercarAncla(dt);
     if (animacion) {
       const p = limitar((ahora - animacion.inicio) / animacion.duracion, 0, 1);
       const anterior = camY;
@@ -520,6 +805,7 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
     const k0 = Math.floor(Math.max(0, yTop - 8) / BLOQUE);
     const k1 = Math.floor(Math.max(0, yBot + 8) / BLOQUE);
     for (let k = k0; k <= k1; k++) for (const objeto of datosBloque(k)) dibujarObjeto(objeto);
+    for (let k = k0; k <= k1; k++) for (const yacimiento of datosYacimientos(k)) dibujarYacimiento(yacimiento);
     dibujarTunel(yTop, yBot);
     dibujarFrenteExcavacion();
     dibujarRotulos(yTop, yBot);

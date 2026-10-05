@@ -84,10 +84,6 @@
 
   <header class="barra">
     <a class="marca" href="/" aria-label="Filón, volver al inicio">FILÓN</a>
-    <p class="hud" id="hud" hidden>
-      <span id="hud-ronda">Ronda 1 de 7</span>
-      <span class="hud-metros"><span id="hud-metros">0</span> m</span>
-    </p>
     <div class="controles">
       <button type="button" class="icono" id="btn-ayuda" aria-label="Cómo se juega">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.2-2.6 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17.4" r="1.1" fill="currentColor"/></svg>
@@ -102,8 +98,11 @@
   </header>
 
   <aside class="profundimetro" id="profundimetro" aria-hidden="true">
-    <div class="escala" id="escala"></div>
-    <div class="marcador" id="marcador"><span id="marcador-texto">0 m</span></div>
+    <div class="escala" id="escala"><div class="cubierta"></div></div>
+    <span class="tope">7.000 m</span>
+    <div class="marcador" id="marcador">
+      <span class="marcador-pildora"><b id="marcador-texto">0 m</b><small id="marcador-estrato">Superficie</small></span>
+    </div>
   </aside>
 
   <main class="panel" id="panel">
@@ -140,44 +139,49 @@
       <p class="meta" id="inicio-meta"></p>
     </section>
 
-    <div class="cabecera-partida" id="cabecera-partida" hidden>
-      <ol class="pepitas" id="pepitas" aria-label="Progreso de las 7 rondas"></ol>
-    </div>
-
     <section class="pantalla ronda" id="p-ronda" hidden aria-labelledby="ronda-enunciado">
-      <p class="ronda-datos"><span id="ronda-num">Ronda 1 de 7</span><span class="categoria" id="ronda-categoria"></span></p>
-      <h2 class="enunciado" id="ronda-enunciado"></h2>
-      <p class="alcance" id="ronda-alcance"></p>
-      <div class="mecha" id="mecha" role="timer" aria-labelledby="mecha-seg">
-        <div class="mecha-cuerda"><div class="mecha-resto" id="mecha-resto"><span class="chispa"></span></div></div>
-        <span class="mecha-seg" id="mecha-seg"><span id="mecha-num">25</span> s</span>
+      <div class="ronda-arriba">
+        <p class="ronda-num"><span id="ronda-num">Pregunta 1 de 7</span><span class="categoria" id="ronda-categoria"></span></p>
+        <ol class="pepitas" id="pepitas-ronda" aria-label="Progreso de las 7 preguntas"></ol>
+        <h2 class="enunciado" id="ronda-enunciado"></h2>
+        <p class="alcance" id="ronda-alcance"></p>
       </div>
-      <form class="form-respuesta" id="form-respuesta" autocomplete="off" novalidate>
-        <label for="campo-respuesta" class="solo-lector">Tu respuesta</label>
-        <input id="campo-respuesta" name="respuesta" type="text" maxlength="120" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Escribí tu respuesta">
-        <button type="submit" class="boton principal" id="btn-responder">Responder</button>
-      </form>
-      <p class="mensaje" id="ronda-mensaje" aria-live="polite"></p>
-      <ul class="intentos" id="ronda-intentos" aria-label="Respuestas que no estaban en la veta"></ul>
-      <button type="button" class="boton fantasma" id="btn-pasar">Pasar esta pregunta (0 puntos)</button>
+      <div class="ronda-abajo">
+        <div class="mecha" id="mecha" role="timer" aria-labelledby="mecha-seg">
+          <div class="mecha-cuerda"><div class="mecha-resto" id="mecha-resto"><span class="chispa"></span></div></div>
+          <span class="mecha-seg" id="mecha-seg"><span id="mecha-num">25</span> s</span>
+        </div>
+        <form class="form-respuesta" id="form-respuesta" autocomplete="off" novalidate>
+          <label for="campo-respuesta" class="solo-lector">Tu respuesta</label>
+          <input id="campo-respuesta" name="respuesta" type="text" maxlength="120" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Escribí tu respuesta">
+          <button type="submit" class="boton principal" id="btn-responder">Responder</button>
+        </form>
+        <p class="mensaje" id="ronda-mensaje" aria-live="polite"></p>
+        <button type="button" class="enlace" id="btn-pasar">Pasar (0 puntos)</button>
+      </div>
     </section>
 
     <section class="pantalla resultado" id="p-resultado" hidden aria-labelledby="res-titulo">
-      <p class="ronda-datos"><span id="res-ronda"></span><span class="categoria" id="res-categoria"></span></p>
-      <p class="res-enunciado" id="res-enunciado"></p>
-      <div class="hallazgo" id="hallazgo" data-rareza="nada">
-        <span class="hallazgo-gema" aria-hidden="true"></span>
-        <div>
-          <h2 class="hallazgo-titulo" id="res-titulo" tabindex="-1"></h2>
-          <p class="hallazgo-puntos" id="res-puntos"></p>
-        </div>
+      <div class="ronda-arriba">
+        <p class="ronda-num"><span id="res-ronda"></span><span class="categoria" id="res-categoria"></span></p>
+        <ol class="pepitas" id="pepitas-resultado" aria-label="Progreso de las 7 preguntas"></ol>
+        <p class="res-enunciado" id="res-enunciado"></p>
       </div>
-      <p class="res-respuesta" id="res-respuesta"></p>
-      <p class="res-explicacion" id="res-explicacion"></p>
-      <p class="res-fuente" id="res-fuente-p"><a id="res-fuente" href="#" target="_blank" rel="noopener noreferrer"></a></p>
-      <p class="res-joya" id="res-joya"></p>
-      <button type="button" class="boton principal" id="btn-siguiente">Seguir bajando</button>
-      <button type="button" class="enlace" id="btn-reportar">¿Diste una respuesta válida que no aceptamos? Reportala</button>
+      <div class="ronda-abajo">
+        <div class="hallazgo" id="hallazgo" data-rareza="nada">
+          <span class="hallazgo-gema" aria-hidden="true"></span>
+          <div>
+            <h2 class="hallazgo-titulo" id="res-titulo" tabindex="-1"></h2>
+            <p class="hallazgo-puntos" id="res-puntos"></p>
+          </div>
+        </div>
+        <p class="res-respuesta" id="res-respuesta"></p>
+        <p class="res-explicacion" id="res-explicacion"></p>
+        <p class="res-fuente" id="res-fuente-p"><a id="res-fuente" href="#" target="_blank" rel="noopener noreferrer"></a></p>
+        <p class="res-joya" id="res-joya"></p>
+        <button type="button" class="boton principal" id="btn-siguiente">Seguir bajando</button>
+        <button type="button" class="enlace" id="btn-reportar">¿Diste una respuesta válida que no aceptamos? Reportala</button>
+      </div>
     </section>
 
     <section class="pantalla final" id="p-final" hidden aria-labelledby="final-titulo">
@@ -234,17 +238,6 @@
       <p>No importan las mayúsculas, los espacios ni las tildes, pero la «ñ» sí cuenta: «año» no es «ano».</p>
       <p>Hay una partida por día. El desafío cambia a las 00:00 de Buenos Aires.</p>
       <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Entendido</button></div>
-    </form>
-  </dialog>
-
-  <dialog class="dialogo respuestas-dialogo" id="dlg-respuestas" aria-labelledby="respuestas-titulo">
-    <form method="dialog">
-      <p class="respuestas-kicker" id="respuestas-ronda"></p>
-      <h2 id="respuestas-titulo">Todas las respuestas válidas</h2>
-      <p class="rep-pregunta" id="respuestas-pregunta"></p>
-      <p class="respuestas-ayuda" id="respuestas-ayuda">Ordenadas de mayor a menor puntaje.</p>
-      <ol class="lista-respuestas" id="lista-respuestas"></ol>
-      <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Cerrar</button></div>
     </form>
   </dialog>
 

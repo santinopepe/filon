@@ -58,8 +58,16 @@ let desfase = 0;
 const ahoraServidor = () => Date.now() + desfase;
 const ronda = (n) => estado.partida?.rondas.find((r) => r.posicion === n);
 
+// Espacio donde se dibuja a Lito. En las preguntas y los resultados queda centrado entre el bloque
+// de arriba (número y pregunta) y el de abajo (respuesta o resultado).
 function zonaLibre() {
   const movil = innerWidth < 860;
+  if (estado.pantalla === 'ronda' || estado.pantalla === 'resultado') {
+    const seccion = $(`p-${estado.pantalla}`);
+    const arriba = seccion.querySelector('.ronda-arriba').getBoundingClientRect().bottom;
+    const abajo = seccion.querySelector('.ronda-abajo').getBoundingClientRect().top;
+    return { movil, centrado: true, izquierda: 0, derecha: innerWidth, arriba, abajo: Math.max(abajo, arriba + 120) };
+  }
   const panel = $('panel').getBoundingClientRect();
   if (movil) return { movil, izquierda: 0, derecha: innerWidth, arriba: 54, abajo: panel.top > 60 ? panel.top : innerHeight * 0.34 };
   return { movil, izquierda: 70, derecha: panel.left > 200 ? panel.left : innerWidth - 500, arriba: 60, abajo: innerHeight };
@@ -150,61 +158,52 @@ function reloj(ms) {
 
 function mostrar(pantalla) {
   for (const id of ['cargando', 'inicio', 'ronda', 'resultado', 'final']) $(`p-${id}`).hidden = id !== pantalla;
-  $('cabecera-partida').hidden = !(pantalla === 'ronda' || pantalla === 'resultado');
   document.body.classList.toggle('en-inicio', pantalla === 'inicio' || pantalla === 'cargando');
-  $('hud').hidden = !(pantalla === 'ronda' || pantalla === 'resultado' || pantalla === 'final');
+  document.body.classList.toggle('en-excavacion', pantalla === 'ronda' || pantalla === 'resultado');
   estado.pantalla = pantalla;
   $('panel').scrollTop = 0;
   escena.disponer();
 }
 
-// ───────── Profundímetro y HUD ─────────
-const rotulosProfundimetro = [];
+// ───────── Barra de profundidad ─────────
+// Lo excavado muestra los colores de los estratos; lo que falta queda a oscuras.
+// La orientación (vertical en escritorio, horizontal en celulares) la resuelve el CSS con --pct.
 function construirProfundimetro() {
   const escala = $('escala');
-  $('profundimetro').classList.add('con-marcador');
-  const rotulos = document.createElement('div');
-  rotulos.className = 'rotulos';
   let desde = 0;
   for (const e of ESTRATOS.slice(1)) {
     const hasta = Math.min(e.hasta, PROFUNDIDAD_MAXIMA);
     const franja = document.createElement('div');
     franja.className = 'franja';
-    franja.style.top = `${(desde / PROFUNDIDAD_MAXIMA) * 100}%`;
-    franja.style.height = `${((hasta - desde) / PROFUNDIDAD_MAXIMA) * 100}%`;
+    franja.style.setProperty('--desde', (desde / PROFUNDIDAD_MAXIMA) * 100);
+    franja.style.setProperty('--largo', ((hasta - desde) / PROFUNDIDAD_MAXIMA) * 100);
     franja.style.background = `rgb(${e.base.map((c) => Math.min(255, c * 1.6)).join(' ')})`;
-    escala.append(franja);
-    const r = document.createElement('span');
-    r.className = 'rotulo';
-    r.style.top = `${((desde + hasta) / 2 / PROFUNDIDAD_MAXIMA) * 100}%`;
-    r.textContent = e.titulo;
-    rotulos.append(r);
-    rotulosProfundimetro.push({ el: r, pct: ((desde + hasta) / 2 / PROFUNDIDAD_MAXIMA) * 100 });
+    escala.prepend(franja);
     desde = hasta;
   }
-  $('profundimetro').append(rotulos);
+  for (let km = 1000; km < PROFUNDIDAD_MAXIMA; km += 1000) {
+    const marca = document.createElement('span');
+    marca.className = 'marca-km';
+    marca.style.setProperty('--pos', (km / PROFUNDIDAD_MAXIMA) * 100);
+    escala.append(marca);
+  }
 }
 
 function mostrarProfundidad(m) {
   const metros = Math.max(0, m);
-  $('hud-metros').textContent = fmt(metros);
   const pct = (Math.min(metros, PROFUNDIDAD_MAXIMA) / PROFUNDIDAD_MAXIMA) * 100;
-  $('marcador').style.top = `${pct}%`;
+  $('profundimetro').style.setProperty('--pct', pct.toFixed(2));
   $('marcador-texto').textContent = `${fmt(metros)} m`;
-  for (const r of rotulosProfundimetro) r.el.classList.toggle('cerca', Math.abs(r.pct - pct) < 3.2);
-}
-
-function actualizarHud(mostrada = null) {
-  const p = estado.partida;
-  if (!p) return;
-  const n = mostrada || p.rondaActiva || p.siguiente || p.rondas.filter((r) => r.estado !== 'pendiente').length || 1;
-  $('hud-ronda').textContent = p.terminada ? 'Partida terminada' : `Ronda ${n} de 7`;
+  const estrato = estratoDe(metros).titulo;
+  if ($('marcador-estrato').textContent !== estrato) $('marcador-estrato').textContent = estrato;
 }
 
 function dibujarPepitas() {
-  const ol = $('pepitas');
-  ol.replaceChildren(
-    ...estado.partida.rondas.map((r) => {
+  for (const ol of document.querySelectorAll('.pepitas')) ol.replaceChildren(...pepitas());
+}
+
+function pepitas() {
+  return estado.partida.rondas.map((r) => {
       const li = document.createElement('li');
       li.dataset.estado = r.estado;
       if (r.respuesta) li.dataset.rareza = r.respuesta.rareza;
@@ -222,9 +221,7 @@ function dibujarPepitas() {
               : `Ronda ${r.posicion}: sin puntos`,
       );
       return li;
-    }),
-  );
-  actualizarHud();
+  });
 }
 
 // ───────── Inicio ─────────
@@ -323,13 +320,13 @@ function mostrarRonda(n) {
   mostrar('ronda');
   dibujarPepitas();
   pose(null);
-  $('ronda-num').textContent = `Ronda ${n} de 7`;
+  $('ronda-num').textContent = `Pregunta ${n} de 7`;
   $('ronda-categoria').textContent = r.categoria;
   $('ronda-enunciado').textContent = r.enunciado;
   $('ronda-alcance').textContent = r.alcance;
   $('ronda-mensaje').textContent = '';
   $('ronda-mensaje').classList.remove('error');
-  dibujarIntentos(r.intentos || []);
+  escena.disponer();
   const campo = $('campo-respuesta');
   campo.value = '';
   campo.disabled = false;
@@ -340,16 +337,6 @@ function mostrarRonda(n) {
   iniciarMecha(n, r.limiteEn);
   decir(elegir(FRASES.ronda), 3200);
   anunciar(`Ronda ${n} de 7. ${r.categoria}. ${r.enunciado} Tenés ${estado.partida.segundosPorPregunta} segundos.`);
-}
-
-function dibujarIntentos(intentos) {
-  $('ronda-intentos').replaceChildren(
-    ...intentos.map((i) => {
-      const li = document.createElement('li');
-      li.textContent = i.texto;
-      return li;
-    }),
-  );
 }
 
 function detenerMecha() {
@@ -461,7 +448,6 @@ async function responder(ev) {
           ? `«${texto}» no vale: ${r.motivo}`
           : `«${texto}» no está en la veta. Probá otra.`;
       mensaje.classList.add('error');
-      dibujarIntentos(ronda(n).intentos || []);
       campo.value = '';
       if (Math.random() < 0.35) decir(elegir(FRASES.rechazo), 2200);
     } else if (r.resultado === 'vacia') {
@@ -531,7 +517,7 @@ async function celebrar(n) {
 }
 
 function volarGema(origen, n, rareza) {
-  const destino = $('pepitas').children[n - 1]?.getBoundingClientRect();
+  const destino = $('pepitas-resultado').children[n - 1]?.getBoundingClientRect();
   const gema = $('gema-vuela');
   if (!destino || !gema.animate) return;
   gema.dataset.rareza = rareza;
@@ -559,68 +545,10 @@ function habilitarSiguiente() {
   b.textContent = estado.partida.siguiente ? 'Seguir bajando' : 'Ver el resultado final';
 }
 
-function botonRespuestas(r, texto) {
-  const boton = document.createElement('button');
-  boton.type = 'button';
-  boton.className = 'respuesta-abrir';
-  boton.textContent = texto;
-  boton.setAttribute('aria-label', `${texto}. Ver todas las respuestas válidas de la ronda ${r.posicion}`);
-  boton.addEventListener('click', () => abrirRespuestas(r.posicion));
-  return boton;
-}
-
-function dibujarRespuestasValidas(r) {
-  const lista = $('lista-respuestas');
-  const fragmento = document.createDocumentFragment();
-  for (const respuesta of r.respuestasValidas || []) {
-    const li = document.createElement('li');
-    li.dataset.rareza = respuesta.rareza;
-    if (respuesta.canonica === r.respuesta?.canonica) li.classList.add('es-tuya');
-    const gema = document.createElement('span');
-    gema.className = 'piedra';
-    const nombre = document.createElement('span');
-    nombre.className = 'respuesta-nombre';
-    nombre.textContent = respuesta.canonica;
-    if (respuesta.canonica === r.respuesta?.canonica) {
-      const tuya = document.createElement('small');
-      tuya.textContent = 'Tu respuesta';
-      nombre.append(tuya);
-    }
-    const rareza = document.createElement('span');
-    rareza.className = 'respuesta-rareza';
-    rareza.textContent = respuesta.nombreRareza;
-    const puntos = document.createElement('strong');
-    puntos.className = 'respuesta-puntos';
-    puntos.textContent = `${respuesta.puntos} pts`;
-    li.append(gema, nombre, rareza, puntos);
-    fragmento.append(li);
-  }
-  lista.replaceChildren(fragmento);
-}
-
-async function abrirRespuestas(n) {
-  const r = ronda(n);
-  if (!r?.totalRespuestas) return;
-  $('respuestas-ronda').textContent = `Ronda ${r.posicion} de 7 · ${r.categoria}`;
-  $('respuestas-pregunta').textContent = r.enunciado;
-  $('respuestas-ayuda').textContent = `${fmt(r.totalRespuestas)} respuestas, ordenadas de mayor a menor puntaje.`;
-  const dlg = $('dlg-respuestas');
-  if (!dlg.open) dlg.showModal();
-  if (r.respuestasValidas?.length) {
-    dibujarRespuestasValidas(r);
-    return;
-  }
-  const carga = document.createElement('li');
-  carga.className = 'respuestas-cargando';
-  carga.textContent = 'Extrayendo el catálogo de la veta…';
-  $('lista-respuestas').replaceChildren(carga);
-  try {
-    const datos = await api('GET', `/api/partidas/${estado.partida.id}/rondas/${n}/respuestas`);
-    r.respuestasValidas = datos.respuestas;
-    dibujarRespuestasValidas(r);
-  } catch (e) {
-    carga.textContent = e.message;
-  }
+function negrita(texto) {
+  const fuerte = document.createElement('strong');
+  fuerte.textContent = texto;
+  return fuerte;
 }
 
 function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
@@ -628,8 +556,7 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
   detenerMecha();
   mostrar('resultado');
   dibujarPepitas();
-  actualizarHud(n);
-  $('res-ronda').textContent = `Ronda ${n} de 7`;
+  $('res-ronda').textContent = `Pregunta ${n} de 7`;
   $('res-categoria').textContent = r.categoria;
   $('res-enunciado').textContent = r.enunciado || '';
   const h = $('hallazgo');
@@ -641,7 +568,7 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
     h.dataset.rareza = a.rareza;
     $('res-titulo').textContent = a.nombreRareza;
     $('res-puntos').textContent = `+${r.puntos} puntos · ${fmt(r.metros)} m más abajo`;
-    respuesta.append('Respuesta aceptada: ', botonRespuestas(r, a.canonica), `. Rareza estimada: ${a.descripcionRareza.toLowerCase()}.`);
+    respuesta.append('Tu respuesta: ', negrita(a.canonica), '.');
     $('res-explicacion').textContent = a.explicacion;
     $('res-explicacion').hidden = false;
     const enlace = $('res-fuente');
@@ -653,8 +580,7 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
     $('res-titulo').textContent = r.estado === 'pasada' ? 'Pasaste' : r.estado === 'caducada' ? 'Sin excavar' : 'Se apagó la mecha';
     $('res-puntos').textContent = '0 puntos · te quedaste en el mismo nivel';
     const probadas = (r.intentos || []).map((i) => `«${i.texto}»`);
-    respuesta.append(probadas.length ? `Probaste ${probadas.join(', ')}, pero no estaban en la veta. ` : 'No llegaste a dar una respuesta válida. ');
-    if (r.totalRespuestas) respuesta.append(botonRespuestas(r, `Ver las ${fmt(r.totalRespuestas)} respuestas válidas`), '.');
+    respuesta.append(probadas.length ? `Probaste ${probadas.join(', ')}, pero no estaban en la veta.` : 'No llegaste a dar una respuesta válida.');
     $('res-explicacion').hidden = true;
     fuenteP.hidden = true;
     if (animar) {
@@ -668,7 +594,6 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
     const fuerte = document.createElement('strong');
     fuerte.textContent = r.joya.canonica;
     joya.append(r.estado === 'acertada' ? 'Otra joya de esta veta: ' : `Una respuesta que valía ${r.joya.puntos} puntos: `, fuerte, ` (${r.joya.nombreRareza}).`);
-    if (r.totalRespuestas) joya.append(` La veta tenía ${r.totalRespuestas} respuestas válidas.`);
   }
   joya.hidden = !r.joya;
   h.classList.remove('revelar');
@@ -680,6 +605,7 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
   const siguiente = $('btn-siguiente');
   siguiente.disabled = enCurso;
   siguiente.textContent = estado.partida.siguiente ? 'Seguir bajando' : 'Ver el resultado final';
+  escena.disponer();
   $('res-titulo').focus({ preventScroll: true });
   anunciar(
     r.estado === 'acertada'
@@ -790,7 +716,6 @@ function mostrarFinal({ completada = false } = {}) {
   detenerMecha();
   mostrar('final');
   escena.fijarProfundidad(p.profundidad, { animar: false });
-  actualizarHud();
   $('final-sobre').textContent = `${completada ? 'Ya excavaste hoy · ' : ''}Desafío #${p.numero} · ${fechaLarga(p.fecha)}`;
   const e = estratoDe(p.profundidad);
   $('final-estrato').textContent =
@@ -813,9 +738,9 @@ function mostrarFinal({ completada = false } = {}) {
       cat.className = 'd-cat';
       cat.textContent = `${r.posicion}. ${r.categoria}`;
       const textoRespuesta = r.respuesta ? `${r.respuesta.canonica} · ${r.respuesta.nombreRareza}` : r.estado === 'pasada' ? 'Pasaste' : 'Sin respuesta';
-      const resp = r.totalRespuestas ? botonRespuestas(r, textoRespuesta) : document.createElement('span');
-      resp.classList.add('d-resp');
-      if (!r.totalRespuestas) resp.textContent = textoRespuesta;
+      const resp = document.createElement('span');
+      resp.className = 'd-resp';
+      resp.textContent = textoRespuesta;
       texto.append(cat, resp);
       const pts = document.createElement('span');
       pts.className = 'd-pts';
