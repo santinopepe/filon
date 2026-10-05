@@ -71,10 +71,11 @@ a { color: var(--cian); }
 .ingreso label { display: grid; gap: 4px; }
 
 label { color: var(--cal-2); font-size: .9rem; }
-input, select {
+input, select, textarea {
   font: inherit; color: var(--cal); background: var(--pizarra-2);
   border: 1px solid var(--borde); border-radius: 8px; padding: 8px 10px; min-width: 0;
 }
+textarea { width: 100%; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .84rem; line-height: 1.45; }
 button {
   font: inherit; font-weight: 700; cursor: pointer;
   background: var(--lampara); color: var(--socavon);
@@ -88,6 +89,15 @@ button.chico { padding: 4px 10px; font-size: .85rem; }
 
 .generar { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
 .generar label { display: grid; gap: 4px; }
+.ayuda-json { color: var(--cal-2); margin: -.2rem 0 14px; }
+.importar { display: grid; gap: 10px; }
+.importar-cabecera { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.importar-cabecera label { display: grid; gap: 4px; }
+.importar-cabecera .archivo { flex: 1 1 280px; }
+.formato-json { color: var(--cal-2); }
+.formato-json summary { cursor: pointer; }
+.formato-json pre { overflow-x: auto; padding: 12px; border-radius: 8px; background: var(--socavon); color: var(--cal-2); font-size: .8rem; }
+.formato-json p { margin-bottom: 0; }
 .aviso {
   margin-top: 14px; padding: 12px 14px; border-radius: 8px;
   background: #3a2230; border: 1px solid var(--alerta);
@@ -125,6 +135,7 @@ button.chico { padding: 4px 10px; font-size: .85rem; }
   background: var(--pizarra-2); color: var(--cal-2); white-space: nowrap;
 }
 .etiqueta.ia { background: #1e3f47; color: var(--cian); }
+.etiqueta.manual { background: #243d31; color: #9bf2b7; }
 .etiqueta.mixto { background: #463b1d; color: var(--oro); }
 .etiqueta.hoy { background: var(--lampara); color: var(--socavon); }
 .etiqueta.mal { background: #4a2430; color: var(--alerta); }

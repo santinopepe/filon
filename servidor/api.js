@@ -2,9 +2,18 @@
 import { randomUUID } from 'node:crypto';
 import { ErrorJuego } from './juego.js';
 import { enviarJson, leerJson, leerCookies, crearFirmador, crearLimitador } from './http.js';
-import { desafioPorFecha, preguntasDeDesafio, respuestasDePregunta, listarDesafios, sincronizarCaches } from './banco.js';
+import {
+  desafioPorFecha,
+  preguntasDeDesafio,
+  respuestasDePregunta,
+  preguntasRecientes,
+  publicarDesafio,
+  listarDesafios,
+  sincronizarCaches,
+} from './banco.js';
 import { esFechaValida, fechaLocal, sumarDias } from './tiempo.js';
 import { asegurarDesafio } from './generador/generar.js';
+import { validarPregunta, validarLote } from './validacion.js';
 
 const COOKIE = 'filon_id';
 const UUID = /^[0-9a-f-]{36}$/;
@@ -86,6 +95,68 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       bd: /^(libsql|https?|wss?):/.test(config.rutaBD) ? new URL(config.rutaBD).host : 'archivo local',
       desafios: await listarDesafios(db),
     }), { admin: true }],
+    // Publica un día pegado como JSON, con el mismo formato de datos/reserva.json.
+    // No llama a ningún proveedor de IA ni verifica fuentes por red: solo aplica las validaciones
+    // estructurales locales y publica las siete preguntas en una transacción.
+    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/importar$/, async ({ m, cuerpo }) => {
+      const fecha = m[1];
+      if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
+      if (!Array.isArray(cuerpo.preguntas)) {
+        throw new ErrorJuego(400, 'json_invalido', 'El JSON debe ser un arreglo o un objeto con una propiedad «preguntas».');
+      }
+
+      const existente = await desafioPorFecha(db, fecha);
+      if (existente && !cuerpo.reemplazar) {
+        throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío para ${fecha}. Confirmá el reemplazo para sobrescribirlo.`);
+      }
+      if (existente) {
+        const { n } = await db.get('SELECT COUNT(*) AS n FROM partidas WHERE desafio_id = ?', existente.id);
+        if (n && !cuerpo.forzar) {
+          throw new ErrorJuego(409, 'hay_partidas', `Ese día ya tiene ${n} partida(s); al reemplazarlo se borran.`);
+        }
+      }
+
+      const recientes = await preguntasRecientes(db, fecha, config.diasSinRepetir);
+      const preguntas = [];
+      const detalles = [];
+      for (const [i, entrada] of cuerpo.preguntas.entries()) {
+        const candidata = { ...entrada, id: entrada?.id || `manual-${fecha}-p${i + 1}` };
+        const validacion = validarPregunta(candidata, { dominios: config.fuentes.dominios, recientes, estricta: true });
+        detalles.push({
+          posicion: i + 1,
+          enunciado: candidata.enunciado || '',
+          errores: validacion.errores,
+          advertencias: validacion.advertencias,
+          descartadas: validacion.descartadas,
+        });
+        if (validacion.ok) preguntas.push({ ...validacion.pregunta, origen: 'reserva' });
+      }
+
+      const lote = preguntas.length === cuerpo.preguntas.length ? validarLote(preguntas) : { ok: false, errores: [] };
+      const errores = detalles.flatMap((d) => d.errores.map((error) => `Pregunta ${d.posicion}: ${error}`));
+      errores.push(...lote.errores);
+      if (errores.length) {
+        const error = new ErrorJuego(422, 'desafio_invalido', `El JSON tiene ${errores.length} problema(s). No se guardó nada.`);
+        error.detalles = { errores, preguntas: detalles };
+        throw error;
+      }
+
+      const publicado = await publicarDesafio(db, {
+        fecha,
+        preguntas,
+        origen: 'reserva',
+        modelo: 'manual',
+        reemplazar: Boolean(existente),
+        ahora: ahora(),
+      });
+      if (!publicado.publicado) throw new ErrorJuego(409, 'ya_existe', `Otro proceso publicó ${fecha} antes que esta carga.`);
+      return {
+        ...publicado,
+        resultado: existente ? 'reemplazado' : 'publicado',
+        origen: 'manual',
+        advertencias: detalles.flatMap((d) => d.advertencias.map((aviso) => `Pregunta ${d.posicion}: ${aviso}`)),
+      };
+    }, { admin: true, limiteJson: 1_000_000 }],
     // Generar o regenerar un día a mano.
     //   modo: 'auto' (IA y, si falla, reserva) | 'ia' (solo IA; si falla no cambia nada) | 'reserva'
     //   reemplazar: true para regenerar un día que ya existe
@@ -153,11 +224,11 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       const ident = opciones.publica || opciones.admin || opciones.cron ? { jugadorId: null, nueva: null } : identificar(req);
       const extra = ident.nueva ? { 'set-cookie': ident.nueva } : {};
       try {
-        const cuerpo = metodo === 'POST' ? await leerJson(req) : {};
+        const cuerpo = metodo === 'POST' ? await leerJson(req, opciones.limiteJson ?? 4096) : {};
         const resultado = await fn({ jugadorId: ident.jugadorId, m, cuerpo, req });
         enviarJson(res, 200, resultado, extra);
       } catch (e) {
-        if (e instanceof ErrorJuego) enviarJson(res, e.estado, { error: e.codigo, mensaje: e.message }, extra);
+        if (e instanceof ErrorJuego) enviarJson(res, e.estado, { error: e.codigo, mensaje: e.message, ...(e.detalles ? { detalles: e.detalles } : {}) }, extra);
         else if (e.estado) enviarJson(res, e.estado, { error: 'solicitud_invalida', mensaje: e.message }, extra);
         else {
           console.error('[api]', e);

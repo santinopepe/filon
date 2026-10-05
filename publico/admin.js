@@ -25,6 +25,7 @@ function h(etiqueta, atributos = {}, ...hijos) {
 const enlaceSeguro = (url, texto) => (/^https?:\/\//.test(url || '') ? h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, texto || url) : texto || url || '—');
 const fechaHora = (ms) => (ms ? new Date(ms).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hourCycle: 'h23', dateStyle: 'short', timeStyle: 'short' }) : '—');
 const etiquetaOrigen = (origen) => h('span', { class: `etiqueta ${origen}` }, origen === 'ia' ? 'IA' : origen);
+const origenDesafio = (desafio) => (desafio.modelo === 'manual' ? 'manual' : desafio.origen);
 
 class ErrorApi extends Error {
   constructor(estado, datos) {
@@ -119,6 +120,7 @@ async function cargarDesafios() {
     h('strong', {}, datos.bd || '—'),
   );
   if (!$('gen-fecha').value) $('gen-fecha').value = sumarDia(hoy);
+  if (!$('imp-fecha').value) $('imp-fecha').value = sumarDia(hoy);
 
   const tabla = $('tabla-desafios');
   tabla.replaceChildren(
@@ -133,7 +135,7 @@ async function cargarDesafios() {
               { class: `clic${d.fecha === fechaElegida ? ' elegida' : ''}`, tabindex: 0, onclick: () => verDesafio(d.fecha), onkeydown: (ev) => ev.key === 'Enter' && verDesafio(d.fecha) },
               h('td', {}, d.fecha, ' ', d.fecha === hoy ? h('span', { class: 'etiqueta hoy' }, 'hoy') : d.fecha > hoy ? h('span', { class: 'etiqueta' }, 'futuro') : null),
               h('td', { class: 'num' }, d.numero),
-              h('td', {}, etiquetaOrigen(d.origen)),
+              h('td', {}, etiquetaOrigen(origenDesafio(d))),
               h('td', {}, d.modelo || '—'),
               h('td', { class: 'num' }, `${d.terminadas}/${d.partidas}`),
               h('td', {}, fechaHora(d.publicado_en)),
@@ -166,7 +168,7 @@ async function verDesafio(fecha) {
       'div',
       { class: 'cabecera-detalle' },
       h('h2', {}, `Desafío #${desafio.numero} · ${desafio.fecha}`),
-      etiquetaOrigen(desafio.origen),
+      etiquetaOrigen(origenDesafio(desafio)),
       h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('auto') }, 'Regenerar'),
       h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('reserva') }, 'Regenerar con reserva'),
     ),
@@ -174,7 +176,14 @@ async function verDesafio(fecha) {
       h(
         'article',
         { class: 'tarjeta pregunta' },
-        h('p', { class: 'meta' }, `${p.posicion}. ${p.categoria} · `, etiquetaOrigen(p.origen), p.reserva_id ? ` · reserva ${p.reserva_id}` : '', ` · ${p.respuestas.length} respuestas`),
+        h(
+          'p',
+          { class: 'meta' },
+          `${p.posicion}. ${p.categoria} · `,
+          etiquetaOrigen(desafio.modelo === 'manual' ? 'manual' : p.origen),
+          desafio.modelo !== 'manual' && p.reserva_id ? ` · reserva ${p.reserva_id}` : '',
+          ` · ${p.respuestas.length} respuestas`,
+        ),
         h('p', { class: 'enunciado' }, p.enunciado),
         h('p', { class: 'alcance' }, p.alcance),
         h(
@@ -287,6 +296,101 @@ function mostrarResultado(r) {
   ]
     .filter(Boolean)
     .join('\n');
+  caja.hidden = false;
+}
+
+// ───────── Importación manual por JSON ─────────
+
+let pendienteImportacion = null;
+
+$('imp-archivo').addEventListener('change', async () => {
+  const archivo = $('imp-archivo').files?.[0];
+  if (!archivo) return;
+  try {
+    $('imp-json').value = await archivo.text();
+    const documento = JSON.parse($('imp-json').value);
+    if (documento?.fecha && /^\d{4}-\d{2}-\d{2}$/.test(documento.fecha)) $('imp-fecha').value = documento.fecha;
+    $('imp-resultado').hidden = true;
+  } catch {
+    mostrarResultadoImportacion({ error: 'El archivo no contiene JSON válido.' });
+  }
+});
+
+$('form-importar').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  let documento;
+  try {
+    documento = JSON.parse($('imp-json').value);
+  } catch (error) {
+    mostrarResultadoImportacion({ error: `JSON inválido: ${error.message}` });
+    return;
+  }
+  const preguntas = Array.isArray(documento) ? documento : documento?.preguntas;
+  if (!Array.isArray(preguntas)) {
+    mostrarResultadoImportacion({ error: 'El JSON debe ser un arreglo de preguntas o un objeto con la propiedad «preguntas».' });
+    return;
+  }
+  importarPreguntas({ preguntas });
+});
+
+$('imp-confirmar-no').addEventListener('click', () => {
+  $('imp-confirmar').hidden = true;
+  pendienteImportacion = null;
+});
+$('imp-confirmar-si').addEventListener('click', () => {
+  $('imp-confirmar').hidden = true;
+  if (pendienteImportacion) importarPreguntas(pendienteImportacion);
+});
+
+async function importarPreguntas(opciones) {
+  const fecha = $('imp-fecha').value;
+  if (!fecha) return;
+  const cuerpo = {
+    preguntas: opciones.preguntas,
+    reemplazar: Boolean(opciones.reemplazar),
+    forzar: Boolean(opciones.forzar),
+  };
+  $('imp-confirmar').hidden = true;
+  $('imp-resultado').hidden = true;
+  $('imp-progreso').hidden = false;
+  $('imp-boton').disabled = true;
+  try {
+    const resultado = await api('POST', `/api/admin/desafios/${fecha}/importar`, cuerpo);
+    mostrarResultadoImportacion(resultado);
+    fechaElegida = fecha;
+    await cargarDesafios();
+    await verDesafio(fecha);
+  } catch (error) {
+    if (error.datos?.error === 'ya_existe') {
+      pedirConfirmacionImportacion(`Ya hay un desafío para ${fecha}. ¿Querés reemplazarlo por este JSON?`, { ...cuerpo, reemplazar: true });
+    } else if (error.datos?.error === 'hay_partidas') {
+      pedirConfirmacionImportacion(`${error.datos.mensaje} Esto también borra esas partidas y no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
+    } else {
+      mostrarResultadoImportacion({ error: error.message, detalles: error.datos?.detalles });
+    }
+  } finally {
+    $('imp-progreso').hidden = true;
+    $('imp-boton').disabled = false;
+  }
+}
+
+function pedirConfirmacionImportacion(texto, siguiente) {
+  pendienteImportacion = siguiente;
+  $('imp-confirmar-texto').textContent = texto;
+  $('imp-confirmar').hidden = false;
+}
+
+function mostrarResultadoImportacion(resultado) {
+  const ok = resultado.resultado === 'publicado' || resultado.resultado === 'reemplazado';
+  const errores = resultado.detalles?.errores || [];
+  const avisos = resultado.advertencias || [];
+  const caja = $('imp-resultado');
+  caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
+  caja.textContent = [
+    ok ? (resultado.resultado === 'reemplazado' ? 'Desafío reemplazado con el JSON manual.' : 'Desafío manual publicado.') : resultado.error || 'No se pudo publicar.',
+    ...errores.map((error) => `• ${error}`),
+    ...avisos.map((aviso) => `Aviso: ${aviso}`),
+  ].join('\n');
   caja.hidden = false;
 }
 

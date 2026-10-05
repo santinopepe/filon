@@ -50,6 +50,53 @@
         <pre class="resultado" id="gen-resultado" hidden></pre>
       </section>
 
+      <section class="tarjeta">
+        <h2>Cargar preguntas manualmente</h2>
+        <p class="ayuda-json">Elegí la fecha y pegá un JSON con las siete preguntas. Usa el mismo formato que <code>datos/reserva.json</code> y no llama a ninguna IA.</p>
+        <form id="form-importar" class="importar">
+          <div class="importar-cabecera">
+            <label>Fecha <input type="date" id="imp-fecha" required></label>
+            <label class="archivo">Abrir archivo JSON <input type="file" id="imp-archivo" accept="application/json,.json"></label>
+          </div>
+          <label for="imp-json">JSON</label>
+          <textarea id="imp-json" rows="14" spellcheck="false" required placeholder='{"preguntas":[{"id":"geo-ejemplo","categoria":"geografia","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}'></textarea>
+          <details class="formato-json">
+            <summary>Ver formato aceptado</summary>
+            <pre>{
+  "preguntas": [
+    {
+      "id": "geo-ejemplo",
+      "categoria": "geografia",
+      "enunciado": "Nombrá…",
+      "alcance": "Cuenta…",
+      "fuentes": [{ "url": "https://…", "titulo": "…" }],
+      "respuestas": [
+        {
+          "canonica": "Respuesta",
+          "variantes": ["Otra forma"],
+          "rareza": "grava",
+          "explicacion": "Una explicación breve."
+        }
+      ],
+      "rechazos": [{ "textos": ["No vale"], "motivo": "Motivo." }]
+    }
+  ]
+}</pre>
+            <p>El día debe contener exactamente una pregunta de cada categoría: geografía, historia, ciencia, deportes, cine, música y literatura. Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.</p>
+          </details>
+          <button type="submit" id="imp-boton">Validar y publicar</button>
+        </form>
+        <div class="aviso" id="imp-confirmar" hidden>
+          <p id="imp-confirmar-texto"></p>
+          <div class="acciones">
+            <button type="button" class="peligro" id="imp-confirmar-si">Reemplazar</button>
+            <button type="button" class="secundario" id="imp-confirmar-no">Cancelar</button>
+          </div>
+        </div>
+        <p class="progreso" id="imp-progreso" hidden>Validando y guardando…</p>
+        <pre class="resultado" id="imp-resultado" hidden></pre>
+      </section>
+
       <nav class="pestanas" role="tablist">
         <button type="button" role="tab" data-pestana="desafios" aria-selected="true">Desafíos</button>
         <button type="button" role="tab" data-pestana="corridas" aria-selected="false">Corridas</button>

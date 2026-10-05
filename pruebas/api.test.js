@@ -1,6 +1,6 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { iniciarServidor } from '../servidor/index.js';
@@ -198,6 +198,45 @@ test('administración: generar y regenerar días a mano', async () => {
     assert.equal(lista.hoy, hoy);
     assert.equal(lista.desafios.length, 1);
     assert.equal(lista.desafios[0].partidas, 1);
+  } finally {
+    await app.cerrar();
+  }
+});
+
+test('administración: importa un desafío manual desde JSON sin usar IA', async () => {
+  const app = await levantar({ PROGRAMADOR_INTERNO: '0' });
+  const admin = { authorization: 'Bearer secreto-admin' };
+  try {
+    const c = cliente(app.puerto);
+    const fecha = (await c.pedir('GET', '/api/salud')).datos.fecha;
+    const banco = JSON.parse(readFileSync(new URL('../datos/reserva.json', import.meta.url), 'utf8'));
+    const categorias = ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'];
+    const preguntas = categorias.map((categoria) => banco.preguntas.find((p) => p.categoria === categoria));
+    const ruta = `/api/admin/desafios/${fecha}/importar`;
+
+    assert.equal((await c.pedir('POST', ruta, { preguntas })).estado, 401);
+    const incompleto = await c.pedir('POST', ruta, { preguntas: preguntas.slice(0, 6) }, admin);
+    assert.equal(incompleto.estado, 422);
+    assert.equal(incompleto.datos.error, 'desafio_invalido');
+    assert.ok(incompleto.datos.detalles.errores.some((e) => /7 preguntas/.test(e)));
+    assert.equal((await app.db.get('SELECT COUNT(*) AS n FROM desafios')).n, 0, 'una importación inválida no guarda nada');
+
+    const importado = await c.pedir('POST', ruta, { preguntas }, admin);
+    assert.equal(importado.estado, 200);
+    assert.equal(importado.datos.resultado, 'publicado');
+    assert.equal(importado.datos.origen, 'manual');
+    assert.equal((await app.db.get('SELECT COUNT(*) AS n FROM corridas')).n, 0, 'la carga manual no crea corridas de IA');
+
+    const detalle = await c.pedir('GET', `/api/admin/desafios/${fecha}`, null, admin);
+    assert.equal(detalle.datos.desafio.modelo, 'manual');
+    assert.equal(detalle.datos.preguntas.length, 7);
+    assert.ok(detalle.datos.preguntas.every((p) => p.respuestas.length >= 5));
+
+    const repetido = await c.pedir('POST', ruta, { preguntas }, admin);
+    assert.equal(repetido.estado, 409);
+    assert.equal(repetido.datos.error, 'ya_existe');
+    const reemplazado = await c.pedir('POST', ruta, { preguntas, reemplazar: true }, admin);
+    assert.equal(reemplazado.datos.resultado, 'reemplazado');
   } finally {
     await app.cerrar();
   }

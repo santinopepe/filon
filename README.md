@@ -219,7 +219,7 @@ La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (2
 
 ### Administración
 
-Panel web en **`/admin`** (pide el `TOKEN_ADMIN`; queda guardado solo en ese navegador): lista de desafíos con sus preguntas, todas las respuestas válidas con rareza, puntos, variantes, explicación y fuente; corridas de generación (qué rechazó la validación, la verificación contra fuentes y la revisión adversarial); reportes de jugadores; y generación manual de cualquier día.
+Panel web en **`/admin`** (pide el `TOKEN_ADMIN`; queda guardado solo en ese navegador): lista de desafíos con sus preguntas y respuestas; corridas de generación; reportes de jugadores; generación asistida; y carga manual de un día completo pegando o abriendo un JSON, sin usar IA.
 
 La misma API, con `Authorization: Bearer $TOKEN_ADMIN`:
 
@@ -228,6 +228,7 @@ La misma API, con `Authorization: Bearer $TOKEN_ADMIN`:
 | `GET /api/admin/desafios` | Desafíos publicados, con cantidad de partidas |
 | `GET /api/admin/desafios/AAAA-MM-DD` | Banco completo de un día |
 | `POST /api/admin/desafios/AAAA-MM-DD/generar` | Genera o regenera un día (ver abajo) |
+| `POST /api/admin/desafios/AAAA-MM-DD/importar` | Valida y publica siete preguntas desde JSON, sin IA |
 | `GET /api/admin/corridas` | Últimas corridas con su detalle |
 | `GET /api/admin/reportes` · `POST /api/admin/reportes/:id` | Reportes y cambio de estado (`{"estado":"aceptado"}`) |
 
@@ -242,6 +243,8 @@ curl -X POST -H "Authorization: Bearer $TOKEN_ADMIN" -H 'content-type: applicati
   -d '{"modo":"ia","reemplazar":true}' https://<tu-dominio>/api/admin/desafios/2026-10-07/generar
 ```
 
+`POST …/importar` recibe `{"preguntas":[…], "reemplazar":false, "forzar":false}`. Las preguntas usan exactamente el formato de `datos/reserva.json`. La API exige siete categorías distintas, valida fuentes, respuestas, variantes, rarezas y repeticiones, y guarda todo en una única transacción. Un error devuelve el detalle y no escribe nada. El cuerpo puede medir hasta 1 MB.
+
 Para administrar la base de producción desde tu máquina: `TURSO_DATABASE_URL=… TURSO_AUTH_TOKEN=… npm run admin -- corridas` (o `GET /api/admin/*` con `TOKEN_ADMIN`).
 
 ### Otras opciones
@@ -252,7 +255,7 @@ Para administrar la base de producción desde tu máquina: `TURSO_DATABASE_URL=�
 
 ## Próximos pasos posibles
 
-- Panel web de administración para revisar reportes y sumar variantes a futuros desafíos.
+- Edición puntual desde el panel para sumar variantes a preguntas ya publicadas.
 - Estadísticas reales de respuestas por desafío (complementarias a la rareza estimada, sin cambiar los puntos del día).
 - Ampliar la reserva para cubrir más días sin repetir.
 
