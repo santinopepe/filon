@@ -49,9 +49,16 @@ export function cargarConfig(sobrescrituras = {}) {
   if (!sobrescrituras.sinArchivoEnv) cargarArchivoEnv(resolve(RAIZ, '.env'));
   const e = { ...process.env, ...(sobrescrituras.env || {}) };
 
-  const clave = e.ANTHROPIC_API_KEY || '';
-  let proveedor = (e.IA_PROVEEDOR || '').toLowerCase();
-  if (!proveedor) proveedor = clave ? 'anthropic' : 'ninguno';
+  // Proveedor de IA: IA_PROVEEDOR si está y tiene su clave; si no, el que tenga clave (primero Anthropic).
+  const claves = { anthropic: e.ANTHROPIC_API_KEY || '', openai: e.OPENAI_API_KEY || '' };
+  const elegido = (e.IA_PROVEEDOR || '').toLowerCase();
+  const detectado = claves.anthropic ? 'anthropic' : claves.openai ? 'openai' : null;
+  let proveedor = elegido || detectado || 'ninguno';
+  if (proveedor in claves && !claves[proveedor] && detectado) proveedor = detectado;
+  const deOpenAI = proveedor === 'openai';
+  // IA_MODELO solo se usa si corresponde al proveedor activo (en Vercel puede haber quedado uno de Claude).
+  const modeloPropio = (m) => (m && /^claude/i.test(m) !== deOpenAI ? m : '');
+  const modelosPorDefecto = deOpenAI ? ['gpt-5', 'gpt-5-mini'] : ['claude-opus-5-5', 'claude-sonnet-5-5'];
 
   // En Vercel: HTTPS, proxy delante y sin procesos permanentes (la tarea diaria la dispara Vercel Cron).
   const enVercel = Boolean(e.VERCEL);
@@ -82,11 +89,11 @@ export function cargarConfig(sobrescrituras = {}) {
     relojDesfaseMs: num(e.RELOJ_DESFASE_MS, 0),
 
     ia: {
-      proveedor, // 'anthropic' | 'simulado' | 'ninguno'
-      claveApi: clave,
-      urlApi: e.ANTHROPIC_URL || 'https://api.anthropic.com/v1/messages',
-      modelo: e.IA_MODELO || 'claude-opus-5-5',
-      modeloRevisor: e.IA_MODELO_REVISOR || 'claude-sonnet-5-5',
+      proveedor, // 'anthropic' | 'openai' | 'simulado' | 'ninguno'
+      claveApi: deOpenAI ? claves.openai : claves.anthropic,
+      urlApi: deOpenAI ? e.OPENAI_URL || 'https://api.openai.com/v1/chat/completions' : e.ANTHROPIC_URL || 'https://api.anthropic.com/v1/messages',
+      modelo: modeloPropio(e.IA_MODELO) || modelosPorDefecto[0],
+      modeloRevisor: modeloPropio(e.IA_MODELO_REVISOR) || modelosPorDefecto[1],
       maxIntentosPorDia: num(e.IA_MAX_INTENTOS_POR_DIA, 3),
       tiempoLimiteMs: num(e.IA_TIEMPO_LIMITE_MS, 240_000),
       candidatasPorCategoria: num(e.IA_CANDIDATAS_POR_CATEGORIA, 2),

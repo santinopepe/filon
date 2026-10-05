@@ -114,7 +114,7 @@ async function cargarDesafios() {
   hoy = datos.hoy;
   $('estado-ia').replaceChildren(
     'IA: ',
-    h('strong', {}, datos.ia ? `${datos.ia.modelo}` : 'sin configurar (solo reserva)'),
+    h('strong', {}, datos.ia ? `${datos.ia.nombre === 'openai' ? 'OpenAI' : datos.ia.nombre === 'anthropic' ? 'Anthropic' : datos.ia.nombre} · ${datos.ia.modelo}` : 'sin configurar (solo reserva)'),
     ` · hoy ${datos.hoy} · base `,
     h('strong', {}, datos.bd || '—'),
   );

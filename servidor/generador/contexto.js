@@ -1,5 +1,5 @@
 // Arma las piezas de la generación (proveedor de IA, verificador de fuentes y reserva) según la configuración.
-import { crearProveedorAnthropic, crearProveedorSimulado } from './ia.js';
+import { crearProveedorAnthropic, crearProveedorOpenAI, crearProveedorSimulado } from './ia.js';
 import { crearVerificador } from '../verificacion.js';
 import { cargarReserva } from './reserva.js';
 import { crearCatalogoWikidata } from './wikidata.js';
@@ -17,6 +17,12 @@ export function crearContextoGeneracion(config, { obtener = globalThis.fetch, lo
       proveedor = crearProveedorAnthropic({ ...ia, obtener });
     } else {
       log.warn('[ia] IA_PROVEEDOR=anthropic pero falta ANTHROPIC_API_KEY: se usará solo la reserva.');
+    }
+  } else if (ia.proveedor === 'openai') {
+    if (ia.claveApi) {
+      proveedor = crearProveedorOpenAI({ ...ia, obtener });
+    } else {
+      log.warn('[ia] IA_PROVEEDOR=openai pero falta OPENAI_API_KEY: se usará solo la reserva.');
     }
   } else if (ia.proveedor === 'simulado') {
     proveedor = crearProveedorSimulado({ banco: reserva.preguntas.map((p) => ({ ...p, rechazos: p.rechazos })) });

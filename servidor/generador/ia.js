@@ -11,55 +11,43 @@ import {
 
 const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Cliente mínimo de la API de Mensajes de Anthropic con uso forzado de herramienta. */
-export function crearProveedorAnthropic({ claveApi, urlApi, modelo, modeloRevisor, tiempoLimiteMs = 240_000, obtener = globalThis.fetch }) {
-  if (!claveApi) throw new Error('Falta ANTHROPIC_API_KEY.');
-
-  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens }) {
-    let ultimoError;
-    for (let intento = 1; intento <= 3; intento++) {
-      let res;
-      try {
-        res = await obtener(urlApi, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'x-api-key': claveApi,
-            'anthropic-version': '2023-06-01',
-          },
-          body: JSON.stringify({
-            model: modeloUsado,
-            max_tokens: maxTokens,
-            system: sistema,
-            messages: [{ role: 'user', content: mensaje }],
-            tools: [herramienta],
-            tool_choice: { type: 'tool', name: herramienta.name },
-          }),
-          signal: AbortSignal.timeout(tiempoLimiteMs),
-        });
-      } catch (e) {
-        ultimoError = e;
-        await esperar(2000 * intento);
-        continue;
-      }
-      if (res.status === 429 || res.status >= 500) {
-        const espera = Number(res.headers.get('retry-after')) * 1000 || 3000 * intento;
-        ultimoError = new Error(`API respondió ${res.status}`);
-        await esperar(Math.min(espera, 30_000));
-        continue;
-      }
-      const cuerpo = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(`API respondió ${res.status}: ${cuerpo?.error?.message || 'sin detalle'}`);
-      if (cuerpo.stop_reason === 'max_tokens') throw new Error('La respuesta de la IA quedó truncada (max_tokens).');
-      const bloque = (cuerpo.content || []).find((b) => b.type === 'tool_use' && b.name === herramienta.name);
-      if (!bloque) throw new Error('La IA no devolvió la herramienta esperada.');
-      return { datos: bloque.input, uso: cuerpo.usage, modelo: cuerpo.model };
+/**
+ * POST con hasta 3 intentos ante errores de red, 429 y 5xx.
+ * `esDefinitivo(res, cuerpo)` puede cortar los reintentos (por ejemplo, cuota agotada).
+ * Devuelve { res, cuerpo } de la primera respuesta que no se reintenta.
+ */
+async function pedirConReintentos({ obtener, url, cabeceras, datos, tiempoLimiteMs, esDefinitivo = () => false }) {
+  let ultimoError;
+  for (let intento = 1; intento <= 3; intento++) {
+    let res;
+    try {
+      res = await obtener(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...cabeceras },
+        body: JSON.stringify(datos),
+        signal: AbortSignal.timeout(tiempoLimiteMs),
+      });
+    } catch (e) {
+      ultimoError = e;
+      await esperar(2000 * intento);
+      continue;
     }
-    throw ultimoError || new Error('No se pudo contactar a la API.');
+    const cuerpo = await res.json().catch(() => ({}));
+    if ((res.status === 429 || res.status >= 500) && !esDefinitivo(res, cuerpo)) {
+      const espera = Number(res.headers.get('retry-after')) * 1000 || 3000 * intento;
+      ultimoError = new Error(`API respondió ${res.status}`);
+      await esperar(Math.min(espera, 30_000));
+      continue;
+    }
+    return { res, cuerpo };
   }
+  throw ultimoError || new Error('No se pudo contactar a la API.');
+}
 
+/** Interfaz común de los proveedores a partir de una función `llamar` específica de cada API. */
+function armarProveedor({ nombre, modelo, modeloRevisor, llamar, tokensGeneracion, tokensRevision }) {
   return {
-    nombre: 'anthropic',
+    nombre,
     modelo,
     async generarPreguntas({ categoria, cantidad, recientes, fecha }) {
       const { datos, uso } = await llamar({
@@ -67,7 +55,7 @@ export function crearProveedorAnthropic({ claveApi, urlApi, modelo, modeloReviso
         sistema: SISTEMA_GENERADOR,
         mensaje: mensajeGenerador({ categoria, cantidad, recientes, fecha }),
         herramienta: HERRAMIENTA_PREGUNTAS,
-        maxTokens: 16_000,
+        maxTokens: tokensGeneracion,
       });
       return { preguntas: Array.isArray(datos?.preguntas) ? datos.preguntas : [], uso };
     },
@@ -77,11 +65,86 @@ export function crearProveedorAnthropic({ claveApi, urlApi, modelo, modeloReviso
         sistema: SISTEMA_REVISOR,
         mensaje: mensajeRevisor(preguntas),
         herramienta: HERRAMIENTA_REVISION,
-        maxTokens: 12_000,
+        maxTokens: tokensRevision,
       });
       return { revisiones: Array.isArray(datos?.preguntas) ? datos.preguntas : [], uso };
     },
   };
+}
+
+/** Cliente mínimo de la API de Mensajes de Anthropic con uso forzado de herramienta. */
+export function crearProveedorAnthropic({ claveApi, urlApi, modelo, modeloRevisor, tiempoLimiteMs = 240_000, obtener = globalThis.fetch }) {
+  if (!claveApi) throw new Error('Falta ANTHROPIC_API_KEY.');
+
+  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens }) {
+    const { res, cuerpo } = await pedirConReintentos({
+      obtener,
+      url: urlApi,
+      tiempoLimiteMs,
+      cabeceras: { 'x-api-key': claveApi, 'anthropic-version': '2023-06-01' },
+      datos: {
+        model: modeloUsado,
+        max_tokens: maxTokens,
+        system: sistema,
+        messages: [{ role: 'user', content: mensaje }],
+        tools: [herramienta],
+        tool_choice: { type: 'tool', name: herramienta.name },
+      },
+    });
+    if (!res.ok) throw new Error(`API respondió ${res.status}: ${cuerpo?.error?.message || 'sin detalle'}`);
+    if (cuerpo.stop_reason === 'max_tokens') throw new Error('La respuesta de la IA quedó truncada (max_tokens).');
+    const bloque = (cuerpo.content || []).find((b) => b.type === 'tool_use' && b.name === herramienta.name);
+    if (!bloque) throw new Error('La IA no devolvió la herramienta esperada.');
+    return { datos: bloque.input, uso: cuerpo.usage, modelo: cuerpo.model };
+  }
+
+  return armarProveedor({ nombre: 'anthropic', modelo, modeloRevisor, llamar, tokensGeneracion: 16_000, tokensRevision: 12_000 });
+}
+
+/**
+ * Cliente mínimo de la API de Chat Completions de OpenAI con llamada a función forzada.
+ * Usa las mismas instrucciones y esquemas que Anthropic: la herramienta se envía como función.
+ */
+export function crearProveedorOpenAI({ claveApi, urlApi, modelo, modeloRevisor, tiempoLimiteMs = 240_000, obtener = globalThis.fetch }) {
+  if (!claveApi) throw new Error('Falta OPENAI_API_KEY.');
+
+  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens }) {
+    const { res, cuerpo } = await pedirConReintentos({
+      obtener,
+      url: urlApi,
+      tiempoLimiteMs,
+      cabeceras: { authorization: `Bearer ${claveApi}` },
+      // Sin crédito, OpenAI responde 429 «insufficient_quota»: reintentar no sirve.
+      esDefinitivo: (r, c) => c?.error?.code === 'insufficient_quota',
+      datos: {
+        model: modeloUsado,
+        // Incluye los tokens de razonamiento en los modelos que razonan.
+        max_completion_tokens: maxTokens,
+        messages: [
+          { role: 'system', content: sistema },
+          { role: 'user', content: mensaje },
+        ],
+        tools: [{ type: 'function', function: { name: herramienta.name, description: herramienta.description, parameters: herramienta.input_schema } }],
+        tool_choice: { type: 'function', function: { name: herramienta.name } },
+      },
+    });
+    if (!res.ok) throw new Error(`API respondió ${res.status}: ${cuerpo?.error?.message || 'sin detalle'}`);
+    const eleccion = cuerpo.choices?.[0];
+    if (eleccion?.finish_reason === 'length') throw new Error('La respuesta de la IA quedó truncada (max_completion_tokens).');
+    if (eleccion?.message?.refusal) throw new Error(`La IA se negó a responder: ${eleccion.message.refusal}`);
+    const llamada = (eleccion?.message?.tool_calls || []).find((t) => t.function?.name === herramienta.name);
+    if (!llamada) throw new Error('La IA no devolvió la función esperada.');
+    let datos;
+    try {
+      datos = JSON.parse(llamada.function.arguments);
+    } catch {
+      throw new Error('La IA devolvió argumentos que no son JSON válido.');
+    }
+    const uso = cuerpo.usage ? { input_tokens: cuerpo.usage.prompt_tokens, output_tokens: cuerpo.usage.completion_tokens } : null;
+    return { datos, uso, modelo: cuerpo.model };
+  }
+
+  return armarProveedor({ nombre: 'openai', modelo, modeloRevisor, llamar, tokensGeneracion: 32_000, tokensRevision: 24_000 });
 }
 
 /**

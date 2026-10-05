@@ -30,17 +30,20 @@ Para ver el banco del día: `npm run admin -- desafio AAAA-MM-DD`.
 
 ## Activar la IA
 
-Lo único que falta es una clave de la API de Anthropic:
+Alcanza con **una** clave, de Anthropic o de OpenAI:
 
 ```bash
 cp .env.example .env
-# editá .env y completá:
-ANTHROPIC_API_KEY=sk-ant-...
+# editá .env y completá una de las dos:
+ANTHROPIC_API_KEY=sk-ant-...         # https://console.anthropic.com → API Keys
+OPENAI_API_KEY=sk-...                # https://platform.openai.com → API keys
 CONTACTO_FUENTES=tu-correo@dominio   # Wikipedia pide un contacto en el User-Agent
 URL_PUBLICA=https://tu-dominio
 ```
 
-Además, el servidor necesita salida a internet hacia `api.anthropic.com` (generación y revisión) y hacia los dominios de las fuentes (`es.wikipedia.org` y los de `DOMINIOS_FUENTES`) para la verificación factual. Para probar la generación sin esperar a medianoche, con una fecha que todavía no exista:
+El proveedor se detecta por la clave; con las dos se usa Anthropic, salvo que `IA_PROVEEDOR=openai`. Las dos APIs reciben las mismas instrucciones y el mismo esquema (uso forzado de herramienta en Anthropic, llamada a función forzada en Chat Completions de OpenAI), y lo que devuelven pasa por la misma validación, verificación contra fuentes y revisión adversarial.
+
+Además, el servidor necesita salida a internet hacia `api.anthropic.com` o `api.openai.com` (generación y revisión) y hacia los dominios de las fuentes (`es.wikipedia.org` y los de `DOMINIOS_FUENTES`) para la verificación factual. Para probar la generación sin esperar a medianoche, con una fecha que todavía no exista:
 
 ```bash
 npm run generar -- --fecha 2026-12-01 --sin-reserva
@@ -48,7 +51,7 @@ npm run admin -- corridas        # resumen de lo generado, rechazado y descartad
 npm run admin -- desafio 2026-12-01
 ```
 
-Modelos por defecto: `claude-opus-5-5` para generar y `claude-sonnet-5-5` para la revisión adversarial (un modelo distinto reduce errores correlacionados). Se cambian con `IA_MODELO` e `IA_MODELO_REVISOR`; los identificadores vigentes están en https://docs.claude.com.
+Modelos por defecto: con Anthropic, `claude-opus-5-5` para generar y `claude-sonnet-5-5` para la revisión adversarial; con OpenAI, `gpt-5` y `gpt-5-mini` (un modelo distinto reduce errores correlacionados). Se cambian con `IA_MODELO` e `IA_MODELO_REVISOR`; un modelo del otro proveedor se ignora. Los identificadores vigentes están en https://docs.claude.com y https://platform.openai.com/docs/models.
 
 Para desarrollar el circuito de generación sin red: `IA_PROVEEDOR=simulado VERIFICAR_FUENTES=desactivada` (usa preguntas de la reserva e introduce una respuesta falsa para mostrar la depuración).
 
@@ -74,7 +77,7 @@ servidor/
   juego.js              partidas, rondas, tiempos, puntos y reportes
   api.js, http.js       rutas, cookies firmadas, límites y seguridad
   programador.js        tarea programada interna (solo servidor local)
-  generador/            IA (Anthropic), instrucciones, reserva y circuito de generación
+  generador/            IA (Anthropic u OpenAI), instrucciones, reserva y circuito de generación
 api/index.js            función de Vercel: atiende /api/* (incluye /api/cron/*)
 vercel.json             estáticos, reescrituras, cabeceras de seguridad y crons
 scripts/                generar-desafio.js · validar-reserva.js · admin.js
@@ -141,7 +144,7 @@ La escena vertical cambia con la profundidad: una superficie verde y luminosa; t
 ## Pruebas
 
 ```bash
-npm test                 # 53 pruebas automáticas (node:test)
+npm test                 # 56 pruebas automáticas (node:test)
 npm run test:navegador   # recorrido completo en Chromium (requiere: npm i -D playwright && npx playwright install chromium)
 ```
 
@@ -173,8 +176,9 @@ Todas son opcionales; están documentadas en `.env.example`. Las principales:
 
 | Variable | Por defecto | Para qué |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | — | Activa la generación con IA |
-| `IA_MODELO` / `IA_MODELO_REVISOR` | `claude-opus-5-5` / `claude-sonnet-5-5` | Modelos de generación y revisión |
+| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` | — | Activa la generación con IA (alcanza con una) |
+| `IA_PROVEEDOR` | según la clave | `anthropic` u `openai` si están las dos |
+| `IA_MODELO` / `IA_MODELO_REVISOR` | según el proveedor | Modelos de generación y revisión |
 | `VERIFICAR_FUENTES` | `estricta` | `desactivada` solo para desarrollo sin internet |
 | `WIKIDATA_TIEMPO_LIMITE_MS` | `45000` | Límite por consulta al catálogo global |
 | `CONTACTO_FUENTES`, `URL_PUBLICA` | — | Identificación del verificador ante Wikipedia |

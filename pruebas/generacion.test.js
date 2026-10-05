@@ -235,3 +235,84 @@ test('cliente de Anthropic: formato de la solicitud, reintento y lectura de la h
   assert.match(cuerpo.messages[0].content, /Nombrá un planeta/);
   assert.match(cuerpo.messages[0].content, /Ciencia/);
 });
+
+test('cliente de OpenAI: formato de la solicitud, reintento y lectura de la función', async () => {
+  const { crearProveedorOpenAI } = await import('../servidor/generador/ia.js');
+  const solicitudes = [];
+  const respuestas = [
+    () => new Response(JSON.stringify({ error: { message: 'caído' } }), { status: 503, headers: { 'retry-after': '0' } }),
+    () =>
+      new Response(
+        JSON.stringify({
+          model: 'gpt-5',
+          choices: [{ finish_reason: 'tool_calls', message: { tool_calls: [{ type: 'function', function: { name: 'entregar_preguntas', arguments: JSON.stringify({ preguntas: [{ enunciado: 'Nombrá algo.' }] }) } }] } }],
+          usage: { prompt_tokens: 10, completion_tokens: 20 },
+        }),
+        { status: 200 },
+      ),
+  ];
+  const obtener = async (url, opciones) => {
+    solicitudes.push({ url, opciones, cuerpo: JSON.parse(opciones.body) });
+    return respuestas[solicitudes.length - 1]();
+  };
+  const p = crearProveedorOpenAI({ claveApi: 'sk-openai', urlApi: 'https://api.openai.com/v1/chat/completions', modelo: 'gpt-5', modeloRevisor: 'gpt-5-mini', obtener });
+  const r = await p.generarPreguntas({ categoria: 'ciencia', cantidad: 2, recientes: [{ enunciado: 'Nombrá un planeta.' }], fecha: '2026-10-05' });
+  assert.equal(p.nombre, 'openai');
+  assert.equal(r.preguntas.length, 1);
+  assert.deepEqual(r.uso, { input_tokens: 10, output_tokens: 20 });
+  assert.equal(solicitudes.length, 2, 'reintenta ante 503');
+  const { url, opciones, cuerpo } = solicitudes[1];
+  assert.equal(url, 'https://api.openai.com/v1/chat/completions');
+  assert.equal(opciones.headers.authorization, 'Bearer sk-openai');
+  assert.equal(cuerpo.model, 'gpt-5');
+  assert.equal(cuerpo.messages[0].role, 'system');
+  assert.match(cuerpo.messages[1].content, /Nombrá un planeta/);
+  assert.equal(cuerpo.tools[0].type, 'function');
+  assert.equal(cuerpo.tools[0].function.name, 'entregar_preguntas');
+  assert.ok(cuerpo.tools[0].function.parameters.properties.preguntas, 'el esquema se envía como parameters');
+  assert.deepEqual(cuerpo.tool_choice, { type: 'function', function: { name: 'entregar_preguntas' } });
+  assert.ok(cuerpo.max_completion_tokens > 0);
+
+  // la revisión usa el modelo revisor
+  solicitudes.length = 0;
+  respuestas[0] = () =>
+    new Response(JSON.stringify({ choices: [{ finish_reason: 'stop', message: { tool_calls: [{ function: { name: 'entregar_revision', arguments: '{"preguntas":[{"indice":0,"apta":true,"problemas":[],"respuestas":[]}]}' } }] } }] }), { status: 200 });
+  const rev = await p.revisarPreguntas({ preguntas: [{ enunciado: 'x', alcance: 'y', respuestas: [], rechazos: [] }] });
+  assert.equal(rev.revisiones.length, 1);
+  assert.equal(solicitudes[0].cuerpo.model, 'gpt-5-mini');
+
+  // sin crédito no reintenta; truncada es error
+  let llamadas = 0;
+  const sinCuota = crearProveedorOpenAI({
+    claveApi: 'k', urlApi: 'u', modelo: 'gpt-5', modeloRevisor: 'gpt-5-mini',
+    obtener: async () => (llamadas++, new Response(JSON.stringify({ error: { code: 'insufficient_quota', message: 'Sin crédito' } }), { status: 429 })),
+  });
+  await assert.rejects(() => sinCuota.generarPreguntas({ categoria: 'ciencia', cantidad: 1, recientes: [], fecha: '2026-10-05' }), /429: Sin crédito/);
+  assert.equal(llamadas, 1);
+  const truncada = crearProveedorOpenAI({
+    claveApi: 'k', urlApi: 'u', modelo: 'gpt-5', modeloRevisor: 'gpt-5-mini',
+    obtener: async () => new Response(JSON.stringify({ choices: [{ finish_reason: 'length', message: {} }] }), { status: 200 }),
+  });
+  await assert.rejects(() => truncada.generarPreguntas({ categoria: 'ciencia', cantidad: 1, recientes: [], fecha: '2026-10-05' }), /truncada/);
+});
+
+test('configuración: el proveedor se detecta por la clave y el modelo corresponde al proveedor', async () => {
+  const { cargarConfig } = await import('../servidor/config.js');
+  const ia = (env) => cargarConfig({ sinArchivoEnv: true, env: { IA_PROVEEDOR: '', ANTHROPIC_API_KEY: '', OPENAI_API_KEY: '', IA_MODELO: '', IA_MODELO_REVISOR: '', ...env } }).ia;
+  assert.equal(ia({}).proveedor, 'ninguno');
+  assert.equal(ia({ ANTHROPIC_API_KEY: 'a' }).proveedor, 'anthropic');
+  const openai = ia({ OPENAI_API_KEY: 'o' });
+  assert.equal(openai.proveedor, 'openai');
+  assert.equal(openai.claveApi, 'o');
+  assert.match(openai.urlApi, /api\.openai\.com/);
+  assert.equal(openai.modelo, 'gpt-5');
+  // como quedó en Vercel: IA_PROVEEDOR y modelos de Claude, pero solo hay clave de OpenAI
+  const mezcla = ia({ IA_PROVEEDOR: 'anthropic', IA_MODELO: 'claude-opus-5-5', IA_MODELO_REVISOR: 'claude-sonnet-5-5', OPENAI_API_KEY: 'o' });
+  assert.equal(mezcla.proveedor, 'openai');
+  assert.equal(mezcla.modelo, 'gpt-5');
+  assert.equal(mezcla.modeloRevisor, 'gpt-5-mini');
+  assert.equal(ia({ OPENAI_API_KEY: 'o', IA_MODELO: 'gpt-5.1' }).modelo, 'gpt-5.1');
+  // con las dos claves manda IA_PROVEEDOR
+  assert.equal(ia({ IA_PROVEEDOR: 'openai', ANTHROPIC_API_KEY: 'a', OPENAI_API_KEY: 'o' }).proveedor, 'openai');
+  assert.equal(ia({ ANTHROPIC_API_KEY: 'a', OPENAI_API_KEY: 'o' }).proveedor, 'anthropic');
+});
