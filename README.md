@@ -141,7 +141,7 @@ La escena vertical cambia con la profundidad: una superficie verde y luminosa; t
 ## Pruebas
 
 ```bash
-npm test                 # 52 pruebas automáticas (node:test)
+npm test                 # 53 pruebas automáticas (node:test)
 npm run test:navegador   # recorrido completo en Chromium (requiere: npm i -D playwright && npx playwright install chromium)
 ```
 
@@ -210,6 +210,31 @@ Crons (hora UTC; Buenos Aires es UTC−3 todo el año). Funcionan también en el
 | `/api/cron/hoy` | 03:05 | 00:05 | Red de seguridad: asegura el desafío de hoy |
 
 La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (200 s) y completa lo que falte con la reserva, así una corrida nunca queda a medias. Con plan Pro podés subir ambos valores. El límite de solicitudes por IP es por instancia de la función, así que en Vercel es orientativo.
+
+### Administración
+
+Panel web en **`/admin`** (pide el `TOKEN_ADMIN`; queda guardado solo en ese navegador): lista de desafíos con sus preguntas, todas las respuestas válidas con rareza, puntos, variantes, explicación y fuente; corridas de generación (qué rechazó la validación, la verificación contra fuentes y la revisión adversarial); reportes de jugadores; y generación manual de cualquier día.
+
+La misma API, con `Authorization: Bearer $TOKEN_ADMIN`:
+
+| Ruta | Qué hace |
+| --- | --- |
+| `GET /api/admin/desafios` | Desafíos publicados, con cantidad de partidas |
+| `GET /api/admin/desafios/AAAA-MM-DD` | Banco completo de un día |
+| `POST /api/admin/desafios/AAAA-MM-DD/generar` | Genera o regenera un día (ver abajo) |
+| `GET /api/admin/corridas` | Últimas corridas con su detalle |
+| `GET /api/admin/reportes` · `POST /api/admin/reportes/:id` | Reportes y cambio de estado (`{"estado":"aceptado"}`) |
+
+`POST …/generar` recibe `{"modo": "auto" | "ia" | "reserva", "reemplazar": bool, "forzar": bool}`:
+- `auto` usa IA y completa con la reserva; `ia` solo publica si la IA arma el día completo (si no, no cambia nada); `reserva` no usa IA.
+- Para regenerar un día que ya existe hace falta `reemplazar: true`. El anterior se borra recién cuando el nuevo se publicó bien, y las preguntas reemplazadas no se repiten.
+- Si ese día ya tiene partidas, responde `409 hay_partidas`; con `forzar: true` se borran junto con el desafío anterior.
+- La generación manual no cuenta para `IA_MAX_INTENTOS_POR_DIA`. Con IA puede tardar varios minutos.
+
+```bash
+curl -X POST -H "Authorization: Bearer $TOKEN_ADMIN" -H 'content-type: application/json' \
+  -d '{"modo":"ia","reemplazar":true}' https://<tu-dominio>/api/admin/desafios/2026-10-07/generar
+```
 
 Para administrar la base de producción desde tu máquina: `TURSO_DATABASE_URL=… TURSO_AUTH_TOKEN=… npm run admin -- corridas` (o `GET /api/admin/*` con `TOKEN_ADMIN`).
 

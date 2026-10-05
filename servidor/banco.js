@@ -3,8 +3,22 @@ import { transaccion } from './db.js';
 import { compactar, crearIndice, buscarEnIndice, buscarParecidoEnIndice, normalizar, sinArticulo } from './normalizar.js';
 import { diasEntre, sumarDias } from './tiempo.js';
 
-// Lo publicado no cambia: desafíos, preguntas y respuestas se cachean en memoria por base.
+// Lo publicado solo cambia si un administrador regenera un día: desafíos, preguntas y respuestas se
+// cachean en memoria por base, y cada reemplazo sube `version_banco` para que todas las instancias
+// (en Vercel hay varias) descarten su caché en la siguiente solicitud.
 const caches = new WeakMap();
+const versiones = new WeakMap();
+
+/** Descarta las cachés si otro proceso reemplazó algún desafío. Una consulta por llamada. */
+export async function sincronizarCaches(db) {
+  const version = (await db.get("SELECT valor FROM meta WHERE clave = 'version_banco'"))?.valor ?? '0';
+  if (versiones.has(db) && versiones.get(db) !== version) {
+    caches.delete(db);
+    for (const [clave, entrada] of cacheIndices) if (entrada.db === db) cacheIndices.delete(clave);
+  }
+  versiones.set(db, version);
+}
+
 function cacheDe(db, nombre) {
   let c = caches.get(db);
   if (!c) caches.set(db, (c = {}));
@@ -63,14 +77,45 @@ export async function respuestasDePregunta(db, preguntaId) {
   }) ?? [];
 }
 
+/** Borra un desafío con todo lo que depende de él (partidas, rondas, intentos y reportes incluidos). */
+async function borrarDesafio(tx, desafioId) {
+  const partidas = 'SELECT id FROM partidas WHERE desafio_id = ?';
+  const preguntas = 'SELECT id FROM preguntas WHERE desafio_id = ?';
+  await tx.run(`DELETE FROM intentos WHERE partida_id IN (${partidas})`, desafioId);
+  await tx.run(`DELETE FROM rondas WHERE partida_id IN (${partidas})`, desafioId);
+  await tx.run('DELETE FROM partidas WHERE desafio_id = ?', desafioId);
+  await tx.run(`DELETE FROM reportes WHERE pregunta_id IN (${preguntas})`, desafioId);
+  await tx.run(`DELETE FROM variantes WHERE pregunta_id IN (${preguntas})`, desafioId);
+  await tx.run(`DELETE FROM respuestas WHERE pregunta_id IN (${preguntas})`, desafioId);
+  await tx.run('DELETE FROM preguntas WHERE desafio_id = ?', desafioId);
+  await tx.run('DELETE FROM desafios WHERE id = ?', desafioId);
+  await tx.run(
+    `INSERT INTO meta (clave, valor) VALUES ('version_banco', '1')
+     ON CONFLICT(clave) DO UPDATE SET valor = CAST(CAST(valor AS INTEGER) + 1 AS TEXT)`,
+  );
+}
+
+/** Desafíos publicados con la cantidad de partidas de cada uno (para administración). */
+export function listarDesafios(db, limite = 120) {
+  return db.all(
+    `SELECT d.id, d.fecha, d.numero, d.origen, d.modelo, d.corrida_id, d.publicado_en,
+            (SELECT COUNT(*) FROM partidas p WHERE p.desafio_id = d.id) AS partidas,
+            (SELECT COUNT(*) FROM partidas p WHERE p.desafio_id = d.id AND p.terminada_en IS NOT NULL) AS terminadas
+     FROM desafios d ORDER BY d.fecha DESC LIMIT ?`,
+    limite,
+  );
+}
+
 /**
  * Publica un desafío completo en una sola transacción.
- * Si ya existe uno para esa fecha no lo reemplaza: devuelve { publicado: false }.
+ * Si ya existe uno para esa fecha no lo reemplaza (devuelve { publicado: false }), salvo con
+ * reemplazar: true, que borra el anterior —con sus partidas— en la misma transacción.
  */
-export function publicarDesafio(db, { fecha, preguntas, origen, modelo = null, corridaId = null, ahora = Date.now() }) {
+export function publicarDesafio(db, { fecha, preguntas, origen, modelo = null, corridaId = null, ahora = Date.now(), reemplazar = false }) {
   return transaccion(db, async (tx) => {
     const existente = await tx.get('SELECT id FROM desafios WHERE fecha = ?', fecha);
-    if (existente) return { publicado: false, motivo: 'ya_existia', desafioId: existente.id };
+    if (existente && !reemplazar) return { publicado: false, motivo: 'ya_existia', desafioId: existente.id };
+    if (existente) await borrarDesafio(tx, existente.id);
 
     const primera = (await tx.get('SELECT MIN(fecha) AS f FROM desafios'))?.f;
     const numero = primera && primera < fecha ? diasEntre(primera, fecha) + 1 : 1;

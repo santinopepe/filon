@@ -17,6 +17,7 @@ export async function iniciarServidor(sobrescrituras = {}) {
     try {
       if (await api(req, res, req.url)) return;
       if ((req.method === 'GET' || req.method === 'HEAD') && estaticos(req, res, req.url)) return;
+      if (req.method === 'GET' && req.url.split('?')[0] === '/admin' && estaticos(req, res, '/admin.html')) return;
       if (req.method === 'GET' && !req.url.includes('.')) {
         if (estaticos(req, res, '/index.html')) return;
       }

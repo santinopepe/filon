@@ -181,11 +181,14 @@ async function generarConPresupuesto(args, presupuestoMs) {
 /**
  * Asegura que exista el desafío de `fecha`.
  * permitirReserva=false se usa al preparar con anticipación: si la IA falla, se reintenta más tarde.
+ * reemplazar=true (administración) genera uno nuevo aunque ya exista y, solo si se pudo publicar,
+ * borra el anterior; forzarIA=true ignora el máximo de intentos de IA por día.
  */
-export async function asegurarDesafio({ db, config, fecha, proveedor = null, verificador, catalogo = null, reserva, permitirReserva = true, ahora = () => Date.now(), titular = randomUUID() }) {
-  if (await desafioPorFecha(db, fecha)) return { resultado: 'ya_existia', fecha };
+export async function asegurarDesafio({ db, config, fecha, proveedor = null, verificador, catalogo = null, reserva, permitirReserva = true, reemplazar = false, forzarIA = false, ahora = () => Date.now(), titular = randomUUID() }) {
+  const anterior = await desafioPorFecha(db, fecha);
+  if (anterior && !reemplazar) return { resultado: 'ya_existia', fecha };
 
-  const quedanIntentosIA = Boolean(proveedor) && (await intentosDeIA(db, fecha)) < config.ia.maxIntentosPorDia;
+  const quedanIntentosIA = Boolean(proveedor) && (forzarIA || (await intentosDeIA(db, fecha)) < config.ia.maxIntentosPorDia);
   if (!permitirReserva && !quedanIntentosIA) return { resultado: 'pendiente', fecha, motivo: 'esperando la ventana de reserva' };
 
   const nombreBloqueo = `generacion:${fecha}`;
@@ -196,11 +199,20 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
   const detalle = { proveedor: proveedor?.nombre ?? 'ninguno', modelo: proveedor?.modelo ?? null, pasos: [], rechazadas: [], descartes: [], avisos: [] };
 
   try {
-    if (await desafioPorFecha(db, fecha)) {
+    if (!reemplazar && (await desafioPorFecha(db, fecha))) {
       await finalizarCorrida(db, corridaId, 'ya_existia', detalle, ahora());
       return { resultado: 'ya_existia', fecha, corridaId };
     }
     const recientes = await preguntasRecientes(db, fecha, config.diasSinRepetir);
+    // Al regenerar, las preguntas que se reemplazan cuentan como recientes: el día cambia de verdad.
+    if (anterior) {
+      detalle.reemplaza = anterior.id;
+      const viejas = await db.all('SELECT id, enunciado, huella, reserva_id AS reservaId FROM preguntas WHERE desafio_id = ?', anterior.id);
+      const canonicas = await db.all('SELECT r.pregunta_id, r.canonica FROM respuestas r JOIN preguntas p ON p.id = r.pregunta_id WHERE p.desafio_id = ?', anterior.id);
+      for (const v of viejas) {
+        recientes.push({ ...v, fecha, claves: canonicas.filter((c) => c.pregunta_id === v.id).map((c) => normalizar(c.canonica)) });
+      }
+    }
     const categorias = mezclar(CLAVES_CATEGORIAS, `orden:${fecha}`);
     let elegidas = new Map();
 
@@ -246,11 +258,11 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
 
     const deIA = preguntas.filter((p) => p.origen === 'ia').length;
     const origen = deIA === preguntas.length ? 'ia' : deIA === 0 ? 'reserva' : 'mixto';
-    const pub = await publicarDesafio(db, { fecha, preguntas, origen, modelo: deIA ? proveedor?.modelo : null, corridaId, ahora: ahora() });
+    const pub = await publicarDesafio(db, { fecha, preguntas, origen, modelo: deIA ? proveedor?.modelo : null, corridaId, ahora: ahora(), reemplazar });
     detalle.publicadas = preguntas.map((p) => ({ categoria: p.categoria, enunciado: p.enunciado, origen: p.origen, respuestas: p.respuestas.length }));
     await finalizarCorrida(db, corridaId, pub.publicado ? `publicado_${origen}` : 'ya_existia', detalle, ahora());
     return pub.publicado
-      ? { resultado: 'publicado', fecha, origen, desafioId: pub.desafioId, numero: pub.numero, corridaId }
+      ? { resultado: anterior && reemplazar ? 'reemplazado' : 'publicado', fecha, origen, desafioId: pub.desafioId, numero: pub.numero, corridaId }
       : { resultado: 'ya_existia', fecha, corridaId };
   } catch (e) {
     detalle.error = e.stack || e.message;

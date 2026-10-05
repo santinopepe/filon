@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Filón · administración</title>
+  <link rel="icon" href="/favicon-nuevo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/admin.css">
+  <script type="module" src="/admin.js"></script>
+</head>
+<body>
+  <header class="barra">
+    <h1>Filón <span>administración</span></h1>
+    <p class="estado-ia" id="estado-ia"></p>
+    <button type="button" class="secundario" id="salir" hidden>Salir</button>
+  </header>
+
+  <main>
+    <form class="tarjeta ingreso" id="ingreso" hidden>
+      <h2>Ingresar</h2>
+      <p>Pegá el <code>TOKEN_ADMIN</code> del proyecto. Queda guardado solo en este navegador.</p>
+      <label>Token <input type="password" id="token" autocomplete="off" required></label>
+      <button type="submit">Entrar</button>
+      <p class="error" id="error-ingreso" hidden></p>
+    </form>
+
+    <div id="panel" hidden>
+      <section class="tarjeta">
+        <h2>Generar un día</h2>
+        <form class="generar" id="form-generar">
+          <label>Fecha <input type="date" id="gen-fecha" required></label>
+          <label>Modo
+            <select id="gen-modo">
+              <option value="auto">IA, y si falla, reserva</option>
+              <option value="ia">Solo IA (si falla no cambia nada)</option>
+              <option value="reserva">Solo reserva (sin IA)</option>
+            </select>
+          </label>
+          <button type="submit" id="gen-boton">Generar</button>
+        </form>
+        <div class="aviso" id="gen-confirmar" hidden>
+          <p id="gen-confirmar-texto"></p>
+          <div class="acciones">
+            <button type="button" class="peligro" id="gen-confirmar-si">Regenerar</button>
+            <button type="button" class="secundario" id="gen-confirmar-no">Cancelar</button>
+          </div>
+        </div>
+        <p class="progreso" id="gen-progreso" hidden>Generando… con IA puede tardar hasta 4 minutos. No cierres la pestaña.</p>
+        <pre class="resultado" id="gen-resultado" hidden></pre>
+      </section>
+
+      <nav class="pestanas" role="tablist">
+        <button type="button" role="tab" data-pestana="desafios" aria-selected="true">Desafíos</button>
+        <button type="button" role="tab" data-pestana="corridas" aria-selected="false">Corridas</button>
+        <button type="button" role="tab" data-pestana="reportes" aria-selected="false">Reportes</button>
+      </nav>
+
+      <section id="pestana-desafios" class="pestana">
+        <div class="tabla-envoltura"><table class="tabla" id="tabla-desafios"></table></div>
+        <div id="detalle"></div>
+      </section>
+      <section id="pestana-corridas" class="pestana" hidden></section>
+      <section id="pestana-reportes" class="pestana" hidden></section>
+    </div>
+  </main>
+</body>
+</html>

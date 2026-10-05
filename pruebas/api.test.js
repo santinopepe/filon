@@ -152,3 +152,53 @@ test('tarea diaria por HTTP (Vercel Cron): protegida e idempotente', async () =>
     await app.cerrar();
   }
 });
+
+test('administración: generar y regenerar días a mano', async () => {
+  const app = await levantar({ PROGRAMADOR_INTERNO: '0' });
+  const admin = { authorization: 'Bearer secreto-admin' };
+  try {
+    const c = cliente(app.puerto);
+    const generar = (fecha, cuerpo) => c.pedir('POST', `/api/admin/desafios/${fecha}/generar`, cuerpo, admin);
+    const hoy = (await c.pedir('GET', '/api/salud')).datos.fecha;
+
+    assert.equal((await c.pedir('POST', `/api/admin/desafios/${hoy}/generar`, { modo: 'reserva' })).estado, 401);
+    assert.equal((await generar(hoy, { modo: 'ia' })).datos.error, 'sin_ia');
+    assert.equal((await generar(hoy, { modo: 'otro' })).estado, 400);
+
+    const primero = await generar(hoy, { modo: 'reserva' });
+    assert.equal(primero.datos.resultado, 'publicado');
+    assert.equal((await generar(hoy, { modo: 'reserva' })).datos.error, 'ya_existe');
+
+    const verPreguntas = async () => (await c.pedir('GET', `/api/admin/desafios/${hoy}`, null, admin)).datos.preguntas.map((p) => p.enunciado);
+    const antes = await verPreguntas();
+    // el juego cachea el desafío: se juega una ronda para llenar las cachés
+    const p = (await c.pedir('POST', '/api/partidas')).datos.partida;
+    const iniciada = (await c.pedir('POST', `/api/partidas/${p.id}/rondas/1/iniciar`)).datos.partida;
+    assert.equal(iniciada.rondas[0].enunciado, antes[0]);
+
+    const conPartidas = await generar(hoy, { modo: 'reserva', reemplazar: true });
+    assert.equal(conPartidas.estado, 409);
+    assert.equal(conPartidas.datos.error, 'hay_partidas');
+
+    const regenerado = await generar(hoy, { modo: 'reserva', reemplazar: true, forzar: true });
+    assert.equal(regenerado.datos.resultado, 'reemplazado');
+    const despues = await verPreguntas();
+    assert.equal(despues.length, 7);
+    assert.ok(despues.every((e) => !antes.includes(e)), 'las preguntas reemplazadas no se repiten');
+
+    // la partida vieja se borró y el juego ve el desafío nuevo
+    assert.equal((await c.pedir('GET', `/api/partidas/${p.id}`)).estado, 404);
+    const estado = (await c.pedir('GET', '/api/estado')).datos;
+    assert.equal(estado.partidaHoy, null);
+    const nueva = (await c.pedir('POST', '/api/partidas')).datos.partida;
+    const ronda = (await c.pedir('POST', `/api/partidas/${nueva.id}/rondas/1/iniciar`)).datos.partida;
+    assert.equal(ronda.rondas[0].enunciado, despues[0]);
+
+    const lista = (await c.pedir('GET', '/api/admin/desafios', null, admin)).datos;
+    assert.equal(lista.hoy, hoy);
+    assert.equal(lista.desafios.length, 1);
+    assert.equal(lista.desafios[0].partidas, 1);
+  } finally {
+    await app.cerrar();
+  }
+});

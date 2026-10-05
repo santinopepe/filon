@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 import { ErrorJuego } from './juego.js';
 import { enviarJson, leerJson, leerCookies, crearFirmador, crearLimitador } from './http.js';
-import { desafioPorFecha, preguntasDeDesafio, respuestasDePregunta } from './banco.js';
+import { desafioPorFecha, preguntasDeDesafio, respuestasDePregunta, listarDesafios, sincronizarCaches } from './banco.js';
 import { esFechaValida, fechaLocal, sumarDias } from './tiempo.js';
 import { asegurarDesafio } from './generador/generar.js';
 
@@ -74,6 +74,41 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
          FROM reportes r JOIN preguntas p ON p.id = r.pregunta_id ORDER BY r.creado_en DESC LIMIT 500`,
       ),
     }), { admin: true }],
+    ['POST', /^\/api\/admin\/reportes\/(\d+)$/, async ({ m, cuerpo }) => {
+      if (!['aceptado', 'descartado', 'pendiente'].includes(cuerpo.estado)) throw new ErrorJuego(400, 'estado_invalido', 'Estado inválido.');
+      const r = await db.run('UPDATE reportes SET estado = ? WHERE id = ?', cuerpo.estado, Number(m[1]));
+      if (!r.changes) throw new ErrorJuego(404, 'sin_reporte', 'No existe ese reporte.');
+      return { ok: true };
+    }, { admin: true }],
+    ['GET', /^\/api\/admin\/desafios$/, async () => ({
+      hoy: fechaLocal(ahora(), config.zona),
+      ia: contexto?.proveedor ? { nombre: contexto.proveedor.nombre, modelo: contexto.proveedor.modelo } : null,
+      desafios: await listarDesafios(db),
+    }), { admin: true }],
+    // Generar o regenerar un día a mano.
+    //   modo: 'auto' (IA y, si falla, reserva) | 'ia' (solo IA; si falla no cambia nada) | 'reserva'
+    //   reemplazar: true para regenerar un día que ya existe
+    //   forzar: true si ese día ya tiene partidas (se borran junto con el desafío anterior)
+    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/generar$/, async ({ m, cuerpo }) => {
+      const fecha = m[1];
+      if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
+      if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La generación no está disponible.');
+      const modo = cuerpo.modo ?? 'auto';
+      if (!['auto', 'ia', 'reserva'].includes(modo)) throw new ErrorJuego(400, 'modo_invalido', 'El modo tiene que ser auto, ia o reserva.');
+      if (modo === 'ia' && !contexto.proveedor) throw new ErrorJuego(400, 'sin_ia', 'La IA no está configurada (falta ANTHROPIC_API_KEY).');
+      const existente = await desafioPorFecha(db, fecha);
+      if (existente && !cuerpo.reemplazar) throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío para ${fecha}. Mandá reemplazar: true para regenerarlo.`);
+      if (existente) {
+        const { n } = await db.get('SELECT COUNT(*) AS n FROM partidas WHERE desafio_id = ?', existente.id);
+        if (n && !cuerpo.forzar) {
+          throw new ErrorJuego(409, 'hay_partidas', `Ese día ya tiene ${n} partida(s); al regenerarlo se borran. Mandá forzar: true para confirmar.`);
+        }
+      }
+      const ctx = modo === 'reserva' ? { ...contexto, proveedor: null } : contexto;
+      const r = await asegurarDesafio({ db, config, fecha, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora });
+      console.info(`[admin] generar ${fecha} (${modo}): ${JSON.stringify(r)}`);
+      return r;
+    }, { admin: true }],
     ['GET', /^\/api\/admin\/corridas$/, async () => ({
       corridas: (await db.all('SELECT id, fecha_objetivo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT 50'))
         .map((c) => ({ ...c, detalle: c.detalle ? JSON.parse(c.detalle) : null })),
@@ -98,6 +133,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
   return async function manejar(req, res, ruta) {
     const camino = ruta.split('?')[0];
     if (!camino.startsWith('/api/')) return false;
+    await sincronizarCaches(db);
     if (!limitar(ip(req))) {
       enviarJson(res, 429, { error: 'demasiadas_solicitudes', mensaje: 'Vas muy rápido. Esperá un momento.' }, { 'retry-after': '2' });
       return true;
