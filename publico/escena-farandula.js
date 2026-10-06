@@ -428,13 +428,17 @@ export function crearMundoFarandula() {
       vallas(ctx, v);
       limusina(ctx, v);
       alfombra(ctx, v);
-      v.filon(ctx);
-      siluetas(ctx, v);
-      carteles(ctx, v);
       // Cerca de la gala cae papel picado de tanto en tanto.
       if (!v.reducido && prog > 0.75 && Math.random() < (prog - 0.7) * 0.25) {
         emitir('confeti', Math.random() * v.W, -10, 1, ['#ffe45f', '#ff7882', '#77edf2', '#fff8dc'], { fuerza: 0.3, gravedad: 40 });
       }
+    },
+    dibujarPersonaje(ctx, v) {
+      v.filon(ctx);
+    },
+    dibujarPrimerPlano(ctx, v) {
+      siluetas(ctx, v);
+      carteles(ctx, v);
     },
     golpe(v, emitir) {
       // Ráfaga de flashes alrededor de Filón.
