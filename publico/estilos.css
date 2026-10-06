@@ -870,6 +870,70 @@ body.en-excavacion .pantalla {
   .reglas { font-size: .9rem; }
 }
 
+/* Inicio y final son páginas: el documento lleva el scroll, sin un panel fijo. */
+body.en-pagina { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
+body.en-pagina::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgb(21 21 43 / .84);
+}
+body.en-recorrido::before { background: none; }
+body.en-pagina .panel {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-height: 100dvh;
+  padding: 280px max(24px, env(safe-area-inset-right)) max(48px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  overflow: visible;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body.en-pagina .pantalla { width: min(100%, 680px); margin-inline: auto; }
+body.en-pagina .inicio { align-items: center; text-align: center; gap: 22px; }
+body.en-pagina .bajada { max-width: 42ch; text-wrap: balance; }
+body.en-pagina .reglas { max-width: 58ch; text-align: left; }
+body.en-pagina .minerales { justify-content: center; }
+body.en-pagina .inicio .nota { max-width: 60ch; }
+body.en-pagina .inicio .principal { min-width: min(100%, 300px); }
+body.en-pagina .cargando { text-align: center; }
+body.en-final .panel { padding-top: 140px; }
+body.en-final .final { text-align: center; gap: 20px; }
+body.en-final .final-titulo { justify-content: center; }
+body.en-final .rendimiento, body.en-final .desglose { text-align: left; }
+body.en-final .desglose-titulo { margin-bottom: 0; }
+body.en-final #btn-compartir, body.en-final #btn-hoy { align-self: center; min-width: min(100%, 300px); }
+body.en-final .gusano, body.en-final .burbuja { visibility: hidden; }
+body.en-recorrido .gusano { visibility: visible; }
+.recorrido {
+  position: relative;
+  z-index: 4;
+  height: calc(var(--largo-recorrido) + 100dvh);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 80px 24px max(56px, env(safe-area-inset-bottom));
+  text-align: center;
+  pointer-events: none;
+}
+.recorrido-inicio { max-width: 42ch; text-shadow: 0 2px 8px #15152b; }
+.recorrido-inicio h2 { font-family: var(--titulo); font-size: 2rem; line-height: 1.1; margin-bottom: 12px; }
+.recorrido-inicio p { color: var(--cal-2); }
+.recorrido-fin { padding: 12px 18px; background: rgb(21 21 43 / .88); border-radius: 8px; max-width: 42ch; }
+
+@media (max-width: 859px) {
+  body.en-pagina .panel { padding-inline: max(20px, env(safe-area-inset-left)) max(20px, env(safe-area-inset-right)); }
+  body.en-final .panel { padding-top: 130px; }
+  body.en-pagina .logo { font-size: 5rem; }
+}
+
 /* ───────── Movimiento reducido ───────── */
 .movimiento-reducido *, .movimiento-reducido *::before, .movimiento-reducido *::after {
   animation: none !important;
