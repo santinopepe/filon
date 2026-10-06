@@ -1,9 +1,11 @@
-// Tarea de generación diaria: prepara, valida y publica un único lote de 7 preguntas por fecha.
-// - Idempotente: si ya hay desafío para la fecha, no hace nada (y la base impide duplicados).
+// Tarea de generación diaria: prepara, valida y publica un único lote de 7 preguntas por fecha y modo.
+// - Idempotente: si ya hay desafío para la fecha y el modo, no hace nada (y la base impide duplicados).
+// - La IA automática (Wikidata, alcance global) solo arma el modo Normal; los modos temáticos usan su
+//   reserva o la carga manual del panel (con el prompt de cada modo para otra IA).
 // - Un bloqueo con vencimiento evita que dos procesos generen la misma fecha a la vez.
 // - Si la IA falla o no está configurada, completa con el banco de reserva validado.
 import { randomUUID } from 'node:crypto';
-import { CLAVES_CATEGORIAS, CATEGORIAS } from '../dominio.js';
+import { CLAVES_CATEGORIAS, CATEGORIAS, MODOS, MODO_POR_DEFECTO, ranurasDeModo, categoriaDeRanura } from '../dominio.js';
 import { validarPregunta, validarLote } from '../validacion.js';
 import { normalizar } from '../normalizar.js';
 import { mezclar } from '../azar.js';
@@ -211,23 +213,27 @@ async function llamadasIADelDia(db, config, t) {
 }
 
 /**
- * Asegura que exista el desafío de `fecha`.
+ * Asegura que exista el desafío de `fecha` para `modo`.
  * permitirReserva=false se usa al preparar con anticipación: si la IA falla, se reintenta más tarde.
  * reemplazar=true (administración) genera uno nuevo aunque ya exista y, solo si se pudo publicar,
  * borra el anterior; forzarIA=true ignora el máximo de intentos de IA por día.
+ * `reservas` trae el banco de cada modo; `reserva` (el de Normal) se acepta por compatibilidad.
  */
-export async function asegurarDesafio({ db, config, fecha, proveedor = null, verificador, catalogo = null, reserva, permitirReserva = true, reemplazar = false, forzarIA = false, ahora = () => Date.now(), titular = randomUUID(), registro = null }) {
-  const anterior = await desafioPorFecha(db, fecha);
-  if (anterior && !reemplazar) return { resultado: 'ya_existia', fecha };
+export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFECTO, proveedor: proveedorIA = null, verificador, catalogo = null, reserva: reservaNormal, reservas = null, permitirReserva = true, reemplazar = false, forzarIA = false, ahora = () => Date.now(), titular = randomUUID(), registro = null }) {
+  const anterior = await desafioPorFecha(db, fecha, modo);
+  if (anterior && !reemplazar) return { resultado: 'ya_existia', fecha, modo };
+  const proveedor = MODOS[modo].iaAutomatica ? proveedorIA : null;
+  const reserva = reservas?.[modo] ?? (modo === MODO_POR_DEFECTO ? reservaNormal : null) ?? { preguntas: [] };
 
   // Tope diario de llamadas (todas las corridas del día): si se agotó, se sigue sin IA.
   const restantesHoy = proveedor ? config.ia.maxLlamadasPorDia - (await llamadasIADelDia(db, config, ahora())) : 0;
   const sinCupo = Boolean(proveedor) && restantesHoy <= 0;
   let quedanIntentosIA = Boolean(proveedor) && !sinCupo && (forzarIA || (await intentosDeIA(db, fecha)) < config.ia.maxIntentosPorDia);
-  if (!permitirReserva && !quedanIntentosIA) return { resultado: 'pendiente', fecha, motivo: 'esperando la ventana de reserva' };
+  if (!permitirReserva && !quedanIntentosIA) return { resultado: 'pendiente', fecha, modo, motivo: 'esperando la ventana de reserva' };
 
-  const nombreBloqueo = `generacion:${fecha}`;
-  if (!(await tomarBloqueo(db, nombreBloqueo, titular, 20 * 60 * 1000, ahora()))) return { resultado: 'ocupado', fecha };
+  // Normal conserva el nombre histórico del bloqueo (lo comparten instancias de versiones anteriores).
+  const nombreBloqueo = modo === MODO_POR_DEFECTO ? `generacion:${fecha}` : `generacion:${modo}:${fecha}`;
+  if (!(await tomarBloqueo(db, nombreBloqueo, titular, 20 * 60 * 1000, ahora()))) return { resultado: 'ocupado', fecha, modo };
   // Una sola generación con IA a la vez (aunque sea para otra fecha): evita costos duplicados.
   let conBloqueoIA = false;
   if (quedanIntentosIA) {
@@ -235,7 +241,7 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
     if (!conBloqueoIA) {
       if (!permitirReserva) {
         await liberarBloqueo(db, nombreBloqueo, titular);
-        return { resultado: 'ocupado', fecha, motivo: 'otra generación con IA en curso' };
+        return { resultado: 'ocupado', fecha, modo, motivo: 'otra generación con IA en curso' };
       }
       quedanIntentosIA = false;
     }
@@ -243,17 +249,17 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
   const inicio = ahora();
   const medidor = proveedor ? contarUso(proveedor, { maxLlamadas: Math.max(0, Math.min(config.ia.maxLlamadasPorCorrida, restantesHoy)) }) : null;
 
-  const { lastInsertRowid } = await db.run('INSERT INTO corridas (fecha_objetivo, iniciada_en) VALUES (?, ?)', fecha, ahora());
+  const { lastInsertRowid } = await db.run('INSERT INTO corridas (fecha_objetivo, modo, iniciada_en) VALUES (?, ?, ?)', fecha, modo, ahora());
   const corridaId = Number(lastInsertRowid);
-  const detalle = { proveedor: proveedor?.nombre ?? 'ninguno', modelo: proveedor?.modelo ?? null, pasos: [], rechazadas: [], descartes: [], avisos: [] };
+  const detalle = { modo, proveedor: proveedor?.nombre ?? 'ninguno', modelo: proveedor?.modelo ?? null, pasos: [], rechazadas: [], descartes: [], avisos: [] };
   if (sinCupo) detalle.avisos.push(`Se agotó el tope diario de ${config.ia.maxLlamadasPorDia} llamadas a la IA.`);
 
   try {
-    if (!reemplazar && (await desafioPorFecha(db, fecha))) {
+    if (!reemplazar && (await desafioPorFecha(db, fecha, modo))) {
       await finalizarCorrida(db, corridaId, 'ya_existia', detalle, ahora());
-      return { resultado: 'ya_existia', fecha, corridaId };
+      return { resultado: 'ya_existia', fecha, modo, corridaId };
     }
-    const recientes = await preguntasRecientes(db, fecha, config.diasSinRepetir);
+    const recientes = await preguntasRecientes(db, fecha, config.diasSinRepetir, modo);
     // Al regenerar, las preguntas que se reemplazan cuentan como recientes: el día cambia de verdad.
     if (anterior) {
       detalle.reemplaza = anterior.id;
@@ -263,7 +269,8 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
         recientes.push({ ...v, fecha, claves: canonicas.filter((c) => c.pregunta_id === v.id).map((c) => normalizar(c.canonica)) });
       }
     }
-    const categorias = mezclar(CLAVES_CATEGORIAS, `orden:${fecha}`);
+    // Ranuras del día: en Normal, las siete categorías en un orden que depende de la fecha.
+    const categorias = modo === MODO_POR_DEFECTO ? mezclar(CLAVES_CATEGORIAS, `orden:${fecha}`) : ranurasDeModo(modo);
     let elegidas = new Map();
 
     if (quedanIntentosIA) {
@@ -280,44 +287,44 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
 
     const faltantes = categorias.filter((c) => !elegidas.has(c));
     if (faltantes.length) {
-      if (quedanIntentosIA) detalle.avisos.push(`Categorías sin pregunta de IA: ${faltantes.map((c) => CATEGORIAS[c]).join(', ')}.`);
+      if (quedanIntentosIA) detalle.avisos.push(`Categorías sin pregunta de IA: ${faltantes.map((c) => CATEGORIAS[categoriaDeRanura(c)]).join(', ')}.`);
       if (!permitirReserva) {
         await finalizarCorrida(db, corridaId, 'pendiente', detalle, ahora());
-        return { resultado: 'pendiente', fecha, corridaId, faltantes };
+        return { resultado: 'pendiente', fecha, modo, corridaId, faltantes };
       }
       const yaElegidas = [...elegidas.values()].map((p) => comoReciente(p, fecha));
-      const { elegidas: deReserva, avisos } = elegirDeReserva({ reserva, categorias: faltantes, recientes: [...recientes, ...yaElegidas], usos: await usosDeReserva(db), fecha });
+      const { elegidas: deReserva, avisos } = elegirDeReserva({ reserva, categorias: faltantes, recientes: [...recientes, ...yaElegidas], usos: await usosDeReserva(db, modo), fecha });
       detalle.avisos.push(...avisos);
       for (const [c, p] of deReserva) elegidas.set(c, p);
     }
 
     let preguntas = categorias.map((c) => elegidas.get(c)).filter(Boolean);
-    let lote = validarLote(preguntas);
+    let lote = validarLote(preguntas, modo);
     if (!lote.ok && permitirReserva && preguntas.some((p) => p.origen === 'ia')) {
       detalle.avisos.push(`Lote mixto inválido (${lote.errores.join(' ')}); se usa reserva completa.`);
-      const { elegidas: deReserva, avisos } = elegirDeReserva({ reserva, categorias, recientes, usos: await usosDeReserva(db), fecha });
+      const { elegidas: deReserva, avisos } = elegirDeReserva({ reserva, categorias, recientes, usos: await usosDeReserva(db, modo), fecha });
       detalle.avisos.push(...avisos);
       preguntas = categorias.map((c) => deReserva.get(c)).filter(Boolean);
-      lote = validarLote(preguntas);
+      lote = validarLote(preguntas, modo);
     }
     if (!lote.ok) {
       detalle.errorLote = lote.errores;
       await finalizarCorrida(db, corridaId, 'fallo', detalle, ahora());
-      return { resultado: 'fallo', fecha, corridaId, errores: lote.errores };
+      return { resultado: 'fallo', fecha, modo, corridaId, errores: lote.errores };
     }
 
     const deIA = preguntas.filter((p) => p.origen === 'ia').length;
     const origen = deIA === preguntas.length ? 'ia' : deIA === 0 ? 'reserva' : 'mixto';
-    const pub = await publicarDesafio(db, { fecha, preguntas, origen, modelo: deIA ? proveedor?.modelo : null, corridaId, ahora: ahora(), reemplazar });
+    const pub = await publicarDesafio(db, { fecha, modo, preguntas, origen, modelo: deIA ? proveedor?.modelo : null, corridaId, ahora: ahora(), reemplazar });
     detalle.publicadas = preguntas.map((p) => ({ categoria: p.categoria, enunciado: p.enunciado, origen: p.origen, respuestas: p.respuestas.length }));
     await finalizarCorrida(db, corridaId, pub.publicado ? `publicado_${origen}` : 'ya_existia', detalle, ahora());
     return pub.publicado
-      ? { resultado: anterior && reemplazar ? 'reemplazado' : 'publicado', fecha, origen, desafioId: pub.desafioId, numero: pub.numero, corridaId }
-      : { resultado: 'ya_existia', fecha, corridaId };
+      ? { resultado: anterior && reemplazar ? 'reemplazado' : 'publicado', fecha, modo, origen, desafioId: pub.desafioId, numero: pub.numero, corridaId }
+      : { resultado: 'ya_existia', fecha, modo, corridaId };
   } catch (e) {
     detalle.error = e.stack || e.message;
     await finalizarCorrida(db, corridaId, 'fallo', detalle, ahora()).catch(() => {});
-    return { resultado: 'fallo', fecha, corridaId, error: e.message };
+    return { resultado: 'fallo', fecha, modo, corridaId, error: e.message };
   } finally {
     if (medidor?.uso.llamadas) {
       const { llamadas, tokensEntrada, tokensSalida } = medidor.uso;

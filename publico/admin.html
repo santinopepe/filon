@@ -37,6 +37,13 @@
     <div id="panel" hidden>
       <section id="pestana-resumen" class="pestana" role="tabpanel" aria-labelledby="tab-resumen" tabindex="0">
         <div class="filtros">
+          <label class="filtro">Modo
+            <select id="est-modo">
+              <option value="normal">Normal</option>
+              <option value="farandula">Farándula Argentina</option>
+              <option value="geografia">Geografía</option>
+            </select>
+          </label>
           <label class="filtro">Día <input type="date" id="est-fecha"></label>
           <div class="segmentado" role="group" aria-label="Período del gráfico de jugadores">
             <button type="button" data-rango="7" aria-pressed="false">7 días</button>
@@ -90,107 +97,108 @@
       </section>
 
       <section id="pestana-desafios" class="pestana" role="tabpanel" aria-labelledby="tab-desafios" tabindex="0" hidden>
+        <div class="filtros">
+          <label class="filtro">Modo
+            <select id="des-modo">
+              <option value="normal">Normal</option>
+              <option value="farandula">Farándula Argentina</option>
+              <option value="geografia">Geografía</option>
+            </select>
+          </label>
+        </div>
         <article class="tarjeta">
           <div class="tabla-envoltura"><table class="tabla" id="tabla-desafios"></table></div>
         </article>
         <div id="detalle"></div>
       </section>
 
-      <section id="pestana-crear" class="pestana grilla-crear" role="tabpanel" aria-labelledby="tab-crear" tabindex="0" hidden>
+      <section id="pestana-crear" class="pestana" role="tabpanel" aria-labelledby="tab-crear" tabindex="0" hidden>
+        <nav class="pestanas-modo" role="tablist" aria-label="Modo de juego" id="nav-crear">
+          <button type="button" role="tab" id="tab-crear-normal" aria-controls="crear-normal" data-modo="normal" aria-selected="true" tabindex="0">Normal</button>
+          <button type="button" role="tab" id="tab-crear-farandula" aria-controls="crear-farandula" data-modo="farandula" aria-selected="false" tabindex="-1">Farándula Argentina</button>
+          <button type="button" role="tab" id="tab-crear-geografia" aria-controls="crear-geografia" data-modo="geografia" aria-selected="false" tabindex="-1">Geografía</button>
+        </nav>
+        <div id="crear-normal" class="grilla-crear" role="tabpanel" aria-labelledby="tab-crear-normal" data-modo="normal"></div>
+        <div id="crear-farandula" class="grilla-crear" role="tabpanel" aria-labelledby="tab-crear-farandula" data-modo="farandula" hidden></div>
+        <div id="crear-geografia" class="grilla-crear" role="tabpanel" aria-labelledby="tab-crear-geografia" data-modo="geografia" hidden></div>
+      </section>
+      <!-- Herramientas de creación: admin.js clona esta plantilla una vez por modo (los id llevan el modo como prefijo). -->
+      <template id="plantilla-crear">
       <section class="tarjeta">
-        <h2>Generar con IA o reserva</h2>
-        <p class="sub">Para un día nuevo o para regenerar uno existente.</p>
-        <form class="generar" id="form-generar">
-          <label>Fecha <input type="date" id="gen-fecha" required></label>
-          <label>Modo
-            <select id="gen-modo">
+        <h2 data-id="gen-titulo">Generar con IA o reserva</h2>
+        <p class="sub" data-id="gen-sub">Para un día nuevo o para regenerar uno existente.</p>
+        <form class="generar" data-id="form-generar">
+          <label>Fecha <input type="date" data-id="gen-fecha" required></label>
+          <label>Origen
+            <select data-id="gen-modo">
               <option value="auto">IA, y si falla, reserva</option>
               <option value="ia">Solo IA (si falla no cambia nada)</option>
               <option value="reserva">Solo reserva (sin IA)</option>
             </select>
           </label>
-          <button type="submit" id="gen-boton">Generar</button>
+          <button type="submit" data-id="gen-boton">Generar</button>
         </form>
-        <div class="aviso" id="gen-confirmar" hidden>
-          <p id="gen-confirmar-texto"></p>
+        <div class="aviso" data-id="gen-confirmar" hidden>
+          <p data-id="gen-confirmar-texto"></p>
           <div class="acciones">
-            <button type="button" class="peligro" id="gen-confirmar-si">Regenerar</button>
-            <button type="button" class="secundario" id="gen-confirmar-no">Cancelar</button>
+            <button type="button" class="peligro" data-id="gen-confirmar-si">Regenerar</button>
+            <button type="button" class="secundario" data-id="gen-confirmar-no">Cancelar</button>
           </div>
         </div>
-        <p class="progreso" id="gen-progreso" hidden>Generando… con IA puede tardar hasta 4 minutos. No cierres la pestaña.</p>
-        <pre class="resultado" id="gen-resultado" hidden></pre>
+        <p class="progreso" data-id="gen-progreso" hidden>Generando… con IA puede tardar hasta 4 minutos. No cierres la pestaña.</p>
+        <pre class="resultado" data-id="gen-resultado" hidden></pre>
       </section>
 
       <section class="tarjeta">
         <h2>Cargar preguntas manualmente</h2>
-        <p class="ayuda-json">Elegí la fecha y pegá un JSON con las siete preguntas. Usa el mismo formato que <code>datos/reserva.json</code> y no llama a ninguna IA.</p>
-        <form id="form-importar" class="importar">
+        <p class="ayuda-json" data-id="ayuda-json">Elegí la fecha y pegá un JSON con las siete preguntas. Usa el mismo formato que <code>datos/reserva.json</code> y no llama a ninguna IA.</p>
+        <form data-id="form-importar" class="importar">
           <div class="importar-cabecera">
-            <label>Fecha <input type="date" id="imp-fecha" required></label>
-            <label class="archivo">Abrir archivo JSON <input type="file" id="imp-archivo" accept="application/json,.json"></label>
+            <label>Fecha <input type="date" data-id="imp-fecha" required></label>
+            <label class="archivo">Abrir archivo JSON <input type="file" data-id="imp-archivo" accept="application/json,.json"></label>
           </div>
-          <label for="imp-json">JSON</label>
-          <textarea id="imp-json" rows="14" spellcheck="false" required placeholder='{"preguntas":[{"id":"geo-ejemplo","categoria":"geografia","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}'></textarea>
+          <label data-for="imp-json">JSON</label>
+          <textarea data-id="imp-json" rows="14" spellcheck="false" required></textarea>
           <details class="formato-json">
             <summary>Ver formato aceptado</summary>
-            <pre>{
-  "preguntas": [
-    {
-      "id": "geo-ejemplo",
-      "categoria": "geografia",
-      "enunciado": "Nombrá…",
-      "alcance": "Cuenta…",
-      "fuentes": [{ "url": "https://…", "titulo": "…" }],
-      "respuestas": [
-        {
-          "canonica": "Respuesta",
-          "variantes": ["Otra forma"],
-          "rareza": "grava",
-          "explicacion": "Una explicación breve."
-        }
-      ],
-      "rechazos": [{ "textos": ["No vale"], "motivo": "Motivo." }]
-    }
-  ]
-}</pre>
-            <p>El día debe contener exactamente una pregunta de cada categoría: geografía, historia, ciencia, deportes, cine, música y literatura. Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.</p>
+            <pre data-id="formato-ejemplo"></pre>
+            <p data-id="formato-reglas"></p>
           </details>
           <div class="acciones">
-            <button type="submit" id="imp-boton">Validar y publicar</button>
-            <button type="button" class="secundario" id="imp-validar">Solo validar</button>
+            <button type="submit" data-id="imp-boton">Validar y publicar</button>
+            <button type="button" class="secundario" data-id="imp-validar">Solo validar</button>
           </div>
-          <p class="sub">Además de las reglas de formato, compara cada pregunta con las de los últimos días (los de «Días de historial», más los ya programados) y entre sí: si repite una, no se publica; si se parece, avisa.</p>
+          <p class="sub" data-id="imp-similitud">Además de las reglas de formato, compara cada pregunta con las de los últimos días (los de «Días de historial», más los ya programados) y entre sí: si repite una, no se publica; si se parece, avisa.</p>
         </form>
-        <div class="aviso" id="imp-confirmar" hidden>
-          <p id="imp-confirmar-texto"></p>
+        <div class="aviso" data-id="imp-confirmar" hidden>
+          <p data-id="imp-confirmar-texto"></p>
           <div class="acciones">
-            <button type="button" class="peligro" id="imp-confirmar-si">Reemplazar</button>
-            <button type="button" class="secundario" id="imp-confirmar-no">Cancelar</button>
+            <button type="button" class="peligro" data-id="imp-confirmar-si">Reemplazar</button>
+            <button type="button" class="secundario" data-id="imp-confirmar-no">Cancelar</button>
           </div>
         </div>
-        <p class="progreso" id="imp-progreso" hidden>Validando y guardando…</p>
-        <pre class="resultado" id="imp-resultado" hidden></pre>
+        <p class="progreso" data-id="imp-progreso" hidden>Validando y guardando…</p>
+        <pre class="resultado" data-id="imp-resultado" hidden></pre>
       </section>
 
-        <section class="tarjeta tarjeta-ancha" aria-labelledby="prompt-titulo">
-          <h2 id="prompt-titulo">Generar con otra IA</h2>
-          <p class="sub">Copiá el prompt en ChatGPT, Claude u otra IA y pegá el JSON que devuelva en «Cargar preguntas manualmente». «Copiar con historial» completa <code>Historial reciente</code> con las preguntas de los últimos días (incluye los ya programados) para que no las repita.</p>
+        <section class="tarjeta tarjeta-ancha">
+          <h2 data-id="prompt-titulo">Generar con otra IA</h2>
+          <p class="sub" data-id="prompt-ayuda">Copiá el prompt en ChatGPT, Claude u otra IA y pegá el JSON que devuelva en «Cargar preguntas manualmente». «Copiar con historial» completa <code>Historial reciente</code> con las preguntas de los últimos días (incluye los ya programados) para que no las repita.</p>
           <div class="historial-controles">
-            <label>Días de historial <input type="number" id="hist-dias" min="1" max="30" value="3" inputmode="numeric"></label>
-            <button type="button" class="secundario" id="hist-json">Descargar JSON</button>
-            <button type="button" class="secundario" id="hist-csv">Descargar CSV</button>
+            <label>Días de historial <input type="number" data-id="hist-dias" min="1" max="30" value="3" inputmode="numeric"></label>
+            <button type="button" class="secundario" data-id="hist-json">Descargar JSON</button>
+            <button type="button" class="secundario" data-id="hist-csv">Descargar CSV</button>
           </div>
-          <label for="prompt-texto">Prompt <span class="sub">(tus cambios quedan guardados en este navegador)</span></label>
-          <textarea id="prompt-texto" rows="16" spellcheck="false"></textarea>
+          <label data-for="prompt-texto">Prompt <span class="sub">(tus cambios quedan guardados en este navegador)</span></label>
+          <textarea data-id="prompt-texto" rows="16" spellcheck="false"></textarea>
           <div class="acciones">
-            <button type="button" id="prompt-copiar-historial">Copiar con historial</button>
-            <button type="button" class="secundario" id="prompt-copiar">Copiar sin historial</button>
-            <button type="button" class="secundario" id="prompt-restaurar">Restaurar el original</button>
+            <button type="button" data-id="prompt-copiar-historial">Copiar con historial</button>
+            <button type="button" class="secundario" data-id="prompt-copiar">Copiar sin historial</button>
+            <button type="button" class="secundario" data-id="prompt-restaurar">Restaurar el original</button>
           </div>
-          <p class="estado-copia" id="prompt-estado" role="status" aria-live="polite"></p>
+          <p class="estado-copia" data-id="prompt-estado" role="status" aria-live="polite"></p>
         </section>
-      </section>
+      </template>
       <section id="pestana-corridas" class="pestana" role="tabpanel" aria-labelledby="tab-corridas" tabindex="0" hidden></section>
       <section id="pestana-reportes" class="pestana" role="tabpanel" aria-labelledby="tab-reportes" tabindex="0" hidden></section>
     </div>

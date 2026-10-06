@@ -74,11 +74,29 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | 4 | `puntajes_agregados` | tabla `puntajes_desafio` y la llena desde `partidas` | sí (tabla nueva) |
 | 5 | `indices_consultas` | 6 índices nuevos (ver §8) | sí (solo índices) |
 | 6 | `uso_ia_en_corridas` | columnas `llamadas_ia`, `tokens_*`, `costo_estimado_usd` en `corridas` (con valores por defecto) + índice | sí (`ADD COLUMN` con default) |
+| 7 | `modos_de_juego` | `desafios` pasa de `UNIQUE(fecha)` a `UNIQUE(modo, fecha)` con la columna `modo` (default `'normal'`); índice `desafios_fecha`; columna `modo` en `corridas` | sí, con una salvedad (ver abajo) |
 
 **Reglas:** solo cambios aditivos; nunca se edita una migración publicada; cada una es idempotente y
 corre en una transacción (si dos instancias arrancan a la vez, la segunda ve la versión registrada).
 
-**Orden de despliegue:** no requiere pasos previos. El primer arranque del código nuevo aplica 2→6.
+**Excepción: la 7 reconstruye `desafios`.** SQLite no permite quitar un `UNIQUE` con `ALTER TABLE`, y
+los modos de juego (Normal, Farándula Argentina, Geografía) necesitan un desafío por fecha *y* modo.
+La migración copia la tabla, la borra, la recrea con las mismas columnas más `modo` y reinserta las
+filas con sus mismos `id`, todo en una transacción. Como libSQL tiene las claves foráneas activas, usa
+`PRAGMA defer_foreign_keys = ON`: las filas de `preguntas`/`partidas` que apuntan a `desafios` quedan
+válidas al reinsertar los mismos `id` antes del `COMMIT`; si algo no cierra, se revierte todo. Las
+pruebas (`pruebas/migraciones.test.js`) verifican columnas, filas, `foreign_key_check` y que las
+claves foráneas sigan activas. Se probó con bases locales; **antes de desplegar en producción,
+hacé un backup de Turso (§3)** y revisá el log `migracion` de la versión 7.
+
+Durante la convivencia de instancias: el código anterior lee las mismas columnas e inserta sin `modo`
+(queda en `normal`). Su `SELECT … WHERE fecha = ?` puede encontrar también los desafíos temáticos de esa
+fecha; el índice `desafios_fecha` los devuelve en orden de inserción y el programador y los crons
+publican siempre Normal primero, así que en la práctica sigue viendo el Normal. Conviene que el
+despliegue no coincida con la publicación del día (00:00–00:10 de Buenos Aires).
+
+**Orden de despliegue:** no requiere pasos previos (salvo el backup recomendado para la 7). El primer
+arranque del código nuevo aplica las pendientes.
 Mientras conviven instancias viejas y nuevas: las viejas ignoran las tablas nuevas; las partidas que
 terminen en una instancia vieja no suman al histograma `puntajes_desafio`, y la limpieza diaria lo
 concilia para los últimos días (`conciliarPuntajes`).

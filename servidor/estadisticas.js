@@ -1,5 +1,5 @@
 // Estadísticas para el panel de administración: totales, serie diaria y detalle de un día.
-import { CATEGORIAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO } from './dominio.js';
+import { CATEGORIAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO, MODO_POR_DEFECTO } from './dominio.js';
 import { desafioPorFecha, preguntasDeDesafio } from './banco.js';
 import { fechaLocal, inicioDeFecha, sumarDias } from './tiempo.js';
 
@@ -68,7 +68,7 @@ async function totales(db) {
     `SELECT
        (SELECT COUNT(*) FROM jugadores) AS visitantes,
        (SELECT COUNT(DISTINCT jugador_id) FROM partidas) AS jugadores,
-       (SELECT COUNT(*) FROM (SELECT jugador_id FROM partidas GROUP BY jugador_id HAVING COUNT(DISTINCT desafio_id) >= 2)) AS recurrentes,
+       (SELECT COUNT(*) FROM (SELECT p.jugador_id FROM partidas p JOIN desafios d ON d.id = p.desafio_id GROUP BY p.jugador_id HAVING COUNT(DISTINCT d.fecha) >= 2)) AS recurrentes,
        (SELECT COUNT(*) FROM partidas) AS partidas,
        (SELECT COUNT(*) FROM partidas WHERE terminada_en IS NOT NULL) AS terminadas,
        (SELECT COUNT(*) FROM reportes WHERE estado = 'pendiente') AS reportesPendientes`,
@@ -77,17 +77,18 @@ async function totales(db) {
 }
 
 /** Una fila por día del rango (incluye días sin desafío, en cero). */
-async function serieDiaria(db, { desde, hasta, zona }) {
+async function serieDiaria(db, { desde, hasta, zona, modo }) {
   const porDia = await db.all(
     `SELECT d.fecha, d.numero,
             COUNT(p.id) AS jugadores,
             COALESCE(SUM(p.terminada_en IS NOT NULL), 0) AS terminadas,
             AVG(CASE WHEN p.terminada_en IS NOT NULL THEN p.puntos END) AS promedioPuntos
      FROM desafios d LEFT JOIN partidas p ON p.desafio_id = d.id
-     WHERE d.fecha BETWEEN ? AND ?
+     WHERE d.fecha BETWEEN ? AND ? AND d.modo = ?
      GROUP BY d.id`,
     desde,
     hasta,
+    modo,
   );
   // Visitantes nuevos: jugadores cuya primera visita cae en ese día local.
   const visitas = await db.all(
@@ -117,8 +118,8 @@ async function serieDiaria(db, { desde, hasta, zona }) {
   return serie;
 }
 
-async function detalleDelDia(db, fecha) {
-  const desafio = await desafioPorFecha(db, fecha);
+async function detalleDelDia(db, fecha, modo) {
+  const desafio = await desafioPorFecha(db, fecha, modo);
   if (!desafio) return null;
   const { jugadores } = await db.get('SELECT COUNT(*) AS jugadores FROM partidas WHERE desafio_id = ?', desafio.id);
   // Histograma agregado (≤ 141 filas), no todas las partidas.
@@ -198,7 +199,8 @@ async function detalleDelDia(db, fecha) {
   };
 }
 
-export async function estadisticasAdmin(db, { zona, desde, hasta, fecha }) {
-  const [t, serie, dia] = await Promise.all([totales(db), serieDiaria(db, { desde, hasta, zona }), detalleDelDia(db, fecha)]);
-  return { desde, hasta, fecha, totales: t, serie, dia };
+/** Totales de todo el juego; la serie diaria y el detalle del día son del modo elegido. */
+export async function estadisticasAdmin(db, { zona, desde, hasta, fecha, modo = MODO_POR_DEFECTO }) {
+  const [t, serie, dia] = await Promise.all([totales(db), serieDiaria(db, { desde, hasta, zona, modo }), detalleDelDia(db, fecha, modo)]);
+  return { desde, hasta, fecha, modo, totales: t, serie, dia };
 }

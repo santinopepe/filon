@@ -18,11 +18,35 @@ export const CATEGORIAS = Object.freeze({
   cine: 'Cine',
   musica: 'Música',
   literatura: 'Literatura',
+  farandula: 'Farándula',
 });
 
-export const CLAVES_CATEGORIAS = Object.keys(CATEGORIAS);
+/** Las siete categorías del modo Normal (una pregunta de cada una por día). */
+export const CLAVES_CATEGORIAS = ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'];
 
 export const PREGUNTAS_POR_DESAFIO = 7;
+
+// Modos de juego. Cada uno tiene su propio desafío diario (una partida por persona, modo y día),
+// su banco de reserva y su prompt. Normal mezcla las siete categorías; los temáticos usan una sola.
+export const MODOS = Object.freeze({
+  normal: { clave: 'normal', nombre: 'Normal', categorias: CLAVES_CATEGORIAS, iaAutomatica: true },
+  farandula: { clave: 'farandula', nombre: 'Farándula Argentina', categorias: ['farandula'], iaAutomatica: false },
+  geografia: { clave: 'geografia', nombre: 'Geografía', categorias: ['geografia'], iaAutomatica: false },
+});
+export const CLAVES_MODOS = Object.keys(MODOS);
+export const MODO_POR_DEFECTO = 'normal';
+export const esModo = (modo) => Object.hasOwn(MODOS, modo);
+
+/**
+ * Las siete «ranuras» de un día: en Normal, una por categoría; en los temáticos, siete de la misma
+ * categoría («farandula#1» … «farandula#7»). La parte antes de «#» es la categoría.
+ */
+export function ranurasDeModo(modo) {
+  const { categorias } = MODOS[modo];
+  if (categorias.length === PREGUNTAS_POR_DESAFIO) return [...categorias];
+  return Array.from({ length: PREGUNTAS_POR_DESAFIO }, (_, i) => `${categorias[0]}#${i + 1}`);
+}
+export const categoriaDeRanura = (ranura) => ranura.split('#')[0];
 export const METROS_POR_PUNTO = 10;
 export const PUNTOS_MAXIMOS = PREGUNTAS_POR_DESAFIO * RAREZAS.diamante.puntos; // 700
 export const PROFUNDIDAD_MAXIMA = PUNTOS_MAXIMOS * METROS_POR_PUNTO; // 7000 m

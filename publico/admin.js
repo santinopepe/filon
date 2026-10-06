@@ -109,7 +109,7 @@ function mostrarPanel() {
 const cargadores = {
   resumen: cargarResumen,
   desafios: cargarDesafios,
-  crear: cargarPrompt,
+  crear: () => elegirModoCrear(modoCrear),
   corridas: cargarCorridas,
   reportes: cargarReportes,
 };
@@ -149,9 +149,17 @@ function mostrarErrorGeneral(e) {
 
 let hoy = '';
 let fechaElegida = null;
+let modoDesafios = 'normal';
+
+$('des-modo').addEventListener('change', () => {
+  modoDesafios = $('des-modo').value;
+  fechaElegida = null;
+  $('detalle').replaceChildren();
+  cargarDesafios().catch(mostrarErrorGeneral);
+});
 
 async function cargarDesafios() {
-  const datos = await api('GET', '/api/admin/desafios');
+  const datos = await api('GET', conModo('/api/admin/desafios', modoDesafios));
   hoy = datos.hoy;
   $('estado-ia').replaceChildren(
     'IA ',
@@ -160,8 +168,7 @@ async function cargarDesafios() {
     'base ',
     h('strong', { title: datos.bd || '' }, (datos.bd || '—').split('.')[0]),
   );
-  if (!$('gen-fecha').value) $('gen-fecha').value = sumarDia(hoy);
-  if (!$('imp-fecha').value) $('imp-fecha').value = sumarDia(hoy);
+  for (const herramientas of Object.values(crear)) herramientas.fechasPorDefecto(sumarDia(hoy));
 
   const tabla = $('tabla-desafios');
   tabla.replaceChildren(
@@ -188,7 +195,7 @@ async function cargarDesafios() {
               h('td', {}, fechaHora(d.publicado_en)),
             ),
           )
-        : h('tr', {}, h('td', { colspan: 6, class: 'vacio' }, 'Todavía no hay desafíos.')),
+        : h('tr', {}, h('td', { colspan: 6, class: 'vacio' }, `Todavía no hay desafíos de ${NOMBRES_MODO[modoDesafios]}.`)),
     ),
   );
   if (!fechaElegida && datos.desafios.length) await verDesafio(datos.desafios.find((d) => d.fecha <= hoy)?.fecha || datos.desafios[0].fecha);
@@ -211,22 +218,22 @@ async function verDesafio(fecha) {
     if (elegida) boton?.setAttribute('aria-current', 'true');
     else boton?.removeAttribute('aria-current');
   }
-  const { desafio, preguntas } = await api('GET', `/api/admin/desafios/${fecha}`);
+  const modo = modoDesafios;
+  const { desafio, preguntas } = await api('GET', conModo(`/api/admin/desafios/${fecha}`, modo));
   if (mio !== pedidoDetalle) return;
-  const regenerar = (modo) => () => {
-    irA('crear');
-    $('gen-fecha').value = fecha;
-    $('gen-modo').value = modo;
-    $('form-generar').requestSubmit();
-    $('form-generar').scrollIntoView({ behavior: 'smooth' });
+  const regenerar = (estrategia) => async () => {
+    await irA('crear');
+    await elegirModoCrear(modo);
+    crear[modo].regenerar(fecha, estrategia);
   };
   $('detalle').replaceChildren(
     h(
       'div',
       { class: 'cabecera-detalle' },
       h('h2', {}, `Desafío #${desafio.numero} · ${desafio.fecha}`),
+      etiquetaModo(modo),
       etiquetaOrigen(origenDesafio(desafio)),
-      h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('auto') }, 'Regenerar'),
+      modo === 'normal' ? h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('auto') }, 'Regenerar') : null,
       h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('reserva') }, 'Regenerar con reserva'),
     ),
     ...preguntas.map((p) =>
@@ -281,56 +288,36 @@ async function verDesafio(fecha) {
   );
 }
 
-// ───────── Generar / regenerar ─────────
+// ───────── Crear: una copia de las herramientas por modo de juego ─────────
+// Cada modo (Normal, Farándula Argentina, Geografía) tiene su pestaña con generar/reserva, carga
+// manual, prompt para otra IA e historial. Todas las llamadas llevan ?modo=, así las preguntas, la
+// validación de repeticiones y el historial quedan separados por modo.
 
-let pendiente = null;
+const NOMBRES_MODO = { normal: 'Normal', farandula: 'Farándula Argentina', geografia: 'Geografía' };
+const CATEGORIA_TEMATICA = { farandula: 'farandula', geografia: 'geografia' };
+const conModo = (ruta, modo) => `${ruta}${ruta.includes('?') ? '&' : '?'}modo=${modo}`;
+const etiquetaModo = (modo) => (modo && modo !== 'normal' ? h('span', { class: `etiqueta modo-${modo}` }, NOMBRES_MODO[modo] || modo) : null);
 
-$('form-generar').addEventListener('submit', (ev) => {
-  ev.preventDefault();
-  generar({ modo: $('gen-modo').value });
-});
-$('gen-confirmar-no').addEventListener('click', () => {
-  $('gen-confirmar').hidden = true;
-  pendiente = null;
-});
-$('gen-confirmar-si').addEventListener('click', () => {
-  $('gen-confirmar').hidden = true;
-  if (pendiente) generar(pendiente);
-});
-
-async function generar(opciones) {
-  const fecha = $('gen-fecha').value;
-  if (!fecha) return;
-  const cuerpo = { modo: opciones.modo, reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar) };
-  $('gen-confirmar').hidden = true;
-  $('gen-resultado').hidden = true;
-  $('gen-progreso').hidden = false;
-  $('gen-boton').disabled = true;
-  try {
-    const r = await api('POST', `/api/admin/desafios/${fecha}/generar`, cuerpo);
-    mostrarResultado(r);
-    fechaElegida = fecha;
-    await cargarDesafios();
-    await verDesafio(fecha);
-  } catch (e) {
-    if (e.datos?.error === 'ya_existe') {
-      pedirConfirmacion(`Ya hay un desafío para ${fecha}. ¿Lo regenero? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });
-    } else if (e.datos?.error === 'hay_partidas') {
-      pedirConfirmacion(`${e.datos.mensaje} Esto no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
-    } else {
-      mostrarResultado({ resultado: 'error', error: e.message });
+const EJEMPLO_JSON = (categoria, id) => `{
+  "preguntas": [
+    {
+      "id": "${id}",
+      "categoria": "${categoria}",
+      "enunciado": "Nombrá…",
+      "alcance": "Cuenta…",
+      "fuentes": [{ "url": "https://…", "titulo": "…" }],
+      "respuestas": [
+        {
+          "canonica": "Respuesta",
+          "variantes": ["Otra forma"],
+          "rareza": "grava",
+          "explicacion": "Una explicación breve."
+        }
+      ],
+      "rechazos": [{ "textos": ["No vale"], "motivo": "Motivo." }]
     }
-  } finally {
-    $('gen-progreso').hidden = true;
-    $('gen-boton').disabled = false;
-  }
-}
-
-function pedirConfirmacion(texto, siguiente) {
-  pendiente = siguiente;
-  $('gen-confirmar-texto').textContent = texto;
-  $('gen-confirmar').hidden = false;
-}
+  ]
+}`;
 
 const EXPLICACION = {
   publicado: 'Publicado.',
@@ -341,231 +328,358 @@ const EXPLICACION = {
   error: 'Error.',
 };
 
-function mostrarResultado(r) {
-  const ok = r.resultado === 'publicado' || r.resultado === 'reemplazado';
-  const caja = $('gen-resultado');
-  caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
-  caja.textContent = [
-    EXPLICACION[r.resultado] || r.resultado,
-    r.origen ? `Origen: ${r.origen}.` : '',
-    r.error ? `Detalle: ${r.error}` : '',
-    r.errores ? `Detalle: ${r.errores.join(' ')}` : '',
-    r.corridaId ? `Corrida #${r.corridaId}.` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-  caja.hidden = false;
-}
+const crear = {}; // modo → herramientas montadas
+let modoCrear = 'normal';
 
-// ───────── Importación manual por JSON ─────────
+function montarCrear(modo) {
+  const raiz = $(`crear-${modo}`);
+  raiz.append($('plantilla-crear').content.cloneNode(true));
+  // Los id llevan el modo como prefijo: «normal-imp-json», «farandula-imp-json»…
+  for (const el of raiz.querySelectorAll('[data-id]')) el.id = `${modo}-${el.dataset.id}`;
+  for (const el of raiz.querySelectorAll('[data-for]')) el.htmlFor = `${modo}-${el.dataset.for}`;
+  const q = (id) => $(`${modo}-${id}`);
+  const tematico = modo !== 'normal';
+  const categoria = CATEGORIA_TEMATICA[modo];
 
-let pendienteImportacion = null;
-
-$('imp-archivo').addEventListener('change', async () => {
-  const archivo = $('imp-archivo').files?.[0];
-  if (!archivo) return;
-  try {
-    $('imp-json').value = await archivo.text();
-    const documento = JSON.parse($('imp-json').value);
-    if (documento?.fecha && /^\d{4}-\d{2}-\d{2}$/.test(documento.fecha)) $('imp-fecha').value = documento.fecha;
-    $('imp-resultado').hidden = true;
-  } catch {
-    mostrarResultadoImportacion({ error: 'El archivo no contiene JSON válido.' });
+  // Textos propios del modo.
+  q('formato-ejemplo').textContent = EJEMPLO_JSON(categoria || 'geografia', tematico ? `${modo}-ejemplo` : 'geo-ejemplo');
+  q('formato-reglas').textContent = tematico
+    ? `Las siete preguntas son de ${NOMBRES_MODO[modo]} y llevan la categoría «${categoria}» (si falta, se completa sola). Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.`
+    : 'El día debe contener exactamente una pregunta de cada categoría: geografía, historia, ciencia, deportes, cine, música y literatura. Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.';
+  q('imp-json').placeholder = tematico
+    ? `{"preguntas":[{"id":"${modo}-ejemplo","categoria":"${categoria}","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}`
+    : '{"preguntas":[{"id":"geo-ejemplo","categoria":"geografia","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}';
+  if (tematico) {
+    // Los modos temáticos no tienen IA automática: se publican desde su reserva o con un JSON.
+    q('gen-titulo').textContent = 'Publicar desde la reserva';
+    q('gen-sub').textContent = `Arma el día con el banco de reserva de ${NOMBRES_MODO[modo]}. Para preguntas nuevas, usá el prompt de abajo y la carga manual.`;
+    for (const opcion of q('gen-modo').querySelectorAll('option')) if (opcion.value !== 'reserva') opcion.remove();
+    q('gen-boton').textContent = 'Publicar';
+    q('ayuda-json').textContent = `Elegí la fecha y pegá un JSON con las siete preguntas de ${NOMBRES_MODO[modo]}. Usa el mismo formato que los bancos de reserva y no llama a ninguna IA.`;
+    q('prompt-titulo').textContent = `Generar ${NOMBRES_MODO[modo]} con otra IA`;
   }
-});
 
-/** Lee las preguntas del cuadro de texto; si el JSON no sirve, muestra el error y devuelve null. */
-function preguntasDelJson() {
-  let documento;
-  try {
-    documento = JSON.parse($('imp-json').value);
-  } catch (error) {
-    mostrarResultadoImportacion({ error: `JSON inválido: ${error.message}` });
-    return null;
+  // ── Generar / regenerar ──
+  let pendiente = null;
+  q('form-generar').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    generar({ modo: q('gen-modo').value });
+  });
+  q('gen-confirmar-no').addEventListener('click', () => {
+    q('gen-confirmar').hidden = true;
+    pendiente = null;
+  });
+  q('gen-confirmar-si').addEventListener('click', () => {
+    q('gen-confirmar').hidden = true;
+    if (pendiente) generar(pendiente);
+  });
+
+  async function generar(opciones) {
+    const fecha = q('gen-fecha').value;
+    if (!fecha) return;
+    const cuerpo = { modo: opciones.modo, reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar) };
+    q('gen-confirmar').hidden = true;
+    q('gen-resultado').hidden = true;
+    q('gen-progreso').hidden = false;
+    q('gen-boton').disabled = true;
+    try {
+      const r = await api('POST', conModo(`/api/admin/desafios/${fecha}/generar`, modo), cuerpo);
+      mostrarResultado(r);
+      await mostrarDesafioCreado(modo, fecha);
+    } catch (e) {
+      if (e.datos?.error === 'ya_existe') {
+        pedirConfirmacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Lo regenero? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });
+      } else if (e.datos?.error === 'hay_partidas') {
+        pedirConfirmacion(`${e.datos.mensaje} Esto no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
+      } else {
+        mostrarResultado({ resultado: 'error', error: e.message });
+      }
+    } finally {
+      q('gen-progreso').hidden = true;
+      q('gen-boton').disabled = false;
+    }
   }
-  const preguntas = Array.isArray(documento) ? documento : documento?.preguntas;
-  if (!Array.isArray(preguntas)) {
-    mostrarResultadoImportacion({ error: 'El JSON debe ser un arreglo de preguntas o un objeto con la propiedad «preguntas».' });
-    return null;
+
+  function pedirConfirmacion(texto, siguiente) {
+    pendiente = siguiente;
+    q('gen-confirmar-texto').textContent = texto;
+    q('gen-confirmar').hidden = false;
   }
-  return preguntas;
-}
 
-$('form-importar').addEventListener('submit', (ev) => {
-  ev.preventDefault();
-  const preguntas = preguntasDelJson();
-  if (preguntas) importarPreguntas({ preguntas });
-});
-// Valida y compara con los últimos días sin publicar nada.
-$('imp-validar').addEventListener('click', () => {
-  const preguntas = preguntasDelJson();
-  if (preguntas) importarPreguntas({ preguntas, soloValidar: true });
-});
+  function mostrarResultado(r) {
+    const ok = r.resultado === 'publicado' || r.resultado === 'reemplazado';
+    const caja = q('gen-resultado');
+    caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
+    caja.textContent = [
+      EXPLICACION[r.resultado] || r.resultado,
+      r.origen ? `Origen: ${r.origen}.` : '',
+      r.error ? `Detalle: ${r.error}` : '',
+      r.errores ? `Detalle: ${r.errores.join(' ')}` : '',
+      r.corridaId ? `Corrida #${r.corridaId}.` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    caja.hidden = false;
+  }
 
-$('imp-confirmar-no').addEventListener('click', () => {
-  $('imp-confirmar').hidden = true;
-  pendienteImportacion = null;
-});
-$('imp-confirmar-si').addEventListener('click', () => {
-  $('imp-confirmar').hidden = true;
-  if (pendienteImportacion) importarPreguntas(pendienteImportacion);
-});
+  // ── Importación manual por JSON ──
+  let pendienteImportacion = null;
 
-async function importarPreguntas(opciones) {
-  const fecha = $('imp-fecha').value;
-  if (!fecha) return;
-  const cuerpo = {
-    preguntas: opciones.preguntas,
-    reemplazar: Boolean(opciones.reemplazar),
-    forzar: Boolean(opciones.forzar),
-    soloValidar: Boolean(opciones.soloValidar),
-    diasSimilitud: diasHistorial(), // los mismos días que el historial que se le pasa a la IA
+  q('imp-archivo').addEventListener('change', async () => {
+    const archivo = q('imp-archivo').files?.[0];
+    if (!archivo) return;
+    try {
+      q('imp-json').value = await archivo.text();
+      const documento = JSON.parse(q('imp-json').value);
+      if (documento?.fecha && /^\d{4}-\d{2}-\d{2}$/.test(documento.fecha)) q('imp-fecha').value = documento.fecha;
+      q('imp-resultado').hidden = true;
+    } catch {
+      mostrarResultadoImportacion({ error: 'El archivo no contiene JSON válido.' });
+    }
+  });
+
+  /** Lee las preguntas del cuadro de texto; si el JSON no sirve, muestra el error y devuelve null. */
+  function preguntasDelJson() {
+    let documento;
+    try {
+      documento = JSON.parse(q('imp-json').value);
+    } catch (error) {
+      mostrarResultadoImportacion({ error: `JSON inválido: ${error.message}` });
+      return null;
+    }
+    const preguntas = Array.isArray(documento) ? documento : documento?.preguntas;
+    if (!Array.isArray(preguntas)) {
+      mostrarResultadoImportacion({ error: 'El JSON debe ser un arreglo de preguntas o un objeto con la propiedad «preguntas».' });
+      return null;
+    }
+    return preguntas;
+  }
+
+  q('form-importar').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const preguntas = preguntasDelJson();
+    if (preguntas) importarPreguntas({ preguntas });
+  });
+  // Valida y compara con los últimos días sin publicar nada.
+  q('imp-validar').addEventListener('click', () => {
+    const preguntas = preguntasDelJson();
+    if (preguntas) importarPreguntas({ preguntas, soloValidar: true });
+  });
+  q('imp-confirmar-no').addEventListener('click', () => {
+    q('imp-confirmar').hidden = true;
+    pendienteImportacion = null;
+  });
+  q('imp-confirmar-si').addEventListener('click', () => {
+    q('imp-confirmar').hidden = true;
+    if (pendienteImportacion) importarPreguntas(pendienteImportacion);
+  });
+
+  async function importarPreguntas(opciones) {
+    const fecha = q('imp-fecha').value;
+    if (!fecha) return;
+    const cuerpo = {
+      preguntas: opciones.preguntas,
+      reemplazar: Boolean(opciones.reemplazar),
+      forzar: Boolean(opciones.forzar),
+      soloValidar: Boolean(opciones.soloValidar),
+      diasSimilitud: diasHistorial(), // los mismos días que el historial que se le pasa a la IA
+    };
+    q('imp-confirmar').hidden = true;
+    q('imp-resultado').hidden = true;
+    q('imp-progreso').hidden = false;
+    q('imp-boton').disabled = true;
+    q('imp-validar').disabled = true;
+    try {
+      const resultado = await api('POST', conModo(`/api/admin/desafios/${fecha}/importar`, modo), cuerpo);
+      mostrarResultadoImportacion(resultado);
+      if (resultado.resultado === 'valido') return; // solo se validó: no hay nada nuevo que mostrar
+      await mostrarDesafioCreado(modo, fecha);
+    } catch (error) {
+      if (error.datos?.error === 'ya_existe') {
+        pedirConfirmacionImportacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Querés reemplazarlo por este JSON?`, { ...cuerpo, reemplazar: true });
+      } else if (error.datos?.error === 'hay_partidas') {
+        pedirConfirmacionImportacion(`${error.datos.mensaje} Esto también borra esas partidas y no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
+      } else {
+        mostrarResultadoImportacion({ error: error.message, detalles: error.datos?.detalles });
+      }
+    } finally {
+      q('imp-progreso').hidden = true;
+      q('imp-boton').disabled = false;
+      q('imp-validar').disabled = false;
+    }
+  }
+
+  function pedirConfirmacionImportacion(texto, siguiente) {
+    pendienteImportacion = siguiente;
+    q('imp-confirmar-texto').textContent = texto;
+    q('imp-confirmar').hidden = false;
+  }
+
+  function mostrarResultadoImportacion(resultado) {
+    const ok = ['publicado', 'reemplazado', 'valido'].includes(resultado.resultado);
+    const errores = resultado.detalles?.errores || [];
+    const avisos = resultado.advertencias || resultado.detalles?.advertencias || [];
+    const similitudes = resultado.similitudes || resultado.detalles?.similitudes;
+    const dias = resultado.diasSimilitud || resultado.detalles?.diasSimilitud;
+    const titulo = {
+      publicado: 'Desafío manual publicado.',
+      reemplazado: 'Desafío reemplazado con el JSON manual.',
+      valido: 'El JSON es válido. Todavía no se publicó: usá «Validar y publicar».',
+    }[resultado.resultado];
+    const sinParecidos = similitudes && similitudes.every((x) => !x.coincidencias.length);
+    const caja = q('imp-resultado');
+    caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
+    caja.textContent = [
+      ok ? titulo : resultado.error || 'No se pudo publicar.',
+      ...errores.map((error) => `• ${error}`),
+      ...avisos.map((aviso) => `Aviso: ${aviso}`),
+      sinParecidos ? `Sin similitudes con las preguntas de ${NOMBRES_MODO[modo]} de los últimos ${dias} días ni dentro del lote.` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    caja.hidden = false;
+  }
+
+  // ── Generar con otra IA: historial y prompt del modo ──
+  // Normal conserva la clave histórica; los otros modos guardan sus ediciones aparte.
+  const clavePrompt = modo === 'normal' ? 'filon_prompt_editado' : `filon_prompt_editado_${modo}`;
+  let promptOriginal = null;
+
+  async function cargarPrompt() {
+    if (promptOriginal !== null) return;
+    promptOriginal = (await api('GET', conModo('/api/admin/prompt', modo))).texto;
+    let guardado = null;
+    try {
+      guardado = localStorage.getItem(clavePrompt);
+    } catch {
+      /* sin almacenamiento: se usa el original */
+    }
+    q('prompt-texto').value = guardado ?? promptOriginal;
+  }
+
+  q('prompt-texto').addEventListener('input', () => {
+    try {
+      if (q('prompt-texto').value === promptOriginal) localStorage.removeItem(clavePrompt);
+      else localStorage.setItem(clavePrompt, q('prompt-texto').value);
+    } catch {
+      /* nada */
+    }
+  });
+
+  q('prompt-restaurar').addEventListener('click', () => {
+    q('prompt-texto').value = promptOriginal ?? '';
+    try {
+      localStorage.removeItem(clavePrompt);
+    } catch {
+      /* nada */
+    }
+    avisarPrompt('Se restauró el prompt original.');
+  });
+
+  const diasHistorial = () => Math.min(30, Math.max(1, Math.floor(Number(q('hist-dias').value)) || 3));
+
+  async function pedirHistorial(formato) {
+    const res = await fetch(conModo(`/api/admin/historial?dias=${diasHistorial()}&formato=${formato}`, modo), { credentials: 'same-origin' });
+    if (res.status === 401) {
+      mostrarIngreso('La sesión venció o se cerró. Volvé a ingresar.');
+      throw new ErrorApi(401, { mensaje: 'Sesión vencida.' });
+    }
+    if (!res.ok) throw new ErrorApi(res.status, await res.json().catch(() => null));
+    const archivo = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') || '')?.[1] || `filon-historial.${formato}`;
+    return { res, archivo };
+  }
+
+  async function descargarHistorial(formato) {
+    try {
+      const { res, archivo } = await pedirHistorial(formato);
+      const url = URL.createObjectURL(await res.blob());
+      const enlace = h('a', { href: url, download: archivo, hidden: true });
+      document.body.append(enlace);
+      enlace.click();
+      enlace.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      avisarPrompt(`Se descargó ${archivo}.`);
+    } catch (e) {
+      mostrarErrorGeneral(e);
+    }
+  }
+  q('hist-json').addEventListener('click', () => descargarHistorial('json'));
+  q('hist-csv').addEventListener('click', () => descargarHistorial('csv'));
+
+  async function copiarPrompt(conHistorial) {
+    try {
+      await cargarPrompt();
+      let texto = q('prompt-texto').value;
+      let detalle = '';
+      if (conHistorial) {
+        const { res } = await pedirHistorial('json');
+        const datos = await res.json();
+        // Lo justo para comparar: sin ids ni números internos.
+        const historial = datos.preguntas.map(({ fecha, categoria, enunciado, alcance, respuestas }) => ({ fecha, categoria, enunciado, alcance, respuestas }));
+        texto = insertarHistorial(texto, historial);
+        detalle = ` con ${historial.length} preguntas de ${NOMBRES_MODO[modo]} desde el ${datos.desde}`;
+      }
+      await copiarTexto(texto);
+      avisarPrompt(`Prompt copiado${detalle}. Pegalo en la IA.`);
+    } catch (e) {
+      mostrarErrorGeneral(e);
+    }
+  }
+  q('prompt-copiar-historial').addEventListener('click', () => copiarPrompt(true));
+  q('prompt-copiar').addEventListener('click', () => copiarPrompt(false));
+
+  function avisarPrompt(texto) {
+    q('prompt-estado').textContent = texto;
+  }
+
+  return {
+    cargar: cargarPrompt,
+    fechasPorDefecto(fecha) {
+      if (!q('gen-fecha').value) q('gen-fecha').value = fecha;
+      if (!q('imp-fecha').value) q('imp-fecha').value = fecha;
+    },
+    regenerar(fecha, estrategia) {
+      q('gen-fecha').value = fecha;
+      q('gen-modo').value = q('gen-modo').querySelector(`option[value="${estrategia}"]`) ? estrategia : 'reserva';
+      q('form-generar').requestSubmit();
+      q('form-generar').scrollIntoView({ behavior: 'smooth' });
+    },
   };
-  $('imp-confirmar').hidden = true;
-  $('imp-resultado').hidden = true;
-  $('imp-progreso').hidden = false;
-  $('imp-boton').disabled = true;
-  $('imp-validar').disabled = true;
-  try {
-    const resultado = await api('POST', `/api/admin/desafios/${fecha}/importar`, cuerpo);
-    mostrarResultadoImportacion(resultado);
-    if (resultado.resultado === 'valido') return; // solo se validó: no hay nada nuevo que mostrar
-    fechaElegida = fecha;
-    await cargarDesafios();
-    await verDesafio(fecha);
-  } catch (error) {
-    if (error.datos?.error === 'ya_existe') {
-      pedirConfirmacionImportacion(`Ya hay un desafío para ${fecha}. ¿Querés reemplazarlo por este JSON?`, { ...cuerpo, reemplazar: true });
-    } else if (error.datos?.error === 'hay_partidas') {
-      pedirConfirmacionImportacion(`${error.datos.mensaje} Esto también borra esas partidas y no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
-    } else {
-      mostrarResultadoImportacion({ error: error.message, detalles: error.datos?.detalles });
-    }
-  } finally {
-    $('imp-progreso').hidden = true;
-    $('imp-boton').disabled = false;
-    $('imp-validar').disabled = false;
+}
+
+for (const modo of Object.keys(NOMBRES_MODO)) crear[modo] = montarCrear(modo);
+
+const pestanasCrear = [...document.querySelectorAll('#nav-crear [role="tab"]')];
+function elegirModoCrear(modo, { enfocar = false } = {}) {
+  modoCrear = modo;
+  for (const b of pestanasCrear) {
+    const activa = b.dataset.modo === modo;
+    b.setAttribute('aria-selected', String(activa));
+    b.tabIndex = activa ? 0 : -1;
+    if (activa && enfocar) b.focus();
   }
+  for (const m of Object.keys(NOMBRES_MODO)) $(`crear-${m}`).hidden = m !== modo;
+  return crear[modo].cargar().catch(mostrarErrorGeneral);
 }
-
-function pedirConfirmacionImportacion(texto, siguiente) {
-  pendienteImportacion = siguiente;
-  $('imp-confirmar-texto').textContent = texto;
-  $('imp-confirmar').hidden = false;
-}
-
-function mostrarResultadoImportacion(resultado) {
-  const ok = ['publicado', 'reemplazado', 'valido'].includes(resultado.resultado);
-  const errores = resultado.detalles?.errores || [];
-  const avisos = resultado.advertencias || resultado.detalles?.advertencias || [];
-  const similitudes = resultado.similitudes || resultado.detalles?.similitudes;
-  const dias = resultado.diasSimilitud || resultado.detalles?.diasSimilitud;
-  const titulo = {
-    publicado: 'Desafío manual publicado.',
-    reemplazado: 'Desafío reemplazado con el JSON manual.',
-    valido: 'El JSON es válido. Todavía no se publicó: usá «Validar y publicar».',
-  }[resultado.resultado];
-  const sinParecidos = similitudes && similitudes.every((s) => !s.coincidencias.length);
-  const caja = $('imp-resultado');
-  caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
-  caja.textContent = [
-    ok ? titulo : resultado.error || 'No se pudo publicar.',
-    ...errores.map((error) => `• ${error}`),
-    ...avisos.map((aviso) => `Aviso: ${aviso}`),
-    sinParecidos ? `Sin similitudes con las preguntas de los últimos ${dias} días ni dentro del lote.` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-  caja.hidden = false;
-}
-
-// ───────── Generar con otra IA: historial y prompt ─────────
-
-const CLAVE_PROMPT = 'filon_prompt_editado'; // solo texto del prompt; nada sensible
-let promptOriginal = null;
-
-async function cargarPrompt() {
-  if (promptOriginal !== null) return;
-  promptOriginal = (await api('GET', '/api/admin/prompt')).texto;
-  let guardado = null;
-  try {
-    guardado = localStorage.getItem(CLAVE_PROMPT);
-  } catch {
-    /* sin almacenamiento: se usa el original */
-  }
-  $('prompt-texto').value = guardado ?? promptOriginal;
-}
-
-$('prompt-texto').addEventListener('input', () => {
-  try {
-    if ($('prompt-texto').value === promptOriginal) localStorage.removeItem(CLAVE_PROMPT);
-    else localStorage.setItem(CLAVE_PROMPT, $('prompt-texto').value);
-  } catch {
-    /* nada */
-  }
+for (const b of pestanasCrear) b.addEventListener('click', () => elegirModoCrear(b.dataset.modo));
+$('nav-crear').addEventListener('keydown', (ev) => {
+  const i = pestanasCrear.indexOf(document.activeElement);
+  if (i < 0) return;
+  const n = pestanasCrear.length;
+  const destino = { ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 }[ev.key];
+  if (destino === undefined) return;
+  ev.preventDefault();
+  elegirModoCrear(pestanasCrear[destino].dataset.modo, { enfocar: true });
 });
 
-$('prompt-restaurar').addEventListener('click', () => {
-  $('prompt-texto').value = promptOriginal ?? '';
-  try {
-    localStorage.removeItem(CLAVE_PROMPT);
-  } catch {
-    /* nada */
-  }
-  avisarPrompt('Se restauró el prompt original.');
-});
-
-const diasHistorial = () => Math.min(30, Math.max(1, Math.floor(Number($('hist-dias').value)) || 3));
-
-async function pedirHistorial(formato) {
-  const res = await fetch(`/api/admin/historial?dias=${diasHistorial()}&formato=${formato}`, { credentials: 'same-origin' });
-  if (res.status === 401) {
-    mostrarIngreso('La sesión venció o se cerró. Volvé a ingresar.');
-    throw new ErrorApi(401, { mensaje: 'Sesión vencida.' });
-  }
-  if (!res.ok) throw new ErrorApi(res.status, await res.json().catch(() => null));
-  const archivo = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') || '')?.[1] || `filon-historial.${formato}`;
-  return { res, archivo };
+/** Después de publicar desde «Crear», muestra ese día en «Desafíos» (sin cambiar de pestaña). */
+async function mostrarDesafioCreado(modo, fecha) {
+  modoDesafios = modo;
+  $('des-modo').value = modo;
+  fechaElegida = fecha;
+  await cargarDesafios();
+  await verDesafio(fecha);
 }
-
-async function descargarHistorial(formato) {
-  try {
-    const { res, archivo } = await pedirHistorial(formato);
-    const url = URL.createObjectURL(await res.blob());
-    const enlace = h('a', { href: url, download: archivo, hidden: true });
-    document.body.append(enlace);
-    enlace.click();
-    enlace.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 10_000);
-    avisarPrompt(`Se descargó ${archivo}.`);
-  } catch (e) {
-    mostrarErrorGeneral(e);
-  }
-}
-$('hist-json').addEventListener('click', () => descargarHistorial('json'));
-$('hist-csv').addEventListener('click', () => descargarHistorial('csv'));
-
-async function copiarPrompt(conHistorial) {
-  try {
-    await cargarPrompt();
-    let texto = $('prompt-texto').value;
-    let detalle = '';
-    if (conHistorial) {
-      const { res } = await pedirHistorial('json');
-      const datos = await res.json();
-      // Lo justo para comparar: sin ids ni números internos.
-      const historial = datos.preguntas.map(({ fecha, categoria, enunciado, alcance, respuestas }) => ({ fecha, categoria, enunciado, alcance, respuestas }));
-      texto = insertarHistorial(texto, historial);
-      detalle = ` con ${historial.length} preguntas desde el ${datos.desde}`;
-    }
-    await copiarTexto(texto);
-    avisarPrompt(`Prompt copiado${detalle}. Pegalo en la IA.`);
-  } catch (e) {
-    mostrarErrorGeneral(e);
-  }
-}
-$('prompt-copiar-historial').addEventListener('click', () => copiarPrompt(true));
-$('prompt-copiar').addEventListener('click', () => copiarPrompt(false));
 
 async function copiarTexto(texto) {
   try {
@@ -579,10 +693,6 @@ async function copiarTexto(texto) {
     document.execCommand('copy');
     area.remove();
   }
-}
-
-function avisarPrompt(texto) {
-  $('prompt-estado').textContent = texto;
 }
 
 // ───────── Corridas ─────────
@@ -603,6 +713,7 @@ async function cargarCorridas() {
               'summary',
               {},
               h('strong', {}, `#${c.id} · ${c.fecha_objetivo}`),
+              etiquetaModo(c.modo),
               h('span', { class: `etiqueta ${ok ? 'ia' : c.resultado === 'en_curso' ? '' : 'mal'}` }, c.resultado),
               c.uso_ia ? h('span', { class: 'etiqueta' }, `IA ${d.modelo || ''}`) : null,
               d.reemplaza ? h('span', { class: 'etiqueta mixto' }, 'regeneración') : null,
@@ -655,7 +766,7 @@ async function cargarReportes() {
                   {},
                   h('td', {}, h('strong', {}, r.texto), h('div', { class: 'vacio' }, fechaHora(r.creado_en))),
                   h('td', { class: 'num' }, r.veces),
-                  h('td', {}, h('div', { class: 'vacio' }, r.pregunta_id), r.enunciado),
+                  h('td', {}, h('div', { class: 'vacio' }, r.pregunta_id, ' ', etiquetaModo(r.modo)), r.enunciado),
                   h('td', {}, r.comentario || '—'),
                   h('td', {}, h('span', { class: `etiqueta ${r.estado === 'aceptado' ? 'ia' : r.estado === 'descartado' ? 'mal' : ''}` }, r.estado)),
                   h(
@@ -680,7 +791,7 @@ async function cargarReportes() {
 
 // ───────── Resumen ─────────
 
-const resumen = { rango: 30, datos: null };
+const resumen = { rango: 30, datos: null, modo: 'normal' };
 const fechaCorta = (f) => `${Number(f.slice(8, 10))}/${Number(f.slice(5, 7))}`;
 const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
 const RAREZAS = ['diamante', 'oro', 'plata', 'cobre', 'grava'];
@@ -693,6 +804,10 @@ function restarDias(fecha, n) {
 }
 
 $('est-fecha').addEventListener('change', () => $('est-fecha').value && cargarResumen());
+$('est-modo').addEventListener('change', () => {
+  resumen.modo = $('est-modo').value;
+  cargarResumen().catch(mostrarErrorGeneral);
+});
 for (const b of document.querySelectorAll('[data-rango]')) {
   b.addEventListener('click', () => {
     resumen.rango = Number(b.dataset.rango);
@@ -707,7 +822,7 @@ async function cargarResumen() {
   const consulta = fecha ? `?fecha=${fecha}&hasta=${fecha}&desde=${restarDias(fecha, resumen.rango - 1)}` : '';
   $('resumen').classList.add('recargando'); // conserva lo anterior atenuado mientras carga
   try {
-    const datos = await api('GET', `/api/admin/estadisticas${consulta}`);
+    const datos = await api('GET', conModo(`/api/admin/estadisticas${consulta}`, resumen.modo));
     if (!$('est-fecha').value) $('est-fecha').value = datos.fecha;
     $('est-fecha').max = sumarDia(datos.hoy);
     resumen.datos = datos;

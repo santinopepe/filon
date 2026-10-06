@@ -204,6 +204,15 @@ ul.lista li { margin: 2px 0; }
 .grilla-crear .tarjeta h2 { margin-bottom: 2px; }
 .grilla-crear .sub, .grilla-crear .ayuda-json { margin-bottom: 14px; }
 
+/* Pestañas de modo dentro de «Crear»: cada modo tiene sus herramientas, su prompt y su historial. */
+.pestanas-modo { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--pizarra-2); }
+.pestanas-modo button { background: var(--pizarra); color: var(--cal-3); border: 1px solid var(--pizarra-2); border-radius: 99px; padding: 6px 14px; font-weight: 700; }
+.pestanas-modo button:hover { color: var(--cal); }
+.pestanas-modo button[aria-selected='true'] { background: var(--lampara); border-color: var(--lampara); color: var(--socavon); }
+.etiqueta.modo-farandula { background: #4a2440; color: #ff9ec0; }
+.etiqueta.modo-geografia { background: #1f3550; color: #8fd3ff; }
+.filtro select { font: inherit; font-weight: 400; }
+
 /* ───────── Resumen ───────── */
 .filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 16px; }
 .filtro { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--cal-2); }

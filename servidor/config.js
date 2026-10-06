@@ -74,6 +74,16 @@ export function cargarConfig(sobrescrituras = {}) {
     rutaBD: urlBD || resolve(RAIZ, e.RUTA_BD || 'datos/filon.db'),
     tokenBD: e.BD_URL ? e.BD_TOKEN || '' : e.TURSO_AUTH_TOKEN || '',
     rutaReserva: resolve(RAIZ, e.RUTA_RESERVA || 'datos/reserva.json'),
+    // Bancos de reserva y prompts para otra IA, por modo de juego (Normal usa rutaReserva).
+    rutasReserva: {
+      farandula: resolve(RAIZ, e.RUTA_RESERVA_FARANDULA || 'datos/reserva-farandula.json'),
+      geografia: resolve(RAIZ, e.RUTA_RESERVA_GEOGRAFIA || 'datos/reserva-geografia.json'),
+    },
+    rutasPrompt: {
+      normal: resolve(RAIZ, 'datos/prompt-generacion.txt'),
+      farandula: resolve(RAIZ, 'datos/prompt-farandula.txt'),
+      geografia: resolve(RAIZ, 'datos/prompt-geografia.txt'),
+    },
     zona: e.ZONA_HORARIA || 'America/Argentina/Buenos_Aires',
     segundosPorPregunta: num(e.SEGUNDOS_POR_PREGUNTA, 25),
     graciaRedMs: num(e.GRACIA_RED_MS, 1500),

@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "revisado": "2026-10-06",
+  "descripcion": "Banco de reserva del modo Farándula Argentina, curado a mano. Se usa cuando no se cargó un día desde el panel. Cada pregunta pasa la validación estricta (npm run validar-reserva) y usa conjuntos cerrados de televisión, cine y música argentinos, verificables en las fuentes indicadas.",
+  "preguntas": [
+    {
+      "id": "far-casados-con-hijos",
+      "categoria": "farandula",
+      "enunciado": "Nombrá a un integrante de los Argento o de los Fuseneco en «Casados con hijos».",
+      "alcance": "Personajes fijos de la versión argentina (Telefe, 2005-2006): las familias Argento y Fuseneco, perro incluido.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Casados_con_hijos_(Argentina)", "titulo": "Casados con hijos (Argentina) — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Pepe Argento", "variantes": ["Pepe"], "rareza": "grava", "explicacion": "El padre, vendedor de zapatos, interpretado por Guillermo Francella." },
+        { "canonica": "Moni Argento", "variantes": ["Moni"], "rareza": "grava", "explicacion": "La esposa de Pepe, interpretada por Florencia Peña." },
+        { "canonica": "Paola Argento", "variantes": ["Paola"], "rareza": "cobre", "explicacion": "La hija mayor, interpretada por Luisana Lopilato." },
+        { "canonica": "Coqui Argento", "variantes": ["Coqui"], "rareza": "cobre", "explicacion": "El hijo menor, interpretado por Darío Lopilato." },
+        { "canonica": "María Elena Fuseneco", "variantes": ["María Elena"], "rareza": "plata", "explicacion": "La vecina de los Argento, interpretada por Érica Rivas." },
+        { "canonica": "Dardo Fuseneco", "variantes": ["Dardo"], "rareza": "oro", "explicacion": "El vecino, marido de María Elena, interpretado por Marcelo De Bellis." },
+        { "canonica": "Fatiga", "variantes": [], "rareza": "diamante", "explicacion": "El perro de la familia Argento." }
+      ],
+      "rechazos": []
+    },
+    {
+      "id": "far-bandana",
+      "categoria": "farandula",
+      "enunciado": "Nombrá a una integrante de Bandana.",
+      "alcance": "Las cinco integrantes del grupo pop que nació en 2001 en el reality «Popstars», de Telefe.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Bandana_(banda)", "titulo": "Bandana (banda) — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Lourdes Fernández", "variantes": ["Lowrdez"], "rareza": "grava", "explicacion": "Una de las cinco ganadoras de Popstars; luego siguió como solista con el nombre Lowrdez." },
+        { "canonica": "Valeria Gastaldi", "variantes": [], "rareza": "cobre", "explicacion": "Integrante de Bandana que después hizo carrera como cantante solista." },
+        { "canonica": "Lissa Vera", "variantes": [], "rareza": "plata", "explicacion": "Integrante de Bandana elegida en Popstars en 2001." },
+        { "canonica": "Virginia Da Cunha", "variantes": ["Virginia da Cunha"], "rareza": "oro", "explicacion": "Integrante de Bandana elegida en Popstars en 2001." },
+        { "canonica": "Ivana Rossi", "variantes": [], "rareza": "diamante", "explicacion": "Integrante de Bandana elegida en Popstars en 2001." }
+      ],
+      "rechazos": []
+    },
+    {
+      "id": "far-relatos-salvajes",
+      "categoria": "farandula",
+      "enunciado": "Nombrá uno de los episodios de «Relatos salvajes».",
+      "alcance": "Los seis relatos de la película de Damián Szifron (2014), por su título.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Relatos_salvajes", "titulo": "Relatos salvajes — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Bombita", "variantes": [], "rareza": "grava", "explicacion": "Ricardo Darín es un ingeniero en demoliciones harto de las grúas y las multas." },
+        { "canonica": "Hasta que la muerte nos separe", "variantes": [], "rareza": "cobre", "explicacion": "Érica Rivas descubre una infidelidad en plena fiesta de casamiento." },
+        { "canonica": "Pasternak", "variantes": [], "rareza": "plata", "explicacion": "Los pasajeros de un avión descubren que todos conocen al mismo hombre." },
+        { "canonica": "El más fuerte", "variantes": [], "rareza": "plata", "explicacion": "Leonardo Sbaraglia y un conductor se enfrentan en una ruta desierta." },
+        { "canonica": "Las ratas", "variantes": [], "rareza": "oro", "explicacion": "Una moza reconoce en un parador de ruta al hombre que arruinó a su familia." },
+        { "canonica": "La propuesta", "variantes": [], "rareza": "diamante", "explicacion": "Oscar Martínez intenta salvar a su hijo después de un accidente de tránsito." }
+      ],
+      "rechazos": []
+    },
+    {
+      "id": "far-oscar-argentinas",
+      "categoria": "farandula",
+      "enunciado": "Nombrá una película argentina nominada al Óscar a mejor película internacional.",
+      "alcance": "Las ocho películas argentinas que llegaron a la terna final de la categoría, incluidas las dos ganadoras.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Óscar_a_la_mejor_película_internacional", "titulo": "Óscar a la mejor película internacional — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "El secreto de sus ojos", "variantes": [], "rareza": "grava", "explicacion": "De Juan José Campanella: ganó el Óscar en 2010." },
+        { "canonica": "La historia oficial", "variantes": [], "rareza": "cobre", "explicacion": "De Luis Puenzo: en 1986 fue la primera película argentina en ganar el Óscar." },
+        { "canonica": "Relatos salvajes", "variantes": [], "rareza": "cobre", "explicacion": "De Damián Szifron: nominada en 2015." },
+        { "canonica": "Argentina, 1985", "variantes": ["Argentina 1985"], "rareza": "cobre", "explicacion": "De Santiago Mitre, con Ricardo Darín: nominada en 2023." },
+        { "canonica": "El hijo de la novia", "variantes": [], "rareza": "plata", "explicacion": "De Juan José Campanella: nominada en 2002." },
+        { "canonica": "Camila", "variantes": [], "rareza": "oro", "explicacion": "De María Luisa Bemberg: nominada en 1985." },
+        { "canonica": "Tango", "variantes": ["Tango, no me dejes nunca"], "rareza": "oro", "explicacion": "De Carlos Saura, presentada por la Argentina: nominada en 1999." },
+        { "canonica": "La tregua", "variantes": [], "rareza": "diamante", "explicacion": "De Sergio Renán: en 1975 fue la primera película argentina nominada." }
+      ],
+      "rechazos": [{ "textos": ["Nueve reinas"], "motivo": "No fue nominada al Óscar." }]
+    },
+    {
+      "id": "far-campanella",
+      "categoria": "farandula",
+      "enunciado": "Nombrá una película dirigida por Juan José Campanella.",
+      "alcance": "Sus largometrajes estrenados entre 1999 y 2019, de «El mismo amor, la misma lluvia» a «El cuento de las comadrejas».",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Juan_José_Campanella", "titulo": "Juan José Campanella — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "El secreto de sus ojos", "variantes": [], "rareza": "grava", "explicacion": "Con Ricardo Darín y Soledad Villamil; ganó el Óscar en 2010." },
+        { "canonica": "El hijo de la novia", "variantes": [], "rareza": "grava", "explicacion": "Con Ricardo Darín, Héctor Alterio y Norma Aleandro (2001)." },
+        { "canonica": "Luna de Avellaneda", "variantes": [], "rareza": "cobre", "explicacion": "Sobre un club de barrio en crisis, con Ricardo Darín (2004)." },
+        { "canonica": "Metegol", "variantes": [], "rareza": "plata", "explicacion": "Película animada sobre un metegol cuyos jugadores cobran vida (2013)." },
+        { "canonica": "El cuento de las comadrejas", "variantes": [], "rareza": "oro", "explicacion": "Remake de «Los muchachos de antes no usaban arsénico» (2019)." },
+        { "canonica": "El mismo amor, la misma lluvia", "variantes": [], "rareza": "diamante", "explicacion": "Con Ricardo Darín y Soledad Villamil (1999): su primera película argentina." }
+      ],
+      "rechazos": [{ "textos": ["Nueve reinas"], "motivo": "La dirigió Fabián Bielinsky." }]
+    },
+    {
+      "id": "far-soda-stereo",
+      "categoria": "farandula",
+      "enunciado": "Nombrá un álbum de estudio de Soda Stereo.",
+      "alcance": "Los siete discos de estudio, de «Soda Stereo» (1984) a «Sueño Stereo» (1995). No cuentan los discos en vivo.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Soda_Stereo", "titulo": "Soda Stereo — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Canción animal", "variantes": [], "rareza": "grava", "explicacion": "Disco de 1990, con «De música ligera»." },
+        { "canonica": "Soda Stereo", "variantes": [], "rareza": "grava", "explicacion": "El primer disco de la banda, de 1984." },
+        { "canonica": "Signos", "variantes": [], "rareza": "cobre", "explicacion": "Disco de 1986, con «Persiana americana»." },
+        { "canonica": "Sueño Stereo", "variantes": [], "rareza": "plata", "explicacion": "El último disco de estudio, de 1995, con «Ella usó mi cabeza como un revólver»." },
+        { "canonica": "Nada personal", "variantes": [], "rareza": "plata", "explicacion": "El segundo disco, de 1985." },
+        { "canonica": "Doble vida", "variantes": [], "rareza": "oro", "explicacion": "Disco de 1988, grabado en Nueva York." },
+        { "canonica": "Dynamo", "variantes": [], "rareza": "diamante", "explicacion": "Disco de 1992, de sonido más experimental y ruidoso." }
+      ],
+      "rechazos": [
+        { "textos": ["Ruido blanco"], "motivo": "Es un disco en vivo, de 1987." },
+        { "textos": ["Comfort y música para volar"], "motivo": "Es un disco en vivo, grabado para MTV Unplugged." }
+      ]
+    },
+    {
+      "id": "far-redondos",
+      "categoria": "farandula",
+      "enunciado": "Nombrá un álbum de estudio de Patricio Rey y sus Redonditos de Ricota.",
+      "alcance": "Los nueve discos de estudio, de «Gulp!» (1985) a «Momo Sampler» (2000). «Lobo suelto, cordero atado» cuenta como uno.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Patricio_Rey_y_sus_Redonditos_de_Ricota", "titulo": "Patricio Rey y sus Redonditos de Ricota — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Oktubre", "variantes": [], "rareza": "grava", "explicacion": "Segundo disco, de 1986, con «Fuegos de octubre» y «Jijiji»." },
+        { "canonica": "La mosca y la sopa", "variantes": [], "rareza": "cobre", "explicacion": "Disco de 1991, con «Un poco de amor francés»." },
+        { "canonica": "Un baión para el ojo idiota", "variantes": [], "rareza": "cobre", "explicacion": "Tercer disco, de 1988." },
+        { "canonica": "Luzbelito", "variantes": [], "rareza": "plata", "explicacion": "Disco de 1996." },
+        { "canonica": "Gulp!", "variantes": [], "rareza": "plata", "explicacion": "El primer disco de la banda, de 1985." },
+        { "canonica": "¡Bang! ¡Bang! Estás liquidado", "variantes": ["Bang bang estás liquidado"], "rareza": "plata", "explicacion": "Cuarto disco, de 1989." },
+        { "canonica": "Lobo suelto, cordero atado", "variantes": [], "rareza": "oro", "explicacion": "Disco doble de 1993, publicado en dos volúmenes." },
+        { "canonica": "Último bondi a Finisterre", "variantes": [], "rareza": "oro", "explicacion": "Disco de 1998." },
+        { "canonica": "Momo Sampler", "variantes": [], "rareza": "diamante", "explicacion": "El último disco de estudio de la banda, del año 2000." }
+      ],
+      "rechazos": []
+    },
+    {
+      "id": "far-canales-historicos",
+      "categoria": "farandula",
+      "enunciado": "Nombrá uno de los cinco canales históricos de la televisión abierta porteña.",
+      "alcance": "Los canales 2, 7, 9, 11 y 13 de Buenos Aires, por su nombre actual. También vale su número, como «Canal 11».",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Televisión_en_Argentina", "titulo": "Televisión en Argentina — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Telefe", "variantes": ["Canal 11"], "rareza": "grava", "explicacion": "El canal 11; su nombre viene de «Televisión Federal»." },
+        { "canonica": "El Trece", "variantes": ["Canal 13", "Trece"], "rareza": "grava", "explicacion": "El canal 13 de Buenos Aires." },
+        { "canonica": "América TV", "variantes": ["América", "Canal 2"], "rareza": "cobre", "explicacion": "El canal 2, con licencia en La Plata." },
+        { "canonica": "TV Pública", "variantes": ["Televisión Pública", "Canal 7"], "rareza": "plata", "explicacion": "El canal 7, la emisora estatal y la primera de la televisión argentina." },
+        { "canonica": "El Nueve", "variantes": ["Canal 9", "Nueve"], "rareza": "diamante", "explicacion": "El canal 9 de Buenos Aires." }
+      ],
+      "rechazos": []
+    },
+    {
+      "id": "far-szifron",
+      "categoria": "farandula",
+      "enunciado": "Nombrá una película o serie dirigida por Damián Szifron.",
+      "alcance": "Sus obras como director hasta 2023: dos series de televisión y cuatro largometrajes.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Damián_Szifron", "titulo": "Damián Szifron — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Los simuladores", "variantes": [], "rareza": "grava", "explicacion": "Serie de Telefe (2002-2003) sobre un equipo que resuelve problemas con operativos de simulacro." },
+        { "canonica": "Relatos salvajes", "variantes": [], "rareza": "grava", "explicacion": "Película de seis episodios (2014), nominada al Óscar." },
+        { "canonica": "Tiempo de valientes", "variantes": [], "rareza": "cobre", "explicacion": "Comedia policial con Luis Luque y Diego Peretti (2005)." },
+        { "canonica": "Hermanos y detectives", "variantes": [], "rareza": "plata", "explicacion": "Serie de Telefe (2006) sobre un chico que ayuda a su hermano policía." },
+        { "canonica": "El fondo del mar", "variantes": [], "rareza": "oro", "explicacion": "Su primer largometraje, de 2003." },
+        { "canonica": "Misántropo", "variantes": ["To Catch a Killer"], "rareza": "diamante", "explicacion": "Su primera película en inglés (2023), con Shailene Woodley." }
+      ],
+      "rechazos": []
+    }
+  ]
+}

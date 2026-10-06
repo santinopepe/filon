@@ -34,8 +34,10 @@ export async function prepararEntorno({ inicio = '2026-10-05T15:00:00-03:00', en
   const db = await abrirBD(config.rutaBD);
   const reloj = crearReloj(inicio);
   const reserva = cargarReserva(config.rutaReserva, { dominios: config.fuentes.dominios });
+  const reservas = { normal: reserva };
+  for (const [modo, ruta] of Object.entries(config.rutasReserva)) reservas[modo] = cargarReserva(ruta, { dominios: config.fuentes.dominios, modo });
   const verificador = crearVerificador({ dominios: config.fuentes.dominios, modo: 'desactivada' });
-  return { config, db, reloj, reserva, verificador };
+  return { config, db, reloj, reserva, reservas, verificador };
 }
 
 /** Publica (con la reserva) el desafío del día actual del reloj. */

@@ -12,6 +12,21 @@ Juego web diario de cultura general ambientado en un viaje por las capas de la T
 
 La rareza es una estimación editorial (de la IA o de la curaduría de la reserva), no un porcentaje de jugadores. Así se presenta en la interfaz.
 
+## Modos de juego
+
+Hay tres modos, con la misma mecánica (siete preguntas, 25 s, rarezas y puntos) y el mismo estilo visual. Se eligen con el botón de menú (☰) de la barra superior, que abre un selector con una miniatura, el nombre y el estado de hoy de cada uno (disponible, en curso, jugado o preparándose).
+
+| Modo | Preguntas | Ambientación | Avance |
+| --- | --- | --- | --- |
+| **Normal** | una de cada categoría (geografía, historia, ciencia, deportes, cine, música, literatura) | Lito cava por las capas de la Tierra | 10 m por punto; el fondo está a 7.000 m |
+| **Farándula Argentina** | siete de farándula y espectáculo argentinos (TV, cine, música, humor) | Lito baja de una limusina y camina por la alfombra roja; a medida que avanza aparecen más fans, carteles, paparazzi y flashes, hasta la entrada de la gala | 10 m de alfombra por punto |
+| **Geografía** | siete de geografía | Lito pilotea un avión desde Aeroparque y da la vuelta al mundo: América del Sur, América del Norte, Europa, África, Asia, Oceanía y la Antártida, con sus monumentos y su cielo | 60 km por punto; la vuelta al mundo son 42.000 km |
+
+- **Una partida por día en cada modo.** Cada modo tiene su propio desafío diario (`desafios` es único por `modo` y `fecha`), así que la restricción histórica «una partida por jugador y desafío» queda en una por jugador, modo y día. Jugar un modo no bloquea los otros. Cambia a las 00:00 de Buenos Aires, como siempre, y como vive en la base sobrevive a recargas y a cerrar el navegador (mientras se conserve la cookie).
+- **Cada pregunta es de su modo.** Normal valida las siete categorías; Farándula solo acepta la categoría `farandula` y Geografía solo `geografia`. El historial, la detección de repeticiones y la numeración de desafíos son independientes por modo.
+- El modo elegido viaja en la URL (`/?modo=farandula`, `/?modo=geografia`), así una recarga o un enlace compartido abren el mismo.
+- La IA automática (Wikidata, alcance global) solo arma Normal. Los modos temáticos se publican desde su banco de reserva (`datos/reserva-farandula.json`, `datos/reserva-geografia.json`) o con la carga manual del panel, usando el prompt de cada modo (`datos/prompt-farandula.txt`, `datos/prompt-geografia.txt`) en otra IA. El programador completa mañana con la reserva recién en los últimos 30 minutos antes de medianoche, para dejar tiempo a la carga manual sin tener que reemplazar nada.
+
 ---
 
 ## Inicio rápido (sin credenciales)
@@ -24,9 +39,9 @@ npm start
 # → http://localhost:3000
 ```
 
-Al arrancar, el servidor publica el desafío de hoy y prepara el de mañana. Sin clave de IA usa el **banco de reserva global** (`datos/reserva.json`: 21 preguntas curadas, 3 por categoría, 239 respuestas con variantes, explicaciones y fuentes), así que se puede jugar de inmediato.
+Al arrancar, el servidor publica el desafío de hoy de cada modo y prepara el de mañana. Sin clave de IA usa los **bancos de reserva** (`datos/reserva.json`: 21 preguntas curadas de Normal, 3 por categoría, 239 respuestas con variantes, explicaciones y fuentes; `datos/reserva-farandula.json`: 9; `datos/reserva-geografia.json`: 13), así que se puede jugar de inmediato.
 
-Para ver el banco del día: `npm run admin -- desafio AAAA-MM-DD`.
+Para ver el banco del día: `npm run admin -- desafio AAAA-MM-DD [normal|farandula|geografia]`.
 
 ## Activar la IA
 
@@ -73,7 +88,8 @@ servidor/
   normalizar.js         normalización de respuestas e índice de búsqueda
   validacion.js         validación estructural y de consistencia (sin IA)
   verificacion.js       verificación contra fuentes externas (sin IA)
-  banco.js              publicación y lectura del banco congelado
+  dominio.js            rarezas, categorías y modos de juego
+  banco.js              publicación y lectura del banco congelado (por fecha y modo)
   juego.js              partidas, rondas, tiempos, puntos y reportes
   api.js, http.js       rutas, cookies firmadas, límites y seguridad
   programador.js        tarea programada interna (solo servidor local)
@@ -81,8 +97,10 @@ servidor/
 api/index.js            función de Vercel: atiende /api/* (incluye /api/cron/*)
 vercel.json             estáticos, reescrituras, cabeceras de seguridad y crons
 scripts/                generar-desafio.js · validar-reserva.js · admin.js
-datos/reserva.json      banco de reserva validado
-publico/                index.html · estilos.css · app.js · escena.js · sonido.js
+datos/                  reserva*.json (bancos de reserva por modo) · prompt-*.txt (prompts para otra IA por modo)
+publico/                index.html · estilos.css · app.js · modos.js (textos y escena de cada modo) · sonido.js
+                        escena.js (la mina) · escena-viaje.js (motor pixel art de las escenas horizontales) · pixel.js
+                        escena-farandula.js (alfombra roja) · escena-geografia.js (avión) · paisaje-geografia.js (vuelta al mundo)
 pruebas/                pruebas automáticas y recorrido en navegador
 despliegue/             systemd, cron (alternativa a Vercel)
 ```
@@ -115,12 +133,13 @@ Así, a las 00:00 el desafío nuevo ya está publicado y el cambio es instantán
 ```bash
 npm run generar                         # hoy (con reserva si la IA falla)
 npm run generar -- --manana --sin-reserva   # mañana solo con IA (código 2 si queda pendiente)
+npm run generar -- --modo farandula      # un solo modo (por defecto, los tres)
 npm run generar -- --solo-reserva        # sin llamar a la IA
 ```
 
 ## Partida
 
-- **Identidad anónima**: cookie `HttpOnly`, `SameSite=Lax`, firmada con HMAC y válida 400 días. Sin registro. Una partida por identificador y desafío (restricción `UNIQUE` en la base).
+- **Identidad anónima**: cookie `HttpOnly`, `SameSite=Lax`, firmada con HMAC y válida 400 días. Sin registro. Una partida por identificador y desafío (restricción `UNIQUE` en la base); como cada modo tiene su desafío, son una por identificador, modo y día.
 - **Tiempo validado en el servidor**: al empezar una ronda se guarda el inicio y el límite (25 s). Una respuesta que llega después del límite más 1,5 s de margen de red no cuenta y la ronda se cierra con 0 puntos. El navegador solo muestra la mecha.
 - **Recarga**: el estado vive en el servidor. Recargar vuelve a la misma ronda con el tiempo restante real; pedir de nuevo una ronda ya empezada no reinicia el reloj; no se puede saltar ni volver a una ronda.
 - **Medianoche**: la partida queda atada a su desafío. Si empezaste a las 23:58, terminás con esas preguntas aunque ya sea el día siguiente (tenés hasta 12 h después del fin del día; luego las rondas sin jugar caducan). El desafío nuevo es otra partida.
@@ -142,13 +161,14 @@ Al terminar la partida, cada fila del resumen final abre **todas las respuestas 
 
 ## Pantallas
 
-- **Inicio**: nombre, explicación breve, rarezas, «Comenzar excavación» y cuenta regresiva al próximo desafío. Si hay una partida en curso, «Seguir excavando»; si quedó una del día anterior, la opción de terminarla.
+- **Selector de modos** (botón ☰): miniatura y nombre de cada modo, con su estado de hoy. Durante una ronda no se puede cambiar de modo (la mecha sigue corriendo).
+- **Inicio**: nombre, modo actual, explicación breve, rarezas, el botón para empezar («Comenzar excavación», «Bajar de la limusina» o «Despegar») y cuenta regresiva al próximo desafío. Si hay una partida en curso, «Seguir…»; si quedó una del día anterior en ese modo, la opción de terminarla.
 - **Partida**: pregunta, alcance, mecha de 25 s, campo de respuesta, intentos rechazados, progreso de las 7 rondas, puntos y profundidad.
 - **Resultado de ronda**: rareza, puntos, metros, respuesta aceptada, explicación, fuente, «otra joya de esta veta» y reporte de faltantes, con la animación de excavación y descenso.
 - **Resultado final**: profundidad total, estrato alcanzado, desglose por pregunta y «Compartir resultado» (un resumen con emojis por rareza, sin respuestas).
 - **Partida completada**: al volver el mismo día, el resultado guardado y el tiempo hasta el próximo desafío.
 
-La escena vertical cambia con la profundidad: una superficie verde y luminosa; tierra con raíces, arenisca con fósiles, pizarra laminada, granito moteado, basalto con grietas de magma y la cámara de cristales a partir de 6.000 m. Lito abre progresivamente un túnel orgánico por el centro del corte geológico: solo aparece detrás del gusano y termina en el frente de excavación de la profundidad alcanzada. El gusano tiene silueta anatómica, clitelo, segmentos y textura húmeda, y cada hallazgo dispara partículas del color de su rareza. Los sonidos se sintetizan con Web Audio y se silencian con un botón; el control de movimiento reducido (que respeta la preferencia del sistema) elimina animaciones, partículas y descensos.
+En Normal, la escena vertical cambia con la profundidad: una superficie verde y luminosa; tierra con raíces, arenisca con fósiles, pizarra laminada, granito moteado, basalto con grietas de magma y la cámara de cristales a partir de 6.000 m. Lito abre progresivamente un túnel orgánico por el centro del corte geológico: solo aparece detrás del gusano y termina en el frente de excavación de la profundidad alcanzada. El gusano tiene silueta anatómica, clitelo, segmentos y textura húmeda, y cada hallazgo dispara partículas del color de su rareza. En Farándula y Geografía la escena es horizontal y en pixel art (`escena-viaje.js`): el avance mueve el mundo alrededor de Filón. Cada cuadro se dibuja en dos lienzos de baja resolución que se agrandan sin suavizado: el fondo (cielo, nubes, sierras, ciudad, reflectores) con pixeles más grandes y desenfocados, y el frente (suelo, mar, alfombra, público, limusina, avión) nítido, con bordes duros y tramas de pixeles para lo translúcido. Filón se pixela a partir del mismo SVG del juego, con contorno oscuro y su vestuario: anteojos y moño en la alfombra roja; gorro de piloto, antiparras y bufanda en la cabina del avión rojo y blanco. Los carteles usan una tipografía pixel de 3×5 (`pixel.js`). La barra de progreso muestra las etapas de cada modo (de «Llegada» a «Entrada de la gala»; de Aeroparque a la Antártida). Los sonidos se sintetizan con Web Audio y se silencian con un botón; el control de movimiento reducido (que respeta la preferencia del sistema) elimina animaciones, partículas y descensos.
 
 ## Pruebas y verificaciones
 
@@ -162,10 +182,10 @@ npm run verificar               # todo lo que corre el CI, en el mismo orden
 | --- | --- |
 | `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
 | `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
-| `npm test` | 92 pruebas unitarias y de integración (`node:test`) |
+| `npm test` | 103 pruebas unitarias y de integración (`node:test`) |
 | `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
-| `npm run validar-reserva` | 21 preguntas válidas, 3 por categoría |
-| `npm run test:navegador` | 11 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
+| `npm run validar-reserva` | los tres bancos: Normal (21, 3 por categoría), Farándula (9) y Geografía (13), cada temático con al menos 7 |
+| `npm run test:navegador` | 15 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
 | `npm run test:recorrido` | recorrido histórico en navegador (19 comprobaciones, guarda capturas en `capturas/`) |
 | `npm run explicar-consultas` | `EXPLAIN QUERY PLAN` de las consultas principales |
 
@@ -224,7 +244,7 @@ Todo corre en Vercel: `publico/` lo sirve la CDN, `/api/*` es una función (`api
 4. `vercel --prod`. El esquema de la base se crea solo en la primera solicitud.
 5. Publicá el primer desafío sin esperar al cron: `curl -H "Authorization: Bearer $CRON_SECRET" https://<tu-dominio>/api/cron/hoy`.
 
-Crons (hora UTC; Buenos Aires es UTC−3 todo el año). Funcionan también en el plan Hobby, que dispara cada cron una vez por día con precisión de una hora:
+Crons (hora UTC; Buenos Aires es UTC−3 todo el año). `hoy` y `manana` recorren los tres modos; `manana-ia` solo Normal. Funcionan también en el plan Hobby, que dispara cada cron una vez por día con precisión de una hora:
 
 | Ruta | UTC | Buenos Aires | Qué hace |
 | --- | --- | --- | --- |
@@ -238,9 +258,9 @@ La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (2
 
 Panel web en **`/admin`**. Se ingresa una vez con el `TOKEN_ADMIN`: el servidor lo compara en tiempo constante y abre una **sesión** (token aleatorio en una cookie `HttpOnly`, `SameSite=Strict`, `__Host-` con HTTPS; en la base solo se guarda su hash). La sesión vence a los 30 minutos sin actividad y, como máximo, a las 8 horas; «Salir» la revoca en el servidor. El token maestro **no** se guarda en el navegador. El login tiene un límite de 5 intentos cada 15 minutos.
 
-El panel abre en un **resumen** con estadísticas: jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos, creación (IA, reserva o JSON), corridas y reportes. En **Crear → Generar con otra IA** está el prompt para usar con ChatGPT, Claude u otra IA (editable, y con «Copiar con historial» que completa el historial reciente para que no repita preguntas) y la descarga en **JSON o CSV** de las preguntas de los últimos N días (por defecto 3, incluidos los ya programados): `GET /api/admin/historial?dias=3&formato=json|csv`. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
+El panel abre en un **resumen** con estadísticas (con un selector de modo): jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos (filtrados por modo), creación (IA, reserva o JSON), corridas y reportes. **Crear** tiene tres pestañas, **Normal**, **Farándula Argentina** y **Geografía**, cada una con las mismas herramientas y su propio estado: publicar (Normal con IA o reserva; los temáticos, desde su reserva), carga manual con «Solo validar», el prompt del modo y su historial. En **Crear → Generar con otra IA** está el prompt para usar con ChatGPT, Claude u otra IA (editable, y con «Copiar con historial» que completa el historial reciente para que no repita preguntas) y la descarga en **JSON o CSV** de las preguntas de los últimos N días (por defecto 3, incluidos los ya programados): `GET /api/admin/historial?dias=3&formato=json|csv`. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
 
-La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `ADMIN_PERMITIR_BEARER=1` (transición):
+La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `ADMIN_PERMITIR_BEARER=1` (transición). Todas las rutas de desafíos, el historial, el prompt y las estadísticas aceptan `?modo=normal|farandula|geografia` (sin el parámetro, Normal); un modo desconocido responde `400 modo_invalido`. En el juego, `GET /api/estado?modo=…` devuelve además `modos` (el estado de hoy de los tres) y `POST /api/partidas` recibe `{"modo": "…"}`.
 
 | Ruta | Qué hace |
 | --- | --- |
@@ -252,7 +272,7 @@ La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `
 | `GET /api/admin/corridas` | Últimas corridas con su detalle |
 | `GET /api/admin/reportes` · `POST /api/admin/reportes/:id` | Reportes y cambio de estado (`{"estado":"aceptado"}`) |
 
-`POST …/generar` recibe `{"modo": "auto" | "ia" | "reserva", "reemplazar": bool, "forzar": bool}`:
+`POST …/generar?modo=…` recibe `{"modo": "auto" | "ia" | "reserva", "reemplazar": bool, "forzar": bool}` (en el cuerpo, `modo` es la estrategia de generación; en Farándula y Geografía `ia` responde 400 porque no tienen IA automática):
 - `auto` usa IA y completa con la reserva; `ia` solo publica si la IA arma el día completo (si no, no cambia nada); `reserva` no usa IA.
 - Para regenerar un día que ya existe hace falta `reemplazar: true`. El anterior se borra recién cuando el nuevo se publicó bien, y las preguntas reemplazadas no se repiten.
 - Si ese día ya tiene partidas, responde `409 hay_partidas`; con `forzar: true` se borran junto con el desafío anterior.
@@ -268,7 +288,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN_ADMIN" -H 'content-type: applicati
   -d '{"modo":"ia","reemplazar":true}' https://<tu-dominio>/api/admin/desafios/2026-10-07/generar
 ```
 
-`POST …/importar` recibe `{"preguntas":[…], "reemplazar":false, "forzar":false}`. Las preguntas usan exactamente el formato de `datos/reserva.json`. La API exige siete categorías distintas, valida fuentes, respuestas, variantes, rarezas y repeticiones, y guarda todo en una única transacción. Un error devuelve el detalle y no escribe nada. El cuerpo puede medir hasta 1 MB.
+`POST …/importar?modo=…` recibe `{"preguntas":[…], "reemplazar":false, "forzar":false}`. Las preguntas usan exactamente el formato de `datos/reserva.json`. En Normal la API exige siete categorías distintas; en los temáticos, siete preguntas de la categoría del modo (si una no trae `categoria`, toma la del modo). En todos, valida fuentes, respuestas, variantes, rarezas y repeticiones, y guarda todo en una única transacción. Un error devuelve el detalle y no escribe nada. El cuerpo puede medir hasta 1 MB.
 
 Para administrar la base de producción desde tu máquina: `TURSO_DATABASE_URL=… TURSO_AUTH_TOKEN=… npm run admin -- corridas` (o `GET /api/admin/*` con `TOKEN_ADMIN`).
 

@@ -1,5 +1,7 @@
 // Filón — interfaz del juego. El servidor decide tiempos, respuestas y puntos; acá solo se muestra.
-import { crearEscena, estratoDe, ESTRATOS } from './escena.js';
+// Hay tres modos (Normal, Farándula Argentina y Geografía), cada uno con su desafío diario, su escena
+// y sus textos; el modo elegido viaja en la URL (?modo=…) para que una recarga vuelva al mismo.
+import { MODOS, esModo, crearFormato } from './modos.js';
 import { crearSonido } from './sonido.js';
 
 const $ = (id) => document.getElementById(id);
@@ -10,18 +12,7 @@ const fmt = (n) => numero.format(Math.round(n));
 const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 const elegir = (lista) => lista[Math.floor(Math.random() * lista.length)];
 
-const FRASES = {
-  inicio: ['¡Buenas! Soy Lito. Hoy vamos a atravesar siete capas.', 'La tierra está húmeda. ¿Bajamos?'],
-  ronda: ['Pensá en lo que nadie diría.', 'Las obvias valen poco. ¡Arriesgá!', 'Bajo tierra, lo raro brilla más.', 'Ojo con la mecha.'],
-  rechazo: ['Esa no abrió camino. ¡Otra!', 'Tierra dura. Probá otra respuesta.'],
-  grava: ['Grava. Algo es algo.', 'Grava… hay más abajo, ¿eh?'],
-  cobre: ['¡Cobre! Vamos bien.', 'Cobre del bueno.'],
-  plata: ['¡Plata! Eso ya brilla.', 'Plata. Se nota que sabés.'],
-  oro: ['¡Oro! Pocos llegan ahí.', '¡Una pepita de oro!'],
-  diamante: ['¡Un diamante! ¿Viste cómo brilla?', '¡Diamante! Eso no lo dice nadie.'],
-  vencida: ['Se apagó la mecha. A la próxima.', 'Uy, se nos fue el tiempo.'],
-  pasada: ['Hay vetas que conviene dejar.'],
-};
+const ESTADOS_MODO = { disponible: 'Disponible', en_curso: 'En curso', jugado: 'Jugado hoy', preparando: 'Preparándose' };
 
 // ───────── Preferencias ─────────
 function leerPrefs() {
@@ -42,8 +33,16 @@ const prefs = leerPrefs();
 if (prefs.sonido === undefined) prefs.sonido = true;
 if (prefs.reducir === undefined) prefs.reducir = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Modo inicial: el de la URL; si no hay, el último elegido en este navegador; si no, Normal.
+function modoInicial() {
+  const enUrl = new URLSearchParams(location.search).get('modo');
+  if (esModo(enUrl)) return enUrl;
+  return esModo(prefs.modo) ? prefs.modo : 'normal';
+}
+
 // ───────── Estado ─────────
 const estado = {
+  modo: modoInicial(),
   general: null,
   partida: null,
   pantalla: 'cargando',
@@ -79,8 +78,43 @@ function zonaLibre() {
   return { movil, izquierda: 70, derecha: panel.left > 200 ? panel.left : innerWidth - 500, arriba: 60, abajo: innerHeight };
 }
 
-const escena = crearEscena($('escena'), { alCambiarProfundidad: mostrarProfundidad, zonaLibre });
+// Lo propio del modo activo: configuración, textos y formato de distancias.
+const modo = () => MODOS[estado.modo];
+const textos = () => modo().textos;
+const frases = (clave) => modo().frases[clave];
+let formato = crearFormato(estado.modo, fmt);
+const dist = (metros) => formato.dist(metros);
+
+let escena = null; // la crea aplicarModo() al arrancar y cada vez que se cambia de modo
 const sonido = crearSonido({ activo: prefs.sonido });
+
+/** Aplica la ambientación de un modo: escena, colores, profundímetro y textos fijos. */
+function aplicarModo(clave) {
+  estado.modo = clave;
+  formato = crearFormato(clave, fmt);
+  escena?.detener();
+  escena = modo().crearEscena($('escena'), { alCambiarProfundidad: mostrarProfundidad, zonaLibre });
+  escena.reducido = prefs.reducir;
+  escena.fijarProfundidad(0, { animar: false });
+  for (const c of Object.keys(MODOS)) document.body.classList.toggle(`modo-${c}`, c === clave);
+  document.title = modo().titulo;
+  construirProfundimetro();
+  pintarTextosDelModo();
+}
+
+function pintarTextosDelModo() {
+  const t = textos();
+  $('inicio-bajada').textContent = t.bajada;
+  $('inicio-regla-avance').textContent = t.reglaAvance;
+  $('inicio-modo').textContent = modo().nombre;
+  $('inicio-preparando').textContent = t.preparando;
+  $('btn-retomar').textContent = t.retomar;
+  $('ayuda-avance').textContent = t.ayudaAvance;
+  $('final-unidad').textContent = modo().unidad.palabra;
+  $('recorrido-titulo').textContent = t.recorridoTitulo;
+  $('recorrido-texto').textContent = t.recorridoTexto;
+  $('tope').textContent = formato.total;
+}
 
 // ───────── Utilidades de interfaz ─────────
 async function api(metodo, ruta, cuerpo) {
@@ -136,6 +170,10 @@ function decir(texto, ms = 3800) {
   b.hidden = false;
   clearTimeout(temporizadorBurbuja);
   temporizadorBurbuja = setTimeout(() => (b.hidden = true), ms);
+}
+
+function sonarGolpe() {
+  sonido[modo().sonidoGolpe]?.();
 }
 
 function pose(clase, ms) {
@@ -203,18 +241,20 @@ addEventListener('scroll', () => {
 addEventListener('resize', actualizarRecorrido);
 
 // ───────── Barra de profundidad ─────────
-// Lo excavado muestra los colores de los estratos; lo que falta queda a oscuras.
-// La orientación (vertical en escritorio, horizontal en celulares) la resuelve el CSS con --pct.
+// Lo recorrido muestra los colores de las etapas del modo (estratos, zonas de la alfombra o continentes);
+// lo que falta queda a oscuras. La orientación (vertical en escritorio, horizontal en celulares) la
+// resuelve el CSS con --pct.
 function construirProfundimetro() {
   const escala = $('escala');
+  for (const viejo of escala.querySelectorAll('.franja, .marca-km')) viejo.remove();
   let desde = 0;
-  for (const e of ESTRATOS.slice(1)) {
+  for (const e of modo().etapas.slice(1)) {
     const hasta = Math.min(e.hasta, PROFUNDIDAD_MAXIMA);
     const franja = document.createElement('div');
     franja.className = 'franja';
     franja.style.setProperty('--desde', (desde / PROFUNDIDAD_MAXIMA) * 100);
     franja.style.setProperty('--largo', ((hasta - desde) / PROFUNDIDAD_MAXIMA) * 100);
-    franja.style.background = `rgb(${e.base.map((c) => Math.min(255, c * 1.6)).join(' ')})`;
+    franja.style.background = e.barra ?? `rgb(${e.base.map((c) => Math.min(255, c * 1.6)).join(' ')})`;
     escala.prepend(franja);
     desde = hasta;
   }
@@ -230,8 +270,8 @@ function mostrarProfundidad(m) {
   const metros = Math.max(0, m);
   const pct = (Math.min(metros, PROFUNDIDAD_MAXIMA) / PROFUNDIDAD_MAXIMA) * 100;
   $('profundimetro').style.setProperty('--pct', pct.toFixed(2));
-  $('marcador-texto').textContent = `${fmt(metros)} m`;
-  const estrato = estratoDe(metros).titulo;
+  $('marcador-texto').textContent = dist(metros);
+  const estrato = modo().etapaDe(metros).titulo;
   if ($('marcador-estrato').textContent !== estrato) $('marcador-estrato').textContent = estrato;
 }
 
@@ -264,6 +304,7 @@ function pepitas() {
 // ───────── Inicio ─────────
 function renderInicio() {
   const g = estado.general;
+  const t = textos();
   mostrar('inicio');
   escena.fijarProfundidad(0, { animar: false });
   $('inicio-meta').textContent = g.desafio ? `Desafío #${g.desafio.numero} · ${fechaLarga(g.desafio.fecha)}` : '';
@@ -271,26 +312,89 @@ function renderInicio() {
   const boton = $('btn-comenzar');
   boton.disabled = !g.desafio;
   const hoy = g.partidaHoy;
-  boton.textContent = hoy && !hoy.terminada && hoy.rondas.some((r) => r.estado !== 'pendiente') ? 'Seguir excavando' : 'Comenzar excavación';
+  const empezada = hoy && !hoy.terminada && hoy.rondas.some((r) => r.estado !== 'pendiente');
+  boton.textContent = empezada ? t.seguir : t.comenzar;
   const prog = $('inicio-progreso');
-  if (hoy && !hoy.terminada && hoy.rondas.some((r) => r.estado !== 'pendiente')) {
+  if (empezada) {
     const hechas = hoy.rondas.filter((r) => r.estado !== 'pendiente' && r.estado !== 'activa').length;
-    prog.textContent = `Llevás ${hechas} de 7 rondas y estás a ${fmt(hoy.profundidad)} m.`;
+    prog.textContent = t.progreso(hechas, dist(hoy.profundidad));
     prog.hidden = false;
   } else prog.hidden = true;
 
   const pend = g.partidaPendiente;
   $('inicio-pendiente').hidden = !pend;
-  if (pend) {
-    $('inicio-pendiente-texto').textContent = `Te quedó una excavación sin terminar del desafío #${pend.numero} (${fechaLarga(pend.fecha)}). Podés terminarla hasta las ${horaLocal(pend.retomarHasta)}.`;
-  }
+  if (pend) $('inicio-pendiente-texto').textContent = t.pendiente(pend.numero, fechaLarga(pend.fecha), horaLocal(pend.retomarHasta));
+  pintarOtrosModos();
   tickCuentas();
-  decir(elegir(FRASES.inicio), 5000);
+  decir(elegir(frases('inicio')), 5000);
 }
 
 async function recargarGeneral() {
-  estado.general = await api('GET', '/api/estado');
+  estado.general = await api('GET', `/api/estado?modo=${estado.modo}`);
   return estado.general;
+}
+
+// ───────── Selector de modos ─────────
+function etiquetaEstadoModo(m) {
+  if (m.estado === 'jugado' && m.profundidad != null) return `${ESTADOS_MODO.jugado} · ${crearFormato(m.clave, fmt).dist(m.profundidad)}`;
+  return ESTADOS_MODO[m.estado] || m.estado;
+}
+
+/** Marca en el selector qué modos siguen disponibles hoy y cuáles ya se jugaron. */
+function pintarSelector() {
+  const resumen = new Map((estado.general?.modos || []).map((m) => [m.clave, m]));
+  for (const boton of document.querySelectorAll('.modo-opcion')) {
+    const clave = boton.dataset.modo;
+    const m = resumen.get(clave);
+    const etiqueta = boton.querySelector('.modo-estado');
+    etiqueta.dataset.estado = m?.estado || 'preparando';
+    etiqueta.textContent = m ? etiquetaEstadoModo(m) : '';
+    const actual = clave === estado.modo;
+    if (actual) boton.setAttribute('aria-current', 'true');
+    else boton.removeAttribute('aria-current');
+    boton.setAttribute('aria-label', `${MODOS[clave].nombre}${m ? `: ${etiqueta.textContent}` : ''}${actual ? ' (modo actual)' : ''}`);
+  }
+}
+
+/** En el inicio, un resumen de cómo están los otros dos modos hoy. */
+function pintarOtrosModos() {
+  const otros = (estado.general?.modos || []).filter((m) => m.clave !== estado.modo);
+  $('inicio-otros').textContent = otros.length
+    ? `${otros.map((m) => `${m.nombre}: ${etiquetaEstadoModo(m).toLowerCase()}`).join(' · ')}.`
+    : '';
+}
+
+function abrirSelector() {
+  if (estado.pantalla === 'ronda') {
+    aviso('Terminá la ronda antes de cambiar de modo: el tiempo sigue corriendo.');
+    return;
+  }
+  pintarSelector();
+  const dlg = $('dlg-modos');
+  $('btn-modos').setAttribute('aria-expanded', 'true');
+  dlg.showModal();
+  (dlg.querySelector('.modo-opcion[aria-current]') || dlg.querySelector('.modo-opcion'))?.focus();
+  // Lo que se muestra al abrir puede ser de antes de jugar: se actualiza desde el servidor.
+  recargarGeneral()
+    .then(() => dlg.open && pintarSelector())
+    .catch(() => {
+      /* sin conexión: queda lo último conocido */
+    });
+}
+
+async function elegirModo(clave) {
+  $('dlg-modos').close();
+  if (!esModo(clave) || clave === estado.modo || estado.ocupado) return;
+  prefs.modo = clave;
+  guardarPrefs();
+  const url = new URL(location.href);
+  if (clave === 'normal') url.searchParams.delete('modo');
+  else url.searchParams.set('modo', clave);
+  history.replaceState(null, '', url);
+  detenerMecha();
+  estado.partida = null;
+  aplicarModo(clave);
+  await abrirModo();
 }
 
 // ───────── Flujo de partida ─────────
@@ -300,7 +404,7 @@ async function comenzar(partidaExistente = null) {
   estado.ocupado = true;
   $('btn-comenzar').disabled = true;
   try {
-    estado.partida = partidaExistente || (await api('POST', '/api/partidas')).partida;
+    estado.partida = partidaExistente || (await api('POST', '/api/partidas', { modo: estado.modo })).partida;
     estado.ocupado = false;
     await entrarEnPartida(true);
   } catch (e) {
@@ -324,6 +428,14 @@ async function entrarEnPartida(animarBajada) {
     pose(null);
   } else {
     escena.fijarProfundidad(p.profundidad, { animar: false });
+  }
+  // Partida nueva: Lito baja de la limusina o carretea por la pista (en la mina no hay entrada).
+  if (animarBajada && !p.rondaActiva && p.rondas.every((r) => r.estado === 'pendiente') && escena.entrada) {
+    mostrar('resultado');
+    $('p-resultado').hidden = true;
+    pose('bajando');
+    await escena.entrada();
+    pose(null);
   }
   if (p.rondaActiva) return mostrarRonda(p.rondaActiva);
   const cerradas = p.rondas.filter((r) => r.estado !== 'pendiente' && r.estado !== 'activa');
@@ -372,7 +484,7 @@ function mostrarRonda(n) {
   $('mecha').classList.remove('apagada', 'urgente');
   campo.focus({ preventScroll: true });
   iniciarMecha(n, r.limiteEn);
-  decir(elegir(FRASES.ronda), 3200);
+  decir(elegir(frases('ronda')), 3200);
   anunciar(`Ronda ${n} de 7. ${r.categoria}. ${r.enunciado} Tenés ${estado.partida.segundosPorPregunta} segundos.`);
 }
 
@@ -486,7 +598,7 @@ async function responder(ev) {
           : `«${texto}» no está en la veta. Probá otra.`;
       mensaje.classList.add('error');
       campo.value = '';
-      if (Math.random() < 0.35) decir(elegir(FRASES.rechazo), 2200);
+      if (Math.random() < 0.35) decir(elegir(frases('rechazo')), 2200);
     } else if (r.resultado === 'vacia') {
       mensaje.textContent = 'Escribí una respuesta antes de enviar.';
       mensaje.classList.add('error');
@@ -531,7 +643,7 @@ async function celebrar(n) {
     for (const t of [140, 500, 860]) {
       setTimeout(() => {
         escena.golpe();
-        sonido.pico();
+        sonarGolpe();
       }, t);
     }
     await esperar(1080);
@@ -549,7 +661,7 @@ async function celebrar(n) {
     await escena.fijarProfundidad(estado.partida.profundidad, { animar: false });
   }
   dibujarPepitas();
-  decir(elegir(FRASES[rareza]), 3200);
+  decir(elegir(frases(rareza)), 3200);
   habilitarSiguiente();
 }
 
@@ -579,7 +691,7 @@ function volarGema(origen, n, rareza) {
 function habilitarSiguiente() {
   const b = $('btn-siguiente');
   b.disabled = false;
-  b.textContent = estado.partida.siguiente ? 'Seguir bajando' : 'Ver el resultado final';
+  b.textContent = estado.partida.siguiente ? textos().siguiente : 'Ver el resultado final';
 }
 
 function negrita(texto) {
@@ -708,7 +820,7 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
     const a = r.respuesta;
     h.dataset.rareza = a.rareza;
     $('res-titulo').textContent = a.nombreRareza;
-    $('res-puntos').textContent = `+${r.puntos} puntos · ${fmt(r.metros)} m más abajo`;
+    $('res-puntos').textContent = `+${r.puntos} puntos · ${textos().avance(dist(r.metros))}`;
     respuesta.append('Tu respuesta: ', negrita(a.canonica), '.');
     $('res-explicacion').textContent = a.explicacion;
     $('res-explicacion').hidden = false;
@@ -719,14 +831,14 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
   } else {
     h.dataset.rareza = 'nada';
     $('res-titulo').textContent = r.estado === 'pasada' ? 'Pasaste' : r.estado === 'caducada' ? 'Sin excavar' : 'Se apagó la mecha';
-    $('res-puntos').textContent = '0 puntos · te quedaste en el mismo nivel';
+    $('res-puntos').textContent = `0 puntos · ${textos().quieto}`;
     const probadas = (r.intentos || []).map((i) => `«${i.texto}»`);
     respuesta.append(probadas.length ? `Probaste ${probadas.join(', ')}, pero no estaban en la veta.` : 'No llegaste a dar una respuesta válida.');
     $('res-explicacion').hidden = true;
     fuenteP.hidden = true;
     if (animar) {
       pose('triste', 1600);
-      decir(elegir(r.estado === 'pasada' ? FRASES.pasada : FRASES.vencida), 3000);
+      decir(elegir(frases(r.estado === 'pasada' ? 'pasada' : 'vencida')), 3000);
     }
   }
   h.classList.remove('revelar');
@@ -737,12 +849,12 @@ function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
   $('btn-reportar').hidden = r.estado === 'caducada';
   const siguiente = $('btn-siguiente');
   siguiente.disabled = enCurso;
-  siguiente.textContent = estado.partida.siguiente ? 'Seguir bajando' : 'Ver el resultado final';
+  siguiente.textContent = estado.partida.siguiente ? textos().siguiente : 'Ver el resultado final';
   escena.disponer();
   $('res-titulo').focus({ preventScroll: true });
   anunciar(
     r.estado === 'acertada'
-      ? `${r.respuesta.nombreRareza}. ${r.respuesta.canonica}. ${r.puntos} puntos, bajás ${fmt(r.metros)} metros.`
+      ? `${r.respuesta.nombreRareza}. ${r.respuesta.canonica}. ${r.puntos} puntos, ${textos().anuncioAvance(`${formato.valor(r.metros)} ${modo().unidad.palabra}`)}.`
       : `${$('res-titulo').textContent}. Cero puntos.`,
   );
 }
@@ -782,7 +894,7 @@ function dibujarRendimiento(estadisticas, puntos) {
     $('rendimiento-resumen').textContent = `Superaste al ${percentil}% de quienes jugaron.${empate}`;
   }
   $('rendimiento-nota').textContent = suficientesDatos
-    ? `La curva toma los ${fmt(total)} resultados terminados. El promedio está en ${fmt(promedio * 10)} m.`
+    ? `La curva toma los ${fmt(total)} resultados terminados. El promedio está en ${dist(promedio * 10)}.`
     : `Todavía hay pocos resultados (${fmt(total)}). La forma de la curva es provisoria y se ajustará a medida que juegue más gente.`;
 
   const svg = $('rendimiento-grafico');
@@ -791,7 +903,7 @@ function dibujarRendimiento(estadisticas, puntos) {
   const desc = nodoSvg(
     'desc',
     { id: 'rendimiento-grafico-desc' },
-    total === 1 ? `Tu resultado fue ${puntos * 10} metros.` : `Tu resultado fue ${puntos * 10} metros y superó al ${percentil} por ciento de los jugadores.`,
+    total === 1 ? `Tu resultado fue ${dist(puntos * 10)}.` : `Tu resultado fue ${dist(puntos * 10)} y superó al ${percentil} por ciento de los jugadores.`,
   );
   svg.append(titulo, desc);
 
@@ -830,7 +942,7 @@ function dibujarRendimiento(estadisticas, puntos) {
   svg.append(nodoSvg('path', { class: `campana-curva${suficientesDatos ? '' : ' provisional'}`, d: camino }));
 
   for (const valor of [0, 350, 700]) {
-    const etiqueta = valor === 0 ? '0 m' : `${fmt(valor * 10)} m`;
+    const etiqueta = dist(valor * 10);
     const ancla = valor === 0 ? 'start' : valor === 700 ? 'end' : 'middle';
     svg.append(nodoSvg('line', { class: 'campana-tick', x1: x(valor), y1: y0, x2: x(valor), y2: y0 + 6 }));
     svg.append(nodoSvg('text', { class: 'campana-etiqueta', x: x(valor), y: 190, 'text-anchor': ancla }, etiqueta));
@@ -841,7 +953,7 @@ function dibujarRendimiento(estadisticas, puntos) {
   svg.append(nodoSvg('circle', { class: 'campana-punto', cx: tuX, cy: 24, r: 6 }));
   const anclaTu = tuX < 105 ? 'start' : tuX > 430 ? 'end' : 'middle';
   const corrimiento = anclaTu === 'start' ? 9 : anclaTu === 'end' ? -9 : 0;
-  svg.append(nodoSvg('text', { class: 'campana-tu', x: tuX + corrimiento, y: 15, 'text-anchor': anclaTu }, `VOS · ${fmt(puntos * 10)} m`));
+  svg.append(nodoSvg('text', { class: 'campana-tu', x: tuX + corrimiento, y: 15, 'text-anchor': anclaTu }, `VOS · ${dist(puntos * 10)}`));
 }
 
 function mostrarFinal({ completada = false } = {}) {
@@ -852,15 +964,12 @@ function mostrarFinal({ completada = false } = {}) {
   const recorrido = $('recorrido');
   recorrido.hidden = p.profundidad <= 0;
   recorrido.style.setProperty('--largo-recorrido', `${Math.max(700, p.profundidad * .7)}px`);
-  $('recorrido-fin').textContent = `Hasta acá llegaste: ${fmt(p.profundidad)} metros. ${estratoDe(p.profundidad).titulo}.`;
-  $('final-sobre').textContent = `${completada ? 'Ya excavaste hoy · ' : ''}Desafío #${p.numero} · ${fechaLarga(p.fecha)}`;
-  const e = estratoDe(p.profundidad);
+  const t = textos();
+  const e = modo().etapaDe(p.profundidad);
+  $('recorrido-fin').textContent = `Hasta acá llegaste: ${formato.valor(p.profundidad)} ${modo().unidad.palabra}. ${e.titulo}.`;
+  $('final-sobre').textContent = `${completada ? `${t.yaJugaste} · ` : ''}${estado.modo === 'normal' ? '' : `${modo().nombre} · `}Desafío #${p.numero} · ${fechaLarga(p.fecha)}`;
   $('final-estrato').textContent =
-    p.profundidad === 0
-      ? 'Te quedaste en la superficie. Mañana hay otra bajada.'
-      : p.profundidad >= PROFUNDIDAD_MAXIMA
-        ? '¡Llegaste al corazón de la Tierra! 7.000 de 7.000 metros.'
-        : `Llegaste hasta ${e.nombre}: ${fmt(p.profundidad)} de 7.000 metros posibles.`;
+    p.profundidad === 0 ? t.finalCero : p.profundidad >= PROFUNDIDAD_MAXIMA ? t.finalMaximo : t.finalLlegaste(e, formato.valor(p.profundidad));
   dibujarRendimiento(p.estadisticas, p.puntos);
   const lista = $('desglose');
   lista.replaceChildren(
@@ -882,19 +991,19 @@ function mostrarFinal({ completada = false } = {}) {
       texto.append(cat, resp);
       const pts = document.createElement('span');
       pts.className = 'd-pts';
-      pts.textContent = `${fmt((r.puntos || 0) * 10)} m`;
+      pts.textContent = dist((r.puntos || 0) * 10);
       li.append(piedra, texto, pts);
       return li;
     }),
   );
   const contador = $('final-metros');
-  if (prefs.reducir || completada) contador.textContent = fmt(p.profundidad);
+  if (prefs.reducir || completada) contador.textContent = formato.valor(p.profundidad);
   else {
     const inicio = performance.now();
     const dur = 1200;
-    const subir = (t) => {
-      const k = Math.min(1, (t - inicio) / dur);
-      contador.textContent = fmt(p.profundidad * (1 - Math.pow(1 - k, 3)));
+    const subir = (ahora) => {
+      const k = Math.min(1, (ahora - inicio) / dur);
+      contador.textContent = formato.valor(p.profundidad * (1 - Math.pow(1 - k, 3)));
       if (k < 1) requestAnimationFrame(subir);
     };
     requestAnimationFrame(subir);
@@ -904,18 +1013,16 @@ function mostrarFinal({ completada = false } = {}) {
   $('final-guardado').textContent = 'Tu resultado quedó guardado.';
   tickCuentas();
   $('final-titulo').focus({ preventScroll: true });
-  decir(
-    p.profundidad >= 5000 ? '¡Qué bajada! Pocos llegan tan hondo.' : p.profundidad >= 2500 ? 'Gran túnel. Mañana, más hondo.' : '¡Mañana seguimos cavando!',
-    4500,
-  );
-  anunciar(`Partida terminada. Llegaste a ${fmt(p.profundidad)} metros.`);
+  decir(t.despedida(p.profundidad), 4500);
+  anunciar(`Partida terminada. Llegaste a ${formato.valor(p.profundidad)} ${modo().unidad.palabra}.`);
 }
 
 function textoCompartir() {
   const p = estado.partida;
   const filas = p.rondas.map((r) => (r.respuesta ? EMOJI[r.respuesta.rareza] : '⬛')).join('');
   const ranking = p.estadisticas ? `\nPuesto #${p.estadisticas.puesto} de ${fmt(p.estadisticas.total)}` : '';
-  return `Filón #${p.numero} · ${fechaCorta(p.fecha)}\nBajé ${fmt(p.profundidad)} m de 7.000 ⛏️${ranking}\n${filas}\n${location.origin}`;
+  const enlace = estado.modo === 'normal' ? location.origin : `${location.origin}/?modo=${estado.modo}`;
+  return `${textos().compartir(p.numero, fechaCorta(p.fecha), dist(p.profundidad))}${ranking}\n${filas}\n${enlace}`;
 }
 
 async function compartir() {
@@ -1010,7 +1117,8 @@ function aplicarPrefs() {
 }
 
 // ───────── Arranque ─────────
-async function cargar() {
+/** Abre el modo activo: retoma una ronda en curso, muestra el resultado si ya se jugó o va al inicio. */
+async function abrirModo() {
   mostrar('cargando');
   try {
     await recargarGeneral();
@@ -1033,6 +1141,10 @@ async function cargar() {
 }
 
 $('btn-comenzar').addEventListener('click', () => comenzar(estado.general?.partidaHoy || null));
+$('btn-modos').addEventListener('click', abrirSelector);
+$('btn-cambiar-modo').addEventListener('click', abrirSelector);
+$('dlg-modos').addEventListener('close', () => $('btn-modos').setAttribute('aria-expanded', 'false'));
+for (const boton of document.querySelectorAll('.modo-opcion')) boton.addEventListener('click', () => elegirModo(boton.dataset.modo));
 $('btn-retomar').addEventListener('click', () => comenzar(estado.general?.partidaPendiente));
 $('form-respuesta').addEventListener('submit', responder);
 $('btn-pasar').addEventListener('click', pasar);
@@ -1077,7 +1189,7 @@ document.addEventListener('visibilitychange', async () => {
 });
 addEventListener('resize', () => escena.disponer());
 
-construirProfundimetro();
+aplicarModo(estado.modo);
 aplicarPrefs();
 setInterval(tickCuentas, 1000);
-cargar();
+abrirModo();

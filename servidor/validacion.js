@@ -2,7 +2,7 @@
 // Detecta: campos faltantes, enunciados subjetivos, rarezas inválidas, respuestas duplicadas,
 // variantes contradictorias (la misma forma apunta a dos respuestas), rechazos que chocan con
 // respuestas aceptadas, falta de variedad de rarezas, fuentes no permitidas y repeticiones recientes.
-import { RAREZAS, CATEGORIAS, ORDEN_RAREZAS, PREGUNTAS_POR_DESAFIO, CLAVES_CATEGORIAS } from './dominio.js';
+import { RAREZAS, CATEGORIAS, ORDEN_RAREZAS, PREGUNTAS_POR_DESAFIO, MODOS, MODO_POR_DEFECTO } from './dominio.js';
 import { normalizar, formasRegistrables } from './normalizar.js';
 
 export const MIN_RESPUESTAS = 5;
@@ -95,15 +95,23 @@ export function prepararCandidata(c = {}) {
  * Valida una pregunta. Los problemas de una respuesta puntual la descartan (y se informan);
  * los problemas de la pregunta la invalidan entera.
  * Con `estricta`, cualquier descarte o contradicción también invalida (se usa para la reserva).
+ * `modo` fija qué categorías valen: las siete de Normal o la única de un modo temático.
  */
-export function validarPregunta(entrada, { dominios = [], recientes = [], estricta = false } = {}) {
+export function validarPregunta(entrada, { dominios = [], recientes = [], estricta = false, modo = MODO_POR_DEFECTO } = {}) {
   const p = prepararCandidata(entrada);
   const errores = [];
   const advertencias = [];
   const descartadas = [];
   let contradicciones = 0;
 
-  if (!CATEGORIAS[p.categoria]) errores.push(`Categoría inválida: «${p.categoria}».`);
+  const permitidas = MODOS[modo].categorias;
+  if (!permitidas.includes(p.categoria)) {
+    errores.push(
+      permitidas.length === 1
+        ? `Categoría inválida para ${MODOS[modo].nombre}: «${p.categoria}» (tiene que ser «${permitidas[0]}»).`
+        : `Categoría inválida: «${p.categoria}».`,
+    );
+  }
   if (p.enunciado.length < 12 || p.enunciado.length > 180) errores.push('El enunciado debe tener entre 12 y 180 caracteres.');
   if (p.alcance.length < 8 || p.alcance.length > 260) errores.push('El alcance debe tener entre 8 y 260 caracteres.');
   if (p.enunciado && esSubjetiva(p.enunciado)) errores.push('El enunciado es subjetivo (mejor, favorito, más famoso…).');
@@ -266,13 +274,21 @@ export function buscarRepeticion(p, recientes) {
   return null;
 }
 
-/** Valida el lote completo de un día (después de validar cada pregunta). */
-export function validarLote(preguntas) {
+/**
+ * Valida el lote completo de un día (después de validar cada pregunta).
+ * Normal: una pregunta de cada una de las siete categorías. Temáticos: las siete de la categoría del modo.
+ */
+export function validarLote(preguntas, modo = MODO_POR_DEFECTO) {
   const errores = [];
   if (preguntas.length !== PREGUNTAS_POR_DESAFIO) errores.push(`El lote debe tener ${PREGUNTAS_POR_DESAFIO} preguntas (tiene ${preguntas.length}).`);
+  const permitidas = MODOS[modo].categorias;
   const cats = new Set(preguntas.map((p) => p.categoria));
-  if (cats.size !== preguntas.length) errores.push('Hay categorías repetidas en el lote.');
-  for (const c of CLAVES_CATEGORIAS) if (preguntas.length === PREGUNTAS_POR_DESAFIO && !cats.has(c)) errores.push(`Falta la categoría ${CATEGORIAS[c]}.`);
+  if (permitidas.length === PREGUNTAS_POR_DESAFIO) {
+    if (cats.size !== preguntas.length) errores.push('Hay categorías repetidas en el lote.');
+    for (const c of permitidas) if (preguntas.length === PREGUNTAS_POR_DESAFIO && !cats.has(c)) errores.push(`Falta la categoría ${CATEGORIAS[c]}.`);
+  } else {
+    for (const c of cats) if (!permitidas.includes(c)) errores.push(`${MODOS[modo].nombre} solo admite preguntas de la categoría «${permitidas[0]}» (llegó «${c}»).`);
+  }
   for (let i = 0; i < preguntas.length; i++) {
     for (let j = i + 1; j < preguntas.length; j++) {
       const a = preguntas[i];

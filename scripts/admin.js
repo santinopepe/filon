@@ -3,11 +3,21 @@
 //   node scripts/admin.js reportes                 # respuestas reportadas como faltantes
 //   node scripts/admin.js reporte <id> <estado>    # marca un reporte (aceptado | descartado | pendiente)
 //   node scripts/admin.js corridas [n]             # últimas corridas de la tarea diaria
-//   node scripts/admin.js desafio <AAAA-MM-DD>     # banco completo de un desafío
-//   node scripts/admin.js desafios                 # lista de desafíos publicados
+//   node scripts/admin.js desafio <AAAA-MM-DD> [modo]   # banco completo de un desafío (modo: normal por defecto)
+//   node scripts/admin.js desafios [modo]          # lista de desafíos publicados (todos los modos si no se indica)
 import { cargarConfig } from '../servidor/config.js';
 import { abrirBD } from '../servidor/db.js';
 import { desafioPorFecha, preguntasDeDesafio, respuestasDePregunta } from '../servidor/banco.js';
+import { CLAVES_MODOS, esModo } from '../servidor/dominio.js';
+
+function modoArgumento(valor, porDefecto) {
+  if (valor === undefined) return porDefecto;
+  if (!esModo(valor)) {
+    console.error(`Modo desconocido: ${valor}. Los válidos son ${CLAVES_MODOS.join(', ')}.`);
+    process.exit(1);
+  }
+  return valor;
+}
 
 const [comando, ...resto] = process.argv.slice(2);
 const config = cargarConfig();
@@ -42,7 +52,7 @@ switch (comando) {
     for (const c of await db.all('SELECT * FROM corridas ORDER BY id DESC LIMIT ?', n)) {
       const d = c.detalle ? JSON.parse(c.detalle) : {};
       console.log(
-        `#${c.id} ${c.fecha_objetivo} · ${c.resultado} · IA:${c.uso_ia ? 'sí' : 'no'} · ${fechaHora(c.iniciada_en)}` +
+        `#${c.id} ${c.fecha_objetivo} · ${c.modo} · ${c.resultado} · IA:${c.uso_ia ? 'sí' : 'no'} · ${fechaHora(c.iniciada_en)}` +
           (d.rechazadas?.length ? ` · preguntas rechazadas ${d.rechazadas.length}` : '') +
           (d.descartes?.length ? ` · respuestas descartadas ${d.descartes.length}` : '') +
           (d.errorIA ? ` · error IA: ${d.errorIA}` : ''),
@@ -51,18 +61,23 @@ switch (comando) {
     break;
   }
   case 'desafios': {
-    for (const d of await db.all('SELECT * FROM desafios ORDER BY fecha DESC LIMIT 60')) {
-      console.log(`#${d.numero} ${d.fecha} · ${d.origen}${d.modelo ? ` (${d.modelo})` : ''} · publicado ${fechaHora(d.publicado_en)}`);
+    const modo = modoArgumento(resto[0], null);
+    const filas = modo
+      ? await db.all('SELECT * FROM desafios WHERE modo = ? ORDER BY fecha DESC LIMIT 60', modo)
+      : await db.all('SELECT * FROM desafios ORDER BY fecha DESC, modo LIMIT 180');
+    for (const d of filas) {
+      console.log(`#${d.numero} ${d.fecha} · ${d.modo} · ${d.origen}${d.modelo ? ` (${d.modelo})` : ''} · publicado ${fechaHora(d.publicado_en)}`);
     }
     break;
   }
   case 'desafio': {
-    const d = await desafioPorFecha(db, resto[0]);
+    const modo = modoArgumento(resto[1], 'normal');
+    const d = await desafioPorFecha(db, resto[0], modo);
     if (!d) {
-      console.error('No hay desafío para esa fecha.');
+      console.error(`No hay desafío de ${modo} para esa fecha.`);
       process.exit(1);
     }
-    console.log(`Desafío #${d.numero} · ${d.fecha} · origen ${d.origen}`);
+    console.log(`Desafío #${d.numero} · ${d.fecha} · ${d.modo} · origen ${d.origen}`);
     for (const p of await preguntasDeDesafio(db, d.id)) {
       console.log(`\n${p.posicion}. [${p.categoria}] ${p.enunciado}\n   Alcance: ${p.alcance}`);
       for (const r of await respuestasDePregunta(db, p.id)) {
@@ -73,6 +88,6 @@ switch (comando) {
     break;
   }
   default:
-    console.log('Comandos: reportes · reporte <id> <estado> · corridas [n] · desafios · desafio <AAAA-MM-DD>');
+    console.log('Comandos: reportes · reporte <id> <estado> · corridas [n] · desafios [modo] · desafio <AAAA-MM-DD> [modo]');
 }
 db.close();
