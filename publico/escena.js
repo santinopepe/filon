@@ -49,7 +49,7 @@ export function estratoDe(m) {
   return ESTRATOS.find((e) => m < e.hasta) ?? ESTRATOS[ESTRATOS.length - 1];
 }
 
-function generador(semilla) {
+export function generador(semilla) {
   let a = semilla >>> 0;
   return () => {
     a = (a + 0x6d2b79f5) | 0;
@@ -59,11 +59,43 @@ function generador(semilla) {
   };
 }
 
-const limitar = (v, a, b) => Math.max(a, Math.min(b, v));
-const lerp = (a, b, t) => a + (b - a) * t;
-const suave = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const rgb = (c, a = 1) => `rgb(${Math.round(c[0])} ${Math.round(c[1])} ${Math.round(c[2])} / ${a})`;
-const mezcla = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+export const limitar = (v, a, b) => Math.max(a, Math.min(b, v));
+export const lerp = (a, b, t) => a + (b - a) * t;
+export const suave = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+export const rgb = (c, a = 1) => `rgb(${Math.round(c[0])} ${Math.round(c[1])} ${Math.round(c[2])} / ${a})`;
+export const mezcla = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+
+/**
+ * Dónde se para Lito (sus pies) y a qué escala, según el espacio libre de la pantalla.
+ * Lo comparten todas las escenas para que el personaje quede siempre en el mismo lugar.
+ */
+export function calcularAncla(z, H) {
+  if (z.centrado) {
+    // Lito (224 px de alto a escala 1) queda centrado en el hueco entre la pregunta y la respuesta.
+    const hueco = Math.max(80, z.abajo - z.arriba);
+    const e = limitar((hueco - 16) / 236, z.movil ? 0.42 : 0.55, z.movil ? 0.8 : 1.05);
+    return { x: (z.izquierda + z.derecha) / 2, y: (z.arriba + z.abajo) / 2 + 112 * e, esc: e };
+  }
+  const e = z.movil ? limitar((z.abajo - z.arriba) / 250, 0.66, 0.82) : limitar(H / 900, 0.82, 1.08);
+  return { x: (z.izquierda + z.derecha) / 2, y: z.movil ? z.abajo - 3 : z.arriba + (z.abajo - z.arriba) * 0.62, esc: e };
+}
+
+/** Desliza la posición actual de Lito hacia su destino; devuelve true si cambió algo. */
+export function acercarA(actual, objetivo, dt, reducido) {
+  const dx = objetivo.x - actual.x;
+  const dy = objetivo.y - actual.y;
+  const de = objetivo.esc - actual.esc;
+  if (Math.abs(dx) < .5 && Math.abs(dy) < .5 && Math.abs(de) < .002) {
+    if (!dx && !dy && !de) return false;
+    Object.assign(actual, objetivo);
+    return true;
+  }
+  const k = reducido ? 1 : 1 - Math.exp(-dt * 9);
+  actual.x += dx * k;
+  actual.y += dy * k;
+  actual.esc += de * k;
+  return true;
+}
 
 function colorDeTierra(y) {
   for (let i = 1; i < ESTRATOS.length; i++) {
@@ -121,16 +153,7 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
       canvas.height = Math.round(H * dpr);
     }
     ppm = limitar(H / 126, 5.4, 8.6);
-    let destino;
-    if (z.centrado) {
-      // Lito (224 px de alto a escala 1) queda centrado en el hueco entre la pregunta y la respuesta.
-      const hueco = Math.max(80, z.abajo - z.arriba);
-      const e = limitar((hueco - 16) / 236, z.movil ? 0.42 : 0.55, z.movil ? 0.8 : 1.05);
-      destino = { x: (z.izquierda + z.derecha) / 2, y: (z.arriba + z.abajo) / 2 + 112 * e, esc: e };
-    } else {
-      const e = z.movil ? limitar((z.abajo - z.arriba) / 250, 0.66, 0.82) : limitar(H / 900, 0.82, 1.08);
-      destino = { x: (z.izquierda + z.derecha) / 2, y: z.movil ? z.abajo - 3 : z.arriba + (z.abajo - z.arriba) * 0.62, esc: e };
-    }
+    const destino = calcularAncla(z, H);
     objetivo = destino;
     if (primera || reducido) {
       anclaX = destino.x;
@@ -143,22 +166,9 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
   // Desliza a Lito (y con él todo el corte) hacia su nueva posición.
   function acercarAncla(dt) {
     if (!objetivo) return;
-    const dx = objetivo.x - anclaX;
-    const dy = objetivo.y - anclaY;
-    const de = objetivo.esc - esc;
-    if (Math.abs(dx) < .5 && Math.abs(dy) < .5 && Math.abs(de) < .002) {
-      if (dx || dy || de) {
-        anclaX = objetivo.x;
-        anclaY = objetivo.y;
-        esc = objetivo.esc;
-        aplicarAncla();
-      }
-      return;
-    }
-    const k = reducido ? 1 : 1 - Math.exp(-dt * 9);
-    anclaX += dx * k;
-    anclaY += dy * k;
-    esc += de * k;
+    const actual = { x: anclaX, y: anclaY, esc };
+    if (!acercarA(actual, objetivo, dt, reducido)) return;
+    ({ x: anclaX, y: anclaY, esc } = actual);
     aplicarAncla();
   }
 
@@ -823,12 +833,13 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
     }
     dibujarIluminacion();
     actualizarParticulas(dt);
-    requestAnimationFrame(cuadro);
+    marco = requestAnimationFrame(cuadro);
   }
 
+  let marco = null;
   disponer();
   addEventListener('resize', disponer);
-  requestAnimationFrame((t) => {
+  marco = requestAnimationFrame((t) => {
     ultimo = t;
     cuadro(t);
   });
@@ -837,6 +848,13 @@ export function crearEscena(canvas, { alCambiarProfundidad = () => {}, zonaLibre
 
   return {
     disponer,
+    /** Deja de dibujar (al cambiar de modo, otra escena toma el lienzo). */
+    detener() {
+      cancelAnimationFrame(marco);
+      removeEventListener('resize', disponer);
+      if (animacion) animacion.resolver();
+      animacion = null;
+    },
     get profundidad() {
       return camY;
     },

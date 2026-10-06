@@ -2,6 +2,7 @@
 import { transaccion } from './db.js';
 import { compactar, crearIndice, buscarEnIndice, buscarParecidoEnIndice, normalizar, sinArticulo } from './normalizar.js';
 import { diasEntre, sumarDias } from './tiempo.js';
+import { MODO_POR_DEFECTO } from './dominio.js';
 
 // Lo publicado solo cambia si un administrador regenera un día: desafíos, preguntas y respuestas se
 // cachean en memoria por base, y cada reemplazo sube `version_banco` para que todas las instancias
@@ -34,8 +35,8 @@ async function recordar(mapa, clave, cargar) {
   return valor;
 }
 
-export async function desafioPorFecha(db, fecha) {
-  return recordar(cacheDe(db, 'desafioFecha'), fecha, () => db.get('SELECT * FROM desafios WHERE fecha = ?', fecha));
+export async function desafioPorFecha(db, fecha, modo = MODO_POR_DEFECTO) {
+  return recordar(cacheDe(db, 'desafioFecha'), `${modo}:${fecha}`, () => db.get('SELECT * FROM desafios WHERE fecha = ? AND modo = ?', fecha, modo));
 }
 
 export async function desafioPorId(db, id) {
@@ -130,35 +131,41 @@ async function borrarDesafio(tx, desafioId) {
   );
 }
 
-/** Desafíos publicados con la cantidad de partidas de cada uno (para administración). */
-export function listarDesafios(db, limite = 120) {
+/** Desafíos publicados de un modo con la cantidad de partidas de cada uno (para administración). */
+export function listarDesafios(db, { modo = MODO_POR_DEFECTO, limite = 120 } = {}) {
   return db.all(
-    `SELECT d.id, d.fecha, d.numero, d.origen, d.modelo, d.corrida_id, d.publicado_en,
+    `SELECT d.id, d.fecha, d.modo, d.numero, d.origen, d.modelo, d.corrida_id, d.publicado_en,
             (SELECT COUNT(*) FROM partidas p WHERE p.desafio_id = d.id) AS partidas,
             (SELECT COUNT(*) FROM partidas p WHERE p.desafio_id = d.id AND p.terminada_en IS NOT NULL) AS terminadas
-     FROM desafios d ORDER BY d.fecha DESC LIMIT ?`,
+     FROM desafios d WHERE d.modo = ? ORDER BY d.fecha DESC LIMIT ?`,
+    modo,
     limite,
   );
 }
 
+/** Id de cada pregunta: el modo Normal conserva el formato histórico («2026-10-05-p1»). */
+export const idDePregunta = (fecha, modo, posicion) => (modo === MODO_POR_DEFECTO ? `${fecha}-p${posicion}` : `${fecha}-${modo}-p${posicion}`);
+
 /**
- * Publica un desafío completo en una sola transacción.
- * Si ya existe uno para esa fecha no lo reemplaza (devuelve { publicado: false }), salvo con
+ * Publica un desafío completo de un modo en una sola transacción.
+ * Si ya existe uno para esa fecha y modo no lo reemplaza (devuelve { publicado: false }), salvo con
  * reemplazar: true, que borra el anterior —con sus partidas— en la misma transacción.
+ * El número de desafío se cuenta por modo, desde el primero publicado de ese modo.
  */
-export function publicarDesafio(db, { fecha, preguntas, origen, modelo = null, corridaId = null, ahora = Date.now(), reemplazar = false }) {
+export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas, origen, modelo = null, corridaId = null, ahora = Date.now(), reemplazar = false }) {
   return transaccion(db, async (tx) => {
-    const existente = await tx.get('SELECT id FROM desafios WHERE fecha = ?', fecha);
+    const existente = await tx.get('SELECT id FROM desafios WHERE fecha = ? AND modo = ?', fecha, modo);
     if (existente && !reemplazar) return { publicado: false, motivo: 'ya_existia', desafioId: existente.id };
     if (existente) await borrarDesafio(tx, existente.id);
 
-    const primera = (await tx.get('SELECT MIN(fecha) AS f FROM desafios'))?.f;
+    const primera = (await tx.get('SELECT MIN(fecha) AS f FROM desafios WHERE modo = ?', modo))?.f;
     const numero = primera && primera < fecha ? diasEntre(primera, fecha) + 1 : 1;
     if (primera && fecha < primera) {
       // Carga hacia atrás: el nuevo día pasa a ser el #1 y el resto se corre.
       await tx.run(
-        "UPDATE desafios SET numero = CAST(julianday(fecha) - julianday(?) AS INTEGER) + 1",
+        "UPDATE desafios SET numero = CAST(julianday(fecha) - julianday(?) AS INTEGER) + 1 WHERE modo = ?",
         fecha,
+        modo,
       );
       await tx.run(
         `INSERT INTO meta (clave, valor) VALUES ('version_banco', '1')
@@ -167,8 +174,8 @@ export function publicarDesafio(db, { fecha, preguntas, origen, modelo = null, c
     }
 
     const { lastInsertRowid: desafioId } = await tx.run(
-      'INSERT INTO desafios (fecha, numero, origen, modelo, corrida_id, publicado_en) VALUES (?, ?, ?, ?, ?, ?)',
-      fecha, numero, origen, modelo, corridaId, ahora,
+      'INSERT INTO desafios (fecha, modo, numero, origen, modelo, corrida_id, publicado_en) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      fecha, modo, numero, origen, modelo, corridaId, ahora,
     );
 
     const insPregunta = `INSERT INTO preguntas (id, desafio_id, posicion, categoria, enunciado, alcance, huella, origen, reserva_id, fuentes, rechazos)
@@ -179,7 +186,7 @@ export function publicarDesafio(db, { fecha, preguntas, origen, modelo = null, c
 
     for (const [i, p] of preguntas.entries()) {
       const posicion = i + 1;
-      const preguntaId = `${fecha}-p${posicion}`;
+      const preguntaId = idDePregunta(fecha, modo, posicion);
       await tx.run(
         insPregunta,
         preguntaId,
@@ -254,33 +261,34 @@ export async function evaluarTexto(db, preguntaId, texto) {
   return { aceptada: false, motivo };
 }
 
-/** Preguntas publicadas en una ventana de fechas, para evitar repeticiones. */
-export async function preguntasRecientes(db, fecha, dias) {
+/** Preguntas publicadas de un modo en una ventana de fechas, para evitar repeticiones. */
+export async function preguntasRecientes(db, fecha, dias, modo = MODO_POR_DEFECTO) {
   const desde = sumarDias(fecha, -dias);
   const hasta = sumarDias(fecha, dias);
   const filas = await db.all(
     `SELECT p.id, p.enunciado, p.huella, p.reserva_id AS reservaId, d.fecha
      FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
-     WHERE d.fecha BETWEEN ? AND ? AND d.fecha <> ?`,
-    desde, hasta, fecha,
+     WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ?`,
+    modo, desde, hasta, fecha,
   );
   const canonicas = await db.all(
     `SELECT r.pregunta_id, r.canonica FROM respuestas r
      JOIN preguntas p ON p.id = r.pregunta_id JOIN desafios d ON d.id = p.desafio_id
-     WHERE d.fecha BETWEEN ? AND ? AND d.fecha <> ? ORDER BY r.id`,
-    desde, hasta, fecha,
+     WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ? ORDER BY r.id`,
+    modo, desde, hasta, fecha,
   );
   const claves = new Map(filas.map((f) => [f.id, []]));
   for (const r of canonicas) claves.get(r.pregunta_id)?.push(normalizar(r.canonica));
   return filas.map((f) => ({ ...f, claves: claves.get(f.id) }));
 }
 
-/** Última fecha en que se usó cada pregunta de reserva. */
-export async function usosDeReserva(db) {
+/** Última fecha en que se usó cada pregunta de la reserva de un modo. */
+export async function usosDeReserva(db, modo = MODO_POR_DEFECTO) {
   const filas = await db.all(
     `SELECT p.reserva_id AS id, MAX(d.fecha) AS ultima, COUNT(*) AS veces
      FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
-     WHERE p.reserva_id IS NOT NULL GROUP BY p.reserva_id`,
+     WHERE p.reserva_id IS NOT NULL AND d.modo = ? GROUP BY p.reserva_id`,
+    modo,
   );
   return new Map(filas.map((f) => [f.id, { ultima: f.ultima, veces: f.veces }]));
 }

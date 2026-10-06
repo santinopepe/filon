@@ -15,9 +15,10 @@ export const CONSULTAS = [
   {
     nombre: 'partida pendiente de un día anterior',
     sql: `SELECT p.* FROM partidas p JOIN desafios d ON d.id = p.desafio_id
-          WHERE p.jugador_id = ? AND p.terminada_en IS NULL AND d.fecha < ? ORDER BY d.fecha DESC LIMIT 1`,
-    args: [ID, '2026-10-05'],
+          WHERE p.jugador_id = ? AND p.terminada_en IS NULL AND d.fecha < ? AND d.modo = ? ORDER BY d.fecha DESC LIMIT 1`,
+    args: [ID, '2026-10-05', 'normal'],
   },
+  { nombre: 'desafío de una fecha y un modo', sql: 'SELECT * FROM desafios WHERE fecha = ? AND modo = ?', args: ['2026-10-05', 'normal'] },
   { nombre: 'rondas de una partida', sql: 'SELECT * FROM rondas WHERE partida_id = ? ORDER BY posicion', args: [ID] },
   {
     nombre: 'intentos de una ronda (tope, dentro de la transacción)',
@@ -37,8 +38,8 @@ export const CONSULTAS = [
   {
     nombre: 'serie diaria del panel',
     sql: `SELECT d.fecha, COUNT(p.id) AS jugadores, COALESCE(SUM(p.terminada_en IS NOT NULL), 0) AS terminadas
-          FROM desafios d LEFT JOIN partidas p ON p.desafio_id = d.id WHERE d.fecha BETWEEN ? AND ? GROUP BY d.id`,
-    args: ['2026-09-01', '2026-10-05'],
+          FROM desafios d LEFT JOIN partidas p ON p.desafio_id = d.id WHERE d.fecha BETWEEN ? AND ? AND d.modo = ? GROUP BY d.id`,
+    args: ['2026-09-01', '2026-10-05', 'normal'],
   },
   { nombre: 'visitantes nuevos por período', sql: 'SELECT creado_en FROM jugadores WHERE creado_en >= ? AND creado_en < ?', args: [0, 1] },
   {

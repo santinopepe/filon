@@ -14,9 +14,16 @@ import { RAIZ } from './config.js';
 
 /** Marca para respuestas que no son JSON (descargas): { [CRUDO]: { tipo, cuerpo, archivo } }. */
 const CRUDO = Symbol('crudo');
-let promptGeneracion = null;
-const leerPrompt = () => (promptGeneracion ??= readFileSync(resolve(RAIZ, 'datos/prompt-generacion.txt'), 'utf8'));
-import { LIMITES, PREGUNTAS_POR_DESAFIO } from './dominio.js';
+import { LIMITES, PREGUNTAS_POR_DESAFIO, MODOS, CLAVES_MODOS, MODO_POR_DEFECTO, esModo } from './dominio.js';
+
+/** Modo de juego pedido (query o cuerpo). Sin valor es Normal; un valor desconocido es un error. */
+function leerModo(valor) {
+  if (valor == null || valor === '') return MODO_POR_DEFECTO;
+  if (!esModo(valor)) throw new ErrorJuego(400, 'modo_invalido', `Modo de juego desconocido: «${String(valor).slice(0, 40)}». Los válidos son ${CLAVES_MODOS.join(', ')}.`);
+  return valor;
+}
+const consulta = (req) => new URL(req.url, 'http://local').searchParams;
+const modoDe = (req) => leerModo(consulta(req).get('modo'));
 import {
   desafioPorFecha,
   preguntasDeDesafio,
@@ -41,6 +48,11 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
   const limitar = crearLimitador({ capacidad: 40 * escala, porSegundo: 8 * escala });
   const limites = crearLimitadorDistribuido({ db, secreto, ahora, registro, escala: config.limitesEscala });
   const sesiones = crearSesionesAdmin({ db, config, ahora });
+  const prompts = new Map();
+  const leerPrompt = (modo) => {
+    if (!prompts.has(modo)) prompts.set(modo, readFileSync(config.rutasPrompt?.[modo] ?? resolve(RAIZ, 'datos/prompt-generacion.txt'), 'utf8'));
+    return prompts.get(modo);
+  };
 
   function identificar(req, cookies) {
     const valor = firmador.verificar(cookies[COOKIE]);
@@ -83,10 +95,13 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
   const rutas = [
     ['GET', /^\/api\/salud$/, async () => {
       const hoy = fechaLocal(ahora(), config.zona);
-      return { ok: true, fecha: hoy, desafioPublicado: Boolean(await desafioPorFecha(db, hoy)) };
+      const modos = {};
+      for (const modo of CLAVES_MODOS) modos[modo] = Boolean(await desafioPorFecha(db, hoy, modo));
+      return { ok: true, fecha: hoy, desafioPublicado: modos[MODO_POR_DEFECTO], modos };
     }, { publica: true }],
-    ['GET', /^\/api\/estado$/, ({ jugadorId }) => juego.estado(jugadorId)],
-    ['POST', /^\/api\/partidas$/, async ({ jugadorId }) => ({ partida: await juego.iniciarPartida(jugadorId) }), { limite: 'partida' }],
+    // ?modo=normal|farandula|geografia (por defecto, normal).
+    ['GET', /^\/api\/estado$/, ({ jugadorId, req }) => juego.estado(jugadorId, modoDe(req))],
+    ['POST', /^\/api\/partidas$/, async ({ jugadorId, cuerpo }) => ({ partida: await juego.iniciarPartida(jugadorId, leerModo(cuerpo.modo)) }), { limite: 'partida' }],
     ['GET', /^\/api\/partidas\/([0-9a-f-]{36})$/, async ({ jugadorId, m }) => ({ partida: await juego.verPartida(jugadorId, m[1]) })],
     // Revelado paginado: ?desde=0&limite=100&buscar=texto (limite ≤ LIMITES.paginaRevelado).
     ['GET', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuestas$/, async ({ jugadorId, m, req }) => {
@@ -127,17 +142,23 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     }, { publica: true, soloMismoOrigen: true }],
 
     // Tarea diaria (Vercel Cron, ver vercel.json). Idempotente.
-    //   hoy: asegura el desafío de hoy (IA si quedan intentos; si no, reserva)
-    //   manana-ia: prepara mañana solo con IA (si falla queda pendiente)
-    //   manana: prepara mañana; si la IA falla, publica la reserva
+    //   hoy: asegura el desafío de hoy de cada modo (Normal con IA si quedan intentos; si no, reserva)
+    //   manana-ia: prepara mañana solo con IA, solo el modo Normal (si falla queda pendiente)
+    //   manana: prepara mañana de cada modo; si la IA falla, publica la reserva
+    // La respuesta es la de Normal, con el resultado de cada modo en `modos`.
     ['GET', /^\/api\/cron\/(hoy|manana|manana-ia)$/, async ({ m }) => {
       if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La generación no está disponible.');
       const hoy = fechaLocal(ahora(), config.zona);
       const fecha = m[1] === 'hoy' ? hoy : sumarDias(hoy, 1);
-      const inicio = Date.now();
-      const r = await asegurarDesafio({ db, config, fecha, ...contexto, permitirReserva: m[1] !== 'manana-ia', ahora, registro });
-      registro[r.resultado === 'fallo' ? 'error' : 'info']('cron', { tarea: m[1], fecha, resultado: r.resultado, origen: r.origen, duracionMs: Date.now() - inicio, error: r.error });
-      return r;
+      const modos = {};
+      for (const modo of CLAVES_MODOS) {
+        if (m[1] === 'manana-ia' && !MODOS[modo].iaAutomatica) continue;
+        const inicio = Date.now();
+        const r = await asegurarDesafio({ db, config, fecha, modo, ...contexto, permitirReserva: m[1] !== 'manana-ia', ahora, registro });
+        registro[r.resultado === 'fallo' ? 'error' : 'info']('cron', { tarea: m[1], fecha, modo, resultado: r.resultado, origen: r.origen, duracionMs: Date.now() - inicio, error: r.error });
+        modos[modo] = r;
+      }
+      return { ...modos[MODO_POR_DEFECTO], modos };
     }, { cron: true, limite: 'cron' }],
     // Limpieza diaria: sesiones y límites vencidos, retención de datos y conciliación de estadísticas.
     ['GET', /^\/api\/cron\/limpieza$/, async () => {
@@ -150,9 +171,10 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     // Administración (requiere TOKEN_ADMIN).
     ['GET', /^\/api\/admin\/reportes$/, async () => ({
       reportes: await db.all(
-        `SELECT r.id, r.pregunta_id, p.enunciado, r.texto, r.comentario, r.estado, r.creado_en,
+        `SELECT r.id, r.pregunta_id, p.enunciado, d.modo, r.texto, r.comentario, r.estado, r.creado_en,
                 (SELECT COUNT(*) FROM reportes r2 WHERE r2.pregunta_id = r.pregunta_id AND r2.normalizado = r.normalizado) AS veces
-         FROM reportes r JOIN preguntas p ON p.id = r.pregunta_id ORDER BY r.creado_en DESC LIMIT ?`,
+         FROM reportes r JOIN preguntas p ON p.id = r.pregunta_id JOIN desafios d ON d.id = p.desafio_id
+         ORDER BY r.creado_en DESC LIMIT ?`,
         LIMITES.paginaReportes,
       ),
     }), { admin: true }],
@@ -162,18 +184,27 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       if (!r.changes) throw new ErrorJuego(404, 'sin_reporte', 'No existe ese reporte.');
       return { ok: true };
     }, { admin: true }],
-    ['GET', /^\/api\/admin\/desafios$/, async () => ({
-      hoy: fechaLocal(ahora(), config.zona),
-      ia: contexto?.proveedor ? { nombre: contexto.proveedor.nombre, modelo: contexto.proveedor.modelo } : null,
-      bd: /^(libsql|https?|wss?):/.test(config.rutaBD) ? new URL(config.rutaBD).host : 'archivo local',
-      desafios: await listarDesafios(db),
-    }), { admin: true }],
+    // En todas las rutas de administración de desafíos, ?modo= elige el modo de juego (por defecto, normal).
+    ['GET', /^\/api\/admin\/desafios$/, async ({ req }) => {
+      const modo = modoDe(req);
+      return {
+        hoy: fechaLocal(ahora(), config.zona),
+        modo,
+        modos: CLAVES_MODOS.map((clave) => ({ clave, nombre: MODOS[clave].nombre, iaAutomatica: MODOS[clave].iaAutomatica })),
+        ia: contexto?.proveedor ? { nombre: contexto.proveedor.nombre, modelo: contexto.proveedor.modelo } : null,
+        bd: /^(libsql|https?|wss?):/.test(config.rutaBD) ? new URL(config.rutaBD).host : 'archivo local',
+        desafios: await listarDesafios(db, { modo }),
+      };
+    }, { admin: true }],
     // Publica un día pegado como JSON, con el mismo formato de datos/reserva.json.
     // No llama a ningún proveedor de IA ni verifica fuentes por red: solo aplica las validaciones
     // estructurales locales y publica las siete preguntas en una transacción.
-    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/importar$/, async ({ m, cuerpo }) => {
+    // En los modos temáticos, una pregunta sin «categoria» toma la del modo.
+    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/importar$/, async ({ m, cuerpo, req }) => {
       const fecha = m[1];
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
+      const modo = modoDe(req);
+      const { categorias } = MODOS[modo];
       if (!Array.isArray(cuerpo.preguntas)) {
         throw new ErrorJuego(400, 'json_invalido', 'El JSON debe ser un arreglo o un objeto con una propiedad «preguntas».');
       }
@@ -187,9 +218,9 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         throw new ErrorJuego(413, 'demasiadas_respuestas', `La pregunta ${larga + 1} supera el máximo de ${LIMITES.respuestasPorPregunta} respuestas.`);
       }
 
-      const existente = await desafioPorFecha(db, fecha);
+      const existente = await desafioPorFecha(db, fecha, modo);
       if (existente && !cuerpo.reemplazar && !cuerpo.soloValidar) {
-        throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío para ${fecha}. Confirmá el reemplazo para sobrescribirlo.`);
+        throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío de ${MODOS[modo].nombre} para ${fecha}. Confirmá el reemplazo para sobrescribirlo.`);
       }
       if (existente && !cuerpo.soloValidar) {
         const { n } = await db.get('SELECT COUNT(*) AS n FROM partidas WHERE desafio_id = ?', existente.id);
@@ -198,12 +229,14 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         }
       }
 
-      const recientes = await preguntasRecientes(db, fecha, config.diasSinRepetir);
+      const recientes = await preguntasRecientes(db, fecha, config.diasSinRepetir, modo);
       const preguntas = [];
       const detalles = [];
+      const prefijo = modo === MODO_POR_DEFECTO ? 'manual' : `manual-${modo}`;
       for (const [i, entrada] of cuerpo.preguntas.entries()) {
-        const candidata = { ...entrada, id: entrada?.id || `manual-${fecha}-p${i + 1}` };
-        const validacion = validarPregunta(candidata, { dominios: config.fuentes.dominios, recientes, estricta: true });
+        const candidata = { ...entrada, id: entrada?.id || `${prefijo}-${fecha}-p${i + 1}` };
+        if (categorias.length === 1 && !candidata.categoria) candidata.categoria = categorias[0];
+        const validacion = validarPregunta(candidata, { dominios: config.fuentes.dominios, recientes, estricta: true, modo });
         detalles.push({
           posicion: i + 1,
           enunciado: candidata.enunciado || '',
@@ -214,14 +247,14 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         if (validacion.ok) preguntas.push({ ...validacion.pregunta, origen: 'reserva' });
       }
 
-      const lote = preguntas.length === cuerpo.preguntas.length ? validarLote(preguntas) : { ok: false, errores: [] };
+      const lote = preguntas.length === cuerpo.preguntas.length ? validarLote(preguntas, modo) : { ok: false, errores: [] };
       const errores = detalles.flatMap((d) => d.errores.map((error) => `Pregunta ${d.posicion}: ${error}`));
       errores.push(...lote.errores);
 
       // Similitud con las preguntas de los últimos N días (incluye los ya programados) y dentro del lote.
       const diasSimilitud = Math.min(30, Math.max(1, Math.floor(Number(cuerpo.diasSimilitud)) || config.similitudDias));
       const hoy = fechaLocal(ahora(), config.zona);
-      const historial = (await historialDesde(db, sumarDias(hoy, -(diasSimilitud - 1)))).filter((p) => p.fecha !== fecha);
+      const historial = (await historialDesde(db, sumarDias(hoy, -(diasSimilitud - 1)), { modo })).filter((p) => p.fecha !== fecha);
       const similitudes = analizarSimilitud(cuerpo.preguntas, historial);
       const avisosSimilitud = [];
       for (const s of similitudes) {
@@ -238,10 +271,11 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         throw error;
       }
       const advertencias = [...avisosSimilitud, ...detalles.flatMap((d) => d.advertencias.map((aviso) => `Pregunta ${d.posicion}: ${aviso}`))];
-      if (cuerpo.soloValidar) return { resultado: 'valido', fecha, advertencias, similitudes, diasSimilitud };
+      if (cuerpo.soloValidar) return { resultado: 'valido', fecha, modo, advertencias, similitudes, diasSimilitud };
 
       const publicado = await publicarDesafio(db, {
         fecha,
+        modo,
         preguntas,
         origen: 'reserva',
         modelo: 'manual',
@@ -252,25 +286,32 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return {
         ...publicado,
         resultado: existente ? 'reemplazado' : 'publicado',
+        modo,
         origen: 'manual',
         advertencias,
         similitudes,
         diasSimilitud,
       };
     }, { admin: true, limiteJson: LIMITES.cuerpoImportacion, limite: 'importar' }],
-    // Generar o regenerar un día a mano.
-    //   modo: 'auto' (IA y, si falla, reserva) | 'ia' (solo IA; si falla no cambia nada) | 'reserva'
+    // Generar o regenerar un día a mano. ?modo= es el modo de juego; en el cuerpo:
+    //   modo: estrategia de generación, 'auto' (IA y, si falla, reserva) | 'ia' (solo IA; si falla no
+    //         cambia nada) | 'reserva'. Los modos temáticos no tienen IA automática: solo 'reserva'
+    //         (o 'auto', que en ellos es lo mismo).
     //   reemplazar: true para regenerar un día que ya existe
     //   forzar: true si ese día ya tiene partidas (se borran junto con el desafío anterior)
-    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/generar$/, async ({ m, cuerpo }) => {
+    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/generar$/, async ({ m, cuerpo, req }) => {
       const fecha = m[1];
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
       if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La generación no está disponible.');
+      const modoJuego = modoDe(req);
       const modo = cuerpo.modo ?? 'auto';
       if (!['auto', 'ia', 'reserva'].includes(modo)) throw new ErrorJuego(400, 'modo_invalido', 'El modo tiene que ser auto, ia o reserva.');
+      if (modo === 'ia' && !MODOS[modoJuego].iaAutomatica) {
+        throw new ErrorJuego(400, 'sin_ia', `${MODOS[modoJuego].nombre} no se genera con la IA automática: usá la reserva o cargá un JSON hecho con su prompt.`);
+      }
       if (modo === 'ia' && !contexto.proveedor) throw new ErrorJuego(400, 'sin_ia', 'La IA no está configurada (falta ANTHROPIC_API_KEY).');
-      const existente = await desafioPorFecha(db, fecha);
-      if (existente && !cuerpo.reemplazar) throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío para ${fecha}. Mandá reemplazar: true para regenerarlo.`);
+      const existente = await desafioPorFecha(db, fecha, modoJuego);
+      if (existente && !cuerpo.reemplazar) throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío de ${MODOS[modoJuego].nombre} para ${fecha}. Mandá reemplazar: true para regenerarlo.`);
       if (existente) {
         const { n } = await db.get('SELECT COUNT(*) AS n FROM partidas WHERE desafio_id = ?', existente.id);
         if (n && !cuerpo.forzar) {
@@ -278,8 +319,8 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         }
       }
       const ctx = modo === 'reserva' ? { ...contexto, proveedor: null } : contexto;
-      const r = await asegurarDesafio({ db, config, fecha, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora, registro });
-      registro.info('admin_generar', { fecha, modo, resultado: r.resultado, origen: r.origen, corridaId: r.corridaId });
+      const r = await asegurarDesafio({ db, config, fecha, modo: modoJuego, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora, registro });
+      registro.info('admin_generar', { fecha, modoJuego, modo, resultado: r.resultado, origen: r.origen, corridaId: r.corridaId });
       return r;
     }, { admin: true, limite: 'generar' }],
     // Estadísticas: ?fecha=AAAA-MM-DD (día en detalle) &desde=…&hasta=… (serie diaria, hasta 366 días).
@@ -292,32 +333,37 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       for (const f of [fecha, desde, hasta]) if (!esFechaValida(f)) throw new ErrorJuego(400, 'fecha_invalida', `Fecha inválida: ${f}`);
       if (desde > hasta) throw new ErrorJuego(400, 'rango_invalido', 'El rango está invertido.');
       if (sumarDias(desde, 366) < hasta) throw new ErrorJuego(400, 'rango_invalido', 'El rango no puede superar un año.');
-      return { hoy, ...(await estadisticasAdmin(db, { zona: config.zona, desde, hasta, fecha })) };
+      return { hoy, ...(await estadisticasAdmin(db, { zona: config.zona, desde, hasta, fecha, modo: modoDe(req) })) };
     }, { admin: true }],
-    // Historial para que una IA externa no repita preguntas: ?dias=3 (1–30) &formato=json|csv.
+    // Historial de un modo para que una IA externa no repita preguntas: ?modo= &dias=3 (1–30) &formato=json|csv.
     // Incluye desde hace N-1 días hasta los días ya programados a futuro.
     ['GET', /^\/api\/admin\/historial$/, async ({ req }) => {
-      const q = new URL(req.url, 'http://local').searchParams;
+      const q = consulta(req);
+      const modo = modoDe(req);
       const dias = Math.min(30, Math.max(1, Math.floor(Number(q.get('dias')) || 3)));
       const formato = q.get('formato') === 'csv' ? 'csv' : 'json';
       const hoy = fechaLocal(ahora(), config.zona);
       const desde = sumarDias(hoy, -(dias - 1));
-      const preguntas = await historialDesde(db, desde);
-      const archivo = `filon-historial-${desde}-${dias}d.${formato}`;
+      const preguntas = await historialDesde(db, desde, { modo });
+      const archivo = `filon-historial-${modo === MODO_POR_DEFECTO ? '' : `${modo}-`}${desde}-${dias}d.${formato}`;
       if (formato === 'csv') return { [CRUDO]: { tipo: 'text/csv; charset=utf-8', cuerpo: historialACsv(preguntas), archivo } };
-      const cuerpo = JSON.stringify({ desde, dias, generado: new Date(ahora()).toISOString(), preguntas }, null, 2);
+      const cuerpo = JSON.stringify({ modo, desde, dias, generado: new Date(ahora()).toISOString(), preguntas }, null, 2);
       return { [CRUDO]: { tipo: 'application/json; charset=utf-8', cuerpo, archivo } };
     }, { admin: true }],
-    // Prompt para generar un día con una IA externa (se copia desde el panel).
-    ['GET', /^\/api\/admin\/prompt$/, async () => ({ texto: leerPrompt() }), { admin: true }],
+    // Prompt de cada modo para generar un día con una IA externa (se copia desde el panel).
+    ['GET', /^\/api\/admin\/prompt$/, async ({ req }) => {
+      const modo = modoDe(req);
+      return { modo, texto: leerPrompt(modo) };
+    }, { admin: true }],
     ['GET', /^\/api\/admin\/corridas$/, async () => ({
-      corridas: (await db.all('SELECT id, fecha_objetivo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
+      corridas: (await db.all('SELECT id, fecha_objetivo, modo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
         .map((c) => ({ ...c, detalle: c.detalle ? JSON.parse(c.detalle) : null })),
     }), { admin: true }],
-    ['GET', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})$/, async ({ m }) => {
+    ['GET', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})$/, async ({ m, req }) => {
       if (!esFechaValida(m[1])) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
-      const d = await desafioPorFecha(db, m[1]);
-      if (!d) throw new ErrorJuego(404, 'sin_desafio', 'No hay desafío para esa fecha.');
+      const modo = modoDe(req);
+      const d = await desafioPorFecha(db, m[1], modo);
+      if (!d) throw new ErrorJuego(404, 'sin_desafio', `No hay desafío de ${MODOS[modo].nombre} para esa fecha.`);
       const preguntas = [];
       for (const p of await preguntasDeDesafio(db, d.id)) {
         // Las respuestas más valiosas primero y con tope: una pregunta de Wikidata puede tener 1.500.

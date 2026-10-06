@@ -934,6 +934,91 @@ body.en-recorrido .gusano { visibility: visible; }
   body.en-pagina .logo { font-size: 5rem; }
 }
 
+/* ───────── Modos de juego ─────────
+   Misma identidad (tipografías, paneles, Lito); cambia el acento y el vestuario de Lito. */
+body.modo-farandula { --cian: #ff9ec0; }
+body.modo-geografia { --cian: #8fd3ff; }
+body.modo-farandula .logo { text-shadow: 5px 5px 0 #e65772, 9px 9px 0 #8e5f2a; }
+body.modo-geografia .logo { text-shadow: 5px 5px 0 #3c8fd0, 9px 9px 0 #5f436d; }
+
+.gusano .accesorio { display: none; }
+body.modo-farandula .gusano .de-farandula,
+body.modo-geografia .gusano .de-geografia { display: inline; }
+/* En Farándula y Geografía la escena es pixel art: Filón se dibuja pixelado en el lienzo (a partir de
+   este mismo SVG, con su vestuario), así que el gusano del DOM no se muestra. */
+body.modo-farandula .gusano, body.modo-geografia .gusano { visibility: hidden !important; }
+body.modo-farandula .burbuja, body.modo-geografia .burbuja {
+  border-radius: 0;
+  border-width: 4px;
+  border-color: #1c1230;
+  box-shadow: 6px 6px 0 rgb(28 18 48 / .45);
+}
+.gusano .bufanda-cola { animation: ondear .55s ease-in-out infinite alternate; transform-box: view-box; transform-origin: 44px 44px; }
+@keyframes ondear { from { transform: rotate(-6deg) scaleX(.92); } to { transform: rotate(5deg) scaleX(1.06); } }
+
+.modo-actual { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: -6px; }
+.modo-chip {
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border: 2px solid var(--cian);
+  border-radius: 999px;
+  color: var(--cal);
+  background: rgb(22 22 48 / .7);
+}
+#btn-cambiar-modo { padding: 0; }
+
+.selector-modos { width: min(640px, calc(100vw - 32px)); }
+.modos-lista { list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.modo-opcion {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px 8px 10px;
+  font: inherit;
+  text-align: center;
+  color: var(--cal);
+  background: #121329;
+  border: 2px solid var(--borde);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .1s ease;
+}
+.modo-opcion:hover { border-color: var(--viga); transform: translateY(-1px); }
+.modo-opcion[aria-current="true"] { border-color: var(--lampara); box-shadow: 0 0 0 1px var(--lampara) inset; }
+.modo-mini { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; border-radius: 8px; }
+.modo-nombre { font-family: var(--titulo); font-weight: 900; font-size: 1.2rem; line-height: 1.05; letter-spacing: .02em; }
+.modo-estado { font-size: .8rem; color: var(--cal-3); line-height: 1.25; }
+.modo-estado[data-estado="disponible"] { color: #8ff0b0; }
+.modo-estado[data-estado="en_curso"] { color: var(--lampara-2); }
+.modo-estado[data-estado="jugado"]::before { content: '✓ '; }
+.modo-opcion { position: relative; }
+.modo-opcion[aria-current="true"]::after {
+  content: 'Actual';
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--lampara);
+  color: #25213d;
+  font-size: .68rem;
+  font-weight: 700;
+}
+@media (max-width: 520px) {
+  .modos-lista { gap: 8px; }
+  .modo-opcion { padding: 6px 5px 8px; }
+  .modo-nombre { font-size: 1rem; }
+  .modo-estado { font-size: .72rem; }
+  .modo-opcion[aria-current="true"]::after { top: 9px; left: 9px; padding: 0 6px; font-size: .62rem; }
+}
+
 /* ───────── Movimiento reducido ───────── */
 .movimiento-reducido *, .movimiento-reducido *::before, .movimiento-reducido *::after {
   animation: none !important;

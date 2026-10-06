@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { bancoDeHoy, masRara, vigilarErrores } from './ayuda.js';
+import { bancoDeHoy, masRara, vigilarErrores, BEARER } from './ayuda.js';
 
 test('carga inicial: portada, cuenta regresiva y sin errores', async ({ page }) => {
   const errores = vigilarErrores(page);
@@ -167,3 +167,67 @@ for (const conPuntos of [false, true]) {
     expect(errores).toEqual([]);
   });
 }
+
+test('modos: el menú ☰ abre el selector y cada modo tiene su ambientación y su partida diaria', async ({ page, request }) => {
+  const errores = vigilarErrores(page);
+  await page.goto('/');
+  await expect(page.locator('#btn-comenzar')).toBeVisible();
+  await page.click('#btn-modos');
+  const dialogo = page.locator('#dlg-modos');
+  await expect(dialogo).toBeVisible();
+  await expect(page.locator('#btn-modos')).toHaveAttribute('aria-expanded', 'true');
+  await expect(dialogo.locator('.modo-opcion')).toHaveCount(3);
+  for (const nombre of ['Normal', 'Farándula Argentina', 'Geografía']) {
+    const opcion = dialogo.locator('.modo-opcion', { hasText: nombre });
+    await expect(opcion.locator('.modo-mini')).toBeVisible();
+    await expect(opcion.locator('.modo-nombre')).toHaveText(nombre);
+  }
+  await expect(dialogo.locator('.modo-opcion[data-modo="normal"]')).toHaveAttribute('aria-current', 'true');
+
+  // Farándula: textos, URL y desafío propios.
+  await dialogo.locator('.modo-opcion[data-modo="farandula"]').click();
+  await expect(dialogo).toBeHidden();
+  await expect(page).toHaveURL(/\?modo=farandula$/);
+  await expect(page.locator('body')).toHaveClass(/modo-farandula/);
+  await expect(page.locator('#inicio-modo')).toHaveText('Farándula Argentina');
+  await expect(page.locator('#btn-comenzar')).toHaveText('Bajar de la limusina');
+  const { fecha } = await (await request.get('/api/salud')).json();
+  const banco = await (await request.get(`/api/admin/desafios/${fecha}?modo=farandula`, { headers: BEARER })).json();
+
+  await page.click('#btn-comenzar');
+  await expect(page.locator('#p-ronda')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('#ronda-categoria')).toHaveText('Farándula');
+  await expect(page.locator('#ronda-enunciado')).toHaveText(banco.preguntas[0].enunciado);
+  // Mientras corre la mecha no se puede cambiar de modo.
+  await page.click('#btn-modos');
+  await expect(dialogo).toBeHidden();
+  await expect(page.locator('#aviso')).toContainText('Terminá la ronda');
+
+  // La recarga vuelve al mismo modo y a la misma ronda.
+  await page.reload();
+  await expect(page.locator('#p-ronda')).toBeVisible();
+  await expect(page.locator('#ronda-enunciado')).toHaveText(banco.preguntas[0].enunciado);
+  for (let n = 1; n <= 7; n++) {
+    await expect(page.locator('#p-ronda')).toBeVisible({ timeout: 8000 });
+    await page.click('#btn-pasar');
+    await expect(page.locator('#p-resultado')).toBeVisible();
+    await page.click('#btn-siguiente');
+  }
+  await expect(page.locator('#p-final')).toBeVisible();
+  await expect(page.locator('#final-unidad')).toHaveText('metros');
+
+  // Farándula quedó jugada; Geografía sigue disponible y usa kilómetros.
+  await page.click('#btn-modos');
+  await expect(dialogo.locator('.modo-opcion[data-modo="farandula"] .modo-estado')).toHaveText(/Jugado hoy/);
+  await expect(dialogo.locator('.modo-opcion[data-modo="geografia"] .modo-estado')).toHaveText('Disponible');
+  await dialogo.locator('.modo-opcion[data-modo="geografia"]').click();
+  await expect(page.locator('#btn-comenzar')).toHaveText('Despegar');
+  await expect(page.locator('#btn-comenzar')).toBeEnabled();
+  await expect(page.locator('#tope')).toHaveText('42.000 km');
+
+  // Volver a Farándula muestra el resultado guardado (no se puede jugar de nuevo hoy).
+  await page.goto('/?modo=farandula');
+  await expect(page.locator('#p-final')).toBeVisible();
+  await expect(page.locator('#final-sobre')).toContainText('Ya desfilaste hoy');
+  expect(errores).toEqual([]);
+});

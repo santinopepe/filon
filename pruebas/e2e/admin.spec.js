@@ -47,36 +47,36 @@ test('importación JSON: inválida no guarda nada; válida publica el día', asy
   await ingresar(page);
   await page.click('#tab-crear');
   await expect(page.locator('#pestana-crear')).toBeVisible();
-  await page.fill('#imp-fecha', '2030-03-15');
+  await page.fill('#normal-imp-fecha', '2030-03-15');
 
-  await page.fill('#imp-json', '{ esto no es JSON');
-  await page.click('#imp-boton');
-  await expect(page.locator('#imp-resultado')).toContainText('JSON inválido');
+  await page.fill('#normal-imp-json', '{ esto no es JSON');
+  await page.click('#normal-imp-boton');
+  await expect(page.locator('#normal-imp-resultado')).toContainText('JSON inválido');
 
   const recientes = await enunciadosRecientes(page.request);
   const lote = lotePorCategoria(recientes);
   // Un lote con una pregunta ya publicada hoy: «Solo validar» la marca como repetida y no publica.
   const yaPublicada = lotePorCategoria([]).find((p) => recientes.includes(p.enunciado));
-  await page.fill('#imp-json', JSON.stringify({ preguntas: lote.map((p) => (p.categoria === yaPublicada.categoria ? yaPublicada : p)) }));
-  await page.click('#imp-validar');
-  await expect(page.locator('#imp-resultado')).toHaveClass(/mal/);
-  await expect(page.locator('#imp-resultado')).toContainText('repite «');
+  await page.fill('#normal-imp-json', JSON.stringify({ preguntas: lote.map((p) => (p.categoria === yaPublicada.categoria ? yaPublicada : p)) }));
+  await page.click('#normal-imp-validar');
+  await expect(page.locator('#normal-imp-resultado')).toHaveClass(/mal/);
+  await expect(page.locator('#normal-imp-resultado')).toContainText('repite «');
 
-  await page.fill('#imp-json', JSON.stringify({ preguntas: lote }));
-  await page.click('#imp-validar');
-  await expect(page.locator('#imp-resultado')).toHaveClass(/ok/);
-  await expect(page.locator('#imp-resultado')).toContainText('El JSON es válido');
+  await page.fill('#normal-imp-json', JSON.stringify({ preguntas: lote }));
+  await page.click('#normal-imp-validar');
+  await expect(page.locator('#normal-imp-resultado')).toHaveClass(/ok/);
+  await expect(page.locator('#normal-imp-resultado')).toContainText('El JSON es válido');
   expect((await page.request.get('/api/admin/desafios/2030-03-15')).status()).toBe(404);
 
-  await page.fill('#imp-json', JSON.stringify({ preguntas: lote.slice(0, 6) }));
-  await page.click('#imp-boton');
-  await expect(page.locator('#imp-resultado')).toHaveClass(/mal/);
-  await expect(page.locator('#imp-resultado')).toContainText('7 preguntas');
+  await page.fill('#normal-imp-json', JSON.stringify({ preguntas: lote.slice(0, 6) }));
+  await page.click('#normal-imp-boton');
+  await expect(page.locator('#normal-imp-resultado')).toHaveClass(/mal/);
+  await expect(page.locator('#normal-imp-resultado')).toContainText('7 preguntas');
 
-  await page.fill('#imp-json', JSON.stringify({ preguntas: lote }));
-  await page.click('#imp-boton');
-  await expect(page.locator('#imp-resultado')).toHaveClass(/ok/);
-  await expect(page.locator('#imp-resultado')).toContainText('Desafío manual publicado');
+  await page.fill('#normal-imp-json', JSON.stringify({ preguntas: lote }));
+  await page.click('#normal-imp-boton');
+  await expect(page.locator('#normal-imp-resultado')).toHaveClass(/ok/);
+  await expect(page.locator('#normal-imp-resultado')).toContainText('Desafío manual publicado');
   expect((await (await page.request.get('/api/admin/desafios/2030-03-15')).json()).preguntas).toHaveLength(7);
 });
 
@@ -110,19 +110,19 @@ test('generar con otra IA: prompt a mano, descargas del historial y copia con hi
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await ingresar(page);
   await page.click('#tab-crear');
-  const prompt = page.locator('#prompt-texto');
+  const prompt = page.locator('#normal-prompt-texto');
   await expect(prompt).toHaveValue(/^Sos el editor de preguntas de Filón/);
   await expect(prompt).toHaveValue(/Historial reciente:\n\[\]\n/);
 
-  const [json] = await Promise.all([page.waitForEvent('download'), page.click('#hist-json')]);
+  const [json] = await Promise.all([page.waitForEvent('download'), page.click('#normal-hist-json')]);
   expect(json.suggestedFilename()).toMatch(/^filon-historial-\d{4}-\d{2}-\d{2}-3d\.json$/);
   const datos = JSON.parse(await (await json.createReadStream()).toArray().then((p) => Buffer.concat(p).toString('utf8')));
   expect(datos.preguntas.length).toBeGreaterThanOrEqual(7);
-  const [csv] = await Promise.all([page.waitForEvent('download'), page.click('#hist-csv')]);
+  const [csv] = await Promise.all([page.waitForEvent('download'), page.click('#normal-hist-csv')]);
   expect(csv.suggestedFilename()).toMatch(/\.csv$/);
 
-  await page.click('#prompt-copiar-historial');
-  await expect(page.locator('#prompt-estado')).toContainText('Prompt copiado con');
+  await page.click('#normal-prompt-copiar-historial');
+  await expect(page.locator('#normal-prompt-estado')).toContainText('Prompt copiado con');
   const copiado = await page.evaluate(() => navigator.clipboard.readText());
   expect(copiado).toContain('Historial reciente:\n[\n  {"fecha":');
   expect(copiado).toContain(datos.preguntas[0].enunciado);
@@ -132,7 +132,44 @@ test('generar con otra IA: prompt a mano, descargas del historial y copia con hi
   await prompt.fill('Prompt editado de prueba');
   await page.reload();
   await page.click('#tab-crear');
-  await expect(page.locator('#prompt-texto')).toHaveValue('Prompt editado de prueba');
-  await page.click('#prompt-restaurar');
-  await expect(page.locator('#prompt-texto')).toHaveValue(/^Sos el editor de preguntas de Filón/);
+  await expect(page.locator('#normal-prompt-texto')).toHaveValue('Prompt editado de prueba');
+  await page.click('#normal-prompt-restaurar');
+  await expect(page.locator('#normal-prompt-texto')).toHaveValue(/^Sos el editor de preguntas de Filón/);
+});
+
+test('crear por modo: pestañas Normal, Farándula y Geografía con prompt e historial propios', async ({ page }) => {
+  const errores = vigilarErrores(page);
+  await ingresar(page);
+  await page.click('#tab-crear');
+  await expect(page.locator('#tab-crear-normal')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#crear-normal')).toBeVisible();
+
+  await page.click('#tab-crear-farandula');
+  await expect(page.locator('#crear-farandula')).toBeVisible();
+  await expect(page.locator('#crear-normal')).toBeHidden();
+  await expect(page.locator('#farandula-prompt-texto')).toHaveValue(/modo Farándula Argentina/);
+  await expect(page.locator('#farandula-gen-modo option')).toHaveCount(1); // sin IA automática: solo reserva
+  const [json] = await Promise.all([page.waitForEvent('download'), page.click('#farandula-hist-json')]);
+  expect(json.suggestedFilename()).toMatch(/^filon-historial-farandula-/);
+  const datos = JSON.parse(await (await json.createReadStream()).toArray().then((p) => Buffer.concat(p).toString('utf8')));
+  expect(datos.modo).toBe('farandula');
+  expect(datos.preguntas.every((p) => p.categoria === 'farandula')).toBe(true);
+
+  // Flechas del teclado entre los modos.
+  await page.locator('#tab-crear-farandula').focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#tab-crear-geografia')).toBeFocused();
+  await expect(page.locator('#geografia-prompt-texto')).toHaveValue(/modo Geografía/);
+
+  // Lo escrito en un modo no aparece en otro.
+  await page.fill('#geografia-imp-json', '{"preguntas":[]}');
+  await page.click('#tab-crear-normal');
+  await expect(page.locator('#normal-imp-json')).toHaveValue('');
+
+  // El listado de desafíos se filtra por modo.
+  await page.click('#tab-desafios');
+  await page.selectOption('#des-modo', 'geografia');
+  await expect(page.locator('#detalle .pregunta')).toHaveCount(7);
+  await expect(page.locator('#detalle .cabecera-detalle')).toContainText('Geografía');
+  expect(errores).toEqual([]);
 });

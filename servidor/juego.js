@@ -1,7 +1,7 @@
 // Lógica de partida. Todo (tiempos, respuestas y puntos) se decide en el servidor.
 import { randomUUID } from 'node:crypto';
 import { transaccion } from './db.js';
-import { CATEGORIAS, RAREZAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO, LIMITES } from './dominio.js';
+import { CATEGORIAS, RAREZAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO, LIMITES, MODOS, CLAVES_MODOS, MODO_POR_DEFECTO } from './dominio.js';
 import { normalizar } from './normalizar.js';
 import { fechaLocal, inicioDeFecha, sumarDias, proximaMedianoche } from './tiempo.js';
 import { desafioPorFecha, desafioPorId, preguntasDeDesafio, respuestasDePregunta, conteoRespuestasDeDesafio, respuestasPorIds, evaluarTexto } from './banco.js';
@@ -29,8 +29,19 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
     await db.run('INSERT OR IGNORE INTO jugadores (id, creado_en) VALUES (?, ?)', id, t);
   }
 
-  function desafioDeHoy(t = ahora()) {
-    return desafioPorFecha(db, fechaLocal(t, zona));
+  function desafioDeHoy(t = ahora(), modo = MODO_POR_DEFECTO) {
+    return desafioPorFecha(db, fechaLocal(t, zona), modo);
+  }
+
+  /** Cómo está cada modo hoy para el selector: sin desafío, disponible, en curso o ya jugado. */
+  function resumenModo(clave, desafio, partida) {
+    return {
+      clave,
+      nombre: MODOS[clave].nombre,
+      estado: !desafio ? 'preparando' : !partida ? 'disponible' : partida.terminada_en ? 'jugado' : 'en_curso',
+      numero: desafio?.numero ?? null,
+      profundidad: partida ? partida.puntos * METROS_POR_PUNTO : null,
+    };
   }
 
   async function obtenerPartida(jugadorId, partidaId) {
@@ -189,6 +200,7 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
     if (rondaActiva) siguiente = null;
     return {
       id: partida.id,
+      modo: desafio.modo ?? MODO_POR_DEFECTO,
       fecha: desafio.fecha,
       numero: desafio.numero,
       terminada: Boolean(partida.terminada_en),
@@ -206,12 +218,12 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
     };
   }
 
-  async function partidaPendienteAnterior(jugadorId, fechaHoy, t) {
+  async function partidaPendienteAnterior(jugadorId, fechaHoy, t, modo) {
     const fila = await db.get(
       `SELECT p.* FROM partidas p JOIN desafios d ON d.id = p.desafio_id
-       WHERE p.jugador_id = ? AND p.terminada_en IS NULL AND d.fecha < ?
+       WHERE p.jugador_id = ? AND p.terminada_en IS NULL AND d.fecha < ? AND d.modo = ?
        ORDER BY d.fecha DESC LIMIT 1`,
-      jugadorId, fechaHoy,
+      jugadorId, fechaHoy, modo,
     );
     if (!fila) return null;
     const actualizada = await mantener(fila, t);
@@ -221,31 +233,43 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
   return {
     asegurarJugador,
 
-    async estado(jugadorId) {
+    /**
+     * Estado del día para un modo (desafío, partida de hoy y una pendiente de ayer) y, en `modos`,
+     * cómo está cada uno de los tres: el límite es una partida por persona, modo y día.
+     */
+    async estado(jugadorId, modo = MODO_POR_DEFECTO) {
       const t = ahora();
       await asegurarJugador(jugadorId, t);
       const hoy = fechaLocal(t, zona);
-      const desafio = await desafioPorFecha(db, hoy);
+      const modos = [];
+      let desafio = null;
       let partidaHoy = null;
-      if (desafio) {
-        const fila = await db.get('SELECT * FROM partidas WHERE jugador_id = ? AND desafio_id = ?', jugadorId, desafio.id);
-        if (fila) partidaHoy = await vista(await mantener(fila, t), t);
+      for (const clave of CLAVES_MODOS) {
+        const delModo = await desafioPorFecha(db, hoy, clave);
+        let fila = delModo ? await db.get('SELECT * FROM partidas WHERE jugador_id = ? AND desafio_id = ?', jugadorId, delModo.id) : null;
+        if (fila) fila = await mantener(fila, t);
+        modos.push(resumenModo(clave, delModo, fila));
+        if (clave !== modo) continue;
+        desafio = delModo;
+        if (fila) partidaHoy = await vista(fila, t);
       }
-      const pendiente = await partidaPendienteAnterior(jugadorId, hoy, t);
+      const pendiente = await partidaPendienteAnterior(jugadorId, hoy, t, modo);
       return {
         ahora: t,
         zona,
+        modo,
         proximoDesafioEn: proximaMedianoche(t, zona),
-        desafio: desafio ? { fecha: desafio.fecha, numero: desafio.numero, preguntas: PREGUNTAS_POR_DESAFIO } : null,
+        desafio: desafio ? { fecha: desafio.fecha, numero: desafio.numero, preguntas: PREGUNTAS_POR_DESAFIO, modo } : null,
         partidaHoy,
         partidaPendiente: pendiente ? await vista(pendiente, t) : null,
+        modos,
       };
     },
 
-    async iniciarPartida(jugadorId) {
+    async iniciarPartida(jugadorId, modo = MODO_POR_DEFECTO) {
       const t = ahora();
       await asegurarJugador(jugadorId, t);
-      const desafio = await desafioDeHoy(t);
+      const desafio = await desafioDeHoy(t, modo);
       if (!desafio) throw new ErrorJuego(503, 'sin_desafio', 'El desafío de hoy todavía se está preparando. Probá de nuevo en unos minutos.');
       await db.run('INSERT OR IGNORE INTO partidas (id, jugador_id, desafio_id, iniciada_en) VALUES (?, ?, ?, ?)', randomUUID(), jugadorId, desafio.id, t);
       const fila = await db.get('SELECT * FROM partidas WHERE jugador_id = ? AND desafio_id = ?', jugadorId, desafio.id);

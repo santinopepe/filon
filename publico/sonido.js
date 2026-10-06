@@ -79,6 +79,16 @@ export function crearSonido({ activo = true } = {}) {
       ruido({ dur: 0.09, vol: 0.35, frec: 3200, q: 2 });
       tono(1760, { dur: 0.08, tipo: 'square', vol: 0.05 });
     },
+    // Obturador de cámara: dos chasquidos cortos (Farándula).
+    flash() {
+      ruido({ dur: 0.03, vol: 0.3, frec: 5200, q: 1.5 });
+      ruido({ dur: 0.04, vol: 0.22, frec: 3800, q: 1.5, en: 0.06 });
+    },
+    // Acelerón de la hélice (Geografía).
+    helice() {
+      tono(110, { dur: 0.32, tipo: 'sawtooth', vol: 0.05, hasta: 190 });
+      ruido({ dur: 0.3, vol: 0.12, frec: 420, q: 0.8, tipo: 'lowpass' });
+    },
     rechazo() {
       tono(140, { dur: 0.22, tipo: 'sine', vol: 0.3, hasta: 70 });
       ruido({ dur: 0.15, vol: 0.12, frec: 400, tipo: 'lowpass' });

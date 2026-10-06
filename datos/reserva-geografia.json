@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "revisado": "2026-10-06",
+  "descripcion": "Banco de reserva del modo Geografía, curado a mano. Se usa cuando no se cargó un día desde el panel. Cada pregunta pasa la validación estricta (npm run validar-reserva) y sus conjuntos son cerrados y verificables en las fuentes indicadas.",
+  "preguntas": [
+    {
+      "id": "gm-limitrofes-argentina",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país limítrofe de la Argentina.",
+      "alcance": "Los cinco Estados soberanos que comparten frontera terrestre con la Argentina.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Fronteras_de_Argentina", "titulo": "Fronteras de Argentina — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Chile", "variantes": ["República de Chile"], "rareza": "grava", "explicacion": "Comparten la frontera más larga de la Argentina, a lo largo de la cordillera de los Andes." },
+        { "canonica": "Brasil", "variantes": ["Brazil"], "rareza": "grava", "explicacion": "Limitan en el noreste, sobre los ríos Uruguay e Iguazú, en la zona de las Cataratas." },
+        { "canonica": "Uruguay", "variantes": ["República Oriental del Uruguay"], "rareza": "cobre", "explicacion": "La frontera sigue el río Uruguay y el Río de la Plata." },
+        { "canonica": "Paraguay", "variantes": ["República del Paraguay"], "rareza": "plata", "explicacion": "Los separan los ríos Paraná, Paraguay y Pilcomayo." },
+        { "canonica": "Bolivia", "variantes": ["Estado Plurinacional de Bolivia"], "rareza": "diamante", "explicacion": "Limita con Jujuy y Salta, en el norte argentino." }
+      ],
+      "rechazos": [{ "textos": ["Perú"], "motivo": "No limita con la Argentina: entre ambos están Bolivia y Chile." }]
+    },
+    {
+      "id": "gm-centroamerica",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país de América Central.",
+      "alcance": "Los siete Estados soberanos del istmo centroamericano, de Guatemala a Panamá. No cuentan México ni las islas del Caribe.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/América_Central", "titulo": "América Central — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Costa Rica", "variantes": [], "rareza": "grava", "explicacion": "Está entre Nicaragua y Panamá; abolió su ejército en 1948." },
+        { "canonica": "Panamá", "variantes": ["República de Panamá"], "rareza": "grava", "explicacion": "Es el país más al sur del istmo; lo cruza el canal que une el Atlántico con el Pacífico." },
+        { "canonica": "Guatemala", "variantes": [], "rareza": "cobre", "explicacion": "Es el país más poblado de América Central y limita con México." },
+        { "canonica": "Honduras", "variantes": [], "rareza": "cobre", "explicacion": "Tiene costas en el Caribe y una salida al Pacífico por el golfo de Fonseca." },
+        { "canonica": "El Salvador", "variantes": [], "rareza": "cobre", "explicacion": "Es el país más pequeño del istmo y el único sin costa en el Caribe." },
+        { "canonica": "Nicaragua", "variantes": [], "rareza": "plata", "explicacion": "Es el país más extenso de América Central; tiene el gran lago Cocibolca." },
+        { "canonica": "Belice", "variantes": ["Belize"], "rareza": "diamante", "explicacion": "Excolonia británica: es el único país del istmo con el inglés como idioma oficial." }
+      ],
+      "rechazos": [
+        { "textos": ["México"], "motivo": "Está en América del Norte; no forma parte del istmo centroamericano." },
+        { "textos": ["Cuba"], "motivo": "Es una isla del Caribe, no un país del istmo." }
+      ]
+    },
+    {
+      "id": "gm-oceanos",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un océano.",
+      "alcance": "Los cinco océanos reconocidos por la Organización Hidrográfica Internacional. No cuentan los mares.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Océano", "titulo": "Océano — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Pacífico", "variantes": ["Océano Pacífico"], "rareza": "grava", "explicacion": "Es el más grande y el más profundo: cubre cerca de un tercio de la superficie del planeta." },
+        { "canonica": "Atlántico", "variantes": ["Océano Atlántico"], "rareza": "grava", "explicacion": "Separa América de Europa y África; baña toda la costa argentina." },
+        { "canonica": "Índico", "variantes": ["Océano Índico"], "rareza": "cobre", "explicacion": "Está entre África, Asia y Australia; es el más cálido de los cinco." },
+        { "canonica": "Ártico", "variantes": ["Océano Ártico", "Glacial Ártico", "Océano Glacial Ártico"], "rareza": "plata", "explicacion": "Rodea el Polo Norte y pasa buena parte del año cubierto de hielo." },
+        { "canonica": "Antártico", "variantes": ["Océano Antártico", "Austral", "Océano Austral", "Glacial Antártico"], "rareza": "diamante", "explicacion": "Rodea la Antártida; la Organización Hidrográfica Internacional lo delimitó en 2000." }
+      ],
+      "rechazos": [{ "textos": ["Mediterráneo", "Mar Mediterráneo"], "motivo": "Es un mar, no un océano." }]
+    },
+    {
+      "id": "gm-provincias-s",
+      "categoria": "geografia",
+      "enunciado": "Nombrá una provincia argentina cuyo nombre empiece con S.",
+      "alcance": "Las 23 provincias argentinas, por su nombre habitual. No cuenta la Ciudad Autónoma de Buenos Aires.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Provincias_de_Argentina", "titulo": "Provincias de Argentina — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Santa Fe", "variantes": ["Santa Fé"], "rareza": "grava", "explicacion": "Su ciudad más grande es Rosario, a orillas del Paraná." },
+        { "canonica": "Salta", "variantes": ["Salta la Linda"], "rareza": "grava", "explicacion": "Provincia del noroeste, famosa por la Quebrada de Cafayate y el Tren a las Nubes." },
+        { "canonica": "San Juan", "variantes": [], "rareza": "cobre", "explicacion": "Provincia cuyana; allí está el parque Ischigualasto, el Valle de la Luna." },
+        { "canonica": "Santa Cruz", "variantes": [], "rareza": "plata", "explicacion": "Provincia patagónica donde está el glaciar Perito Moreno." },
+        { "canonica": "San Luis", "variantes": [], "rareza": "plata", "explicacion": "Provincia cuyana, entre Mendoza y Córdoba." },
+        { "canonica": "Santiago del Estero", "variantes": [], "rareza": "diamante", "explicacion": "Su capital, fundada en 1553, es la ciudad más antigua de la Argentina." }
+      ],
+      "rechazos": [{ "textos": ["San Miguel de Tucumán"], "motivo": "Es una ciudad, la capital de Tucumán; la provincia empieza con T." }]
+    },
+    {
+      "id": "gm-capitales-sudamerica",
+      "categoria": "geografia",
+      "enunciado": "Nombrá la capital de un país de América del Sur.",
+      "alcance": "Capitales de los 12 Estados soberanos sudamericanos. De Bolivia valen Sucre (capital constitucional) y La Paz (sede del gobierno).",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/América_del_Sur", "titulo": "América del Sur — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Buenos Aires", "variantes": [], "rareza": "grava", "explicacion": "Capital de la Argentina, a orillas del Río de la Plata." },
+        { "canonica": "Santiago", "variantes": ["Santiago de Chile"], "rareza": "grava", "explicacion": "Capital de Chile, en un valle al pie de los Andes." },
+        { "canonica": "Montevideo", "variantes": [], "rareza": "grava", "explicacion": "Capital del Uruguay, frente al Río de la Plata." },
+        { "canonica": "Lima", "variantes": [], "rareza": "cobre", "explicacion": "Capital del Perú, fundada por Francisco Pizarro en 1535." },
+        { "canonica": "Bogotá", "variantes": [], "rareza": "cobre", "explicacion": "Capital de Colombia, a unos 2.600 metros de altura." },
+        { "canonica": "Asunción", "variantes": [], "rareza": "cobre", "explicacion": "Capital del Paraguay, sobre el río Paraguay." },
+        { "canonica": "Brasilia", "variantes": [], "rareza": "cobre", "explicacion": "Capital del Brasil desde 1960, ciudad planificada por Lúcio Costa y Oscar Niemeyer." },
+        { "canonica": "Caracas", "variantes": [], "rareza": "cobre", "explicacion": "Capital de Venezuela, en un valle cerca del mar Caribe." },
+        { "canonica": "Quito", "variantes": [], "rareza": "plata", "explicacion": "Capital del Ecuador, a casi 2.900 metros de altura." },
+        { "canonica": "La Paz", "variantes": [], "rareza": "plata", "explicacion": "Sede del gobierno de Bolivia y una de las capitales más altas del mundo." },
+        { "canonica": "Sucre", "variantes": [], "rareza": "oro", "explicacion": "Capital constitucional de Bolivia y sede de su poder judicial." },
+        { "canonica": "Georgetown", "variantes": [], "rareza": "diamante", "explicacion": "Capital de Guyana, en la desembocadura del río Demerara." },
+        { "canonica": "Paramaribo", "variantes": [], "rareza": "diamante", "explicacion": "Capital de Surinam; su centro histórico es patrimonio de la UNESCO." }
+      ],
+      "rechazos": [
+        { "textos": ["Río de Janeiro"], "motivo": "Fue capital del Brasil hasta 1960; hoy lo es Brasilia." },
+        { "textos": ["Cayena"], "motivo": "Es la capital de la Guayana Francesa, que no es un país sino un territorio de Francia." }
+      ]
+    },
+    {
+      "id": "gm-europa-sin-mar",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país de Europa sin salida al mar.",
+      "alcance": "Estados soberanos con todo su territorio en Europa y sin costa marítima. No cuentan Kosovo ni los países del Cáucaso o de Asia central.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/País_sin_litoral", "titulo": "País sin litoral — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Suiza", "variantes": [], "rareza": "grava", "explicacion": "Rodeada por Alemania, Francia, Italia, Austria y Liechtenstein, en plenos Alpes." },
+        { "canonica": "Austria", "variantes": [], "rareza": "grava", "explicacion": "País alpino que limita con ocho países, ninguno a través del mar." },
+        { "canonica": "Hungría", "variantes": [], "rareza": "cobre", "explicacion": "Está en la llanura del Danubio; su lago Balatón es el más grande de Europa central." },
+        { "canonica": "Luxemburgo", "variantes": [], "rareza": "cobre", "explicacion": "Pequeño gran ducado entre Bélgica, Francia y Alemania." },
+        { "canonica": "Andorra", "variantes": [], "rareza": "cobre", "explicacion": "Principado en los Pirineos, entre España y Francia." },
+        { "canonica": "Chequia", "variantes": ["República Checa"], "rareza": "cobre", "explicacion": "País de Europa central cuya capital es Praga." },
+        { "canonica": "Eslovaquia", "variantes": [], "rareza": "plata", "explicacion": "Se separó de Chequia en 1993; su capital, Bratislava, está sobre el Danubio." },
+        { "canonica": "Serbia", "variantes": [], "rareza": "plata", "explicacion": "Perdió su salida al mar en 2006, cuando Montenegro se independizó." },
+        { "canonica": "Liechtenstein", "variantes": [], "rareza": "plata", "explicacion": "Principado entre Suiza y Austria, sin litoral él y sus dos vecinos." },
+        { "canonica": "San Marino", "variantes": [], "rareza": "plata", "explicacion": "República enclavada en el centro de Italia." },
+        { "canonica": "Ciudad del Vaticano", "variantes": ["Vaticano", "Santa Sede"], "rareza": "plata", "explicacion": "El Estado más pequeño del mundo, enclavado en Roma." },
+        { "canonica": "Bielorrusia", "variantes": ["Belarús", "Belarus"], "rareza": "oro", "explicacion": "Está entre Rusia, Ucrania, Polonia, Lituania y Letonia." },
+        { "canonica": "Moldavia", "variantes": ["Moldova"], "rareza": "oro", "explicacion": "Está entre Rumania y Ucrania, sin costa sobre el mar Negro." },
+        { "canonica": "Macedonia del Norte", "variantes": ["Macedonia"], "rareza": "diamante", "explicacion": "País balcánico cuya capital es Skopie; limita con Grecia, que sí tiene costa." }
+      ],
+      "rechazos": [
+        { "textos": ["Bosnia y Herzegovina", "Bosnia"], "motivo": "Tiene una costa corta sobre el mar Adriático, en Neum." },
+        { "textos": ["Eslovenia"], "motivo": "Tiene costa sobre el mar Adriático." }
+      ]
+    },
+    {
+      "id": "gm-danubio",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país por donde pase el río Danubio.",
+      "alcance": "Los diez países que el Danubio atraviesa o bordea, desde la Selva Negra alemana hasta su delta en el mar Negro.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Danubio", "titulo": "Danubio — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Austria", "variantes": [], "rareza": "grava", "explicacion": "El río cruza Viena, su capital." },
+        { "canonica": "Hungría", "variantes": [], "rareza": "grava", "explicacion": "El Danubio separa Buda de Pest, en Budapest." },
+        { "canonica": "Alemania", "variantes": [], "rareza": "cobre", "explicacion": "El Danubio nace en la Selva Negra, en el sudoeste alemán." },
+        { "canonica": "Rumania", "variantes": ["Rumanía"], "rareza": "cobre", "explicacion": "Allí está casi todo el delta del Danubio, en el mar Negro." },
+        { "canonica": "Serbia", "variantes": [], "rareza": "cobre", "explicacion": "El río pasa por Belgrado, donde recibe al Sava." },
+        { "canonica": "Eslovaquia", "variantes": [], "rareza": "plata", "explicacion": "El Danubio pasa por Bratislava, su capital." },
+        { "canonica": "Bulgaria", "variantes": [], "rareza": "plata", "explicacion": "El río marca buena parte de su frontera norte con Rumania." },
+        { "canonica": "Croacia", "variantes": [], "rareza": "plata", "explicacion": "El Danubio forma parte de su frontera con Serbia." },
+        { "canonica": "Ucrania", "variantes": [], "rareza": "oro", "explicacion": "Tiene el brazo norte del delta, en la frontera con Rumania." },
+        { "canonica": "Moldavia", "variantes": ["Moldova"], "rareza": "diamante", "explicacion": "Bordea el río a lo largo de apenas unos cientos de metros, cerca de Giurgiulești." }
+      ],
+      "rechazos": [
+        { "textos": ["Chequia", "República Checa"], "motivo": "El Danubio no pasa por Chequia; su río principal es el Moldava." },
+        { "textos": ["Suiza"], "motivo": "El Danubio nace en Alemania y no toca Suiza." }
+      ]
+    },
+    {
+      "id": "gm-ochomiles",
+      "categoria": "geografia",
+      "enunciado": "Nombrá una montaña de más de 8.000 metros de altura.",
+      "alcance": "Los 14 «ochomiles» reconocidos, todos en el Himalaya y el Karakórum.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Ochomil", "titulo": "Ochomil — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Everest", "variantes": ["Monte Everest", "Chomolungma", "Sagarmatha"], "rareza": "grava", "explicacion": "Con 8.849 m, es la montaña más alta del mundo, entre Nepal y China." },
+        { "canonica": "K2", "variantes": ["Chogori"], "rareza": "cobre", "explicacion": "La segunda más alta (8.611 m), en el Karakórum, entre Pakistán y China." },
+        { "canonica": "Annapurna", "variantes": ["Annapurna I"], "rareza": "plata", "explicacion": "Fue el primer ochomil escalado, en 1950, por una expedición francesa." },
+        { "canonica": "Nanga Parbat", "variantes": [], "rareza": "plata", "explicacion": "El extremo occidental del Himalaya, en Pakistán (8.126 m)." },
+        { "canonica": "Kangchenjunga", "variantes": ["Kanchenjunga"], "rareza": "oro", "explicacion": "La tercera más alta (8.586 m), entre Nepal y la India." },
+        { "canonica": "Lhotse", "variantes": [], "rareza": "oro", "explicacion": "La cuarta más alta (8.516 m), unida al Everest por el collado Sur." },
+        { "canonica": "Makalu", "variantes": [], "rareza": "oro", "explicacion": "La quinta más alta (8.485 m), con forma de pirámide de cuatro caras." },
+        { "canonica": "Cho Oyu", "variantes": [], "rareza": "oro", "explicacion": "La sexta más alta (8.188 m), en la frontera entre Nepal y el Tíbet." },
+        { "canonica": "Dhaulagiri", "variantes": [], "rareza": "diamante", "explicacion": "La séptima más alta (8.167 m); su nombre significa «montaña blanca»." },
+        { "canonica": "Manaslu", "variantes": [], "rareza": "diamante", "explicacion": "La octava más alta (8.163 m), en el centro de Nepal." },
+        { "canonica": "Gasherbrum I", "variantes": ["Hidden Peak"], "rareza": "diamante", "explicacion": "Ochomil del Karakórum (8.080 m), también llamado Hidden Peak." },
+        { "canonica": "Broad Peak", "variantes": [], "rareza": "diamante", "explicacion": "Ochomil del Karakórum (8.051 m), vecino del K2." },
+        { "canonica": "Gasherbrum II", "variantes": [], "rareza": "diamante", "explicacion": "Ochomil del Karakórum (8.035 m), en el macizo de los Gasherbrum." },
+        { "canonica": "Shisha Pangma", "variantes": ["Xixabangma"], "rareza": "diamante", "explicacion": "El más bajo de los catorce (8.027 m) y el único totalmente en el Tíbet." }
+      ],
+      "rechazos": [
+        { "textos": ["Aconcagua"], "motivo": "Es la montaña más alta de América, pero mide 6.961 m." },
+        { "textos": ["Kilimanjaro"], "motivo": "Es la montaña más alta de África, con 5.895 m." }
+      ]
+    },
+    {
+      "id": "gm-limitrofes-china",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país que limite por tierra con China.",
+      "alcance": "Los 14 países con frontera terrestre con la República Popular China. No cuentan Taiwán ni los que solo comparten mar.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Fronteras_de_China", "titulo": "Fronteras de China — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Rusia", "variantes": [], "rareza": "grava", "explicacion": "Comparten más de 4.000 km de frontera, sobre todo a lo largo del río Amur." },
+        { "canonica": "India", "variantes": [], "rareza": "grava", "explicacion": "Comparten una larga frontera en el Himalaya, con zonas en disputa." },
+        { "canonica": "Mongolia", "variantes": [], "rareza": "cobre", "explicacion": "Está entre China y Rusia; la frontera cruza el desierto de Gobi." },
+        { "canonica": "Corea del Norte", "variantes": [], "rareza": "cobre", "explicacion": "Los ríos Yalu y Tumen marcan su frontera con China." },
+        { "canonica": "Vietnam", "variantes": [], "rareza": "cobre", "explicacion": "Limita con las provincias chinas de Yunnan y Guangxi." },
+        { "canonica": "Pakistán", "variantes": [], "rareza": "plata", "explicacion": "Los une la carretera del Karakórum, a través del paso de Khunjerab." },
+        { "canonica": "Nepal", "variantes": [], "rareza": "plata", "explicacion": "La frontera pasa por la cima del Everest." },
+        { "canonica": "Kazajistán", "variantes": [], "rareza": "plata", "explicacion": "Limita con la región china de Xinjiang." },
+        { "canonica": "Laos", "variantes": [], "rareza": "oro", "explicacion": "Limita con la provincia china de Yunnan." },
+        { "canonica": "Birmania", "variantes": ["Myanmar"], "rareza": "oro", "explicacion": "Limita con Yunnan y el Tíbet, en el sudoeste chino." },
+        { "canonica": "Afganistán", "variantes": [], "rareza": "oro", "explicacion": "Toca China por el estrecho corredor de Wakhan." },
+        { "canonica": "Kirguistán", "variantes": ["Kirguizistán"], "rareza": "oro", "explicacion": "Limita con Xinjiang a través de las montañas Tian Shan." },
+        { "canonica": "Tayikistán", "variantes": [], "rareza": "diamante", "explicacion": "Limita con Xinjiang en la región montañosa del Pamir." },
+        { "canonica": "Bután", "variantes": [], "rareza": "diamante", "explicacion": "Pequeño reino del Himalaya entre China y la India." }
+      ],
+      "rechazos": [
+        { "textos": ["Japón"], "motivo": "No tiene frontera terrestre con China: los separa el mar." },
+        { "textos": ["Corea del Sur"], "motivo": "Su única frontera terrestre es con Corea del Norte." }
+      ]
+    },
+    {
+      "id": "gm-caribe-insular",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país insular del Caribe.",
+      "alcance": "Los 13 Estados soberanos formados solo por islas en el Caribe y las Antillas, incluidas las Bahamas. No cuentan territorios dependientes como Puerto Rico o Aruba.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Antillas", "titulo": "Antillas — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Cuba", "variantes": [], "rareza": "grava", "explicacion": "Es la isla más grande del Caribe." },
+        { "canonica": "Jamaica", "variantes": [], "rareza": "grava", "explicacion": "Isla de las Antillas Mayores, al sur de Cuba." },
+        { "canonica": "República Dominicana", "variantes": ["Dominicana"], "rareza": "cobre", "explicacion": "Ocupa el este de la isla La Española." },
+        { "canonica": "Haití", "variantes": [], "rareza": "cobre", "explicacion": "Ocupa el oeste de La Española; se independizó de Francia en 1804." },
+        { "canonica": "Bahamas", "variantes": [], "rareza": "cobre", "explicacion": "Archipiélago de cientos de islas al norte de Cuba." },
+        { "canonica": "Barbados", "variantes": [], "rareza": "plata", "explicacion": "Es la isla más oriental de las Antillas Menores." },
+        { "canonica": "Trinidad y Tobago", "variantes": [], "rareza": "plata", "explicacion": "Dos islas frente a la costa de Venezuela." },
+        { "canonica": "Antigua y Barbuda", "variantes": [], "rareza": "oro", "explicacion": "País de dos islas principales en las Antillas Menores." },
+        { "canonica": "Granada", "variantes": ["Grenada"], "rareza": "oro", "explicacion": "Isla de las Antillas Menores conocida como «la isla de las especias»." },
+        { "canonica": "Santa Lucía", "variantes": ["Saint Lucia"], "rareza": "oro", "explicacion": "Isla volcánica de las Antillas Menores, famosa por los picos Pitons." },
+        { "canonica": "Dominica", "variantes": [], "rareza": "diamante", "explicacion": "Isla montañosa entre Guadalupe y Martinica; no confundir con la República Dominicana." },
+        { "canonica": "San Cristóbal y Nieves", "variantes": ["Saint Kitts y Nevis"], "rareza": "diamante", "explicacion": "El país más pequeño de América, formado por dos islas." },
+        { "canonica": "San Vicente y las Granadinas", "variantes": [], "rareza": "diamante", "explicacion": "La isla de San Vicente y la mayor parte del archipiélago de las Granadinas." }
+      ],
+      "rechazos": [{ "textos": ["Puerto Rico"], "motivo": "Es un territorio de Estados Unidos, no un Estado soberano." }]
+    },
+    {
+      "id": "gm-lusofonos",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un país donde el portugués sea idioma oficial.",
+      "alcance": "Los nueve Estados miembros de la Comunidad de Países de Lengua Portuguesa (CPLP).",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Comunidad_de_Países_de_Lengua_Portuguesa", "titulo": "Comunidad de Países de Lengua Portuguesa — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Brasil", "variantes": ["Brazil"], "rareza": "grava", "explicacion": "Es el país con más hablantes de portugués del mundo." },
+        { "canonica": "Portugal", "variantes": [], "rareza": "grava", "explicacion": "El portugués nació en el noroeste de la península ibérica." },
+        { "canonica": "Angola", "variantes": [], "rareza": "cobre", "explicacion": "Excolonia portuguesa del sudoeste de África, independiente desde 1975." },
+        { "canonica": "Mozambique", "variantes": [], "rareza": "plata", "explicacion": "Excolonia portuguesa en la costa del océano Índico." },
+        { "canonica": "Cabo Verde", "variantes": [], "rareza": "plata", "explicacion": "Archipiélago del Atlántico frente a Senegal." },
+        { "canonica": "Guinea-Bisáu", "variantes": ["Guinea-Bissau", "Guinea Bisau"], "rareza": "oro", "explicacion": "Excolonia portuguesa del oeste de África, independiente desde 1973." },
+        { "canonica": "Santo Tomé y Príncipe", "variantes": [], "rareza": "oro", "explicacion": "Archipiélago del golfo de Guinea, uno de los países más pequeños de África." },
+        { "canonica": "Timor Oriental", "variantes": ["Timor-Leste", "Timor Leste"], "rareza": "diamante", "explicacion": "País del sudeste asiático, con el portugués y el tetun como idiomas oficiales." },
+        { "canonica": "Guinea Ecuatorial", "variantes": [], "rareza": "diamante", "explicacion": "Excolonia española que adoptó el portugués como idioma oficial y entró a la CPLP en 2014." }
+      ],
+      "rechazos": [
+        { "textos": ["Macao"], "motivo": "Es una región administrativa especial de China, no un país." },
+        { "textos": ["Guinea"], "motivo": "Su idioma oficial es el francés; no es Guinea-Bisáu ni Guinea Ecuatorial." }
+      ]
+    },
+    {
+      "id": "gm-continentes",
+      "categoria": "geografia",
+      "enunciado": "Nombrá un continente.",
+      "alcance": "Los seis continentes del modelo más usado en el mundo hispanohablante, en el que América cuenta como uno solo.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Continente", "titulo": "Continente — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "América", "variantes": [], "rareza": "grava", "explicacion": "Se extiende de Alaska a Tierra del Fuego; en este modelo es un solo continente." },
+        { "canonica": "Europa", "variantes": [], "rareza": "grava", "explicacion": "Unida a Asia por tierra; la separan los Urales y el Cáucaso." },
+        { "canonica": "Asia", "variantes": [], "rareza": "grava", "explicacion": "Es el continente más grande y más poblado." },
+        { "canonica": "África", "variantes": [], "rareza": "cobre", "explicacion": "Es el segundo continente más grande; lo cruza el ecuador." },
+        { "canonica": "Oceanía", "variantes": [], "rareza": "plata", "explicacion": "Agrupa Australia, Nueva Zelanda y las islas del Pacífico." },
+        { "canonica": "Antártida", "variantes": ["Antártica"], "rareza": "diamante", "explicacion": "Rodea el Polo Sur y está cubierta casi por completo de hielo." }
+      ],
+      "rechazos": []
+    },
+    {
+      "id": "gm-capitales-europa-b",
+      "categoria": "geografia",
+      "enunciado": "Nombrá una capital europea que empiece con B.",
+      "alcance": "Capitales de Estados soberanos con todo su territorio en Europa, por su nombre en español. No cuentan las del Cáucaso.",
+      "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Europa", "titulo": "Europa — Wikipedia" }],
+      "respuestas": [
+        { "canonica": "Berlín", "variantes": [], "rareza": "grava", "explicacion": "Capital de Alemania; el muro la dividió entre 1961 y 1989." },
+        { "canonica": "Bruselas", "variantes": [], "rareza": "cobre", "explicacion": "Capital de Bélgica y sede de las principales instituciones de la Unión Europea." },
+        { "canonica": "Budapest", "variantes": [], "rareza": "cobre", "explicacion": "Capital de Hungría, partida en dos por el Danubio." },
+        { "canonica": "Berna", "variantes": [], "rareza": "plata", "explicacion": "Sede del gobierno federal de Suiza; muchos creen que la capital es Zúrich." },
+        { "canonica": "Belgrado", "variantes": [], "rareza": "plata", "explicacion": "Capital de Serbia, donde el Sava desemboca en el Danubio." },
+        { "canonica": "Bucarest", "variantes": [], "rareza": "plata", "explicacion": "Capital de Rumania, la ciudad más poblada del país." },
+        { "canonica": "Bratislava", "variantes": [], "rareza": "diamante", "explicacion": "Capital de Eslovaquia, sobre el Danubio y a pocos kilómetros de Austria y Hungría." }
+      ],
+      "rechazos": [
+        { "textos": ["Barcelona"], "motivo": "No es una capital de Estado: la capital de España es Madrid." },
+        { "textos": ["Bakú"], "motivo": "Es la capital de Azerbaiyán, país del Cáucaso que no cuenta en este alcance." }
+      ]
+    }
+  ]
+}

@@ -170,6 +170,8 @@ function envolver(ejecutor, { reintentar = false } = {}) {
  * Migraciones versionadas. Reglas:
  *  - Solo cambios aditivos (tablas, índices y columnas nuevas): el código de la versión anterior
  *    sigue funcionando mientras conviven instancias viejas y nuevas durante un despliegue.
+ *    Única excepción: una migración que declara `reconstruye` puede rehacer esas tablas, siempre que
+ *    conserven todas sus columnas (lo comprueban las pruebas).
  *  - Cada una es idempotente y se aplica dentro de una transacción; si dos instancias arrancan a la
  *    vez, la segunda ve la versión ya registrada y no hace nada.
  *  - Nunca se edita una migración ya publicada: se agrega otra.
@@ -247,10 +249,51 @@ export const MIGRACIONES = [
       await tx.run('CREATE INDEX IF NOT EXISTS corridas_iniciada ON corridas(iniciada_en)');
     },
   },
+  {
+    version: 7,
+    nombre: 'modos_de_juego',
+    // Excepción documentada a «solo aditivas» (ver docs/OPERACIONES.md): las pruebas verifican que la
+    // tabla reconstruida conserva todas sus columnas, sus filas y las claves foráneas que la apuntan.
+    reconstruye: ['desafios'],
+    // Un desafío por fecha Y modo. SQLite no permite quitar el UNIQUE(fecha) con ALTER TABLE, así que
+    // `desafios` se reconstruye con las mismas columnas más `modo` (las filas existentes quedan en
+    // 'normal'). Es la única migración no aditiva: el código anterior sigue leyendo las mismas columnas.
+    // Con las claves foráneas activas (libSQL las activa), borrar la tabla padre deja violaciones
+    // diferidas que se saldan al reinsertar las mismas filas antes del COMMIT; si algo no cierra, la
+    // transacción entera se revierte.
+    async aplicar(tx) {
+      const columnas = new Set((await tx.all('PRAGMA table_info(desafios)')).map((c) => c.name));
+      if (!columnas.has('modo')) {
+        await tx.run('PRAGMA defer_foreign_keys = ON');
+        await tx.run('CREATE TABLE desafios_copia AS SELECT * FROM desafios');
+        await tx.run('DROP TABLE desafios');
+        await tx.run(`CREATE TABLE desafios (
+           id INTEGER PRIMARY KEY,
+           fecha TEXT NOT NULL,
+           numero INTEGER NOT NULL,
+           origen TEXT NOT NULL CHECK (origen IN ('ia', 'reserva', 'mixto')),
+           modelo TEXT,
+           corrida_id INTEGER,
+           publicado_en INTEGER NOT NULL,
+           modo TEXT NOT NULL DEFAULT 'normal',
+           UNIQUE (modo, fecha)
+         )`);
+        await tx.run(
+          `INSERT INTO desafios (id, fecha, numero, origen, modelo, corrida_id, publicado_en, modo)
+           SELECT id, fecha, numero, origen, modelo, corrida_id, publicado_en, 'normal' FROM desafios_copia`,
+        );
+        await tx.run('DROP TABLE desafios_copia');
+      }
+      // Las búsquedas por fecha sola (estadísticas, limpieza) siguen teniendo índice.
+      await tx.run('CREATE INDEX IF NOT EXISTS desafios_fecha ON desafios(fecha)');
+      const deCorridas = new Set((await tx.all('PRAGMA table_info(corridas)')).map((c) => c.name));
+      if (!deCorridas.has('modo')) await tx.run("ALTER TABLE corridas ADD COLUMN modo TEXT NOT NULL DEFAULT 'normal'");
+    },
+  },
 ];
 
 async function migrar(db, cliente, registro) {
-  await cliente.execute('CREATE TABLE IF NOT EXISTS migraciones (version INTEGER PRIMARY KEY, nombre TEXT NOT NULL, aplicada_en INTEGER NOT NULL)');
+  await conReintentos(() => cliente.execute('CREATE TABLE IF NOT EXISTS migraciones (version INTEGER PRIMARY KEY, nombre TEXT NOT NULL, aplicada_en INTEGER NOT NULL)'));
   const aplicadas = new Set((await db.all('SELECT version FROM migraciones')).map((m) => m.version));
   for (const m of MIGRACIONES) {
     if (aplicadas.has(m.version)) continue;
@@ -258,7 +301,7 @@ async function migrar(db, cliente, registro) {
     try {
       if (m.multiple) {
         // Solo sentencias IF NOT EXISTS: repetirla es inocuo, por eso puede ir fuera de una transacción.
-        await cliente.executeMultiple(m.multiple);
+        await conReintentos(() => cliente.executeMultiple(m.multiple));
         await db.run('INSERT OR IGNORE INTO migraciones (version, nombre, aplicada_en) VALUES (?, ?, ?)', m.version, m.nombre, Date.now());
       } else {
         await db.transaccion(async (tx) => {
@@ -288,7 +331,8 @@ export async function abrirBD(url, { token, registro } = {}) {
   // sobre el mismo archivo reciben SQLITE_BUSY al instante y una sentencia cortada puede dejar la conexión
   // inutilizable para el siguiente COMMIT. En Turso (remoto) no aplica: la concurrencia la resuelve el servidor.
   const cliente = createClient({ url: destino, authToken: token || undefined, intMode: 'number', ...(local ? { timeout: 5000 } : {}) });
-  if (local && url !== ':memory:') await cliente.execute('PRAGMA journal_mode = WAL;');
+  // Varias instancias pueden abrir la misma base a la vez: el cambio a WAL reintenta si está ocupada.
+  if (local && url !== ':memory:') await conReintentos(() => cliente.execute('PRAGMA journal_mode = WAL;'));
   const db = envolver(cliente, { reintentar: true });
   db.cliente = cliente;
   db.close = () => cliente.close();
