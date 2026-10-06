@@ -980,15 +980,15 @@ function mostrarFinal({ completada = false } = {}) {
       piedra.className = 'piedra';
       const texto = document.createElement('span');
       texto.className = 'd-texto';
-      const cat = document.createElement('span');
-      cat.className = 'd-cat';
-      cat.textContent = `${r.posicion}. ${r.categoria}`;
+      const pregunta = document.createElement('span');
+      pregunta.className = 'd-pregunta';
+      pregunta.textContent = `${r.posicion}. ${r.enunciado}`;
       const textoRespuesta = r.respuesta ? `${r.respuesta.canonica} · ${r.respuesta.nombreRareza}` : r.estado === 'pasada' ? 'Pasaste' : 'Sin respuesta';
       // Al terminar, cada fila abre todas las respuestas válidas de esa pregunta.
       const resp = r.totalRespuestas ? botonRespuestas(r, textoRespuesta) : document.createElement('span');
       resp.classList.add('d-resp');
       if (!r.totalRespuestas) resp.textContent = textoRespuesta;
-      texto.append(cat, resp);
+      texto.append(pregunta, resp);
       const pts = document.createElement('span');
       pts.className = 'd-pts';
       pts.textContent = dist((r.puntos || 0) * 10);
