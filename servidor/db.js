@@ -166,7 +166,117 @@ function envolver(ejecutor, { reintentar = false } = {}) {
  * Abre la base. `url` puede ser libsql://… (Turso), file:… o una ruta local (o ':memory:').
  * Crea el esquema si hace falta.
  */
-export async function abrirBD(url, { token } = {}) {
+/**
+ * Migraciones versionadas. Reglas:
+ *  - Solo cambios aditivos (tablas, índices y columnas nuevas): el código de la versión anterior
+ *    sigue funcionando mientras conviven instancias viejas y nuevas durante un despliegue.
+ *  - Cada una es idempotente y se aplica dentro de una transacción; si dos instancias arrancan a la
+ *    vez, la segunda ve la versión ya registrada y no hace nada.
+ *  - Nunca se edita una migración ya publicada: se agrega otra.
+ * La 1 es el esquema histórico (CREATE … IF NOT EXISTS), así que una base existente la «aplica» sin cambios.
+ */
+export const MIGRACIONES = [
+  { version: 1, nombre: 'esquema_inicial', multiple: ESQUEMA },
+  {
+    version: 2,
+    nombre: 'sesiones_admin',
+    sentencias: [
+      `CREATE TABLE IF NOT EXISTS admin_sesiones (
+         hash TEXT PRIMARY KEY,
+         creada_en INTEGER NOT NULL,
+         ultima_actividad INTEGER NOT NULL,
+         vence_en INTEGER NOT NULL,
+         vida_hasta INTEGER NOT NULL
+       )`,
+      'CREATE INDEX IF NOT EXISTS admin_sesiones_vence ON admin_sesiones(vence_en)',
+    ],
+  },
+  {
+    version: 3,
+    nombre: 'limites_distribuidos',
+    sentencias: [
+      `CREATE TABLE IF NOT EXISTS limites (
+         clave TEXT PRIMARY KEY,
+         ventana INTEGER NOT NULL,
+         cuenta INTEGER NOT NULL,
+         vence_en INTEGER NOT NULL
+       )`,
+      'CREATE INDEX IF NOT EXISTS limites_vence ON limites(vence_en)',
+    ],
+  },
+  {
+    version: 4,
+    nombre: 'puntajes_agregados',
+    sentencias: [
+      // Histograma exacto de puntos por desafío (los puntos van de 0 a 700 de a 5: ≤ 141 filas por día).
+      `CREATE TABLE IF NOT EXISTS puntajes_desafio (
+         desafio_id INTEGER NOT NULL,
+         puntos INTEGER NOT NULL,
+         cantidad INTEGER NOT NULL,
+         PRIMARY KEY (desafio_id, puntos)
+       )`,
+      `INSERT OR IGNORE INTO puntajes_desafio (desafio_id, puntos, cantidad)
+         SELECT desafio_id, puntos, COUNT(*) FROM partidas WHERE terminada_en IS NOT NULL GROUP BY desafio_id, puntos`,
+    ],
+  },
+  {
+    version: 5,
+    nombre: 'indices_consultas',
+    // Justificación con EXPLAIN QUERY PLAN en scripts/explicar-consultas.js y docs/OPERACIONES.md.
+    sentencias: [
+      'CREATE INDEX IF NOT EXISTS partidas_desafio_terminada ON partidas(desafio_id, terminada_en)',
+      'CREATE INDEX IF NOT EXISTS partidas_jugador_terminada ON partidas(jugador_id, terminada_en)',
+      'CREATE INDEX IF NOT EXISTS jugadores_creado ON jugadores(creado_en)',
+      'CREATE INDEX IF NOT EXISTS reportes_estado ON reportes(estado, creado_en)',
+      'CREATE INDEX IF NOT EXISTS reportes_pregunta ON reportes(pregunta_id, normalizado)',
+      'CREATE INDEX IF NOT EXISTS intentos_en ON intentos(en)',
+    ],
+  },
+  {
+    version: 6,
+    nombre: 'uso_ia_en_corridas',
+    async aplicar(tx) {
+      const columnas = new Set((await tx.all('PRAGMA table_info(corridas)')).map((c) => c.name));
+      const nuevas = [
+        ['llamadas_ia', 'INTEGER NOT NULL DEFAULT 0'],
+        ['tokens_entrada', 'INTEGER NOT NULL DEFAULT 0'],
+        ['tokens_salida', 'INTEGER NOT NULL DEFAULT 0'],
+        ['costo_estimado_usd', 'REAL'],
+      ];
+      for (const [nombre, tipo] of nuevas) if (!columnas.has(nombre)) await tx.run(`ALTER TABLE corridas ADD COLUMN ${nombre} ${tipo}`);
+      await tx.run('CREATE INDEX IF NOT EXISTS corridas_iniciada ON corridas(iniciada_en)');
+    },
+  },
+];
+
+async function migrar(db, cliente, registro) {
+  await cliente.execute('CREATE TABLE IF NOT EXISTS migraciones (version INTEGER PRIMARY KEY, nombre TEXT NOT NULL, aplicada_en INTEGER NOT NULL)');
+  const aplicadas = new Set((await db.all('SELECT version FROM migraciones')).map((m) => m.version));
+  for (const m of MIGRACIONES) {
+    if (aplicadas.has(m.version)) continue;
+    const inicio = Date.now();
+    try {
+      if (m.multiple) {
+        // Solo sentencias IF NOT EXISTS: repetirla es inocuo, por eso puede ir fuera de una transacción.
+        await cliente.executeMultiple(m.multiple);
+        await db.run('INSERT OR IGNORE INTO migraciones (version, nombre, aplicada_en) VALUES (?, ?, ?)', m.version, m.nombre, Date.now());
+      } else {
+        await db.transaccion(async (tx) => {
+          if (await tx.get('SELECT 1 AS si FROM migraciones WHERE version = ?', m.version)) return; // otra instancia ganó
+          if (m.aplicar) await m.aplicar(tx);
+          for (const sentencia of m.sentencias || []) await tx.run(sentencia);
+          await tx.run('INSERT INTO migraciones (version, nombre, aplicada_en) VALUES (?, ?, ?)', m.version, m.nombre, Date.now());
+        });
+      }
+      registro?.info('migracion', { version: m.version, nombre: m.nombre, duracionMs: Date.now() - inicio });
+    } catch (e) {
+      registro?.error('migracion_fallida', { version: m.version, nombre: m.nombre, error: e });
+      throw e;
+    }
+  }
+}
+
+export async function abrirBD(url, { token, registro } = {}) {
   let destino = url;
   const local = !/^(libsql|https?|wss?):/.test(url);
   if (local && url !== ':memory:') {
@@ -174,9 +284,11 @@ export async function abrirBD(url, { token } = {}) {
     mkdirSync(dirname(ruta), { recursive: true });
     destino = `file:${ruta}`;
   }
-  const cliente = createClient({ url: destino, authToken: token || undefined, intMode: 'number' });
+  // `timeout`: espera de bloqueo (busy timeout) por conexión para archivos locales. Sin ella, dos procesos
+  // sobre el mismo archivo reciben SQLITE_BUSY al instante y una sentencia cortada puede dejar la conexión
+  // inutilizable para el siguiente COMMIT. En Turso (remoto) no aplica: la concurrencia la resuelve el servidor.
+  const cliente = createClient({ url: destino, authToken: token || undefined, intMode: 'number', ...(local ? { timeout: 5000 } : {}) });
   if (local && url !== ':memory:') await cliente.execute('PRAGMA journal_mode = WAL;');
-  await cliente.executeMultiple(ESQUEMA);
   const db = envolver(cliente, { reintentar: true });
   db.cliente = cliente;
   db.close = () => cliente.close();
@@ -185,21 +297,28 @@ export async function abrirBD(url, { token } = {}) {
   /** Ejecuta fn(tx) dentro de una transacción de escritura (BEGIN IMMEDIATE). */
   db.transaccion = (fn) => {
     const corrida = cola.then(async () => {
-      const tx = await conReintentos(() => cliente.transaction('write'));
-      try {
-        const r = await fn(envolver(tx));
-        await tx.commit();
-        return r;
-      } catch (err) {
-        await tx.rollback().catch(() => {});
-        throw err;
-      } finally {
-        tx.close();
+      // Si otra conexión tiene el bloqueo (BUSY al empezar, en una sentencia o al confirmar), la
+      // transacción ya quedó revertida: se repite entera, releyendo el estado. Las funciones de
+      // transacción solo leen y escriben la base, así que repetirlas es seguro.
+      for (let intento = 1; ; intento++) {
+        const tx = await conReintentos(() => cliente.transaction('write'));
+        try {
+          const r = await fn(envolver(tx));
+          await tx.commit();
+          return r;
+        } catch (err) {
+          await tx.rollback().catch(() => {});
+          if (!/SQLITE_BUSY/.test(err?.code || err?.message || '') || intento >= 30) throw err;
+          await new Promise((ok) => setTimeout(ok, 5 * intento + Math.random() * 10));
+        } finally {
+          tx.close();
+        }
       }
     });
     cola = corrida.catch(() => {});
     return corrida;
   };
+  await migrar(db, cliente, registro);
   return db;
 }
 

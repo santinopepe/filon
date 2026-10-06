@@ -20,11 +20,13 @@ const TIPOS = {
 
 export const CABECERAS_SEGURIDAD = {
   'content-security-policy':
-    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   'x-content-type-options': 'nosniff',
   'referrer-policy': 'strict-origin-when-cross-origin',
   'x-frame-options': 'DENY',
   'permissions-policy': 'camera=(), microphone=(), geolocation=()',
+  'cross-origin-opener-policy': 'same-origin',
+  'cross-origin-resource-policy': 'same-origin',
 };
 
 export function enviarJson(res, estado, cuerpo, extra = {}) {
@@ -101,11 +103,37 @@ export async function leerJson(req, limite = 4096) {
 
 export function leerCookies(req) {
   const salida = {};
-  for (const par of (req.headers.cookie || '').split(';')) {
+  for (const par of String(req.headers.cookie || '').split(';')) {
     const i = par.indexOf('=');
-    if (i > 0) salida[par.slice(0, i).trim()] = decodeURIComponent(par.slice(i + 1).trim());
+    if (i <= 0) continue;
+    const valor = par.slice(i + 1).trim();
+    try {
+      salida[par.slice(0, i).trim()] = decodeURIComponent(valor);
+    } catch {
+      // Percent-encoding inválido («%E0%A4%A»): se ignora esa cookie en vez de responder 500.
+    }
   }
   return salida;
+}
+
+/**
+ * IP del cliente sin confiar en encabezados que cualquiera puede inventar.
+ *  - En Vercel: x-real-ip (Vercel lo sobrescribe con la IP que ve; un cliente no puede fijarlo).
+ *  - Detrás de un proxy propio (CONFIAR_PROXY=1): la entrada de X-Forwarded-For que agregó ese proxy,
+ *    es decir, la última (las anteriores las puede haber escrito el cliente).
+ *  - Sin proxy: la dirección del socket.
+ */
+export function ipCliente(req, { enVercel = false, confiarProxy = false } = {}) {
+  const h = req.headers;
+  if (enVercel) {
+    const real = String(h['x-real-ip'] || '').trim();
+    if (real) return real;
+  }
+  if (enVercel || confiarProxy) {
+    const xff = String(h['x-forwarded-for'] || '').split(',').map((x) => x.trim()).filter(Boolean);
+    if (xff.length) return enVercel ? xff[0] : xff.at(-1);
+  }
+  return req.socket?.remoteAddress || 'desconocida';
 }
 
 export function crearFirmador(secreto) {

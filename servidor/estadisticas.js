@@ -29,6 +29,40 @@ export function resumir(valores) {
   };
 }
 
+/** Igual que resumir() pero sobre un histograma [{ valor, cantidad }] (exacto: los puntos son discretos). */
+export function resumirHistograma(filas) {
+  const ordenadas = filas.filter((f) => f.cantidad > 0).sort((a, b) => a.valor - b.valor);
+  const n = ordenadas.reduce((s, f) => s + f.cantidad, 0);
+  if (!n) return null;
+  const promedio = ordenadas.reduce((s, f) => s + f.valor * f.cantidad, 0) / n;
+  const desviacion = Math.sqrt(ordenadas.reduce((s, f) => s + f.cantidad * (f.valor - promedio) ** 2, 0) / n);
+  // Valor en la posición k (0-based) de la lista ordenada, sin expandirla.
+  const enPosicion = (k) => {
+    let acumulado = 0;
+    for (const f of ordenadas) {
+      acumulado += f.cantidad;
+      if (k < acumulado) return f.valor;
+    }
+    return ordenadas.at(-1).valor;
+  };
+  const cuantil = (p) => {
+    const i = (n - 1) * p;
+    const a = enPosicion(Math.floor(i));
+    const b = enPosicion(Math.ceil(i));
+    return a + (b - a) * (i - Math.floor(i));
+  };
+  return {
+    cantidad: n,
+    promedio,
+    desviacion,
+    minimo: ordenadas[0].valor,
+    p25: cuantil(0.25),
+    mediana: cuantil(0.5),
+    p75: cuantil(0.75),
+    maximo: ordenadas.at(-1).valor,
+  };
+}
+
 async function totales(db) {
   const fila = await db.get(
     `SELECT
@@ -86,8 +120,12 @@ async function serieDiaria(db, { desde, hasta, zona }) {
 async function detalleDelDia(db, fecha) {
   const desafio = await desafioPorFecha(db, fecha);
   if (!desafio) return null;
-  const partidas = await db.all('SELECT puntos, terminada_en FROM partidas WHERE desafio_id = ?', desafio.id);
-  const metros = partidas.filter((p) => p.terminada_en != null).map((p) => p.puntos * METROS_POR_PUNTO);
+  const { jugadores } = await db.get('SELECT COUNT(*) AS jugadores FROM partidas WHERE desafio_id = ?', desafio.id);
+  // Histograma agregado (≤ 141 filas), no todas las partidas.
+  const distribucion = (await db.all('SELECT puntos, cantidad FROM puntajes_desafio WHERE desafio_id = ? AND cantidad > 0 ORDER BY puntos', desafio.id)).map(
+    (f) => ({ metros: f.puntos * METROS_POR_PUNTO, cantidad: f.cantidad }),
+  );
+  const terminadas = distribucion.reduce((s, f) => s + f.cantidad, 0);
 
   const estados = await db.all(
     `SELECT r.posicion, r.estado, COUNT(*) AS n, COALESCE(SUM(r.puntos), 0) AS puntos
@@ -101,19 +139,26 @@ async function detalleDelDia(db, fecha) {
      WHERE p.desafio_id = ? AND r.estado = 'acertada' GROUP BY r.posicion, x.rareza`,
     desafio.id,
   );
+  // Las «top» se recortan en SQL por pregunta (ROW_NUMBER), no en memoria.
   const aceptadas = await db.all(
-    `SELECT r.posicion, x.canonica AS texto, COUNT(*) AS veces
-     FROM rondas r JOIN partidas p ON p.id = r.partida_id JOIN respuestas x ON x.id = r.respuesta_id
-     WHERE p.desafio_id = ? AND r.estado = 'acertada'
-     GROUP BY r.posicion, x.id ORDER BY veces DESC`,
+    `SELECT posicion, texto, veces FROM (
+       SELECT r.posicion, x.canonica AS texto, COUNT(*) AS veces,
+              ROW_NUMBER() OVER (PARTITION BY r.posicion ORDER BY COUNT(*) DESC, x.canonica) AS orden
+       FROM rondas r JOIN partidas p ON p.id = r.partida_id JOIN respuestas x ON x.id = r.respuesta_id
+       WHERE p.desafio_id = ? AND r.estado = 'acertada'
+       GROUP BY r.posicion, x.id)
+     WHERE orden <= 5 ORDER BY posicion, veces DESC`,
     desafio.id,
   );
   // Intentos que no estaban en la veta: si muchos repiten lo mismo, puede faltar una respuesta.
   const fallidas = await db.all(
-    `SELECT i.posicion, MIN(i.texto) AS texto, COUNT(*) AS veces
-     FROM intentos i JOIN partidas p ON p.id = i.partida_id
-     WHERE p.desafio_id = ? AND i.aceptado = 0
-     GROUP BY i.posicion, i.normalizado ORDER BY veces DESC`,
+    `SELECT posicion, texto, veces FROM (
+       SELECT i.posicion, MIN(i.texto) AS texto, COUNT(*) AS veces,
+              ROW_NUMBER() OVER (PARTITION BY i.posicion ORDER BY COUNT(*) DESC, i.normalizado) AS orden
+       FROM intentos i JOIN partidas p ON p.id = i.partida_id
+       WHERE p.desafio_id = ? AND i.aceptado = 0
+       GROUP BY i.posicion, i.normalizado)
+     WHERE orden <= 6 ORDER BY posicion, veces DESC`,
     desafio.id,
   );
 
@@ -143,12 +188,12 @@ async function detalleDelDia(db, fecha) {
     fecha,
     numero: desafio.numero,
     origen: desafio.origen,
-    jugadores: partidas.length,
-    terminadas: metros.length,
-    enCurso: partidas.length - metros.length,
+    jugadores,
+    terminadas,
+    enCurso: Math.max(0, jugadores - terminadas),
     maximoMetros: PREGUNTAS_POR_DESAFIO * 100 * METROS_POR_PUNTO,
-    metros,
-    resumen: resumir(metros),
+    distribucion,
+    resumen: resumirHistograma(distribucion.map((f) => ({ valor: f.metros, cantidad: f.cantidad }))),
     preguntas,
   };
 }

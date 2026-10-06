@@ -1,7 +1,12 @@
 // Rutas HTTP del juego.
 import { randomUUID } from 'node:crypto';
 import { ErrorJuego } from './juego.js';
-import { enviarJson, leerJson, leerCookies, crearFirmador, crearLimitador } from './http.js';
+import { enviarJson, leerJson, leerCookies, crearFirmador, crearLimitador, ipCliente } from './http.js';
+import { crearLimitadorDistribuido } from './limites.js';
+import { crearSesionesAdmin, secretoCoincide } from './sesiones.js';
+import { crearRegistro } from './registro.js';
+import { limpiarDatos } from './limpieza.js';
+import { LIMITES, PREGUNTAS_POR_DESAFIO } from './dominio.js';
 import {
   desafioPorFecha,
   preguntasDeDesafio,
@@ -19,12 +24,15 @@ import { validarPregunta, validarLote } from './validacion.js';
 const COOKIE = 'filon_id';
 const UUID = /^[0-9a-f-]{36}$/;
 
-export function crearApi({ db, config, juego, secreto, contexto = null, ahora = () => Date.now() }) {
+export function crearApi({ db, config, juego, secreto, contexto = null, ahora = () => Date.now(), registro = crearRegistro() }) {
   const firmador = crearFirmador(secreto);
+  // Primera barrera, en memoria y por instancia (barata). La protección real es la distribuida.
   const limitar = crearLimitador({ capacidad: 40, porSegundo: 8 });
+  const limites = crearLimitadorDistribuido({ db, secreto, ahora, registro, escala: config.limitesEscala });
+  const sesiones = crearSesionesAdmin({ db, config, ahora });
 
-  function identificar(req) {
-    const valor = firmador.verificar(leerCookies(req)[COOKIE]);
+  function identificar(req, cookies) {
+    const valor = firmador.verificar(cookies[COOKIE]);
     if (valor && UUID.test(valor)) return { jugadorId: valor, nueva: null };
     const id = randomUUID();
     const atributos = [`${COOKIE}=${encodeURIComponent(firmador.firmar(id))}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${400 * 86400}`];
@@ -32,20 +40,34 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     return { jugadorId: id, nueva: atributos.join('; ') };
   }
 
-  function ip(req) {
-    if (config.confiarProxy) {
-      const xff = req.headers['x-forwarded-for'];
-      if (xff) return String(xff).split(',')[0].trim();
+  const ip = (req) => ipCliente(req, config);
+  const bearer = (req) => {
+    const a = String(req.headers.authorization || '');
+    return a.startsWith('Bearer ') ? a.slice(7).trim() : '';
+  };
+
+  /** Sesión del panel (cookie) o, durante la transición, Bearer TOKEN_ADMIN. Devuelve null si no autoriza. */
+  async function autorizarAdmin(req, cookies) {
+    if (!config.tokenAdmin) return null;
+    const sesion = await sesiones.validar(cookies);
+    if (sesion) return { via: 'sesion', renovar: sesion.renovar };
+    if (config.admin.permitirBearer && secretoCoincide(bearer(req), config.tokenAdmin)) return { via: 'bearer', renovar: null };
+    return null;
+  }
+
+  const esCron = async (req, cookies) =>
+    secretoCoincide(bearer(req), config.secretoCron) || Boolean(await autorizarAdmin(req, cookies));
+
+  // Defensa adicional contra CSRF (además de SameSite=Strict) para cambios hechos con la cookie de sesión.
+  const mismoOrigen = (req) => {
+    const origen = req.headers.origin;
+    if (!origen) return true;
+    try {
+      return new URL(origen).host === req.headers.host;
+    } catch {
+      return false;
     }
-    return req.socket?.remoteAddress || 'desconocida';
-  }
-
-  function esAdmin(req) {
-    if (!config.tokenAdmin) return false;
-    return req.headers.authorization === `Bearer ${config.tokenAdmin}`;
-  }
-
-  const esCron = (req) => (config.secretoCron && req.headers.authorization === `Bearer ${config.secretoCron}`) || esAdmin(req);
+  };
 
   const rutas = [
     ['GET', /^\/api\/salud$/, async () => {
@@ -53,15 +75,45 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return { ok: true, fecha: hoy, desafioPublicado: Boolean(await desafioPorFecha(db, hoy)) };
     }, { publica: true }],
     ['GET', /^\/api\/estado$/, ({ jugadorId }) => juego.estado(jugadorId)],
-    ['POST', /^\/api\/partidas$/, async ({ jugadorId }) => ({ partida: await juego.iniciarPartida(jugadorId) })],
+    ['POST', /^\/api\/partidas$/, async ({ jugadorId }) => ({ partida: await juego.iniciarPartida(jugadorId) }), { limite: 'partida' }],
     ['GET', /^\/api\/partidas\/([0-9a-f-]{36})$/, async ({ jugadorId, m }) => ({ partida: await juego.verPartida(jugadorId, m[1]) })],
-    ['GET', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuestas$/, async ({ jugadorId, m }) => ({
-      respuestas: await juego.respuestasValidas(jugadorId, m[1], Number(m[2])),
-    })],
+    // Revelado paginado: ?desde=0&limite=100&buscar=texto (limite ≤ LIMITES.paginaRevelado).
+    ['GET', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuestas$/, async ({ jugadorId, m, req }) => {
+      const q = new URL(req.url, 'http://local').searchParams;
+      const desde = Math.max(0, Math.floor(Number(q.get('desde')) || 0));
+      const limite = Math.min(LIMITES.paginaRevelado, Math.max(1, Math.floor(Number(q.get('limite')) || LIMITES.paginaRevelado)));
+      const buscar = String(q.get('buscar') || '').slice(0, 60);
+      return juego.respuestasValidas(jugadorId, m[1], Number(m[2]), { desde, limite, buscar });
+    }, { limite: 'revelado' }],
     ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/iniciar$/, async ({ jugadorId, m }) => ({ partida: await juego.iniciarRonda(jugadorId, m[1], Number(m[2])) })],
-    ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuesta$/, ({ jugadorId, m, cuerpo }) => juego.responder(jugadorId, m[1], Number(m[2]), cuerpo.texto)],
+    ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuesta$/, ({ jugadorId, m, cuerpo }) => juego.responder(jugadorId, m[1], Number(m[2]), cuerpo.texto), { limite: 'respuesta' }],
     ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/pasar$/, async ({ jugadorId, m }) => ({ partida: await juego.pasar(jugadorId, m[1], Number(m[2])) })],
-    ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/reporte$/, ({ jugadorId, m, cuerpo }) => juego.reportar(jugadorId, m[1], Number(m[2]), cuerpo.texto, cuerpo.comentario)],
+    ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/reporte$/, ({ jugadorId, m, cuerpo }) => juego.reportar(jugadorId, m[1], Number(m[2]), cuerpo.texto, cuerpo.comentario), { limite: 'reporte' }],
+
+    // ───────── Sesión del panel de administración ─────────
+    ['POST', /^\/api\/admin\/sesion$/, async ({ cuerpo, req, cabeceras }) => {
+      if (!config.tokenAdmin) throw new ErrorJuego(503, 'admin_deshabilitado', 'El panel está deshabilitado: falta TOKEN_ADMIN.');
+      const origen = limites.anonimizar(ip(req));
+      if (!secretoCoincide(cuerpo.token, config.tokenAdmin)) {
+        registro.warn('admin_login_fallido', { origen });
+        throw new ErrorJuego(401, 'credenciales_invalidas', 'Token incorrecto.');
+      }
+      await sesiones.limpiar();
+      cabeceras['set-cookie'] = (await sesiones.crear()).cookie;
+      registro.info('admin_login', { origen });
+      return { ok: true, inactividadMin: config.admin.inactividadMs / 60_000 };
+    }, { publica: true, limite: 'login_admin', soloMismoOrigen: true }],
+    ['GET', /^\/api\/admin\/sesion$/, async ({ cookies, cabeceras }) => {
+      const sesion = config.tokenAdmin ? await sesiones.validar(cookies) : null;
+      if (sesion?.renovar) cabeceras['set-cookie'] = sesion.renovar;
+      return { autenticado: Boolean(sesion), habilitado: Boolean(config.tokenAdmin) };
+    }, { publica: true }],
+    ['DELETE', /^\/api\/admin\/sesion$/, async ({ cookies, cabeceras, req }) => {
+      const { revocada, cookie } = await sesiones.revocar(cookies);
+      cabeceras['set-cookie'] = cookie;
+      registro.info('admin_logout', { revocada, origen: limites.anonimizar(ip(req)) });
+      return { ok: true };
+    }, { publica: true, soloMismoOrigen: true }],
 
     // Tarea diaria (Vercel Cron, ver vercel.json). Idempotente.
     //   hoy: asegura el desafío de hoy (IA si quedan intentos; si no, reserva)
@@ -71,17 +123,26 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La generación no está disponible.');
       const hoy = fechaLocal(ahora(), config.zona);
       const fecha = m[1] === 'hoy' ? hoy : sumarDias(hoy, 1);
-      const r = await asegurarDesafio({ db, config, fecha, ...contexto, permitirReserva: m[1] !== 'manana-ia', ahora });
-      console.info(`[cron] ${m[1]}: ${JSON.stringify(r)}`);
+      const inicio = Date.now();
+      const r = await asegurarDesafio({ db, config, fecha, ...contexto, permitirReserva: m[1] !== 'manana-ia', ahora, registro });
+      registro[r.resultado === 'fallo' ? 'error' : 'info']('cron', { tarea: m[1], fecha, resultado: r.resultado, origen: r.origen, duracionMs: Date.now() - inicio, error: r.error });
       return r;
-    }, { cron: true }],
+    }, { cron: true, limite: 'cron' }],
+    // Limpieza diaria: sesiones y límites vencidos, retención de datos y conciliación de estadísticas.
+    ['GET', /^\/api\/cron\/limpieza$/, async () => {
+      const inicio = Date.now();
+      const r = await limpiarDatos({ db, config, ahora, sesiones, limites });
+      registro.info('cron', { tarea: 'limpieza', duracionMs: Date.now() - inicio, ...r });
+      return r;
+    }, { cron: true, limite: 'cron' }],
 
     // Administración (requiere TOKEN_ADMIN).
     ['GET', /^\/api\/admin\/reportes$/, async () => ({
       reportes: await db.all(
         `SELECT r.id, r.pregunta_id, p.enunciado, r.texto, r.comentario, r.estado, r.creado_en,
                 (SELECT COUNT(*) FROM reportes r2 WHERE r2.pregunta_id = r.pregunta_id AND r2.normalizado = r.normalizado) AS veces
-         FROM reportes r JOIN preguntas p ON p.id = r.pregunta_id ORDER BY r.creado_en DESC LIMIT 500`,
+         FROM reportes r JOIN preguntas p ON p.id = r.pregunta_id ORDER BY r.creado_en DESC LIMIT ?`,
+        LIMITES.paginaReportes,
       ),
     }), { admin: true }],
     ['POST', /^\/api\/admin\/reportes\/(\d+)$/, async ({ m, cuerpo }) => {
@@ -104,6 +165,15 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
       if (!Array.isArray(cuerpo.preguntas)) {
         throw new ErrorJuego(400, 'json_invalido', 'El JSON debe ser un arreglo o un objeto con una propiedad «preguntas».');
+      }
+      if (cuerpo.preguntas.length > PREGUNTAS_POR_DESAFIO) {
+        const error = new ErrorJuego(422, 'desafio_invalido', `El día lleva exactamente ${PREGUNTAS_POR_DESAFIO} preguntas. No se guardó nada.`);
+        error.detalles = { errores: [`El lote debe tener ${PREGUNTAS_POR_DESAFIO} preguntas (llegaron ${cuerpo.preguntas.length}).`], preguntas: [] };
+        throw error;
+      }
+      const larga = cuerpo.preguntas.findIndex((p) => Array.isArray(p?.respuestas) && p.respuestas.length > LIMITES.respuestasPorPregunta);
+      if (larga >= 0) {
+        throw new ErrorJuego(413, 'demasiadas_respuestas', `La pregunta ${larga + 1} supera el máximo de ${LIMITES.respuestasPorPregunta} respuestas.`);
       }
 
       const existente = await desafioPorFecha(db, fecha);
@@ -157,7 +227,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         origen: 'manual',
         advertencias: detalles.flatMap((d) => d.advertencias.map((aviso) => `Pregunta ${d.posicion}: ${aviso}`)),
       };
-    }, { admin: true, limiteJson: 1_000_000 }],
+    }, { admin: true, limiteJson: LIMITES.cuerpoImportacion, limite: 'importar' }],
     // Generar o regenerar un día a mano.
     //   modo: 'auto' (IA y, si falla, reserva) | 'ia' (solo IA; si falla no cambia nada) | 'reserva'
     //   reemplazar: true para regenerar un día que ya existe
@@ -178,10 +248,10 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         }
       }
       const ctx = modo === 'reserva' ? { ...contexto, proveedor: null } : contexto;
-      const r = await asegurarDesafio({ db, config, fecha, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora });
-      console.info(`[admin] generar ${fecha} (${modo}): ${JSON.stringify(r)}`);
+      const r = await asegurarDesafio({ db, config, fecha, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora, registro });
+      registro.info('admin_generar', { fecha, modo, resultado: r.resultado, origen: r.origen, corridaId: r.corridaId });
       return r;
-    }, { admin: true }],
+    }, { admin: true, limite: 'generar' }],
     // Estadísticas: ?fecha=AAAA-MM-DD (día en detalle) &desde=…&hasta=… (serie diaria, hasta 366 días).
     ['GET', /^\/api\/admin\/estadisticas$/, async ({ req }) => {
       const q = new URL(req.url, 'http://local').searchParams;
@@ -195,7 +265,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return { hoy, ...(await estadisticasAdmin(db, { zona: config.zona, desde, hasta, fecha })) };
     }, { admin: true }],
     ['GET', /^\/api\/admin\/corridas$/, async () => ({
-      corridas: (await db.all('SELECT id, fecha_objetivo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT 50'))
+      corridas: (await db.all('SELECT id, fecha_objetivo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
         .map((c) => ({ ...c, detalle: c.detalle ? JSON.parse(c.detalle) : null })),
     }), { admin: true }],
     ['GET', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})$/, async ({ m }) => {
@@ -204,11 +274,14 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       if (!d) throw new ErrorJuego(404, 'sin_desafio', 'No hay desafío para esa fecha.');
       const preguntas = [];
       for (const p of await preguntasDeDesafio(db, d.id)) {
+        // Las respuestas más valiosas primero y con tope: una pregunta de Wikidata puede tener 1.500.
+        const todas = [...(await respuestasDePregunta(db, p.id))].sort((a, b) => b.puntos - a.puntos || a.id - b.id);
         preguntas.push({
           ...p,
           fuentes: JSON.parse(p.fuentes),
           rechazos: JSON.parse(p.rechazos),
-          respuestas: (await respuestasDePregunta(db, p.id)).map((r) => ({ ...r, variantes: JSON.parse(r.variantes) })),
+          totalRespuestas: todas.length,
+          respuestas: todas.slice(0, LIMITES.respuestasEnDetalleAdmin).map((r) => ({ ...r, variantes: JSON.parse(r.variantes) })),
         });
       }
       return { desafio: d, preguntas };
@@ -223,34 +296,78 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       enviarJson(res, 429, { error: 'demasiadas_solicitudes', mensaje: 'Vas muy rápido. Esperá un momento.' }, { 'retry-after': '2' });
       return true;
     }
-    for (const [metodo, patron, fn, opciones = {}] of rutas) {
-      const m = camino.match(patron);
-      if (!m) continue;
-      if (req.method !== metodo) {
-        enviarJson(res, 405, { error: 'metodo_no_permitido' });
+    let ruta_ = null;
+    let m = null;
+    let existeCamino = false;
+    for (const r of rutas) {
+      const coincide = camino.match(r[1]);
+      if (!coincide) continue;
+      existeCamino = true;
+      if (r[0] === req.method) {
+        ruta_ = r;
+        m = coincide;
+        break;
+      }
+    }
+    if (!ruta_) {
+      enviarJson(res, existeCamino ? 405 : 404, { error: existeCamino ? 'metodo_no_permitido' : 'no_encontrado' });
+      return true;
+    }
+    const [metodo, , fn, opciones = {}] = ruta_;
+    const cookies = leerCookies(req);
+    const cabeceras = {};
+    try {
+      if (opciones.admin) {
+        const auth = await autorizarAdmin(req, cookies);
+        if (!auth) {
+          registro.warn('admin_no_autorizado', { ruta: camino, metodo });
+          enviarJson(res, 401, { error: 'no_autorizado' });
+          return true;
+        }
+        if (auth.via === 'sesion' && metodo !== 'GET' && !mismoOrigen(req)) {
+          registro.warn('admin_origen_rechazado', { ruta: camino, metodo });
+          enviarJson(res, 403, { error: 'origen_invalido' });
+          return true;
+        }
+        if (auth.renovar) cabeceras['set-cookie'] = auth.renovar;
+      }
+      if (opciones.soloMismoOrigen && !mismoOrigen(req)) {
+        registro.warn('origen_rechazado', { ruta: camino, metodo });
+        enviarJson(res, 403, { error: 'origen_invalido' });
         return true;
       }
-      if ((opciones.admin && !esAdmin(req)) || (opciones.cron && !esCron(req))) {
+      if (opciones.cron && !(await esCron(req, cookies))) {
+        registro.warn('cron_no_autorizado', { ruta: camino });
         enviarJson(res, 401, { error: 'no_autorizado' });
         return true;
       }
-      const ident = opciones.publica || opciones.admin || opciones.cron ? { jugadorId: null, nueva: null } : identificar(req);
-      const extra = ident.nueva ? { 'set-cookie': ident.nueva } : {};
-      try {
-        const cuerpo = metodo === 'POST' ? await leerJson(req, opciones.limiteJson ?? 4096) : {};
-        const resultado = await fn({ jugadorId: ident.jugadorId, m, cuerpo, req });
-        enviarJson(res, 200, resultado, extra);
-      } catch (e) {
-        if (e instanceof ErrorJuego) enviarJson(res, e.estado, { error: e.codigo, mensaje: e.message, ...(e.detalles ? { detalles: e.detalles } : {}) }, extra);
-        else if (e.estado) enviarJson(res, e.estado, { error: 'solicitud_invalida', mensaje: e.message }, extra);
-        else {
-          console.error('[api]', e);
-          enviarJson(res, 500, { error: 'interno', mensaje: 'Algo falló en el servidor.' }, extra);
+      const politica = opciones.limite ?? (opciones.admin ? 'admin' : null);
+      if (politica) {
+        const l = await limites.consumir(politica, ip(req));
+        if (!l.permitido) {
+          enviarJson(res, 429, { error: 'demasiadas_solicitudes', mensaje: 'Demasiados intentos. Esperá un momento.' }, { 'retry-after': String(l.reintentarEn) });
+          return true;
         }
       }
+    } catch (e) {
+      registro.error('error_5xx', { ruta: camino, metodo, etapa: 'autorizacion', error: e });
+      enviarJson(res, 500, { error: 'interno', mensaje: 'Algo falló en el servidor.' });
       return true;
     }
-    enviarJson(res, 404, { error: 'no_encontrado' });
+    const ident = opciones.publica || opciones.admin || opciones.cron ? { jugadorId: null, nueva: null } : identificar(req, cookies);
+    if (ident.nueva) cabeceras['set-cookie'] = ident.nueva;
+    try {
+      const cuerpo = metodo === 'POST' ? await leerJson(req, opciones.limiteJson ?? LIMITES.cuerpoJson) : {};
+      const resultado = await fn({ jugadorId: ident.jugadorId, m, cuerpo, req, cookies, cabeceras });
+      enviarJson(res, 200, resultado, cabeceras);
+    } catch (e) {
+      if (e instanceof ErrorJuego) enviarJson(res, e.estado, { error: e.codigo, mensaje: e.message, ...(e.detalles ? { detalles: e.detalles } : {}) }, cabeceras);
+      else if (e.estado) enviarJson(res, e.estado, { error: 'solicitud_invalida', mensaje: e.message }, cabeceras);
+      else {
+        registro.error('error_5xx', { ruta: camino, metodo, error: e, pila: e.stack });
+        enviarJson(res, 500, { error: 'interno', mensaje: 'Algo falló en el servidor.' }, cabeceras);
+      }
+    }
     return true;
   };
 }

@@ -9,34 +9,43 @@ import {
   HERRAMIENTA_REVISION,
 } from './prompts.js';
 
-const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+/** Espera cancelable: si la señal se aborta, rechaza enseguida. */
+const esperar = (ms, signal) =>
+  new Promise((ok, mal) => {
+    if (signal?.aborted) return mal(signal.reason);
+    const t = setTimeout(ok, ms);
+    signal?.addEventListener('abort', () => (clearTimeout(t), mal(signal.reason)), { once: true });
+  });
 
 /**
  * POST con hasta 3 intentos ante errores de red, 429 y 5xx.
  * `esDefinitivo(res, cuerpo)` puede cortar los reintentos (por ejemplo, cuota agotada).
  * Devuelve { res, cuerpo } de la primera respuesta que no se reintenta.
  */
-async function pedirConReintentos({ obtener, url, cabeceras, datos, tiempoLimiteMs, esDefinitivo = () => false }) {
+async function pedirConReintentos({ obtener, url, cabeceras, datos, tiempoLimiteMs, signal, esDefinitivo = () => false }) {
   let ultimoError;
   for (let intento = 1; intento <= 3; intento++) {
+    // Una cancelación externa (presupuesto de la corrida) corta la solicitud real y los reintentos.
+    if (signal?.aborted) throw signal.reason ?? new Error('Solicitud cancelada.');
     let res;
     try {
       res = await obtener(url, {
         method: 'POST',
         headers: { 'content-type': 'application/json', ...cabeceras },
         body: JSON.stringify(datos),
-        signal: AbortSignal.timeout(tiempoLimiteMs),
+        signal: signal ? AbortSignal.any([AbortSignal.timeout(tiempoLimiteMs), signal]) : AbortSignal.timeout(tiempoLimiteMs),
       });
     } catch (e) {
+      if (signal?.aborted) throw signal.reason ?? e;
       ultimoError = e;
-      await esperar(2000 * intento);
+      await esperar(2000 * intento, signal);
       continue;
     }
     const cuerpo = await res.json().catch(() => ({}));
     if ((res.status === 429 || res.status >= 500) && !esDefinitivo(res, cuerpo)) {
       const espera = Number(res.headers.get('retry-after')) * 1000 || 3000 * intento;
       ultimoError = new Error(`API respondió ${res.status}`);
-      await esperar(Math.min(espera, 30_000));
+      await esperar(Math.min(espera, 30_000), signal);
       continue;
     }
     return { res, cuerpo };
@@ -49,8 +58,9 @@ function armarProveedor({ nombre, modelo, modeloRevisor, llamar, tokensGeneracio
   return {
     nombre,
     modelo,
-    async generarPreguntas({ categoria, cantidad, recientes, fecha }) {
+    async generarPreguntas({ categoria, cantidad, recientes, fecha, signal }) {
       const { datos, uso } = await llamar({
+        signal,
         modeloUsado: modelo,
         sistema: SISTEMA_GENERADOR,
         mensaje: mensajeGenerador({ categoria, cantidad, recientes, fecha }),
@@ -59,8 +69,9 @@ function armarProveedor({ nombre, modelo, modeloRevisor, llamar, tokensGeneracio
       });
       return { preguntas: Array.isArray(datos?.preguntas) ? datos.preguntas : [], uso };
     },
-    async revisarPreguntas({ preguntas }) {
+    async revisarPreguntas({ preguntas, signal }) {
       const { datos, uso } = await llamar({
+        signal,
         modeloUsado: modeloRevisor,
         sistema: SISTEMA_REVISOR,
         mensaje: mensajeRevisor(preguntas),
@@ -76,8 +87,9 @@ function armarProveedor({ nombre, modelo, modeloRevisor, llamar, tokensGeneracio
 export function crearProveedorAnthropic({ claveApi, urlApi, modelo, modeloRevisor, tiempoLimiteMs = 240_000, obtener = globalThis.fetch }) {
   if (!claveApi) throw new Error('Falta ANTHROPIC_API_KEY.');
 
-  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens }) {
+  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens, signal }) {
     const { res, cuerpo } = await pedirConReintentos({
+      signal,
       obtener,
       url: urlApi,
       tiempoLimiteMs,
@@ -108,8 +120,9 @@ export function crearProveedorAnthropic({ claveApi, urlApi, modelo, modeloReviso
 export function crearProveedorOpenAI({ claveApi, urlApi, modelo, modeloRevisor, tiempoLimiteMs = 240_000, obtener = globalThis.fetch }) {
   if (!claveApi) throw new Error('Falta OPENAI_API_KEY.');
 
-  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens }) {
+  async function llamar({ modeloUsado, sistema, mensaje, herramienta, maxTokens, signal }) {
     const { res, cuerpo } = await pedirConReintentos({
+      signal,
       obtener,
       url: urlApi,
       tiempoLimiteMs,

@@ -70,6 +70,41 @@ export async function respuestasDeDesafio(db, desafioId) {
   }) ?? new Map();
 }
 
+/** Cantidad de respuestas válidas por pregunta de un desafío (sin traer las respuestas). */
+export async function conteoRespuestasDeDesafio(db, desafioId) {
+  return recordar(cacheDe(db, 'conteoRespuestas'), desafioId, async () => {
+    const filas = await db.all(
+      'SELECT r.pregunta_id, COUNT(*) AS n FROM respuestas r JOIN preguntas p ON p.id = r.pregunta_id WHERE p.desafio_id = ? GROUP BY r.pregunta_id',
+      desafioId,
+    );
+    return filas.length ? new Map(filas.map((f) => [f.pregunta_id, f.n])) : null;
+  }) ?? new Map();
+}
+
+/** Respuestas puntuales por id (las aceptadas de una partida), con caché. */
+export async function respuestasPorIds(db, ids) {
+  const cache = cacheDe(db, 'respuestaId');
+  const faltan = [...new Set(ids.filter((id) => id != null && !cache.has(id)))];
+  if (faltan.length) {
+    const filas = await db.all(`SELECT * FROM respuestas WHERE id IN (${faltan.map(() => '?').join(',')})`, ...faltan);
+    for (const f of filas) cache.set(f.id, f);
+    while (cache.size > 2000) cache.delete(cache.keys().next().value);
+  }
+  return new Map(ids.filter((id) => cache.has(id)).map((id) => [id, cache.get(id)]));
+}
+
+/** Rehace el histograma de puntajes de un desafío a partir de las partidas terminadas. */
+export function conciliarPuntajes(db, desafioId) {
+  return transaccion(db, async (tx) => {
+    await tx.run('DELETE FROM puntajes_desafio WHERE desafio_id = ?', desafioId);
+    await tx.run(
+      `INSERT INTO puntajes_desafio (desafio_id, puntos, cantidad)
+       SELECT desafio_id, puntos, COUNT(*) FROM partidas WHERE desafio_id = ? AND terminada_en IS NOT NULL GROUP BY puntos`,
+      desafioId,
+    );
+  });
+}
+
 export async function respuestasDePregunta(db, preguntaId) {
   return recordar(cacheDe(db, 'respuestas'), preguntaId, async () => {
     const filas = await db.all('SELECT * FROM respuestas WHERE pregunta_id = ? ORDER BY puntos, id', preguntaId);
@@ -119,6 +154,17 @@ export function publicarDesafio(db, { fecha, preguntas, origen, modelo = null, c
 
     const primera = (await tx.get('SELECT MIN(fecha) AS f FROM desafios'))?.f;
     const numero = primera && primera < fecha ? diasEntre(primera, fecha) + 1 : 1;
+    if (primera && fecha < primera) {
+      // Carga hacia atrás: el nuevo día pasa a ser el #1 y el resto se corre.
+      await tx.run(
+        "UPDATE desafios SET numero = CAST(julianday(fecha) - julianday(?) AS INTEGER) + 1",
+        fecha,
+      );
+      await tx.run(
+        `INSERT INTO meta (clave, valor) VALUES ('version_banco', '1')
+         ON CONFLICT(clave) DO UPDATE SET valor = CAST(CAST(valor AS INTEGER) + 1 AS TEXT)`,
+      );
+    }
 
     const { lastInsertRowid: desafioId } = await tx.run(
       'INSERT INTO desafios (fecha, numero, origen, modelo, corrida_id, publicado_en) VALUES (?, ?, ?, ?, ?, ?)',
@@ -187,7 +233,7 @@ export async function indiceDePregunta(db, preguntaId) {
 /** Valida un texto contra el banco almacenado (sin IA). */
 export async function evaluarTexto(db, preguntaId, texto) {
   const { indice, rechazos } = await indiceDePregunta(db, preguntaId);
-  const respuestaPorId = async (id) => (await respuestasDePregunta(db, preguntaId)).find((r) => r.id === id);
+  const respuestaPorId = async (id) => (await respuestasPorIds(db, [id])).get(id);
   const respuestaId = buscarEnIndice(indice, texto);
   if (respuestaId != null) {
     const respuesta = await respuestaPorId(respuestaId);

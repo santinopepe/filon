@@ -561,59 +561,99 @@ function botonRespuestas(r, texto) {
   return boton;
 }
 
-function dibujarRespuestasValidas(r) {
-  const lista = $('lista-respuestas');
-  const fragmento = document.createDocumentFragment();
-  for (const respuesta of r.respuestasValidas || []) {
-    const li = document.createElement('li');
-    li.dataset.rareza = respuesta.rareza;
-    if (respuesta.canonica === r.respuesta?.canonica) li.classList.add('es-tuya');
-    const gema = document.createElement('span');
-    gema.className = 'piedra';
-    const nombre = document.createElement('span');
-    nombre.className = 'respuesta-nombre';
-    nombre.textContent = respuesta.canonica;
-    if (respuesta.canonica === r.respuesta?.canonica) {
-      const tuya = document.createElement('small');
-      tuya.textContent = 'Tu respuesta';
-      nombre.append(tuya);
-    }
-    const rareza = document.createElement('span');
-    rareza.className = 'respuesta-rareza';
-    rareza.textContent = respuesta.nombreRareza;
-    const puntos = document.createElement('strong');
-    puntos.className = 'respuesta-puntos';
-    puntos.textContent = `${respuesta.puntos} pts`;
-    li.append(gema, nombre, rareza, puntos);
-    fragmento.append(li);
+// Revelado paginado: se piden y se dibujan de a 100 (el servidor no entrega más por página).
+const revelado = { n: null, buscar: '', siguiente: 0, pidiendo: false, espera: null };
+
+function filaRespuesta(respuesta, propia) {
+  const li = document.createElement('li');
+  li.dataset.rareza = respuesta.rareza;
+  if (respuesta.canonica === propia) li.classList.add('es-tuya');
+  const gema = document.createElement('span');
+  gema.className = 'piedra';
+  const nombre = document.createElement('span');
+  nombre.className = 'respuesta-nombre';
+  nombre.textContent = respuesta.canonica;
+  if (respuesta.canonica === propia) {
+    const tuya = document.createElement('small');
+    tuya.textContent = 'Tu respuesta';
+    nombre.append(tuya);
   }
-  lista.replaceChildren(fragmento);
+  const rareza = document.createElement('span');
+  rareza.className = 'respuesta-rareza';
+  rareza.textContent = respuesta.nombreRareza;
+  const puntos = document.createElement('strong');
+  puntos.className = 'respuesta-puntos';
+  puntos.textContent = `${respuesta.puntos} pts`;
+  li.append(gema, nombre, rareza, puntos);
+  return li;
+}
+
+async function pedirPaginaRespuestas({ reiniciar = false } = {}) {
+  const r = ronda(revelado.n);
+  if (!r || revelado.pidiendo || (!reiniciar && revelado.siguiente == null)) return;
+  revelado.pidiendo = true;
+  const lista = $('lista-respuestas');
+  const mas = $('respuestas-mas');
+  if (reiniciar) {
+    revelado.siguiente = 0;
+    const carga = document.createElement('li');
+    carga.className = 'respuestas-cargando';
+    carga.textContent = 'Extrayendo el catálogo de la veta…';
+    lista.replaceChildren(carga);
+  }
+  mas.disabled = true;
+  try {
+    const q = new URLSearchParams({ desde: String(revelado.siguiente), limite: '100' });
+    if (revelado.buscar) q.set('buscar', revelado.buscar);
+    const datos = await api('GET', `/api/partidas/${estado.partida.id}/rondas/${revelado.n}/respuestas?${q}`);
+    if (reiniciar) lista.replaceChildren();
+    const fragmento = document.createDocumentFragment();
+    for (const respuesta of datos.respuestas) fragmento.append(filaRespuesta(respuesta, r.respuesta?.canonica));
+    lista.append(fragmento);
+    if (!datos.coincidencias) {
+      const vacio = document.createElement('li');
+      vacio.className = 'respuestas-cargando';
+      vacio.textContent = 'Ninguna respuesta válida coincide con esa búsqueda.';
+      lista.append(vacio);
+    }
+    revelado.siguiente = datos.siguiente;
+    const mostradas = lista.querySelectorAll('li:not(.respuestas-cargando)').length;
+    $('respuestas-ayuda').textContent = revelado.buscar
+      ? `${fmt(datos.coincidencias)} de ${fmt(datos.total)} respuestas coinciden. Mostrando ${fmt(mostradas)}.`
+      : `${fmt(datos.total)} respuestas, ordenadas de mayor a menor puntaje.${datos.total > mostradas ? ` Mostrando ${fmt(mostradas)}.` : ''}`;
+    mas.hidden = datos.siguiente == null;
+  } catch (e) {
+    lista.replaceChildren(Object.assign(document.createElement('li'), { className: 'respuestas-cargando', textContent: e.message }));
+  } finally {
+    revelado.pidiendo = false;
+    mas.disabled = false;
+  }
 }
 
 async function abrirRespuestas(n) {
   const r = ronda(n);
   if (!r?.totalRespuestas) return;
+  revelado.n = n;
+  revelado.buscar = '';
   $('respuestas-ronda').textContent = `Pregunta ${r.posicion} de 7 · ${r.categoria}`;
   $('respuestas-pregunta').textContent = r.enunciado;
   $('respuestas-ayuda').textContent = `${fmt(r.totalRespuestas)} respuestas, ordenadas de mayor a menor puntaje.`;
+  $('respuestas-buscar').value = '';
+  $('respuestas-buscar-caja').hidden = r.totalRespuestas <= 30;
+  $('respuestas-mas').hidden = true;
   const dlg = $('dlg-respuestas');
   if (!dlg.open) dlg.showModal();
-  if (r.respuestasValidas?.length) {
-    dibujarRespuestasValidas(r);
-    return;
-  }
-  const carga = document.createElement('li');
-  carga.className = 'respuestas-cargando';
-  carga.textContent = 'Extrayendo el catálogo de la veta…';
-  $('lista-respuestas').replaceChildren(carga);
-  try {
-    const datos = await api('GET', `/api/partidas/${estado.partida.id}/rondas/${n}/respuestas`);
-    r.respuestasValidas = datos.respuestas;
-    dibujarRespuestasValidas(r);
-  } catch (e) {
-    carga.textContent = e.message;
-  }
+  await pedirPaginaRespuestas({ reiniciar: true });
 }
+
+$('respuestas-mas').addEventListener('click', () => pedirPaginaRespuestas());
+$('respuestas-buscar').addEventListener('input', () => {
+  clearTimeout(revelado.espera);
+  revelado.espera = setTimeout(() => {
+    revelado.buscar = $('respuestas-buscar').value.trim().slice(0, 60);
+    pedirPaginaRespuestas({ reiniciar: true });
+  }, 250);
+});
 
 function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
   const r = ronda(n);

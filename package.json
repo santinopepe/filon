@@ -5,7 +5,7 @@
   "description": "Filón: desafío diario de cultura general donde las respuestas raras te llevan más hondo en la mina.",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": "24.x"
   },
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning servidor/index.js",
@@ -13,10 +13,22 @@
     "generar": "node --disable-warning=ExperimentalWarning scripts/generar-desafio.js",
     "validar-reserva": "node --disable-warning=ExperimentalWarning scripts/validar-reserva.js",
     "admin": "node --disable-warning=ExperimentalWarning scripts/admin.js",
+    "explicar-consultas": "node --disable-warning=ExperimentalWarning scripts/explicar-consultas.js",
+    "lint": "eslint .",
+    "chequear": "node scripts/chequear-sintaxis.js",
     "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 pruebas/*.test.js",
-    "test:navegador": "node --disable-warning=ExperimentalWarning pruebas/navegador/recorrido.mjs"
+    "test:cobertura": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include=servidor/**/*.js --test-coverage-include=api/**/*.js --test-coverage-lines=85 --test-coverage-functions=85 --test-coverage-branches=70 pruebas/*.test.js",
+    "test:navegador": "playwright test",
+    "test:recorrido": "node --disable-warning=ExperimentalWarning pruebas/navegador/recorrido.mjs",
+    "verificar": "npm run lint && npm run chequear && npm run test:cobertura && npm run validar-reserva && npm audit --omit=dev --audit-level=moderate && npm run test:navegador"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0"
   }
 }

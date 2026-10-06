@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { prepararEntorno, publicarHoy, respuestasDe } from './ayuda.js';
 import { crearJuego, ErrorJuego } from '../servidor/juego.js';
+import { conciliarPuntajes } from '../servidor/banco.js';
 
 async function armar(opciones) {
   const e = await prepararEntorno(opciones);
@@ -41,7 +42,7 @@ test('flujo completo: 7 rondas, puntos por rareza y profundidad', async () => {
   assert.equal(p.estadisticas.puesto, 1);
   assert.equal(p.estadisticas.percentil, null);
   assert.ok(p.rondas.every((r) => r.totalRespuestas >= 5));
-  const respuestasValidas = await e.juego.respuestasValidas(yo, p.id, 1);
+  const { respuestas: respuestasValidas } = await e.juego.respuestasValidas(yo, p.id, 1);
   assert.ok(
     respuestasValidas.every((respuesta, i, todas) => i === 0 || todas[i - 1].puntos >= respuesta.puntos),
     'las respuestas válidas se entregan ordenadas de mayor a menor puntaje',
@@ -67,6 +68,9 @@ test('el resultado final calcula ranking y distribución entre partidas terminad
       `ranking-partida-${i}`, jugador, desafioId, e.reloj.ahora(), e.reloj.ahora(), puntos,
     );
   }
+  // Las partidas se insertaron a mano (sin pasar por el juego): se concilia el histograma agregado,
+  // como hace la limpieza diaria.
+  await conciliarPuntajes(e.db, desafioId);
 
   p = await e.juego.verPartida(yo, p.id);
   assert.equal(p.estadisticas.total, 6);

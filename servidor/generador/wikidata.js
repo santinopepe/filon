@@ -44,7 +44,9 @@ function valor(binding, clave) {
 }
 
 export function crearCatalogoWikidata({ obtener = globalThis.fetch, userAgent = 'FilonBot/1.0', tiempoLimiteMs = 45_000 } = {}) {
-  async function etiquetasDe(ids) {
+  const senal = (externa) => (externa ? AbortSignal.any([AbortSignal.timeout(tiempoLimiteMs), externa]) : AbortSignal.timeout(tiempoLimiteMs));
+
+  async function etiquetasDe(ids, externa) {
     const lotes = [];
     for (let i = 0; i < ids.length; i += 300) lotes.push(ids.slice(i, i + 300));
     const salida = new Map();
@@ -66,7 +68,7 @@ export function crearCatalogoWikidata({ obtener = globalThis.fetch, userAgent = 
             'user-agent': userAgent,
           },
           body: new URLSearchParams({ query: consulta }),
-          signal: AbortSignal.timeout(tiempoLimiteMs),
+          signal: senal(externa),
         });
         if (res.ok || (res.status !== 429 && res.status < 500)) break;
         const espera = Math.min(10_000, Number(res.headers.get('retry-after')) * 1000 || intento * 1500);
@@ -88,7 +90,7 @@ export function crearCatalogoWikidata({ obtener = globalThis.fetch, userAgent = 
     return salida;
   }
 
-  async function hidratar(candidata) {
+  async function hidratar(candidata, { signal: externa } = {}) {
     const consulta = consultaSegura(candidata.consulta_wikidata ?? candidata.consultaWikidata);
     const cuerpo = new URLSearchParams({ query: consulta });
     const res = await obtener(ENDPOINT, {
@@ -100,7 +102,7 @@ export function crearCatalogoWikidata({ obtener = globalThis.fetch, userAgent = 
         'user-agent': userAgent,
       },
       body: cuerpo,
-      signal: AbortSignal.timeout(tiempoLimiteMs),
+      signal: senal(externa),
     });
     if (!res.ok) throw new Error(`Wikidata respondió HTTP ${res.status}.`);
     const datos = await res.json();
@@ -122,7 +124,7 @@ export function crearCatalogoWikidata({ obtener = globalThis.fetch, userAgent = 
 
     const sinEtiqueta = [...porEntidad.values()].filter((entidad) => !entidad.canonica).map((entidad) => entidad.id);
     if (sinEtiqueta.length) {
-      const etiquetas = await etiquetasDe(sinEtiqueta);
+      const etiquetas = await etiquetasDe(sinEtiqueta, externa);
       for (const entidad of porEntidad.values()) {
         const etiqueta = etiquetas.get(entidad.id);
         if (!entidad.canonica && etiqueta) entidad.canonica = etiqueta.canonica;

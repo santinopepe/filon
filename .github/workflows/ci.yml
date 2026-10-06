@@ -1,0 +1,73 @@
+# CI obligatorio: ningún commit debería llegar a producción sin que este workflow esté verde.
+# El job se llama «verificar»: marcalo como check requerido en la protección de la rama main
+# (ver docs/OPERACIONES.md → «Despliegue»).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: verificar
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Las pruebas nunca usan servicios externos ni credenciales reales.
+      ANTHROPIC_API_KEY: ''
+      OPENAI_API_KEY: ''
+      TURSO_DATABASE_URL: ''
+      BD_URL: ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias (npm ci)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Chequeo estático (sintaxis e imports)
+        run: npm run chequear
+
+      - name: Pruebas unitarias e integración
+        run: npm test
+
+      - name: Cobertura (con umbrales)
+        run: npm run test:cobertura
+
+      - name: Validar banco de reserva
+        run: npm run validar-reserva
+
+      - name: Auditoría de dependencias de producción
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Instalar Chromium para Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E (Chromium)
+        run: npm run test:navegador
+
+      - name: Reporte de Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
