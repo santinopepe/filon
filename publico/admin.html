@@ -13,11 +13,11 @@
   <header class="barra">
     <p class="marca">Filón <span>admin</span></p>
     <nav class="pestanas" role="tablist" aria-label="Secciones" id="nav" hidden>
-      <button type="button" role="tab" data-pestana="resumen" aria-selected="true">Resumen</button>
-      <button type="button" role="tab" data-pestana="desafios" aria-selected="false">Desafíos</button>
-      <button type="button" role="tab" data-pestana="crear" aria-selected="false">Crear</button>
-      <button type="button" role="tab" data-pestana="corridas" aria-selected="false">Corridas</button>
-      <button type="button" role="tab" data-pestana="reportes" aria-selected="false">Reportes <span class="insignia" id="insignia-reportes" hidden></span></button>
+      <button type="button" role="tab" id="tab-resumen" aria-controls="pestana-resumen" tabindex="0" data-pestana="resumen" aria-selected="true">Resumen</button>
+      <button type="button" role="tab" id="tab-desafios" aria-controls="pestana-desafios" tabindex="-1" data-pestana="desafios" aria-selected="false">Desafíos</button>
+      <button type="button" role="tab" id="tab-crear" aria-controls="pestana-crear" tabindex="-1" data-pestana="crear" aria-selected="false">Crear</button>
+      <button type="button" role="tab" id="tab-corridas" aria-controls="pestana-corridas" tabindex="-1" data-pestana="corridas" aria-selected="false">Corridas</button>
+      <button type="button" role="tab" id="tab-reportes" aria-controls="pestana-reportes" tabindex="-1" data-pestana="reportes" aria-selected="false">Reportes <span class="insignia" id="insignia-reportes" hidden></span></button>
     </nav>
     <div class="barra-derecha">
       <p class="estado-ia" id="estado-ia"></p>
@@ -28,14 +28,14 @@
   <main>
     <form class="tarjeta ingreso" id="ingreso" hidden>
       <h2>Ingresar</h2>
-      <p>Pegá el <code>TOKEN_ADMIN</code> del proyecto. Queda guardado solo en este navegador.</p>
+      <p>Pegá el <code>TOKEN_ADMIN</code> del proyecto. Se usa solo para abrir una sesión de 30 minutos (renovable con la actividad); no se guarda en el navegador.</p>
       <label>Token <input type="password" id="token" autocomplete="off" required></label>
-      <button type="submit">Entrar</button>
-      <p class="error" id="error-ingreso" hidden></p>
+      <button type="submit" id="ingresar">Entrar</button>
+      <p class="error" id="error-ingreso" role="alert" hidden></p>
     </form>
 
     <div id="panel" hidden>
-      <section id="pestana-resumen" class="pestana" aria-label="Resumen">
+      <section id="pestana-resumen" class="pestana" role="tabpanel" aria-labelledby="tab-resumen" tabindex="0">
         <div class="filtros">
           <label class="filtro">Día <input type="date" id="est-fecha"></label>
           <div class="segmentado" role="group" aria-label="Período del gráfico de jugadores">
@@ -89,14 +89,14 @@
         </div>
       </section>
 
-      <section id="pestana-desafios" class="pestana" aria-label="Desafíos" hidden>
+      <section id="pestana-desafios" class="pestana" role="tabpanel" aria-labelledby="tab-desafios" tabindex="0" hidden>
         <article class="tarjeta">
           <div class="tabla-envoltura"><table class="tabla" id="tabla-desafios"></table></div>
         </article>
         <div id="detalle"></div>
       </section>
 
-      <section id="pestana-crear" class="pestana grilla-crear" aria-label="Crear" hidden>
+      <section id="pestana-crear" class="pestana grilla-crear" role="tabpanel" aria-labelledby="tab-crear" tabindex="0" hidden>
       <section class="tarjeta">
         <h2>Generar con IA o reserva</h2>
         <p class="sub">Para un día nuevo o para regenerar uno existente.</p>
@@ -170,10 +170,11 @@
       </section>
 
       </section>
-      <section id="pestana-corridas" class="pestana" aria-label="Corridas" hidden></section>
-      <section id="pestana-reportes" class="pestana" aria-label="Reportes" hidden></section>
+      <section id="pestana-corridas" class="pestana" role="tabpanel" aria-labelledby="tab-corridas" tabindex="0" hidden></section>
+      <section id="pestana-reportes" class="pestana" role="tabpanel" aria-labelledby="tab-reportes" tabindex="0" hidden></section>
     </div>
   </main>
   <div class="tooltip" id="tooltip" role="status" hidden></div>
+  <p class="estado-global" id="estado-global" role="alert" hidden></p>
 </body>
 </html>

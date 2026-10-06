@@ -84,6 +84,15 @@ export function cargarConfig(sobrescrituras = {}) {
     confiarProxy: bool(e.CONFIAR_PROXY, enVercel),
     urlPublica: e.URL_PUBLICA || '',
     tokenAdmin: e.TOKEN_ADMIN || '',
+    // Multiplica los máximos de los límites de solicitudes (1 en producción; más alto solo en pruebas E2E).
+    limitesEscala: num(e.LIMITES_ESCALA, 1),
+    admin: {
+      // Sesiones del panel: vencen por inactividad y, como máximo, a las N horas de iniciadas.
+      inactividadMs: num(e.ADMIN_INACTIVIDAD_MIN, 30) * 60_000,
+      vidaMaximaMs: num(e.ADMIN_VIDA_HORAS, 8) * 3_600_000,
+      // Transición: acepta «Authorization: Bearer TOKEN_ADMIN» para scripts y curl. Poné 0 para exigir sesión.
+      permitirBearer: bool(e.ADMIN_PERMITIR_BEARER, true),
+    },
     // Vercel Cron envía «Authorization: Bearer $CRON_SECRET».
     secretoCron: e.CRON_SECRET || '',
     relojDesfaseMs: num(e.RELOJ_DESFASE_MS, 0),
@@ -100,12 +109,20 @@ export function cargarConfig(sobrescrituras = {}) {
       revisionAdversarial: bool(e.IA_REVISION_ADVERSARIAL, true),
       // Tiempo máximo para la IA en una corrida (0 = sin límite). En Vercel tiene que entrar en maxDuration.
       presupuestoMs: num(e.IA_PRESUPUESTO_MS, enVercel ? 200_000 : 0),
+      // Topes de costo: llamadas a la API por corrida y por día (todas las corridas del día local).
+      maxLlamadasPorCorrida: num(e.IA_MAX_LLAMADAS_POR_CORRIDA, 30),
+      maxLlamadasPorDia: num(e.IA_MAX_LLAMADAS_POR_DIA, 90),
+      // Precio por millón de tokens, solo para estimar el costo en los logs (0 = desconocido).
+      costoEntradaMTok: num(e.IA_COSTO_ENTRADA_USD_MTOK, 0),
+      costoSalidaMTok: num(e.IA_COSTO_SALIDA_USD_MTOK, 0),
     },
 
     fuentes: {
       modo: (e.VERIFICAR_FUENTES || 'estricta').toLowerCase(), // 'estricta' | 'desactivada'
       dominios: (e.DOMINIOS_FUENTES ? e.DOMINIOS_FUENTES.split(',') : DOMINIOS_POR_DEFECTO).map((d) => d.trim()).filter(Boolean),
       tiempoLimiteMs: num(e.FUENTES_TIEMPO_LIMITE_MS, 15_000),
+      maxBytes: num(e.FUENTES_MAX_BYTES, 3_000_000),
+      maxRedirecciones: num(e.FUENTES_MAX_REDIRECCIONES, 3),
       userAgent: e.FUENTES_USER_AGENT || `FilonBot/1.0 (verificacion de preguntas; ${e.URL_PUBLICA || "sin-url"}; ${e.CONTACTO_FUENTES || "sin-contacto"})`,
     },
 
@@ -120,6 +137,14 @@ export function cargarConfig(sobrescrituras = {}) {
     },
 
     diasSinRepetir: num(e.DIAS_SIN_REPETIR, 60),
+
+    // Retención (días). Las partidas y los desafíos se conservan: son el historial del juego.
+    retencion: {
+      visitantesSinPartidaDias: num(e.RETENER_VISITANTES_DIAS, 90),
+      intentosDias: num(e.RETENER_INTENTOS_DIAS, 180),
+      reportesResueltosDias: num(e.RETENER_REPORTES_DIAS, 365),
+      detalleCorridasDias: num(e.RETENER_CORRIDAS_DIAS, 180),
+    },
   };
   return config;
 }

@@ -45,6 +45,7 @@ function comprobar(condicion, descripcion) {
   if (!condicion) fallas++;
 }
 // Quita tildes pero conserva la ñ, como hace el servidor.
+// eslint-disable-next-line no-control-regex -- \u0001 marca temporal para preservar la ñ, como el servidor
 const sinTildesMayus = (t) => t.replace(/ñ/g, '\u0001').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0001/g, 'ñ').toUpperCase();
 
 const navegador = await chromium.launch();

@@ -5,3 +5,6 @@ datos/*.db-wal
 datos/*.db-shm
 capturas/
 .vercel
+test-results/
+playwright-report/
+cobertura/

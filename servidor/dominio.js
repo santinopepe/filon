@@ -32,3 +32,14 @@ export function puntosDeRareza(rareza) {
   if (!r) throw new Error(`Rareza desconocida: ${rareza}`);
   return r.puntos;
 }
+
+// Límites explícitos de tamaño (protegen memoria, base y DOM).
+export const LIMITES = Object.freeze({
+  cuerpoJson: 4096, // bytes de una solicitud normal del juego
+  cuerpoImportacion: 512_000, // bytes del JSON de carga manual (siete preguntas)
+  respuestasPorPregunta: 1500, // tope absoluto (preguntas de Wikidata); las editoriales, 80
+  paginaRevelado: 100, // respuestas válidas por página al revelarlas
+  paginaReportes: 500,
+  respuestasEnDetalleAdmin: 200, // por pregunta, en el detalle de un desafío del panel
+  paginaCorridas: 50,
+});

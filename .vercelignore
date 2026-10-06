@@ -11,3 +11,9 @@ despliegue
 capturas
 Dockerfile
 .dockerignore
+test-results
+playwright-report
+cobertura
+.github
+playwright.config.js
+eslint.config.js

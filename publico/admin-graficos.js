@@ -163,11 +163,15 @@ export function columnasApiladas(contenedor, { dias, elegida, alElegir, alto = 2
 
 const densidadNormal = (x, media, desvio) => Math.exp(-0.5 * ((x - media) / desvio) ** 2) / (desvio * Math.sqrt(2 * Math.PI));
 
+// Los valores pueden venir sueltos (números) o como histograma ({ valor, cantidad }).
+const valorDe = (v) => (typeof v === 'number' ? v : v.valor);
+const pesoDe = (v) => (typeof v === 'number' ? 1 : v.cantidad);
+
 /** Cuenta los valores en tramos de `ancho` entre 0 y `maximo` (el máximo entra en el último tramo). */
 export function tramos(valores, maximo, ancho) {
   const n = Math.ceil(maximo / ancho);
   const cuentas = Array.from({ length: n }, (_, i) => ({ desde: i * ancho, hasta: (i + 1) * ancho - 1, cantidad: 0 }));
-  for (const v of valores) cuentas[Math.min(n - 1, Math.max(0, Math.floor(v / ancho)))].cantidad++;
+  for (const v of valores) cuentas[Math.min(n - 1, Math.max(0, Math.floor(valorDe(v) / ancho)))].cantidad += pesoDe(v);
   return cuentas;
 }
 
@@ -178,7 +182,7 @@ export function campana(contenedor, { valores, resumen, maximo = 7000, ancho = 5
   const arriba = 26;
   const abajo = alto - 28;
   const cuentas = tramos(valores, maximo, ancho);
-  const n = valores.length;
+  const n = valores.reduce((s, v) => s + pesoDe(v), 0);
   const conCurva = n >= 3 && resumen?.desviacion > 0;
   const curva = [];
   if (conCurva) {

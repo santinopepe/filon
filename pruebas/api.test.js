@@ -279,7 +279,7 @@ test('administración: estadísticas de jugadores, distribución y preguntas del
     assert.equal(e.serie[0].terminadas, 2);
     assert.equal(e.dia.terminadas, 2, 'A y B terminaron');
     assert.equal(e.dia.enCurso, 1);
-    assert.deepEqual([...e.dia.metros].sort((x, y) => x - y), [0, 7000]);
+    assert.deepEqual(e.dia.distribucion, [{ metros: 0, cantidad: 1 }, { metros: 7000, cantidad: 1 }], 'histograma agregado, no la lista de partidas');
     assert.equal(e.dia.resumen.promedio, 3500);
     assert.equal(e.dia.resumen.mediana, 3500);
     const p1 = e.dia.preguntas[0];

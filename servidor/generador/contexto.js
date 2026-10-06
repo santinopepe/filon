@@ -31,6 +31,8 @@ export function crearContextoGeneracion(config, { obtener = globalThis.fetch, lo
   const verificador = crearVerificador({
     dominios: config.fuentes.dominios,
     tiempoLimiteMs: config.fuentes.tiempoLimiteMs,
+    maxBytes: config.fuentes.maxBytes,
+    maxRedirecciones: config.fuentes.maxRedirecciones,
     userAgent: config.fuentes.userAgent,
     modo: config.fuentes.modo,
     obtener,

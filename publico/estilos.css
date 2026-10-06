@@ -750,7 +750,11 @@ body.en-excavacion .pantalla {
 .rep-nota { font-size: .85rem !important; color: var(--cal-3) !important; }
 .dialogo-acciones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .respuestas-dialogo { width: min(620px, calc(100vw - 32px)); max-height: min(82vh, 760px); }
-.respuestas-dialogo form { max-height: calc(min(82vh, 760px) - 52px); grid-template-rows: auto auto auto auto minmax(100px, 1fr) auto; }
+.respuestas-dialogo form { max-height: calc(min(82vh, 760px) - 52px); display: flex; flex-direction: column; }
+.respuestas-dialogo .lista-respuestas { flex: 1 1 auto; min-height: 100px; }
+.respuestas-buscar { display: grid; gap: 4px; font-size: .85rem; color: var(--cal-2); }
+.respuestas-buscar input { font: inherit; font-size: 1rem; padding: .5rem .7rem; border-radius: 8px; border: 2px solid var(--viga); background: #101126; color: var(--cal); }
+#respuestas-mas { align-self: center; }
 .respuestas-kicker { color: var(--cian) !important; font-family: var(--titulo); font-size: .78rem !important; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .respuestas-ayuda { color: var(--cal-3) !important; font-size: .82rem !important; }
 .lista-respuestas { list-style: none; min-height: 0; overflow-y: auto; margin: 2px -8px 0 0; padding: 0 8px 0 0; }

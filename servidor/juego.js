@@ -1,10 +1,10 @@
 // Lógica de partida. Todo (tiempos, respuestas y puntos) se decide en el servidor.
 import { randomUUID } from 'node:crypto';
 import { transaccion } from './db.js';
-import { CATEGORIAS, RAREZAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO } from './dominio.js';
+import { CATEGORIAS, RAREZAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO, LIMITES } from './dominio.js';
 import { normalizar } from './normalizar.js';
 import { fechaLocal, inicioDeFecha, sumarDias, proximaMedianoche } from './tiempo.js';
-import { desafioPorFecha, desafioPorId, preguntasDeDesafio, respuestasDePregunta, respuestasDeDesafio, evaluarTexto } from './banco.js';
+import { desafioPorFecha, desafioPorId, preguntasDeDesafio, respuestasDePregunta, conteoRespuestasDeDesafio, respuestasPorIds, evaluarTexto } from './banco.js';
 
 export class ErrorJuego extends Error {
   constructor(estado, codigo, mensaje) {
@@ -14,7 +14,6 @@ export class ErrorJuego extends Error {
   }
 }
 
-const ESTADOS_CERRADOS = new Set(['acertada', 'vencida', 'pasada', 'caducada']);
 const MAX_LARGO_RESPUESTA = 120;
 const MAX_REPORTES_POR_PARTIDA = 15;
 
@@ -73,7 +72,15 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
       const cerradas = await tx.get(`SELECT COUNT(*) AS n, COALESCE(SUM(puntos), 0) AS puntos FROM rondas WHERE partida_id = ? AND estado <> 'activa'`, fila.id);
       if (cerradas.n >= PREGUNTAS_POR_DESAFIO) {
-        await tx.run('UPDATE partidas SET terminada_en = ?, puntos = ? WHERE id = ?', t, cerradas.puntos, fila.id);
+        const fin = await tx.run('UPDATE partidas SET terminada_en = ?, puntos = ? WHERE id = ? AND terminada_en IS NULL', t, cerradas.puntos, fila.id);
+        if (fin.changes === 1) {
+          await tx.run(
+            `INSERT INTO puntajes_desafio (desafio_id, puntos, cantidad) VALUES (?, ?, 1)
+             ON CONFLICT(desafio_id, puntos) DO UPDATE SET cantidad = cantidad + 1`,
+            fila.desafio_id,
+            cerradas.puntos,
+          );
+        }
         return { ...fila, terminada_en: t, puntos: cerradas.puntos };
       }
       return fila;
@@ -86,25 +93,29 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       .sort((a, b) => b.puntos - a.puntos || a.canonica.localeCompare(b.canonica, 'es'));
   }
 
+  /** Ranking y distribución del día a partir del histograma agregado (≤ 141 filas, no todas las partidas). */
   async function estadisticasDe(partida) {
-    const resultados = (
-      await db.all('SELECT puntos FROM partidas WHERE desafio_id = ? AND terminada_en IS NOT NULL ORDER BY puntos DESC, terminada_en, id', partida.desafio_id)
-    ).map((fila) => fila.puntos);
-    const total = resultados.length;
+    const filas = await db.all('SELECT puntos, cantidad FROM puntajes_desafio WHERE desafio_id = ? AND cantidad > 0 ORDER BY puntos DESC', partida.desafio_id);
+    const total = filas.reduce((s, f) => s + f.cantidad, 0);
     if (!total) return null;
-
-    const mayores = resultados.filter((puntos) => puntos > partida.puntos).length;
-    const iguales = resultados.filter((puntos) => puntos === partida.puntos).length;
+    let mayores = 0;
+    let iguales = 0;
+    let suma = 0;
+    for (const f of filas) {
+      if (f.puntos > partida.puntos) mayores += f.cantidad;
+      else if (f.puntos === partida.puntos) iguales += f.cantidad;
+      suma += f.puntos * f.cantidad;
+    }
     const menores = total - mayores - iguales;
-    const promedio = resultados.reduce((suma, puntos) => suma + puntos, 0) / total;
-    const varianza = resultados.reduce((suma, puntos) => suma + (puntos - promedio) ** 2, 0) / total;
+    const promedio = suma / total;
+    const varianza = filas.reduce((s, f) => s + f.cantidad * (f.puntos - promedio) ** 2, 0) / total;
     const ancho = 50;
     const distribucion = Array.from({ length: 14 }, (_, indice) => ({
       desde: indice * ancho,
       hasta: indice === 13 ? 700 : (indice + 1) * ancho - 1,
       cantidad: 0,
     }));
-    for (const puntos of resultados) distribucion[Math.min(13, Math.max(0, Math.floor(puntos / ancho)))].cantidad++;
+    for (const f of filas) distribucion[Math.min(13, Math.max(0, Math.floor(f.puntos / ancho)))].cantidad += f.cantidad;
 
     return {
       total,
@@ -114,8 +125,8 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       percentil: total > 1 ? Math.round(((menores + (iguales - 1) / 2) / (total - 1)) * 100) : null,
       promedio,
       desviacion: Math.sqrt(varianza),
-      minimo: resultados.at(-1),
-      maximo: resultados[0],
+      minimo: filas.at(-1).puntos,
+      maximo: filas[0].puntos,
       distribucion,
       suficientesDatos: total >= 5 && varianza > 0,
     };
@@ -123,13 +134,15 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
   async function vista(partida, t = ahora()) {
     const desafio = await desafioPorId(db, partida.desafio_id);
-    const [preguntas, respuestasPorPregunta, filasRondas, filasIntentos] = await Promise.all([
+    const [preguntas, conteo, filasRondas, filasIntentos] = await Promise.all([
       preguntasDeDesafio(db, desafio.id),
-      respuestasDeDesafio(db, desafio.id),
+      conteoRespuestasDeDesafio(db, desafio.id),
       rondasDe(db, partida.id),
       db.all('SELECT posicion, texto, motivo FROM intentos WHERE partida_id = ? AND aceptado = 0 ORDER BY id', partida.id),
     ]);
     const rondas = new Map(filasRondas.map((r) => [r.posicion, r]));
+    // Solo las respuestas aceptadas en esta partida (≤ 7), no el banco completo.
+    const aceptadas = await respuestasPorIds(db, filasRondas.filter((r) => r.estado === 'acertada').map((r) => r.respuesta_id));
     const intentosDe = (posicion) => filasIntentos.filter((i) => i.posicion === posicion).map((i) => ({ texto: i.texto, motivo: i.motivo }));
 
     let rondaActiva = null;
@@ -153,12 +166,11 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       item.puntos = r.puntos;
       item.metros = r.puntos * METROS_POR_PUNTO;
       if (r.estado !== 'caducada') {
-        const todas = respuestasPorPregunta.get(p.id) || [];
-        item.totalRespuestas = todas.length;
+        item.totalRespuestas = conteo.get(p.id) || 0;
         item.intentos = intentosDe(p.posicion);
       }
       if (r.estado === 'acertada') {
-        const resp = (respuestasPorPregunta.get(p.id) || []).find((x) => x.id === r.respuesta_id);
+        const resp = aceptadas.get(r.respuesta_id);
         item.textoIngresado = r.texto_aceptado;
         item.respuesta = {
           canonica: resp.canonica,
@@ -245,14 +257,25 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       return vista(await mantener(await obtenerPartida(jugadorId, partidaId), t), t);
     },
 
-    async respuestasValidas(jugadorId, partidaId, posicion) {
+    async respuestasValidas(jugadorId, partidaId, posicion, { desde = 0, limite = LIMITES.paginaRevelado, buscar = '' } = {}) {
       const t = ahora();
       const partida = await mantener(await obtenerPartida(jugadorId, partidaId), t);
       const ronda = await db.get('SELECT r.estado, r.pregunta_id AS preguntaId FROM rondas r WHERE r.partida_id = ? AND r.posicion = ?', partida.id, posicion);
       if (!ronda) throw new ErrorJuego(409, 'ronda_no_iniciada', 'Esa ronda todavía no empezó.');
       if (ronda.estado === 'activa') throw new ErrorJuego(409, 'ronda_activa', 'Las respuestas se revelan cuando termina la ronda.');
       if (ronda.estado === 'caducada') throw new ErrorJuego(410, 'ronda_caducada', 'Esa ronda quedó sin jugar.');
-      return respuestasPublicas(await respuestasDePregunta(db, ronda.preguntaId));
+      const todas = respuestasPublicas(await respuestasDePregunta(db, ronda.preguntaId));
+      const filtro = normalizar(buscar);
+      const filtradas = filtro ? todas.filter((r) => normalizar(r.canonica).includes(filtro)) : todas;
+      const tope = Math.min(Math.max(1, limite), LIMITES.paginaRevelado);
+      const pagina = filtradas.slice(desde, desde + tope);
+      return {
+        respuestas: pagina,
+        total: todas.length,
+        coincidencias: filtradas.length,
+        desde,
+        siguiente: desde + pagina.length < filtradas.length ? desde + pagina.length : null,
+      };
     },
 
     async iniciarRonda(jugadorId, partidaId, posicion) {
@@ -288,19 +311,25 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       const normalizado = normalizar(texto);
       if (!normalizado) return { resultado: 'vacia', partida: await vista(partida, t) };
 
-      const previos = await db.all('SELECT normalizado FROM intentos WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
-      if (previos.length >= config.maxIntentosPorRonda) {
-        return { resultado: 'rechazada', motivo: 'Llegaste al máximo de intentos de esta ronda.', partida: await vista(partida, t) };
-      }
-      const repetida = previos.some((p) => p.normalizado === normalizado);
       const ev = await evaluarTexto(db, ronda.pregunta_id, texto);
       if (ev.sugerencia) {
         return { resultado: 'sugerida', sugerencia: ev.sugerencia, partida: await vista(partida, t) };
       }
 
+      // Todo lo que decide se lee y se escribe en la misma transacción (BEGIN IMMEDIATE): dos envíos
+      // simultáneos no pueden superar el máximo de intentos ni puntuar dos veces.
+      let repetida = false;
       const resultado = await transaccion(db, async (tx) => {
         const actual = await tx.get('SELECT estado FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
         if (actual.estado !== 'activa') return 'cerrada';
+        const previos = await tx.get(
+          'SELECT COUNT(*) AS n, COALESCE(SUM(normalizado = ?), 0) AS iguales FROM intentos WHERE partida_id = ? AND posicion = ?',
+          normalizado,
+          partida.id,
+          posicion,
+        );
+        repetida = previos.iguales > 0;
+        if (previos.n >= config.maxIntentosPorRonda) return 'limite';
         await tx.run(
           'INSERT INTO intentos (partida_id, posicion, texto, normalizado, aceptado, motivo, en) VALUES (?, ?, ?, ?, ?, ?, ?)',
           partida.id,
@@ -319,6 +348,9 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
         await tx.run('UPDATE partidas SET puntos = (SELECT COALESCE(SUM(puntos), 0) FROM rondas WHERE partida_id = ?) WHERE id = ?', partida.id, partida.id);
         return 'aceptada';
       });
+      if (resultado === 'limite') {
+        return { resultado: 'rechazada', motivo: 'Llegaste al máximo de intentos de esta ronda.', partida: await vista(partida, t) };
+      }
       const actualizada = await mantener(partida, t);
       return { resultado, motivo: ev.aceptada ? null : ev.motivo, repetida, partida: await vista(actualizada, t) };
     },

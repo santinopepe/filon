@@ -246,8 +246,10 @@
       <p class="respuestas-kicker" id="respuestas-ronda"></p>
       <h2 id="respuestas-titulo">Todas las respuestas válidas</h2>
       <p class="rep-pregunta" id="respuestas-pregunta"></p>
-      <p class="respuestas-ayuda" id="respuestas-ayuda">Ordenadas de mayor a menor puntaje.</p>
+      <p class="respuestas-ayuda" id="respuestas-ayuda" aria-live="polite">Ordenadas de mayor a menor puntaje.</p>
+      <label class="respuestas-buscar" id="respuestas-buscar-caja" hidden>Buscar en la veta <input type="search" id="respuestas-buscar" maxlength="60" autocomplete="off" spellcheck="false"></label>
       <ol class="lista-respuestas" id="lista-respuestas"></ol>
+      <button type="button" class="boton secundario" id="respuestas-mas" hidden>Mostrar más</button>
       <div class="dialogo-acciones"><button class="boton principal" value="cerrar">Cerrar</button></div>
     </form>
   </dialog>

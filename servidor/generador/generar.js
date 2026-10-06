@@ -10,6 +10,7 @@ import { mezclar } from '../azar.js';
 import { tomarBloqueo, liberarBloqueo } from '../db.js';
 import { desafioPorFecha, publicarDesafio, preguntasRecientes, usosDeReserva } from '../banco.js';
 import { elegirDeReserva } from './reserva.js';
+import { fechaLocal, inicioDeFecha } from '../tiempo.js';
 
 async function enParalelo(items, limite, fn) {
   const resultados = new Array(items.length);
@@ -38,13 +39,14 @@ function puntaje(p) {
 }
 
 /** Genera candidatas con IA, las depura y elige la mejor por categoría. */
-export async function generarConIA({ proveedor, verificador, catalogo, categorias, recientes, fecha, config, detalle, elegidas = new Map() }) {
+export async function generarConIA({ proveedor, verificador, catalogo, categorias, recientes, fecha, config, detalle, elegidas = new Map(), signal = null }) {
   const dominios = config.fuentes.dominios;
   const registrar = (lista, item) => {
     if (lista.length < 300) lista.push(item);
   };
 
   for (let pasada = 1; pasada <= 2; pasada++) {
+    if (signal?.aborted) break;
     const pendientes = categorias.filter((c) => !elegidas.has(c));
     if (!pendientes.length) break;
     const yaElegidas = () => [...elegidas.values()].map((p) => comoReciente(p, fecha));
@@ -52,7 +54,9 @@ export async function generarConIA({ proveedor, verificador, catalogo, categoria
     // 1) Generación por categoría.
     const generadas = await enParalelo(pendientes, 3, async (categoria) => {
       try {
+        if (signal?.aborted) return [];
         const { preguntas, uso } = await proveedor.generarPreguntas({
+          signal,
           categoria,
           cantidad: config.ia.candidatasPorCategoria,
           recientes: recientes.filter((r) => r.enunciado).slice(0, 120),
@@ -69,6 +73,7 @@ export async function generarConIA({ proveedor, verificador, catalogo, categoria
     // 2) Validación estructural y verificación contra fuentes.
     const depuradas = [];
     for (const candidata of generadas.flat()) {
+      if (signal?.aborted) break;
       let preparada = candidata;
       if (candidata.consulta_wikidata || candidata.consultaWikidata) {
         if (!catalogo) {
@@ -76,7 +81,7 @@ export async function generarConIA({ proveedor, verificador, catalogo, categoria
           continue;
         }
         try {
-          preparada = await catalogo.hidratar(candidata);
+          preparada = await catalogo.hidratar(candidata, { signal });
           registrar(detalle.pasos, { pasada, categoria: candidata.categoria, wikidata: preparada.respuestas.length });
         } catch (e) {
           registrar(detalle.rechazadas, { etapa: 'wikidata', categoria: candidata.categoria, enunciado: candidata.enunciado, motivos: [e.message] });
@@ -89,7 +94,7 @@ export async function generarConIA({ proveedor, verificador, catalogo, categoria
         registrar(detalle.rechazadas, { etapa: 'estructura', categoria: candidata.categoria, enunciado: candidata.enunciado, motivos: v.errores });
         continue;
       }
-      const ver = await verificador.verificarPregunta(v.pregunta);
+      const ver = await verificador.verificarPregunta(v.pregunta, { signal });
       if (!ver.verificada) {
         registrar(detalle.rechazadas, { etapa: 'fuentes', categoria: candidata.categoria, enunciado: candidata.enunciado, motivos: ['No se pudo leer ninguna fuente.', ...ver.errores] });
         continue;
@@ -97,13 +102,13 @@ export async function generarConIA({ proveedor, verificador, catalogo, categoria
       for (const d of ver.descartadas) registrar(detalle.descartes, { etapa: 'fuentes', enunciado: candidata.enunciado, ...d });
       depuradas.push({ ...v.pregunta, respuestas: ver.respuestas, origen: 'ia' });
     }
-    if (!depuradas.length) continue;
+    if (!depuradas.length || signal?.aborted) continue;
 
     // 3) Revisión adversarial: solo puede quitar respuestas o preguntas, nunca agregar ni aprobar por sí sola.
     let revisadas = depuradas;
     if (config.ia.revisionAdversarial) {
       try {
-        const { revisiones } = await proveedor.revisarPreguntas({ preguntas: depuradas });
+        const { revisiones } = await proveedor.revisarPreguntas({ preguntas: depuradas, signal });
         const porIndice = new Map(revisiones.map((r) => [r.indice, r]));
         revisadas = [];
         depuradas.forEach((p, i) => {
@@ -162,20 +167,47 @@ export async function intentosDeIA(db, fecha) {
 }
 
 /** Corre la generación con IA, pero deja de esperarla al agotar el presupuesto (se conserva lo ya elegido). */
-async function generarConPresupuesto(args, presupuestoMs) {
-  if (!presupuestoMs) return generarConIA(args);
+/**
+ * Corre la generación con IA con un tope de tiempo. Al vencer, ABORTA las solicitudes en curso
+ * (proveedor, Wikidata y fuentes): no quedan llamadas pagas corriendo en segundo plano.
+ * Se conserva lo que ya se eligió.
+ */
+export async function generarConPresupuesto(args, presupuestoMs) {
+  const controlador = new AbortController();
+  const senal = args.signal ? AbortSignal.any([controlador.signal, args.signal]) : controlador.signal;
+  if (!presupuestoMs) return generarConIA({ ...args, signal: senal });
   let temporizador;
   const vencido = new Promise((ok) => {
     temporizador = setTimeout(() => {
-      args.detalle.avisos.push(`La IA superó el presupuesto de ${Math.round(presupuestoMs / 1000)} s; se usa lo que alcanzó a elegir.`);
+      args.detalle.avisos.push(`La IA superó el presupuesto de ${Math.round(presupuestoMs / 1000)} s; se cancelaron las solicitudes y se usa lo que alcanzó a elegir.`);
+      controlador.abort(new Error('Presupuesto de tiempo de la IA agotado.'));
       ok(args.elegidas);
     }, presupuestoMs);
   });
   try {
-    return await Promise.race([generarConIA(args), vencido]);
+    return await Promise.race([generarConIA({ ...args, signal: senal }), vencido]);
   } finally {
     clearTimeout(temporizador);
   }
+}
+
+/** Envuelve al proveedor: cuenta llamadas y tokens, y corta al llegar al tope de la corrida. */
+export function contarUso(proveedor, { maxLlamadas }) {
+  const uso = { llamadas: 0, tokensEntrada: 0, tokensSalida: 0 };
+  const llamar = (metodo) => async (args) => {
+    if (uso.llamadas >= maxLlamadas) throw new Error(`Se alcanzó el tope de ${maxLlamadas} llamadas a la IA para esta corrida.`);
+    uso.llamadas++;
+    const r = await proveedor[metodo](args);
+    uso.tokensEntrada += r?.uso?.input_tokens || 0;
+    uso.tokensSalida += r?.uso?.output_tokens || 0;
+    return r;
+  };
+  return { proveedor: { ...proveedor, generarPreguntas: llamar('generarPreguntas'), revisarPreguntas: llamar('revisarPreguntas') }, uso };
+}
+
+async function llamadasIADelDia(db, config, t) {
+  const desde = inicioDeFecha(fechaLocal(t, config.zona), config.zona);
+  return (await db.get('SELECT COALESCE(SUM(llamadas_ia), 0) AS n FROM corridas WHERE iniciada_en >= ?', desde)).n;
 }
 
 /**
@@ -184,19 +216,37 @@ async function generarConPresupuesto(args, presupuestoMs) {
  * reemplazar=true (administración) genera uno nuevo aunque ya exista y, solo si se pudo publicar,
  * borra el anterior; forzarIA=true ignora el máximo de intentos de IA por día.
  */
-export async function asegurarDesafio({ db, config, fecha, proveedor = null, verificador, catalogo = null, reserva, permitirReserva = true, reemplazar = false, forzarIA = false, ahora = () => Date.now(), titular = randomUUID() }) {
+export async function asegurarDesafio({ db, config, fecha, proveedor = null, verificador, catalogo = null, reserva, permitirReserva = true, reemplazar = false, forzarIA = false, ahora = () => Date.now(), titular = randomUUID(), registro = null }) {
   const anterior = await desafioPorFecha(db, fecha);
   if (anterior && !reemplazar) return { resultado: 'ya_existia', fecha };
 
-  const quedanIntentosIA = Boolean(proveedor) && (forzarIA || (await intentosDeIA(db, fecha)) < config.ia.maxIntentosPorDia);
+  // Tope diario de llamadas (todas las corridas del día): si se agotó, se sigue sin IA.
+  const restantesHoy = proveedor ? config.ia.maxLlamadasPorDia - (await llamadasIADelDia(db, config, ahora())) : 0;
+  const sinCupo = Boolean(proveedor) && restantesHoy <= 0;
+  let quedanIntentosIA = Boolean(proveedor) && !sinCupo && (forzarIA || (await intentosDeIA(db, fecha)) < config.ia.maxIntentosPorDia);
   if (!permitirReserva && !quedanIntentosIA) return { resultado: 'pendiente', fecha, motivo: 'esperando la ventana de reserva' };
 
   const nombreBloqueo = `generacion:${fecha}`;
   if (!(await tomarBloqueo(db, nombreBloqueo, titular, 20 * 60 * 1000, ahora()))) return { resultado: 'ocupado', fecha };
+  // Una sola generación con IA a la vez (aunque sea para otra fecha): evita costos duplicados.
+  let conBloqueoIA = false;
+  if (quedanIntentosIA) {
+    conBloqueoIA = await tomarBloqueo(db, 'generacion:ia', titular, 20 * 60 * 1000, ahora());
+    if (!conBloqueoIA) {
+      if (!permitirReserva) {
+        await liberarBloqueo(db, nombreBloqueo, titular);
+        return { resultado: 'ocupado', fecha, motivo: 'otra generación con IA en curso' };
+      }
+      quedanIntentosIA = false;
+    }
+  }
+  const inicio = ahora();
+  const medidor = proveedor ? contarUso(proveedor, { maxLlamadas: Math.max(0, Math.min(config.ia.maxLlamadasPorCorrida, restantesHoy)) }) : null;
 
   const { lastInsertRowid } = await db.run('INSERT INTO corridas (fecha_objetivo, iniciada_en) VALUES (?, ?)', fecha, ahora());
   const corridaId = Number(lastInsertRowid);
   const detalle = { proveedor: proveedor?.nombre ?? 'ninguno', modelo: proveedor?.modelo ?? null, pasos: [], rechazadas: [], descartes: [], avisos: [] };
+  if (sinCupo) detalle.avisos.push(`Se agotó el tope diario de ${config.ia.maxLlamadasPorDia} llamadas a la IA.`);
 
   try {
     if (!reemplazar && (await desafioPorFecha(db, fecha))) {
@@ -219,7 +269,7 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
     if (quedanIntentosIA) {
       await db.run('UPDATE corridas SET uso_ia = 1 WHERE id = ?', corridaId);
       try {
-        elegidas = await generarConPresupuesto({ proveedor, verificador, catalogo, categorias, recientes, fecha, config, detalle, elegidas }, config.ia.presupuestoMs);
+        elegidas = await generarConPresupuesto({ proveedor: medidor.proveedor, verificador, catalogo, categorias, recientes, fecha, config, detalle, elegidas }, config.ia.presupuestoMs);
         elegidas = new Map(elegidas); // la IA pudo seguir corriendo en segundo plano: se congela lo elegido
       } catch (e) {
         detalle.errorIA = e.message;
@@ -269,6 +319,30 @@ export async function asegurarDesafio({ db, config, fecha, proveedor = null, ver
     await finalizarCorrida(db, corridaId, 'fallo', detalle, ahora()).catch(() => {});
     return { resultado: 'fallo', fecha, corridaId, error: e.message };
   } finally {
+    if (medidor?.uso.llamadas) {
+      const { llamadas, tokensEntrada, tokensSalida } = medidor.uso;
+      const costo = config.ia.costoEntradaMTok || config.ia.costoSalidaMTok
+        ? (tokensEntrada * config.ia.costoEntradaMTok + tokensSalida * config.ia.costoSalidaMTok) / 1e6
+        : null;
+      await db
+        .run('UPDATE corridas SET llamadas_ia = ?, tokens_entrada = ?, tokens_salida = ?, costo_estimado_usd = ? WHERE id = ?', llamadas, tokensEntrada, tokensSalida, costo, corridaId)
+        .catch(() => {});
+      registro?.info('ia', {
+        proveedor: proveedor.nombre,
+        modelo: proveedor.modelo,
+        fecha,
+        corridaId,
+        duracionMs: ahora() - inicio,
+        llamadas,
+        tokensEntrada,
+        tokensSalida,
+        costoEstimadoUsd: costo,
+        resultado: detalle.publicadas ? 'publicado' : detalle.errorIA || detalle.error ? 'error' : 'sin_publicar',
+        preguntasDeIA: [...(detalle.publicadas || [])].filter((p) => p.origen === 'ia').length,
+        errorIA: detalle.errorIA,
+      });
+    }
+    if (conBloqueoIA) await liberarBloqueo(db, 'generacion:ia', titular).catch(() => {});
     await liberarBloqueo(db, nombreBloqueo, titular).catch(() => {});
   }
 }

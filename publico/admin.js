@@ -2,12 +2,13 @@
 // Todo el contenido (que puede venir de la IA o de los jugadores) se inserta como texto, nunca como HTML.
 import { fmt, columnasApiladas, campana, barraResultado, tramos, ocultarTooltip } from './admin-graficos.js';
 
-const CLAVE_TOKEN = 'filon_admin_token';
 const $ = (id) => document.getElementById(id);
 
-let token = '';
+// El token maestro ya no se guarda en el navegador: se envía una sola vez al iniciar sesión y la sesión
+// vive en una cookie HttpOnly. Se borra lo que haya dejado la versión anterior del panel.
 try {
-  token = localStorage.getItem(CLAVE_TOKEN) || '';
+  localStorage.removeItem('filon_admin_token');
+  sessionStorage.removeItem('filon_admin_token');
 } catch {
   /* almacenamiento no disponible */
 }
@@ -40,13 +41,14 @@ class ErrorApi extends Error {
 async function api(metodo, ruta, cuerpo) {
   const res = await fetch(ruta, {
     method: metodo,
-    headers: { authorization: `Bearer ${token}`, ...(cuerpo ? { 'content-type': 'application/json' } : {}) },
+    credentials: 'same-origin',
+    headers: cuerpo ? { 'content-type': 'application/json' } : {},
     body: cuerpo ? JSON.stringify(cuerpo) : undefined,
   });
   const datos = await res.json().catch(() => null);
-  if (res.status === 401) {
-    salir();
-    throw new ErrorApi(401, { mensaje: 'Token inválido.' });
+  if (res.status === 401 && ruta !== '/api/admin/sesion') {
+    mostrarIngreso('La sesión venció o se cerró. Volvé a ingresar.');
+    throw new ErrorApi(401, { mensaje: 'Sesión vencida.' });
   }
   if (!res.ok) throw new ErrorApi(res.status, datos);
   return datos;
@@ -54,38 +56,44 @@ async function api(metodo, ruta, cuerpo) {
 
 // ───────── Ingreso ─────────
 
-function salir() {
-  token = '';
-  try {
-    localStorage.removeItem(CLAVE_TOKEN);
-  } catch {
-    /* nada */
-  }
+function mostrarIngreso(mensaje = '') {
+  ocultarTooltip();
   $('panel').hidden = true;
   $('nav').hidden = true;
   $('salir').hidden = true;
   $('estado-ia').textContent = '';
   $('ingreso').hidden = false;
+  $('error-ingreso').textContent = mensaje;
+  $('error-ingreso').hidden = !mensaje;
+  $('token').focus();
 }
 
 $('ingreso').addEventListener('submit', async (ev) => {
   ev.preventDefault();
-  token = $('token').value.trim();
+  const token = $('token').value.trim();
+  $('token').value = ''; // no queda en el DOM ni en memoria del formulario
   $('error-ingreso').hidden = true;
+  $('ingresar').disabled = true;
   try {
-    await cargarDesafios();
-    try {
-      localStorage.setItem(CLAVE_TOKEN, token);
-    } catch {
-      /* solo dura la sesión */
-    }
-    mostrarPanel();
+    await api('POST', '/api/admin/sesion', { token });
+    await iniciarPanel();
   } catch (e) {
-    $('error-ingreso').textContent = e.message;
-    $('error-ingreso').hidden = false;
+    const mensaje = e.estado === 401 ? 'Token incorrecto.' : e.estado === 429 ? 'Demasiados intentos. Esperá unos minutos.' : e.message;
+    mostrarIngreso(mensaje);
+  } finally {
+    $('ingresar').disabled = false;
   }
 });
-$('salir').addEventListener('click', salir);
+
+$('salir').addEventListener('click', async () => {
+  await api('DELETE', '/api/admin/sesion').catch(() => {}); // revoca la sesión en el servidor
+  mostrarIngreso('Cerraste la sesión.');
+});
+
+async function iniciarPanel() {
+  await cargarDesafios();
+  mostrarPanel();
+}
 
 function mostrarPanel() {
   $('ingreso').hidden = true;
@@ -104,16 +112,36 @@ const cargadores = {
   corridas: cargarCorridas,
   reportes: cargarReportes,
 };
-function irA(nombre) {
+const pestanas = [...document.querySelectorAll('[role="tab"][data-pestana]')];
+function irA(nombre, { enfocar = false } = {}) {
   ocultarTooltip();
-  for (const b of document.querySelectorAll('[data-pestana]')) b.setAttribute('aria-selected', String(b.dataset.pestana === nombre));
+  for (const b of pestanas) {
+    const activa = b.dataset.pestana === nombre;
+    b.setAttribute('aria-selected', String(activa));
+    b.tabIndex = activa ? 0 : -1; // «roving tabindex»: solo la pestaña activa entra en el orden de tabulación
+    if (activa && enfocar) b.focus();
+  }
   for (const n of Object.keys(cargadores)) $(`pestana-${n}`).hidden = n !== nombre;
   return cargadores[nombre]().catch(mostrarErrorGeneral);
 }
-for (const boton of document.querySelectorAll('[data-pestana]')) boton.addEventListener('click', () => irA(boton.dataset.pestana));
+for (const boton of pestanas) boton.addEventListener('click', () => irA(boton.dataset.pestana));
+// Teclado del patrón de pestañas: flechas izquierda/derecha, Inicio y Fin.
+$('nav').addEventListener('keydown', (ev) => {
+  const i = pestanas.indexOf(document.activeElement);
+  if (i < 0) return;
+  const destino = { ArrowRight: (i + 1) % pestanas.length, ArrowLeft: (i - 1 + pestanas.length) % pestanas.length, Home: 0, End: pestanas.length - 1 }[ev.key];
+  if (destino === undefined) return;
+  ev.preventDefault();
+  irA(pestanas[destino].dataset.pestana, { enfocar: true });
+});
 
 function mostrarErrorGeneral(e) {
-  if (e.estado !== 401) alert?.(e.message);
+  if (e.estado === 401) return;
+  const zona = $('estado-global');
+  zona.textContent = `No se pudo completar: ${e.message}`;
+  zona.hidden = false;
+  clearTimeout(mostrarErrorGeneral.t);
+  mostrarErrorGeneral.t = setTimeout(() => (zona.hidden = true), 8000);
 }
 
 // ───────── Desafíos ─────────
@@ -144,8 +172,14 @@ async function cargarDesafios() {
         ? datos.desafios.map((d) =>
             h(
               'tr',
-              { class: `clic${d.fecha === fechaElegida ? ' elegida' : ''}`, tabindex: 0, onclick: () => verDesafio(d.fecha), onkeydown: (ev) => ev.key === 'Enter' && verDesafio(d.fecha) },
-              h('td', {}, d.fecha, ' ', d.fecha === hoy ? h('span', { class: 'etiqueta hoy' }, 'hoy') : d.fecha > hoy ? h('span', { class: 'etiqueta' }, 'futuro') : null),
+              { class: d.fecha === fechaElegida ? 'elegida' : null, 'data-fecha': d.fecha },
+              h(
+                'td',
+                {},
+                h('button', { type: 'button', class: 'boton-fila', 'aria-current': d.fecha === fechaElegida ? 'true' : null, onclick: () => verDesafio(d.fecha) }, d.fecha),
+                ' ',
+                d.fecha === hoy ? h('span', { class: 'etiqueta hoy' }, 'hoy') : d.fecha > hoy ? h('span', { class: 'etiqueta' }, 'futuro') : null,
+              ),
               h('td', { class: 'num' }, d.numero),
               h('td', {}, etiquetaOrigen(origenDesafio(d))),
               h('td', {}, d.modelo || '—'),
@@ -165,10 +199,19 @@ function sumarDia(fecha) {
   return d.toISOString().slice(0, 10);
 }
 
+let pedidoDetalle = 0;
 async function verDesafio(fecha) {
+  const mio = ++pedidoDetalle; // si llega una respuesta vieja después de otra elección, se descarta
   fechaElegida = fecha;
-  for (const tr of $('tabla-desafios').querySelectorAll('tbody tr')) tr.classList.toggle('elegida', tr.firstChild?.firstChild?.textContent === fecha);
+  for (const tr of $('tabla-desafios').querySelectorAll('tbody tr')) {
+    const elegida = tr.dataset.fecha === fecha;
+    tr.classList.toggle('elegida', elegida);
+    const boton = tr.querySelector('.boton-fila');
+    if (elegida) boton?.setAttribute('aria-current', 'true');
+    else boton?.removeAttribute('aria-current');
+  }
   const { desafio, preguntas } = await api('GET', `/api/admin/desafios/${fecha}`);
+  if (mio !== pedidoDetalle) return;
   const regenerar = (modo) => () => {
     irA('crear');
     $('gen-fecha').value = fecha;
@@ -195,7 +238,8 @@ async function verDesafio(fecha) {
           `${p.posicion}. ${p.categoria} · `,
           etiquetaOrigen(desafio.modelo === 'manual' ? 'manual' : p.origen),
           desafio.modelo !== 'manual' && p.reserva_id ? ` · reserva ${p.reserva_id}` : '',
-          ` · ${p.respuestas.length} respuestas`,
+          ` · ${p.totalRespuestas ?? p.respuestas.length} respuestas`,
+          (p.totalRespuestas ?? 0) > p.respuestas.length ? ` (se muestran las ${p.respuestas.length} más valiosas)` : '',
         ),
         h('p', { class: 'enunciado' }, p.enunciado),
         h('p', { class: 'alcance' }, p.alcance),
@@ -582,7 +626,8 @@ function pintarResumen(e) {
   $('campana-sub').textContent = dia?.terminadas
     ? `${fmt(dia.terminadas)} partidas terminadas del ${e.fecha}, en tramos de 500 m.${dia.terminadas < 3 ? ' Con menos de 3 no se ajusta la campana.' : ''}`
     : `Sin partidas terminadas el ${e.fecha}.`;
-  const cuentas = tramos(dia?.metros || [], 7000, 500);
+  const histograma = (dia?.distribucion || []).map((f) => ({ valor: f.metros, cantidad: f.cantidad }));
+  const cuentas = tramos(histograma, 7000, 500);
   $('tabla-campana').replaceChildren(tabla(['Tramo', 'Partidas', '% del total'], cuentas.map((c) => [`${fmt(c.desde)}–${fmt(c.hasta)} m`, fmt(c.cantidad), `${pct(c.cantidad, dia?.terminadas || 0)}%`])));
 
   pintarNumeros(e);
@@ -616,7 +661,7 @@ function dibujarGraficos(e) {
         : [{ valor: 'Sin desafío', etiqueta: 'ese día' }],
     })),
   });
-  campana($('graf-campana'), { valores: e.dia?.metros || [], resumen: e.dia?.resumen });
+  campana($('graf-campana'), { valores: (e.dia?.distribucion || []).map((f) => ({ valor: f.metros, cantidad: f.cantidad })), resumen: e.dia?.resumen });
 }
 
 function pintarNumeros(e) {
@@ -633,7 +678,7 @@ function pintarNumeros(e) {
         ['Desvío estándar', r ? `${fmt(r.desviacion)} m` : '—'],
         ['Mitad central (25–75%)', r ? `${fmt(r.p25)}–${fmt(r.p75)} m` : '—'],
         ['Mínimo y máximo', r ? `${fmt(r.minimo)} · ${fmt(r.maximo)} m` : '—'],
-        ['Llegaron al fondo (7.000 m)', fmt((dia.metros || []).filter((m) => m >= 7000).length)],
+        ['Llegaron al fondo (7.000 m)', fmt((dia.distribucion || []).filter((f) => f.metros >= 7000).reduce((a, f) => a + f.cantidad, 0))],
       ]
     : [['Sin desafío', 'Elegí otro día o generá uno en «Crear».']];
   $('numeros').replaceChildren(...filas.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]));
@@ -712,10 +757,6 @@ function tabla(cabeceras, filas) {
 
 // ───────── Inicio ─────────
 
-if (token) {
-  cargarDesafios()
-    .then(mostrarPanel)
-    .catch(() => salir());
-} else {
-  salir();
-}
+api('GET', '/api/admin/sesion')
+  .then((s) => (s.autenticado ? iniciarPanel() : mostrarIngreso(s.habilitado ? '' : 'El panel está deshabilitado: falta TOKEN_ADMIN en el servidor.')))
+  .catch(() => mostrarIngreso('No se pudo contactar al servidor.'));

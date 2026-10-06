@@ -16,7 +16,7 @@ La rareza es una estimación editorial (de la IA o de la curaduría de la reserv
 
 ## Inicio rápido (sin credenciales)
 
-Requisito: **Node.js 22 o posterior**.
+Requisito: **Node.js 24** (la versión fijada en `engines`, la misma que usa Vercel y el CI).
 
 ```bash
 npm install
@@ -57,7 +57,7 @@ Para desarrollar el circuito de generación sin red: `IA_PROVEEDOR=simulado VERI
 
 ## Stack y por qué
 
-- **Node.js 22 con una sola dependencia** (`@libsql/client`): `node:http` para el servidor local, `fetch` para la IA y las fuentes, `node:test` para las pruebas. No tiene paso de compilación.
+- **Node.js 24 con una sola dependencia de producción** (`@libsql/client`): `node:http` para el servidor local, `fetch` para la IA y las fuentes, `node:test` para las pruebas. Playwright y ESLint son solo de desarrollo. No tiene paso de compilación.
 - **libSQL / SQLite**: en tu máquina, un archivo (`datos/filon.db`, modo WAL); en Vercel, una base **Turso** (mismo dialecto SQL). La restricción `UNIQUE(fecha)` garantiza que nunca haya dos desafíos para el mismo día, aunque corran dos procesos a la vez. Lo publicado (desafíos, preguntas, respuestas) se cachea en memoria porque no cambia.
 - **Frontend sin framework**: HTML, CSS y módulos de JavaScript. La mina es un `<canvas>` procedural; la minera, un SVG animado con CSS. Tipografías incluidas (Big Shoulders Stencil y Atkinson Hyperlegible, licencia OFL) para no depender de servicios externos.
 
@@ -125,11 +125,20 @@ npm run generar -- --solo-reserva        # sin llamar a la IA
 - **Recarga**: el estado vive en el servidor. Recargar vuelve a la misma ronda con el tiempo restante real; pedir de nuevo una ronda ya empezada no reinicia el reloj; no se puede saltar ni volver a una ronda.
 - **Medianoche**: la partida queda atada a su desafío. Si empezaste a las 23:58, terminás con esas preguntas aunque ya sea el día siguiente (tenés hasta 12 h después del fin del día; luego las rondas sin jugar caducan). El desafío nuevo es otra partida.
 - **Validación de respuestas** contra el banco almacenado, sin IA. La respuesta y el banco de una ronda nunca se envían al navegador hasta que la ronda termina.
-- **Reportes**: después de cada ronda se puede reportar una respuesta válida que falte. Se revisan con `npm run admin -- reportes` y se marcan con `npm run admin -- reporte <id> aceptado|descartado`. Las puntuaciones del día no cambian.
+- **Reportes**: después de cada ronda se puede reportar una respuesta válida que falte. Se revisan en el panel (`/admin` → Reportes) o con `npm run admin -- reportes`. Las puntuaciones del día no cambian.
+- **Concurrencia**: el tope de intentos por ronda, el cierre de la ronda y la suma de puntos se deciden en una misma transacción; dos envíos simultáneos (doble clic, dos pestañas, dos instancias) no superan el máximo ni puntúan dos veces.
+- **Límites**: una partida por identificador anónimo (una cookie). Sin cuentas, borrar las cookies o usar otro navegador permite volver a jugar; el ranking cuenta lo que llega.
 
 ### Normalización
 
-Se ignoran mayúsculas, espacios repetidos, tildes, diéresis y signos de puntuación; **la ñ se conserva** («año» ≠ «ano»). Se aceptan las variantes registradas antes de publicar (nombres alternativos, títulos originales, abreviaturas) y, para cada una, también su forma sin artículo inicial («La traviata» → «traviata»). Al buscar se prueba además la forma sin espacios («J.R.R.» = «JRR») y se quita un artículo que el jugador haya agregado («la Argentina»). Todas las variantes de una respuesta valen los mismos puntos porque apuntan a la misma fila. No hay tolerancia a errores de tipeo: rompería la distinción de la ñ y podría aceptar respuestas distintas parecidas (Austria/Australia).
+Se ignoran mayúsculas, espacios repetidos, tildes, diéresis y signos de puntuación; **la ñ se conserva** («año» ≠ «ano»). Al buscar se prueba además la forma sin espacios («J.R.R.» = «JRR») y se quita un artículo que el jugador haya agregado («la Argentina»).
+
+**Tolerancia: nunca se acepta algo distinto sin que el jugador lo confirme.**
+- Si lo escrito es exactamente el nombre canónico (con la normalización de arriba), se acepta.
+- Si coincide con una **variante** registrada (nombre alternativo, título original, abreviatura) o con una forma sin artículo, el juego responde «¿Quisiste decir «X»?» con el nombre canónico; al confirmar con Enter se acepta y vale los mismos puntos.
+- Si se parece a una sola respuesta (5 letras o más, a una distancia de edición de hasta el 20 % del largo, con un máximo de 3), también **sugiere** el nombre; si hay dos candidatas igual de cercanas, no sugiere nada. Así un error de tipeo no pierde la ronda, pero «Austria» nunca se convierte sola en «Australia».
+
+Al terminar la partida, cada fila del resumen final abre **todas las respuestas válidas** de esa pregunta (ordenadas de mayor a menor puntaje, de a 100, con buscador si son muchas). Durante el juego no se revelan: el servidor las entrega solo para rondas ya cerradas.
 
 ## Pantallas
 
@@ -141,22 +150,26 @@ Se ignoran mayúsculas, espacios repetidos, tildes, diéresis y signos de puntua
 
 La escena vertical cambia con la profundidad: una superficie verde y luminosa; tierra con raíces, arenisca con fósiles, pizarra laminada, granito moteado, basalto con grietas de magma y la cámara de cristales a partir de 6.000 m. Lito abre progresivamente un túnel orgánico por el centro del corte geológico: solo aparece detrás del gusano y termina en el frente de excavación de la profundidad alcanzada. El gusano tiene silueta anatómica, clitelo, segmentos y textura húmeda, y cada hallazgo dispara partículas del color de su rareza. Los sonidos se sintetizan con Web Audio y se silencian con un botón; el control de movimiento reducido (que respeta la preferencia del sistema) elimina animaciones, partículas y descensos.
 
-## Pruebas
+## Pruebas y verificaciones
 
 ```bash
-npm test                 # 56 pruebas automáticas (node:test)
-npm run test:navegador   # recorrido completo en Chromium (requiere: npm i -D playwright && npx playwright install chromium)
+npm ci                          # dependencias exactas (también instala Playwright y ESLint)
+npx playwright install chromium # una vez: el navegador de las pruebas E2E
+npm run verificar               # todo lo que corre el CI, en el mismo orden
 ```
 
-Las pruebas automáticas cubren, entre otras cosas:
+| Comando | Qué hace |
+| --- | --- |
+| `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
+| `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
+| `npm test` | 85 pruebas unitarias y de integración (`node:test`) |
+| `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
+| `npm run validar-reserva` | 21 preguntas válidas, 3 por categoría |
+| `npm run test:navegador` | 10 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
+| `npm run test:recorrido` | recorrido histórico en navegador (19 comprobaciones, guarda capturas en `capturas/`) |
+| `npm run explicar-consultas` | `EXPLAIN QUERY PLAN` de las consultas principales |
 
-- normalización (mayúsculas, tildes, espacios, ñ, puntuación, artículos, forma compacta);
-- validación (subjetividad, duplicados, contradicciones, rarezas, fuentes, repeticiones) y validez estricta de toda la reserva;
-- generación: idempotencia, ejecuciones simultáneas (una sola publicación), restricción única en la base, lote de 7 juntas, depuración por fuentes y por revisión, caída a la reserva, fecha pendiente cuando no se permite reserva, programador alrededor de la medianoche y formato de la llamada a la API de Anthropic con reintentos;
-- partida: flujo de 7 rondas, reintentos, variantes con los mismos puntos, vencimiento con margen de red, recarga sin reiniciar el reloj, orden de rondas, una partida por día, partida que cruza la medianoche, caducidad, reportes y ausencia de llamadas a la IA durante el juego;
-- HTTP: abrir la página no genera desafíos, cookie firmada (una cookie adulterada no accede a la partida), el banco no se filtra durante una ronda, JSON obligatorio, administración protegida y bloqueo de rutas fuera de `publico/`.
-
-El recorrido en navegador comprueba inicio, rechazo, «Eduardo Camano» rechazado y «EDUARDO CAMAÑO» aceptado, recarga a mitad de ronda, vencimiento, pasar, final con profundidad correcta, texto para compartir sin respuestas, partida completada al recargar, controles de sonido y movimiento, ausencia de errores en consola y ausencia de desborde horizontal en celular. Guarda capturas en `capturas/`.
+Cubren, entre otras cosas: normalización y sugerencias; validación y reserva; generación (idempotencia, ejecuciones simultáneas, caída a la reserva, cancelación real de la IA por tiempo, topes de llamadas por corrida y por día, bloqueo global); partida (tiempos, recarga, medianoche, caducidad, doble envío y tope de intentos con dos instancias en hilos separados); sesiones del panel (login, revocación, inactividad, vida máxima, límite de intentos, origen, `__Host-`); rate limiting compartido entre instancias; migraciones (base nueva, base heredada con datos, arranque simultáneo); SSRF (redirecciones, cuerpos grandes, timeout, redes privadas); volumen (3.000 partidas, preguntas de 1.500 respuestas) y la limpieza diaria. El E2E prueba carga inicial, partida completa, doble envío, recarga, revelado final, móvil y teclado, panel sin autenticación, login/logout, importación JSON válida e inválida y la navegación por teclado de las pestañas.
 
 ## Decisiones tomadas
 
@@ -189,7 +202,11 @@ Todas son opcionales; están documentadas en `.env.example`. Las principales:
 | `SEGUNDOS_POR_PREGUNTA` | `25` | Duración de la mecha |
 | `PROGRAMADOR_INTERNO` | `1` (`0` en Vercel) | `0` para usar cron/systemd/Vercel Cron |
 | `COOKIE_SEGURA`, `CONFIAR_PROXY` | `0` (`1` en Vercel) | Producción detrás de HTTPS / proxy |
-| `TOKEN_ADMIN` | — | Habilita `/api/admin/*` |
+| `TOKEN_ADMIN` | — | Habilita el panel (solo se usa para iniciar sesión) |
+| `ADMIN_INACTIVIDAD_MIN`, `ADMIN_VIDA_HORAS` | `30`, `8` | Vencimiento de la sesión del panel |
+| `ADMIN_PERMITIR_BEARER` | `1` | Transición: acepta `Authorization: Bearer TOKEN_ADMIN` en scripts; poné `0` para exigir sesión |
+| `IA_MAX_LLAMADAS_POR_CORRIDA`, `IA_MAX_LLAMADAS_POR_DIA` | `30`, `90` | Topes de costo de la IA |
+| `RETENER_*` | ver `.env.example` | Retención de datos (ver docs/OPERACIONES.md) |
 | `CRON_SECRET` | — | Protege `/api/cron/*` (Vercel Cron lo envía solo) |
 | `IA_PRESUPUESTO_MS` | `0` (`200000` en Vercel) | Tope de la IA por corrida; después se completa con la reserva |
 | `RELOJ_DESFASE_MS` | `0` | Probar la medianoche sin esperar |
@@ -219,9 +236,11 @@ La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (2
 
 ### Administración
 
-Panel web en **`/admin`** (pide el `TOKEN_ADMIN`; queda guardado solo en ese navegador). Abre en un **resumen** con estadísticas: jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: lista de desafíos con sus preguntas y respuestas; corridas de generación; reportes de jugadores; generación asistida; y carga manual de un día completo pegando o abriendo un JSON, sin usar IA.
+Panel web en **`/admin`**. Se ingresa una vez con el `TOKEN_ADMIN`: el servidor lo compara en tiempo constante y abre una **sesión** (token aleatorio en una cookie `HttpOnly`, `SameSite=Strict`, `__Host-` con HTTPS; en la base solo se guarda su hash). La sesión vence a los 30 minutos sin actividad y, como máximo, a las 8 horas; «Salir» la revoca en el servidor. El token maestro **no** se guarda en el navegador. El login tiene un límite de 5 intentos cada 15 minutos.
 
-La misma API, con `Authorization: Bearer $TOKEN_ADMIN`:
+El panel abre en un **resumen** con estadísticas: jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos, creación (IA, reserva o JSON), corridas y reportes. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
+
+La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `ADMIN_PERMITIR_BEARER=1` (transición):
 
 | Ruta | Qué hace |
 | --- | --- |
@@ -247,6 +266,10 @@ curl -X POST -H "Authorization: Bearer $TOKEN_ADMIN" -H 'content-type: applicati
 `POST …/importar` recibe `{"preguntas":[…], "reemplazar":false, "forzar":false}`. Las preguntas usan exactamente el formato de `datos/reserva.json`. La API exige siete categorías distintas, valida fuentes, respuestas, variantes, rarezas y repeticiones, y guarda todo en una única transacción. Un error devuelve el detalle y no escribe nada. El cuerpo puede medir hasta 1 MB.
 
 Para administrar la base de producción desde tu máquina: `TURSO_DATABASE_URL=… TURSO_AUTH_TOKEN=… npm run admin -- corridas` (o `GET /api/admin/*` con `TOKEN_ADMIN`).
+
+### Operación: CI, migraciones, backups y rollback
+
+Todo el procedimiento está en **[docs/OPERACIONES.md](docs/OPERACIONES.md)**: la regla de que producción solo promueve commits con CI verde (y cómo configurarlo en GitHub y Vercel), las migraciones versionadas y su compatibilidad durante un deploy, backup y restore de Turso (con RPO/RTO; la prueba de restore está **pendiente**), rollback de código, logs estructurados y alertas, retención de datos y la configuración recomendada del Vercel Firewall.
 
 ### Otras opciones
 
