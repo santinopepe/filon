@@ -717,7 +717,7 @@ body.en-excavacion .pantalla {
 .desglose .piedra { width: 18px; height: 18px; }
 .desglose li[data-rareza="nada"] .piedra { background: #3a2f27; }
 .desglose .d-texto { min-width: 0; }
-.desglose .d-cat { display: block; font-size: .78rem; color: var(--cal-3); }
+.desglose .d-pregunta { display: block; font-size: .88rem; line-height: 1.4; color: var(--cal-3); overflow-wrap: anywhere; }
 .desglose .d-resp { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .desglose .d-pts { font-variant-numeric: tabular-nums; color: var(--cal-2); font-size: .92rem; text-align: right; }
 
