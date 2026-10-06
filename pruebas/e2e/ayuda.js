@@ -13,10 +13,22 @@ export async function bancoDeHoy(request) {
 
 export const masRara = (banco, n) => [...banco.preguntas[n - 1].respuestas].sort((a, b) => b.puntos - a.puntos)[0];
 
-/** Siete preguntas válidas (una por categoría) tomadas de la reserva, para la carga manual. */
-export function lotePorCategoria() {
+/**
+ * Siete preguntas válidas (una por categoría) de la reserva, para la carga manual.
+ * `usadas`: enunciados ya publicados (por ejemplo, el historial reciente) que se evitan.
+ */
+export function lotePorCategoria(usadas = []) {
   const reserva = JSON.parse(readFileSync(new URL('../../datos/reserva.json', import.meta.url), 'utf8'));
-  return ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'].map((c) => reserva.preguntas.find((p) => p.categoria === c));
+  const evitar = new Set(usadas);
+  return ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'].map(
+    (c) => reserva.preguntas.find((p) => p.categoria === c && !evitar.has(p.enunciado)) ?? reserva.preguntas.find((p) => p.categoria === c),
+  );
+}
+
+/** Enunciados publicados en los últimos días (los que la carga manual no debe repetir). */
+export async function enunciadosRecientes(request) {
+  const r = await request.get('/api/admin/historial?dias=3', { headers: BEARER });
+  return (await r.json()).preguntas.map((p) => p.enunciado);
 }
 
 /** Junta los errores de consola y de la página para afirmar que no hubo ninguno. */

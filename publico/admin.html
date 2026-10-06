@@ -156,7 +156,11 @@
 }</pre>
             <p>El día debe contener exactamente una pregunta de cada categoría: geografía, historia, ciencia, deportes, cine, música y literatura. Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.</p>
           </details>
-          <button type="submit" id="imp-boton">Validar y publicar</button>
+          <div class="acciones">
+            <button type="submit" id="imp-boton">Validar y publicar</button>
+            <button type="button" class="secundario" id="imp-validar">Solo validar</button>
+          </div>
+          <p class="sub">Además de las reglas de formato, compara cada pregunta con las de los últimos días (los de «Días de historial», más los ya programados) y entre sí: si repite una, no se publica; si se parece, avisa.</p>
         </form>
         <div class="aviso" id="imp-confirmar" hidden>
           <p id="imp-confirmar-texto"></p>

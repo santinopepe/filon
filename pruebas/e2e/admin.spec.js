@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TOKEN_ADMIN_E2E, lotePorCategoria, vigilarErrores } from './ayuda.js';
+import { TOKEN_ADMIN_E2E, lotePorCategoria, enunciadosRecientes, vigilarErrores } from './ayuda.js';
 
 async function ingresar(page, token = TOKEN_ADMIN_E2E) {
   await page.goto('/admin');
@@ -53,7 +53,21 @@ test('importación JSON: inválida no guarda nada; válida publica el día', asy
   await page.click('#imp-boton');
   await expect(page.locator('#imp-resultado')).toContainText('JSON inválido');
 
-  const lote = lotePorCategoria();
+  const recientes = await enunciadosRecientes(page.request);
+  const lote = lotePorCategoria(recientes);
+  // Un lote con una pregunta ya publicada hoy: «Solo validar» la marca como repetida y no publica.
+  const yaPublicada = lotePorCategoria([]).find((p) => recientes.includes(p.enunciado));
+  await page.fill('#imp-json', JSON.stringify({ preguntas: lote.map((p) => (p.categoria === yaPublicada.categoria ? yaPublicada : p)) }));
+  await page.click('#imp-validar');
+  await expect(page.locator('#imp-resultado')).toHaveClass(/mal/);
+  await expect(page.locator('#imp-resultado')).toContainText('repite «');
+
+  await page.fill('#imp-json', JSON.stringify({ preguntas: lote }));
+  await page.click('#imp-validar');
+  await expect(page.locator('#imp-resultado')).toHaveClass(/ok/);
+  await expect(page.locator('#imp-resultado')).toContainText('El JSON es válido');
+  expect((await page.request.get('/api/admin/desafios/2030-03-15')).status()).toBe(404);
+
   await page.fill('#imp-json', JSON.stringify({ preguntas: lote.slice(0, 6) }));
   await page.click('#imp-boton');
   await expect(page.locator('#imp-resultado')).toHaveClass(/mal/);
