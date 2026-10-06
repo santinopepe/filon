@@ -68,6 +68,12 @@ function zonaLibre() {
     const abajo = seccion.querySelector('.ronda-abajo').getBoundingClientRect().top;
     return { movil, centrado: true, izquierda: 0, derecha: innerWidth, arriba, abajo: Math.max(abajo, arriba + 120) };
   }
+  if (estado.pantalla === 'inicio' || estado.pantalla === 'cargando') {
+    return { movil, centrado: true, izquierda: 0, derecha: innerWidth, arriba: 60 - scrollY, abajo: 260 - scrollY };
+  }
+  if (estado.pantalla === 'final') {
+    return { movil, centrado: true, izquierda: 0, derecha: innerWidth, arriba: 120, abajo: innerHeight - 120 };
+  }
   const panel = $('panel').getBoundingClientRect();
   if (movil) return { movil, izquierda: 0, derecha: innerWidth, arriba: 54, abajo: panel.top > 60 ? panel.top : innerHeight * 0.34 };
   return { movil, izquierda: 70, derecha: panel.left > 200 ? panel.left : innerWidth - 500, arriba: 60, abajo: innerHeight };
@@ -160,10 +166,41 @@ function mostrar(pantalla) {
   for (const id of ['cargando', 'inicio', 'ronda', 'resultado', 'final']) $(`p-${id}`).hidden = id !== pantalla;
   document.body.classList.toggle('en-inicio', pantalla === 'inicio' || pantalla === 'cargando');
   document.body.classList.toggle('en-excavacion', pantalla === 'ronda' || pantalla === 'resultado');
+  document.body.classList.toggle('en-pagina', ['inicio', 'cargando', 'final'].includes(pantalla));
+  document.body.classList.toggle('en-final', pantalla === 'final');
+  document.body.classList.remove('en-recorrido');
+  $('recorrido').hidden = true;
   estado.pantalla = pantalla;
   $('panel').scrollTop = 0;
+  window.scrollTo({ top: 0, behavior: 'instant' });
   escena.disponer();
 }
+
+// El scroll de la página recorre únicamente la parte de la mina que se excavó.
+function actualizarRecorrido() {
+  if (estado.pantalla === 'inicio' || estado.pantalla === 'cargando') {
+    escena.disponer();
+    return;
+  }
+  if (estado.pantalla !== 'final') return;
+  const recorrido = $('recorrido');
+  if (recorrido.hidden) return;
+  const inicio = recorrido.getBoundingClientRect().top + scrollY - innerHeight * .35;
+  const fin = document.documentElement.scrollHeight - innerHeight;
+  const progreso = Math.max(0, Math.min(1, (scrollY - inicio) / Math.max(1, fin - inicio)));
+  document.body.classList.toggle('en-recorrido', scrollY >= inicio);
+  escena.fijarProfundidad(estado.partida.profundidad * progreso, { animar: false });
+}
+
+let marcoScroll = null;
+addEventListener('scroll', () => {
+  if (marcoScroll !== null) return;
+  marcoScroll = requestAnimationFrame(() => {
+    marcoScroll = null;
+    actualizarRecorrido();
+  });
+}, { passive: true });
+addEventListener('resize', actualizarRecorrido);
 
 // ───────── Barra de profundidad ─────────
 // Lo excavado muestra los colores de los estratos; lo que falta queda a oscuras.
@@ -811,7 +848,11 @@ function mostrarFinal({ completada = false } = {}) {
   const p = estado.partida;
   detenerMecha();
   mostrar('final');
-  escena.fijarProfundidad(p.profundidad, { animar: false });
+  escena.fijarProfundidad(0, { animar: false });
+  const recorrido = $('recorrido');
+  recorrido.hidden = p.profundidad <= 0;
+  recorrido.style.setProperty('--largo-recorrido', `${Math.max(700, p.profundidad * .7)}px`);
+  $('recorrido-fin').textContent = `Hasta acá llegaste: ${fmt(p.profundidad)} metros. ${estratoDe(p.profundidad).titulo}.`;
   $('final-sobre').textContent = `${completada ? 'Ya excavaste hoy · ' : ''}Desafío #${p.numero} · ${fechaLarga(p.fecha)}`;
   const e = estratoDe(p.profundidad);
   $('final-estrato').textContent =

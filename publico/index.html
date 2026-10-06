@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/estilos.css">
   <script type="module" src="/app.js"></script>
 </head>
-<body class="en-superficie">
+<body class="en-superficie en-inicio en-pagina">
   <canvas id="escena" aria-hidden="true"></canvas>
 
   <!-- Lito, el gusano explorador que abre camino entre los estratos -->
@@ -212,6 +212,14 @@
       <button type="button" class="boton secundario" id="btn-hoy" hidden>Ir al desafío de hoy</button>
     </section>
   </main>
+
+  <section class="recorrido" id="recorrido" hidden aria-labelledby="recorrido-titulo">
+    <div class="recorrido-inicio">
+      <h2 id="recorrido-titulo">Recorré tu excavación</h2>
+      <p>Seguí bajando para explorar desde la superficie hasta donde llegaste.</p>
+    </div>
+    <p class="recorrido-fin" id="recorrido-fin"></p>
+  </section>
 
   <dialog class="dialogo" id="dlg-reporte" aria-labelledby="rep-titulo">
     <form method="dialog" id="form-reporte">
