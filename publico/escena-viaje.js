@@ -2,13 +2,15 @@
 // Misma interfaz que la mina (escena.js): el avance de la partida (0 a 7.000 «metros») mueve el mundo
 // en horizontal alrededor de Filón, que se queda en su lugar.
 //
-// Cada cuadro se dibuja en dos lienzos chicos y se agranda sin suavizado:
+// El decorado se dibuja en lienzos chicos y se agranda sin suavizado:
 //  - el fondo (cielo, nubes, sierras, ciudad) a la mitad de resolución y desenfocado: pixel art borroso;
 //  - el medio (opcional: paisaje cercano, monumentos, árboles) nítido y con contorno de un pixel;
-//  - el frente (suelo, público, avión, Filón) nítido: cada pixel queda opaco o vacío, y lo que tiene que
+//  - el frente (suelo, público) nítido: cada pixel queda opaco o vacío, y lo que tiene que
 //    verse translúcido (humo, flashes, la hélice) usa una trama de pixeles (vista.trama).
 // Filón se pixela a partir del mismo SVG del juego (con el vestuario del modo), con contorno oscuro.
-import { calcularAncla, acercarA, limitar, suave, COLORES_RAREZA } from './escena.js';
+// El personaje y el avión se componen a resolución de pantalla: conservan el pixel art, pero su
+// movimiento no queda limitado a saltos de un pixel grande de la escena.
+import { calcularAncla, acercarA, limitar, COLORES_RAREZA } from './escena.js';
 
 // Cuántos metros de avance ocupa en pantalla la altura de Filón: el decorado se dibuja en esa unidad
 // (vista.alto), así la composición es la misma en un celular y en un monitor grande.
@@ -123,7 +125,9 @@ const soportaFiltro = (() => {
  *   vestuario,                        // accesorios de Filón: 'farandula' | 'geografia'
  *   dibujarFondo(ctx, vista),         // capa de fondo (se desenfoca)
  *   dibujarMedio?(ctx, vista),        // capa intermedia nítida, con contorno de color `contorno`
- *   dibujarFrente(ctx, vista, emitir),// capa nítida; dibuja a Filón con vista.filon(ctx, opciones)
+ *   dibujarFrente(ctx, vista, emitir),// decorado cercano y efectos en pixel art
+ *   dibujarPersonaje(ctx, vista),     // sprite nítido, con movimiento a resolución de pantalla
+ *   dibujarPrimerPlano?(ctx, vista), // elementos que pasan delante del personaje
  *   golpe?(vista, emitir), descubrir?(vista, emitir, rareza, color),
  * }
  */
@@ -147,6 +151,8 @@ export function crearEscenaViaje(canvas, { mundo, alCambiarProfundidad = () => {
 
   // Alinea una coordenada de pantalla a la cuadrícula de pixeles de la escena.
   vista.snap = (n) => Math.round(n / vista.P) * vista.P;
+  // El arte conserva sus pixeles grandes; la posición se mueve por pixeles de pantalla.
+  vista.posicion = (n) => Math.round(n * dpr) / dpr;
   // Rectángulo alineado a la cuadrícula (todo lo que sea «sprite» se dibuja así, sin bordes suaves).
   vista.rect = (c, x, y, w, h, color) => {
     const P = vista.P;
@@ -205,7 +211,7 @@ export function crearEscenaViaje(canvas, { mundo, alCambiarProfundidad = () => {
       c.rect(x - a, recorte - a * 2, a * 2, a * 2);
       c.clip();
     }
-    c.translate(vista.snap(x), vista.snap(y + dy));
+    c.translate(vista.posicion(x), vista.posicion(y + dy));
     c.rotate(giro);
     c.scale(sx, sy);
     c.imageSmoothingEnabled = false;
@@ -331,7 +337,10 @@ export function crearEscenaViaje(canvas, { mundo, alCambiarProfundidad = () => {
     if (animacion) {
       const p = limitar((ahora - animacion.inicio) / animacion.duracion, 0, 1);
       const anterior = vista.x;
-      vista.x = animacion.desde + (animacion.hasta - animacion.desde) * (animacion.lineal ? p : suave(p));
+      // La curva anterior concentraba el avance en el medio y triplicaba la velocidad media.
+      // Esta curva mantiene la salida y la llegada suaves, con una velocidad máxima menor.
+      const progreso = animacion.lineal ? p : (1 - Math.cos(Math.PI * p)) / 2;
+      vista.x = animacion.desde + (animacion.hasta - animacion.desde) * progreso;
       vista.velocidad = dt ? (vista.x - anterior) / dt : 0;
       alCambiarProfundidad(Math.max(0, vista.x));
       if (p >= 1) {
@@ -366,6 +375,12 @@ export function crearEscenaViaje(canvas, { mundo, alCambiarProfundidad = () => {
     ctx.filter = 'none';
     if (mundo.dibujarMedio) ctx.drawImage(medio.c, 0, 0, medio.c.width * P, medio.c.height * P);
     ctx.drawImage(frente.c, 0, 0, frente.c.width * P, frente.c.height * P);
+    mundo.dibujarPersonaje(ctx, vista);
+    if (mundo.dibujarPrimerPlano) {
+      mundo.dibujarPrimerPlano(preparar(frente, P), vista);
+      endurecer(frente.ctx, frente.c.width, frente.c.height);
+      ctx.drawImage(frente.c, 0, 0, frente.c.width * P, frente.c.height * P);
+    }
     marco = requestAnimationFrame(cuadro);
   }
 
@@ -376,12 +391,11 @@ export function crearEscenaViaje(canvas, { mundo, alCambiarProfundidad = () => {
     cuadro(t);
   });
 
-  const duracion = (metros) => limitar(850 + Math.abs(metros) * 2.2, 850, 3200);
+  const duracion = (metros) => limitar(1000 + Math.abs(metros) * 2.8, 1000, 4200);
   const punto = () => ({ x: vista.anclaX, y: vista.anclaY - 60 * vista.esc });
 
   function animar(desde, hasta, ms, lineal = false) {
     if (animacion) {
-      vista.x = animacion.hasta;
       animacion.resolver();
       animacion = null;
     }

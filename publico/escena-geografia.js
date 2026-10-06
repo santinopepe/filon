@@ -50,9 +50,9 @@ export function crearMundoGeografia() {
     const a = v.alto / P; // altura de Filón, en pixeles de la escena
     const n = (k) => Math.round(k * a);
     const enTierra = limitar(1 - v.x / 120, 0, 1);
-    const balanceo = v.reducido || enTierra > 0 ? 0 : Math.round(Math.sin(v.reloj * 2.2) * 1.2);
-    const ox = v.snap(v.anclaX);
-    const oy = v.snap(v.anclaY) + balanceo * P;
+    const balanceo = v.reducido || enTierra > 0 ? 0 : Math.sin(v.reloj * 2.2) * 1.2;
+    const ox = v.posicion(v.anclaX);
+    const oy = v.posicion(v.anclaY + balanceo * P);
     const B = (dx, dy, w, h, color) => {
       if (w <= 0 || h <= 0) return;
       ctx.fillStyle = color;
@@ -188,7 +188,11 @@ export function crearMundoGeografia() {
         }
         if (Math.random() < 0.35) emitir('humo', v.anclaX - v.alto * 1.05, v.anclaY - v.alto * 0.36, 1, '#ffffff', { fuerza: 0.2 });
       }
+    },
+    dibujarPersonaje(ctx, v) {
       avion(ctx, v);
+    },
+    dibujarPrimerPlano(ctx, v) {
       for (const { lugar, x, y } of carteles) {
         // El cartel se corre si quedaría encima del avión.
         if (Math.abs(x - v.anclaX) < v.alto * 1.2 && y > v.anclaY - v.alto * 1.3) continue;
