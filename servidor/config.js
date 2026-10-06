@@ -137,6 +137,8 @@ export function cargarConfig(sobrescrituras = {}) {
     },
 
     diasSinRepetir: num(e.DIAS_SIN_REPETIR, 60),
+    // Carga manual: días hacia atrás (más los ya programados) con los que se comparan las preguntas.
+    similitudDias: num(e.SIMILITUD_DIAS, 3),
 
     // Retención (días). Las partidas y los desafíos se conservan: son el historial del juego.
     retencion: {

@@ -162,7 +162,7 @@ npm run verificar               # todo lo que corre el CI, en el mismo orden
 | --- | --- |
 | `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
 | `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
-| `npm test` | 87 pruebas unitarias y de integración (`node:test`) |
+| `npm test` | 92 pruebas unitarias y de integración (`node:test`) |
 | `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
 | `npm run validar-reserva` | 21 preguntas válidas, 3 por categoría |
 | `npm run test:navegador` | 11 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
@@ -257,6 +257,11 @@ La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `
 - Para regenerar un día que ya existe hace falta `reemplazar: true`. El anterior se borra recién cuando el nuevo se publicó bien, y las preguntas reemplazadas no se repiten.
 - Si ese día ya tiene partidas, responde `409 hay_partidas`; con `forzar: true` se borran junto con el desafío anterior.
 - La generación manual no cuenta para `IA_MAX_INTENTOS_POR_DIA`. Con IA puede tardar varios minutos.
+
+**Carga manual (JSON) y repeticiones.** Además de las reglas de formato, cada pregunta se compara con las publicadas en los últimos días (por defecto 3, `SIMILITUD_DIAS`, o los «Días de historial» del panel; incluye los días ya programados) y con las otras del mismo JSON. Se comparan las raíces de las palabras del enunciado («termina»/«termine», «país»/«países») y las respuestas en común:
+- **repetida** (no se publica): enunciado muy parecido (≥ 60 %), o el mismo conjunto (≥ 60 % de las respuestas y al menos 4), o enunciado parecido (≥ 45 %) con la mitad de las respuestas en común (al menos 3);
+- **parecida** (se publica con aviso): enunciado algo parecido (≥ 35 %) o 3 respuestas en común o ≥ 30 % del conjunto.
+El aviso dice con qué pregunta y fecha, el porcentaje y qué respuestas comparten. «Solo validar» hace todo el control sin publicar. Sigue vigente el control de 60 días (`DIAS_SIN_REPETIR`) para repeticiones evidentes.
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN_ADMIN" -H 'content-type: application/json' \

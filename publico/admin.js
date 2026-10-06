@@ -374,21 +374,32 @@ $('imp-archivo').addEventListener('change', async () => {
   }
 });
 
-$('form-importar').addEventListener('submit', (ev) => {
-  ev.preventDefault();
+/** Lee las preguntas del cuadro de texto; si el JSON no sirve, muestra el error y devuelve null. */
+function preguntasDelJson() {
   let documento;
   try {
     documento = JSON.parse($('imp-json').value);
   } catch (error) {
     mostrarResultadoImportacion({ error: `JSON inválido: ${error.message}` });
-    return;
+    return null;
   }
   const preguntas = Array.isArray(documento) ? documento : documento?.preguntas;
   if (!Array.isArray(preguntas)) {
     mostrarResultadoImportacion({ error: 'El JSON debe ser un arreglo de preguntas o un objeto con la propiedad «preguntas».' });
-    return;
+    return null;
   }
-  importarPreguntas({ preguntas });
+  return preguntas;
+}
+
+$('form-importar').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const preguntas = preguntasDelJson();
+  if (preguntas) importarPreguntas({ preguntas });
+});
+// Valida y compara con los últimos días sin publicar nada.
+$('imp-validar').addEventListener('click', () => {
+  const preguntas = preguntasDelJson();
+  if (preguntas) importarPreguntas({ preguntas, soloValidar: true });
 });
 
 $('imp-confirmar-no').addEventListener('click', () => {
@@ -407,14 +418,18 @@ async function importarPreguntas(opciones) {
     preguntas: opciones.preguntas,
     reemplazar: Boolean(opciones.reemplazar),
     forzar: Boolean(opciones.forzar),
+    soloValidar: Boolean(opciones.soloValidar),
+    diasSimilitud: diasHistorial(), // los mismos días que el historial que se le pasa a la IA
   };
   $('imp-confirmar').hidden = true;
   $('imp-resultado').hidden = true;
   $('imp-progreso').hidden = false;
   $('imp-boton').disabled = true;
+  $('imp-validar').disabled = true;
   try {
     const resultado = await api('POST', `/api/admin/desafios/${fecha}/importar`, cuerpo);
     mostrarResultadoImportacion(resultado);
+    if (resultado.resultado === 'valido') return; // solo se validó: no hay nada nuevo que mostrar
     fechaElegida = fecha;
     await cargarDesafios();
     await verDesafio(fecha);
@@ -429,6 +444,7 @@ async function importarPreguntas(opciones) {
   } finally {
     $('imp-progreso').hidden = true;
     $('imp-boton').disabled = false;
+    $('imp-validar').disabled = false;
   }
 }
 
@@ -439,16 +455,27 @@ function pedirConfirmacionImportacion(texto, siguiente) {
 }
 
 function mostrarResultadoImportacion(resultado) {
-  const ok = resultado.resultado === 'publicado' || resultado.resultado === 'reemplazado';
+  const ok = ['publicado', 'reemplazado', 'valido'].includes(resultado.resultado);
   const errores = resultado.detalles?.errores || [];
-  const avisos = resultado.advertencias || [];
+  const avisos = resultado.advertencias || resultado.detalles?.advertencias || [];
+  const similitudes = resultado.similitudes || resultado.detalles?.similitudes;
+  const dias = resultado.diasSimilitud || resultado.detalles?.diasSimilitud;
+  const titulo = {
+    publicado: 'Desafío manual publicado.',
+    reemplazado: 'Desafío reemplazado con el JSON manual.',
+    valido: 'El JSON es válido. Todavía no se publicó: usá «Validar y publicar».',
+  }[resultado.resultado];
+  const sinParecidos = similitudes && similitudes.every((s) => !s.coincidencias.length);
   const caja = $('imp-resultado');
   caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
   caja.textContent = [
-    ok ? (resultado.resultado === 'reemplazado' ? 'Desafío reemplazado con el JSON manual.' : 'Desafío manual publicado.') : resultado.error || 'No se pudo publicar.',
+    ok ? titulo : resultado.error || 'No se pudo publicar.',
     ...errores.map((error) => `• ${error}`),
     ...avisos.map((aviso) => `Aviso: ${aviso}`),
-  ].join('\n');
+    sinParecidos ? `Sin similitudes con las preguntas de los últimos ${dias} días ni dentro del lote.` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
   caja.hidden = false;
 }
 

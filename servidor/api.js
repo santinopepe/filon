@@ -7,6 +7,7 @@ import { crearSesionesAdmin, secretoCoincide } from './sesiones.js';
 import { crearRegistro } from './registro.js';
 import { limpiarDatos } from './limpieza.js';
 import { historialDesde, historialACsv } from './historial.js';
+import { analizarSimilitud } from './similitud.js';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { RAIZ } from './config.js';
@@ -187,10 +188,10 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       }
 
       const existente = await desafioPorFecha(db, fecha);
-      if (existente && !cuerpo.reemplazar) {
+      if (existente && !cuerpo.reemplazar && !cuerpo.soloValidar) {
         throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío para ${fecha}. Confirmá el reemplazo para sobrescribirlo.`);
       }
-      if (existente) {
+      if (existente && !cuerpo.soloValidar) {
         const { n } = await db.get('SELECT COUNT(*) AS n FROM partidas WHERE desafio_id = ?', existente.id);
         if (n && !cuerpo.forzar) {
           throw new ErrorJuego(409, 'hay_partidas', `Ese día ya tiene ${n} partida(s); al reemplazarlo se borran.`);
@@ -216,11 +217,28 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       const lote = preguntas.length === cuerpo.preguntas.length ? validarLote(preguntas) : { ok: false, errores: [] };
       const errores = detalles.flatMap((d) => d.errores.map((error) => `Pregunta ${d.posicion}: ${error}`));
       errores.push(...lote.errores);
+
+      // Similitud con las preguntas de los últimos N días (incluye los ya programados) y dentro del lote.
+      const diasSimilitud = Math.min(30, Math.max(1, Math.floor(Number(cuerpo.diasSimilitud)) || config.similitudDias));
+      const hoy = fechaLocal(ahora(), config.zona);
+      const historial = (await historialDesde(db, sumarDias(hoy, -(diasSimilitud - 1)))).filter((p) => p.fecha !== fecha);
+      const similitudes = analizarSimilitud(cuerpo.preguntas, historial);
+      const avisosSimilitud = [];
+      for (const s of similitudes) {
+        for (const c of s.coincidencias) {
+          const contra = c.origen === 'lote' ? `la pregunta ${c.posicion} de este mismo JSON` : `«${c.enunciado}» del ${c.fecha}`;
+          if (c.nivel === 'repetida') errores.push(`Pregunta ${s.posicion}: repite ${contra} (${c.motivo}).`);
+          else avisosSimilitud.push(`Pregunta ${s.posicion}: se parece a ${contra} (${c.motivo}).`);
+        }
+      }
+
       if (errores.length) {
         const error = new ErrorJuego(422, 'desafio_invalido', `El JSON tiene ${errores.length} problema(s). No se guardó nada.`);
-        error.detalles = { errores, preguntas: detalles };
+        error.detalles = { errores, advertencias: avisosSimilitud, preguntas: detalles, similitudes, diasSimilitud };
         throw error;
       }
+      const advertencias = [...avisosSimilitud, ...detalles.flatMap((d) => d.advertencias.map((aviso) => `Pregunta ${d.posicion}: ${aviso}`))];
+      if (cuerpo.soloValidar) return { resultado: 'valido', fecha, advertencias, similitudes, diasSimilitud };
 
       const publicado = await publicarDesafio(db, {
         fecha,
@@ -235,7 +253,9 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         ...publicado,
         resultado: existente ? 'reemplazado' : 'publicado',
         origen: 'manual',
-        advertencias: detalles.flatMap((d) => d.advertencias.map((aviso) => `Pregunta ${d.posicion}: ${aviso}`)),
+        advertencias,
+        similitudes,
+        diasSimilitud,
       };
     }, { admin: true, limiteJson: LIMITES.cuerpoImportacion, limite: 'importar' }],
     // Generar o regenerar un día a mano.
