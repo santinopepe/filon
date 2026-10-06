@@ -5,7 +5,7 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 300,
-      "includeFiles": "datos/reserva.json"
+      "includeFiles": "datos/**"
     }
   },
   "rewrites": [

@@ -169,6 +169,23 @@
         <pre class="resultado" id="imp-resultado" hidden></pre>
       </section>
 
+        <section class="tarjeta tarjeta-ancha" aria-labelledby="prompt-titulo">
+          <h2 id="prompt-titulo">Generar con otra IA</h2>
+          <p class="sub">Copiá el prompt en ChatGPT, Claude u otra IA y pegá el JSON que devuelva en «Cargar preguntas manualmente». «Copiar con historial» completa <code>Historial reciente</code> con las preguntas de los últimos días (incluye los ya programados) para que no las repita.</p>
+          <div class="historial-controles">
+            <label>Días de historial <input type="number" id="hist-dias" min="1" max="30" value="3" inputmode="numeric"></label>
+            <button type="button" class="secundario" id="hist-json">Descargar JSON</button>
+            <button type="button" class="secundario" id="hist-csv">Descargar CSV</button>
+          </div>
+          <label for="prompt-texto">Prompt <span class="sub">(tus cambios quedan guardados en este navegador)</span></label>
+          <textarea id="prompt-texto" rows="16" spellcheck="false"></textarea>
+          <div class="acciones">
+            <button type="button" id="prompt-copiar-historial">Copiar con historial</button>
+            <button type="button" class="secundario" id="prompt-copiar">Copiar sin historial</button>
+            <button type="button" class="secundario" id="prompt-restaurar">Restaurar el original</button>
+          </div>
+          <p class="estado-copia" id="prompt-estado" role="status" aria-live="polite"></p>
+        </section>
       </section>
       <section id="pestana-corridas" class="pestana" role="tabpanel" aria-labelledby="tab-corridas" tabindex="0" hidden></section>
       <section id="pestana-reportes" class="pestana" role="tabpanel" aria-labelledby="tab-reportes" tabindex="0" hidden></section>

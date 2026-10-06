@@ -162,10 +162,10 @@ npm run verificar               # todo lo que corre el CI, en el mismo orden
 | --- | --- |
 | `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
 | `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
-| `npm test` | 85 pruebas unitarias y de integración (`node:test`) |
+| `npm test` | 87 pruebas unitarias y de integración (`node:test`) |
 | `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
 | `npm run validar-reserva` | 21 preguntas válidas, 3 por categoría |
-| `npm run test:navegador` | 10 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
+| `npm run test:navegador` | 11 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
 | `npm run test:recorrido` | recorrido histórico en navegador (19 comprobaciones, guarda capturas en `capturas/`) |
 | `npm run explicar-consultas` | `EXPLAIN QUERY PLAN` de las consultas principales |
 
@@ -238,7 +238,7 @@ La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (2
 
 Panel web en **`/admin`**. Se ingresa una vez con el `TOKEN_ADMIN`: el servidor lo compara en tiempo constante y abre una **sesión** (token aleatorio en una cookie `HttpOnly`, `SameSite=Strict`, `__Host-` con HTTPS; en la base solo se guarda su hash). La sesión vence a los 30 minutos sin actividad y, como máximo, a las 8 horas; «Salir» la revoca en el servidor. El token maestro **no** se guarda en el navegador. El login tiene un límite de 5 intentos cada 15 minutos.
 
-El panel abre en un **resumen** con estadísticas: jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos, creación (IA, reserva o JSON), corridas y reportes. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
+El panel abre en un **resumen** con estadísticas: jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos, creación (IA, reserva o JSON), corridas y reportes. En **Crear → Generar con otra IA** está el prompt para usar con ChatGPT, Claude u otra IA (editable, y con «Copiar con historial» que completa el historial reciente para que no repita preguntas) y la descarga en **JSON o CSV** de las preguntas de los últimos N días (por defecto 3, incluidos los ya programados): `GET /api/admin/historial?dias=3&formato=json|csv`. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
 
 La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `ADMIN_PERMITIR_BEARER=1` (transición):
 
