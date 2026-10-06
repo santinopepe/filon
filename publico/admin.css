@@ -318,3 +318,12 @@ ul.lista li { margin: 2px 0; }
   max-width: min(560px, calc(100vw - 32px)); padding: 10px 14px; border-radius: 10px;
   background: #3a2230; border: 1px solid var(--alerta); color: var(--cal);
 }
+
+/* ───────── Generar con otra IA ───────── */
+.tarjeta-ancha { grid-column: 1 / -1; }
+.historial-controles { display: flex; flex-wrap: wrap; align-items: end; gap: 10px 12px; margin: 4px 0 14px; }
+.historial-controles label { display: grid; gap: 4px; }
+.historial-controles input { width: 7em; }
+#prompt-texto { margin: 4px 0 10px; min-height: 260px; }
+.estado-copia { margin: 10px 0 0; color: var(--cal-2); min-height: 1.5em; }
+.solo-lector { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

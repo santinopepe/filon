@@ -1,6 +1,7 @@
 // Panel de administración: resumen con estadísticas, desafíos, creación, corridas y reportes.
 // Todo el contenido (que puede venir de la IA o de los jugadores) se inserta como texto, nunca como HTML.
 import { fmt, columnasApiladas, campana, barraResultado, tramos, ocultarTooltip } from './admin-graficos.js';
+import { insertarHistorial } from './prompt.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -108,7 +109,7 @@ function mostrarPanel() {
 const cargadores = {
   resumen: cargarResumen,
   desafios: cargarDesafios,
-  crear: async () => {},
+  crear: cargarPrompt,
   corridas: cargarCorridas,
   reportes: cargarReportes,
 };
@@ -449,6 +450,112 @@ function mostrarResultadoImportacion(resultado) {
     ...avisos.map((aviso) => `Aviso: ${aviso}`),
   ].join('\n');
   caja.hidden = false;
+}
+
+// ───────── Generar con otra IA: historial y prompt ─────────
+
+const CLAVE_PROMPT = 'filon_prompt_editado'; // solo texto del prompt; nada sensible
+let promptOriginal = null;
+
+async function cargarPrompt() {
+  if (promptOriginal !== null) return;
+  promptOriginal = (await api('GET', '/api/admin/prompt')).texto;
+  let guardado = null;
+  try {
+    guardado = localStorage.getItem(CLAVE_PROMPT);
+  } catch {
+    /* sin almacenamiento: se usa el original */
+  }
+  $('prompt-texto').value = guardado ?? promptOriginal;
+}
+
+$('prompt-texto').addEventListener('input', () => {
+  try {
+    if ($('prompt-texto').value === promptOriginal) localStorage.removeItem(CLAVE_PROMPT);
+    else localStorage.setItem(CLAVE_PROMPT, $('prompt-texto').value);
+  } catch {
+    /* nada */
+  }
+});
+
+$('prompt-restaurar').addEventListener('click', () => {
+  $('prompt-texto').value = promptOriginal ?? '';
+  try {
+    localStorage.removeItem(CLAVE_PROMPT);
+  } catch {
+    /* nada */
+  }
+  avisarPrompt('Se restauró el prompt original.');
+});
+
+const diasHistorial = () => Math.min(30, Math.max(1, Math.floor(Number($('hist-dias').value)) || 3));
+
+async function pedirHistorial(formato) {
+  const res = await fetch(`/api/admin/historial?dias=${diasHistorial()}&formato=${formato}`, { credentials: 'same-origin' });
+  if (res.status === 401) {
+    mostrarIngreso('La sesión venció o se cerró. Volvé a ingresar.');
+    throw new ErrorApi(401, { mensaje: 'Sesión vencida.' });
+  }
+  if (!res.ok) throw new ErrorApi(res.status, await res.json().catch(() => null));
+  const archivo = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') || '')?.[1] || `filon-historial.${formato}`;
+  return { res, archivo };
+}
+
+async function descargarHistorial(formato) {
+  try {
+    const { res, archivo } = await pedirHistorial(formato);
+    const url = URL.createObjectURL(await res.blob());
+    const enlace = h('a', { href: url, download: archivo, hidden: true });
+    document.body.append(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    avisarPrompt(`Se descargó ${archivo}.`);
+  } catch (e) {
+    mostrarErrorGeneral(e);
+  }
+}
+$('hist-json').addEventListener('click', () => descargarHistorial('json'));
+$('hist-csv').addEventListener('click', () => descargarHistorial('csv'));
+
+async function copiarPrompt(conHistorial) {
+  try {
+    await cargarPrompt();
+    let texto = $('prompt-texto').value;
+    let detalle = '';
+    if (conHistorial) {
+      const { res } = await pedirHistorial('json');
+      const datos = await res.json();
+      // Lo justo para comparar: sin ids ni números internos.
+      const historial = datos.preguntas.map(({ fecha, categoria, enunciado, alcance, respuestas }) => ({ fecha, categoria, enunciado, alcance, respuestas }));
+      texto = insertarHistorial(texto, historial);
+      detalle = ` con ${historial.length} preguntas desde el ${datos.desde}`;
+    }
+    await copiarTexto(texto);
+    avisarPrompt(`Prompt copiado${detalle}. Pegalo en la IA.`);
+  } catch (e) {
+    mostrarErrorGeneral(e);
+  }
+}
+$('prompt-copiar-historial').addEventListener('click', () => copiarPrompt(true));
+$('prompt-copiar').addEventListener('click', () => copiarPrompt(false));
+
+async function copiarTexto(texto) {
+  try {
+    await navigator.clipboard.writeText(texto);
+  } catch {
+    // Sin permiso de portapapeles: se usa un área temporal seleccionada.
+    const area = h('textarea', { readonly: true, class: 'solo-lector' });
+    area.value = texto;
+    document.body.append(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+}
+
+function avisarPrompt(texto) {
+  $('prompt-estado').textContent = texto;
 }
 
 // ───────── Corridas ─────────

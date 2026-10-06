@@ -1,11 +1,20 @@
 // Rutas HTTP del juego.
 import { randomUUID } from 'node:crypto';
 import { ErrorJuego } from './juego.js';
-import { enviarJson, leerJson, leerCookies, crearFirmador, crearLimitador, ipCliente } from './http.js';
+import { enviarJson, leerJson, leerCookies, crearFirmador, crearLimitador, ipCliente, CABECERAS_SEGURIDAD } from './http.js';
 import { crearLimitadorDistribuido } from './limites.js';
 import { crearSesionesAdmin, secretoCoincide } from './sesiones.js';
 import { crearRegistro } from './registro.js';
 import { limpiarDatos } from './limpieza.js';
+import { historialDesde, historialACsv } from './historial.js';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { RAIZ } from './config.js';
+
+/** Marca para respuestas que no son JSON (descargas): { [CRUDO]: { tipo, cuerpo, archivo } }. */
+const CRUDO = Symbol('crudo');
+let promptGeneracion = null;
+const leerPrompt = () => (promptGeneracion ??= readFileSync(resolve(RAIZ, 'datos/prompt-generacion.txt'), 'utf8'));
 import { LIMITES, PREGUNTAS_POR_DESAFIO } from './dominio.js';
 import {
   desafioPorFecha,
@@ -27,7 +36,8 @@ const UUID = /^[0-9a-f-]{36}$/;
 export function crearApi({ db, config, juego, secreto, contexto = null, ahora = () => Date.now(), registro = crearRegistro() }) {
   const firmador = crearFirmador(secreto);
   // Primera barrera, en memoria y por instancia (barata). La protección real es la distribuida.
-  const limitar = crearLimitador({ capacidad: 40, porSegundo: 8 });
+  const escala = config.limitesEscala ?? 1;
+  const limitar = crearLimitador({ capacidad: 40 * escala, porSegundo: 8 * escala });
   const limites = crearLimitadorDistribuido({ db, secreto, ahora, registro, escala: config.limitesEscala });
   const sesiones = crearSesionesAdmin({ db, config, ahora });
 
@@ -264,6 +274,22 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       if (sumarDias(desde, 366) < hasta) throw new ErrorJuego(400, 'rango_invalido', 'El rango no puede superar un año.');
       return { hoy, ...(await estadisticasAdmin(db, { zona: config.zona, desde, hasta, fecha })) };
     }, { admin: true }],
+    // Historial para que una IA externa no repita preguntas: ?dias=3 (1–30) &formato=json|csv.
+    // Incluye desde hace N-1 días hasta los días ya programados a futuro.
+    ['GET', /^\/api\/admin\/historial$/, async ({ req }) => {
+      const q = new URL(req.url, 'http://local').searchParams;
+      const dias = Math.min(30, Math.max(1, Math.floor(Number(q.get('dias')) || 3)));
+      const formato = q.get('formato') === 'csv' ? 'csv' : 'json';
+      const hoy = fechaLocal(ahora(), config.zona);
+      const desde = sumarDias(hoy, -(dias - 1));
+      const preguntas = await historialDesde(db, desde);
+      const archivo = `filon-historial-${desde}-${dias}d.${formato}`;
+      if (formato === 'csv') return { [CRUDO]: { tipo: 'text/csv; charset=utf-8', cuerpo: historialACsv(preguntas), archivo } };
+      const cuerpo = JSON.stringify({ desde, dias, generado: new Date(ahora()).toISOString(), preguntas }, null, 2);
+      return { [CRUDO]: { tipo: 'application/json; charset=utf-8', cuerpo, archivo } };
+    }, { admin: true }],
+    // Prompt para generar un día con una IA externa (se copia desde el panel).
+    ['GET', /^\/api\/admin\/prompt$/, async () => ({ texto: leerPrompt() }), { admin: true }],
     ['GET', /^\/api\/admin\/corridas$/, async () => ({
       corridas: (await db.all('SELECT id, fecha_objetivo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
         .map((c) => ({ ...c, detalle: c.detalle ? JSON.parse(c.detalle) : null })),
@@ -359,6 +385,18 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     try {
       const cuerpo = metodo === 'POST' ? await leerJson(req, opciones.limiteJson ?? LIMITES.cuerpoJson) : {};
       const resultado = await fn({ jugadorId: ident.jugadorId, m, cuerpo, req, cookies, cabeceras });
+      if (resultado?.[CRUDO]) {
+        const { tipo, cuerpo: datos, archivo } = resultado[CRUDO];
+        res.writeHead(200, {
+          ...CABECERAS_SEGURIDAD,
+          'content-type': tipo,
+          'cache-control': 'no-store',
+          'content-disposition': `attachment; filename="${archivo}"`,
+          ...cabeceras,
+        });
+        res.end(datos);
+        return true;
+      }
       enviarJson(res, 200, resultado, cabeceras);
     } catch (e) {
       if (e instanceof ErrorJuego) enviarJson(res, e.estado, { error: e.codigo, mensaje: e.message, ...(e.detalles ? { detalles: e.detalles } : {}) }, cabeceras);

@@ -91,3 +91,34 @@ test('pestañas del panel por teclado (flechas, Inicio y Fin)', async ({ page })
   await expect(fila).toHaveAttribute('aria-current', 'true');
   await expect(page.locator('#detalle .pregunta')).toHaveCount(7);
 });
+
+test('generar con otra IA: prompt a mano, descargas del historial y copia con historial', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await ingresar(page);
+  await page.click('#tab-crear');
+  const prompt = page.locator('#prompt-texto');
+  await expect(prompt).toHaveValue(/^Sos el editor de preguntas de Filón/);
+  await expect(prompt).toHaveValue(/Historial reciente:\n\[\]\n/);
+
+  const [json] = await Promise.all([page.waitForEvent('download'), page.click('#hist-json')]);
+  expect(json.suggestedFilename()).toMatch(/^filon-historial-\d{4}-\d{2}-\d{2}-3d\.json$/);
+  const datos = JSON.parse(await (await json.createReadStream()).toArray().then((p) => Buffer.concat(p).toString('utf8')));
+  expect(datos.preguntas.length).toBeGreaterThanOrEqual(7);
+  const [csv] = await Promise.all([page.waitForEvent('download'), page.click('#hist-csv')]);
+  expect(csv.suggestedFilename()).toMatch(/\.csv$/);
+
+  await page.click('#prompt-copiar-historial');
+  await expect(page.locator('#prompt-estado')).toContainText('Prompt copiado con');
+  const copiado = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiado).toContain('Historial reciente:\n[\n  {"fecha":');
+  expect(copiado).toContain(datos.preguntas[0].enunciado);
+  expect(copiado).toContain('Generá ahora el desafío completo.');
+
+  // Las ediciones quedan en este navegador y se pueden descartar.
+  await prompt.fill('Prompt editado de prueba');
+  await page.reload();
+  await page.click('#tab-crear');
+  await expect(page.locator('#prompt-texto')).toHaveValue('Prompt editado de prueba');
+  await page.click('#prompt-restaurar');
+  await expect(page.locator('#prompt-texto')).toHaveValue(/^Sos el editor de preguntas de Filón/);
+});
