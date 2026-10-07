@@ -21,6 +21,14 @@ export const CONSULTAS = [
   { nombre: 'desafío de una fecha y un modo', sql: 'SELECT * FROM desafios WHERE fecha = ? AND modo = ?', args: ['2026-10-05', 'normal'] },
   { nombre: 'rondas de una partida', sql: 'SELECT * FROM rondas WHERE partida_id = ? ORDER BY posicion', args: [ID] },
   {
+    nombre: 'partida y ronda para revelado',
+    sql: `SELECT p.*, r.estado AS estadoRonda, r.pregunta_id AS preguntaId
+          FROM partidas p LEFT JOIN rondas r ON r.partida_id = p.id AND r.posicion = ?
+          WHERE p.id = ? AND p.jugador_id = ?`,
+    args: [1, ID, ID],
+  },
+  { nombre: 'catálogo liviano para revelado', sql: 'SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? ORDER BY id', args: [ID] },
+  {
     nombre: 'intentos de una ronda (tope, dentro de la transacción)',
     sql: 'SELECT COUNT(*) AS n, COALESCE(SUM(normalizado = ?), 0) AS iguales FROM intentos WHERE partida_id = ? AND posicion = ?',
     args: ['a', ID, 1],
