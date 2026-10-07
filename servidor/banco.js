@@ -211,7 +211,7 @@ export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas,
         p.alcance,
         p.huella,
         p.origen,
-        p.origen === 'reserva' ? p.id : null,
+        p.id ?? null, // id en la reserva (las de la IA también quedan guardadas ahí)
         JSON.stringify(p.fuentes),
         JSON.stringify(p.rechazos.map((r) => ({ formas: r.formas, motivo: r.motivo, ejemplo: r.textos[0] }))),
       );
@@ -305,4 +305,90 @@ export async function usosDeReserva(db, modo = MODO_POR_DEFECTO) {
     modo,
   );
   return new Map(filas.map((f) => [f.id, { ultima: f.ultima, veces: f.veces }]));
+}
+
+/** Una pregunta publicada en el formato de los bancos de reserva (con todas sus respuestas). */
+export async function preguntaParaEditar(db, preguntaId) {
+  const p = await db.get('SELECT * FROM preguntas WHERE id = ?', preguntaId);
+  if (!p) return null;
+  const respuestas = await db.all('SELECT * FROM respuestas WHERE pregunta_id = ? ORDER BY puntos, id', preguntaId);
+  const fuentes = JSON.parse(p.fuentes);
+  const general = fuentes[0]?.url;
+  return {
+    id: p.reserva_id || p.id,
+    categoria: p.categoria,
+    enunciado: p.enunciado,
+    alcance: p.alcance,
+    ...(respuestas.length > 80 ? { datosEstructurados: 'wikidata' } : {}),
+    fuentes,
+    respuestas: respuestas.map((r) => ({
+      canonica: r.canonica,
+      variantes: JSON.parse(r.variantes),
+      rareza: r.rareza,
+      explicacion: r.explicacion,
+      ...(r.fuente_url && r.fuente_url !== general ? { fuente: { url: r.fuente_url, titulo: r.fuente_titulo } } : {}),
+    })),
+    // Se guarda solo un ejemplo de cada rechazo (más sus formas normalizadas).
+    rechazos: JSON.parse(p.rechazos).map((r) => ({ textos: [r.ejemplo ?? r.formas?.[0]].filter(Boolean), motivo: r.motivo })),
+  };
+}
+
+/**
+ * Reemplaza el contenido de una pregunta publicada por una versión validada (forma interna).
+ * Las respuestas se emparejan por su nombre normalizado: las que siguen conservan su id (las rondas
+ * ya jugadas las referencian y sus puntos no cambian); no se puede quitar una respuesta que algún
+ * jugador ya dio. Devuelve { editada: true } o { editada: false, enUso: [canónicas] }.
+ */
+export function editarPregunta(db, preguntaId, nueva) {
+  return transaccion(db, async (tx) => {
+    const actuales = await tx.all('SELECT id, canonica FROM respuestas WHERE pregunta_id = ?', preguntaId);
+    const porClave = new Map(actuales.map((r) => [normalizar(r.canonica), r]));
+    const nuevasClaves = new Set(nueva.respuestas.map((r) => normalizar(r.canonica)));
+    const quitadas = actuales.filter((r) => !nuevasClaves.has(normalizar(r.canonica)));
+    if (quitadas.length) {
+      const enUso = await tx.all(
+        `SELECT DISTINCT x.canonica FROM rondas r JOIN respuestas x ON x.id = r.respuesta_id
+         WHERE r.respuesta_id IN (${quitadas.map(() => '?').join(',')})`,
+        ...quitadas.map((r) => r.id),
+      );
+      if (enUso.length) return { editada: false, enUso: enUso.map((r) => r.canonica) };
+    }
+    await tx.run('DELETE FROM variantes WHERE pregunta_id = ?', preguntaId);
+    for (const r of quitadas) await tx.run('DELETE FROM respuestas WHERE id = ?', r.id);
+    await tx.run(
+      'UPDATE preguntas SET enunciado = ?, alcance = ?, huella = ?, fuentes = ?, rechazos = ?, reserva_id = COALESCE(reserva_id, ?) WHERE id = ?',
+      nueva.enunciado,
+      nueva.alcance,
+      nueva.huella,
+      JSON.stringify(nueva.fuentes),
+      JSON.stringify(nueva.rechazos.map((r) => ({ formas: r.formas, motivo: r.motivo, ejemplo: r.textos[0] }))),
+      nueva.id,
+      preguntaId,
+    );
+    for (const r of nueva.respuestas) {
+      const fuente = r.fuente ?? nueva.fuentes[0];
+      const existente = porClave.get(normalizar(r.canonica));
+      let respuestaId = existente?.id;
+      if (existente) {
+        await tx.run(
+          'UPDATE respuestas SET canonica = ?, rareza = ?, puntos = ?, explicacion = ?, fuente_url = ?, fuente_titulo = ?, variantes = ? WHERE id = ?',
+          r.canonica, r.rareza, r.puntos, r.explicacion, fuente.url, fuente.titulo, JSON.stringify(r.variantes), existente.id,
+        );
+      } else {
+        respuestaId = (
+          await tx.run(
+            'INSERT INTO respuestas (pregunta_id, canonica, rareza, puntos, explicacion, fuente_url, fuente_titulo, variantes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            preguntaId, r.canonica, r.rareza, r.puntos, r.explicacion, fuente.url, fuente.titulo, JSON.stringify(r.variantes),
+          )
+        ).lastInsertRowid;
+      }
+      for (const forma of r.formas) await tx.run('INSERT OR IGNORE INTO variantes (pregunta_id, normalizada, respuesta_id) VALUES (?, ?, ?)', preguntaId, forma, respuestaId);
+    }
+    // Todas las instancias descartan su caché del banco.
+    await tx.run(
+      `INSERT INTO meta (clave, valor) VALUES ('version_banco', '1')
+       ON CONFLICT(clave) DO UPDATE SET valor = CAST(CAST(valor AS INTEGER) + 1 AS TEXT)`,
+    );
+    return { editada: true };
+  });
 }

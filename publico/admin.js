@@ -110,6 +110,7 @@ const cargadores = {
   resumen: cargarResumen,
   desafios: cargarDesafios,
   crear: () => elegirModoCrear(modoCrear),
+  reserva: cargarReserva,
   corridas: cargarCorridas,
   reportes: cargarReportes,
 };
@@ -251,6 +252,7 @@ async function verDesafio(fecha) {
         ),
         h('p', { class: 'enunciado' }, p.enunciado),
         h('p', { class: 'alcance' }, p.alcance),
+        h('p', {}, h('button', { type: 'button', class: 'secundario chico', onclick: () => editarPublicada(modo, fecha, p.posicion) }, 'Editar pregunta')),
         h(
           'div',
           { class: 'tabla-envoltura' },
@@ -693,6 +695,244 @@ async function copiarTexto(texto) {
     document.execCommand('copy');
     area.remove();
   }
+}
+
+// ───────── Editor de preguntas (publicadas y de la reserva) ─────────
+
+const CATEGORIAS_MODO = {
+  normal: [['geografia', 'Geografía'], ['historia', 'Historia'], ['ciencia', 'Ciencia'], ['deportes', 'Deportes'], ['cine', 'Cine'], ['musica', 'Música'], ['literatura', 'Literatura']],
+  farandula: [['farandula', 'Farándula']],
+  geografia: [['geografia', 'Geografía']],
+};
+const RAREZAS_EDITOR = [['grava', 'Grava · 10'], ['cobre', 'Cobre · 30'], ['plata', 'Plata · 60'], ['oro', 'Oro · 85'], ['diamante', 'Diamante · 100']];
+// Qué se está editando: { tipo: 'publicada', modo, fecha, posicion } | { tipo: 'reserva', modo, nueva }.
+let edicion = null;
+
+function filaRespuesta(r = {}) {
+  const celda = (hijo) => h('td', {}, hijo);
+  const fila = h(
+    'tr',
+    {},
+    celda(h('input', { class: 'ed-canonica', value: r.canonica || '', 'aria-label': 'Respuesta' })),
+    celda(h('input', { class: 'ed-variantes', value: (r.variantes || []).join(', '), 'aria-label': 'Variantes' })),
+    celda(h('select', { class: 'ed-rareza', 'aria-label': 'Rareza' }, RAREZAS_EDITOR.map(([v, t]) => h('option', { value: v, selected: v === (r.rareza || 'grava') }, t)))),
+    celda(h('input', { class: 'ed-explicacion', value: r.explicacion || '', 'aria-label': 'Explicación' })),
+    celda(h('button', { type: 'button', class: 'secundario chico', 'aria-label': 'Quitar esta respuesta', onclick: () => {
+      fila.remove();
+      contarRespuestas();
+    } }, '✕')),
+  );
+  if (r.fuente?.url) fila.dataset.fuente = JSON.stringify(r.fuente); // la fuente propia se conserva tal cual
+  return fila;
+}
+
+function contarRespuestas() {
+  $('ed-cuenta').textContent = `(${$('ed-respuestas').children.length})`;
+}
+
+function llenarEditor(p) {
+  $('ed-id').value = p.id || '';
+  $('ed-categoria').value = p.categoria || $('ed-categoria').options[0]?.value || '';
+  $('ed-enunciado').value = p.enunciado || '';
+  $('ed-alcance').value = p.alcance || '';
+  $('ed-fuentes').value = (p.fuentes || []).map((f) => `${f.url}${f.titulo ? ` | ${f.titulo}` : ''}`).join('\n');
+  $('ed-respuestas').replaceChildren(...(p.respuestas || []).map(filaRespuesta));
+  $('ed-rechazos').value = (p.rechazos || []).map((x) => `${(x.textos || []).join(', ')} | ${x.motivo}`).join('\n');
+  $('ed-form').dataset.estructurada = p.datosEstructurados || '';
+  $('ed-json').value = JSON.stringify(p, null, 2);
+  contarRespuestas();
+}
+
+/** Lee el formulario y arma la pregunta en el formato de los bancos de reserva. */
+function leerEditor() {
+  const lineas = (texto) => texto.split('\n').map((l) => l.trim()).filter(Boolean);
+  const p = {
+    id: $('ed-id').value.trim(),
+    categoria: $('ed-categoria').value,
+    enunciado: $('ed-enunciado').value.trim(),
+    alcance: $('ed-alcance').value.trim(),
+    fuentes: lineas($('ed-fuentes').value).map((l) => {
+      const [url, ...titulo] = l.split('|');
+      return { url: url.trim(), titulo: titulo.join('|').trim() };
+    }),
+    respuestas: [...$('ed-respuestas').children]
+      .map((fila) => ({
+        canonica: fila.querySelector('.ed-canonica').value.trim(),
+        variantes: fila.querySelector('.ed-variantes').value.split(',').map((x) => x.trim()).filter(Boolean),
+        rareza: fila.querySelector('.ed-rareza').value,
+        explicacion: fila.querySelector('.ed-explicacion').value.trim(),
+        ...(fila.dataset.fuente ? { fuente: JSON.parse(fila.dataset.fuente) } : {}),
+      }))
+      .filter((r) => r.canonica),
+    rechazos: lineas($('ed-rechazos').value).map((l) => {
+      const i = l.lastIndexOf('|');
+      return { textos: (i < 0 ? l : l.slice(0, i)).split(',').map((x) => x.trim()).filter(Boolean), motivo: i < 0 ? '' : l.slice(i + 1).trim() };
+    }),
+  };
+  if ($('ed-form').dataset.estructurada) p.datosEstructurados = $('ed-form').dataset.estructurada;
+  return p;
+}
+
+function abrirEditor(pregunta, contexto, { titulo, sub, aviso = '' }) {
+  edicion = contexto;
+  $('ed-titulo').textContent = titulo;
+  $('ed-sub').textContent = sub;
+  $('ed-aviso').textContent = aviso;
+  $('ed-categoria').replaceChildren(...CATEGORIAS_MODO[contexto.modo].map(([v, t]) => h('option', { value: v }, t)));
+  // En una pregunta publicada la categoría no cambia (el día conserva su reparto) y el id tampoco.
+  $('ed-categoria').disabled = contexto.tipo === 'publicada' || CATEGORIAS_MODO[contexto.modo].length === 1;
+  $('ed-id').readOnly = !(contexto.tipo === 'reserva' && contexto.nueva);
+  $('ed-resultado').hidden = true;
+  llenarEditor(pregunta);
+  $('dlg-editor').showModal();
+  $('ed-enunciado').focus();
+}
+
+async function editarPublicada(modo, fecha, posicion) {
+  try {
+    const datos = await api('GET', conModo(`/api/admin/desafios/${fecha}/preguntas/${posicion}`, modo));
+    abrirEditor(datos.pregunta, { tipo: 'publicada', modo, fecha, posicion }, {
+      titulo: `Editar la pregunta ${posicion} del ${fecha}`,
+      sub: `${NOMBRES_MODO[modo]} · se guarda también en la reserva`,
+      aviso: datos.jugadas
+        ? `Ya se jugó ${datos.jugadas} ${datos.jugadas === 1 ? 'vez' : 'veces'}: los puntos de esas partidas no cambian y no se pueden quitar respuestas que ya dio algún jugador.`
+        : '',
+    });
+  } catch (e) {
+    mostrarErrorGeneral(e);
+  }
+}
+
+function mostrarResultadoEditor(ok, texto, detalles) {
+  const caja = $('ed-resultado');
+  caja.className = `resultado ${ok ? 'ok' : 'mal'}`;
+  caja.textContent = [
+    texto,
+    ...(detalles?.errores || []).map((e) => `• ${e}`),
+    ...(detalles?.descartadas || []).map((d) => `• Respuesta «${d.canonica}»: ${d.motivo}`),
+    ...(detalles?.advertencias || []).map((a) => `Aviso: ${a}`),
+  ]
+    .filter(Boolean)
+    .join('\n');
+  caja.hidden = false;
+  caja.scrollIntoView({ block: 'nearest' });
+}
+
+async function guardarEditor(soloValidar) {
+  if (!edicion) return;
+  const pregunta = leerEditor();
+  const ruta = edicion.tipo === 'publicada' ? conModo(`/api/admin/desafios/${edicion.fecha}/preguntas/${edicion.posicion}`, edicion.modo) : conModo('/api/admin/reserva', edicion.modo);
+  $('ed-guardar').disabled = true;
+  $('ed-validar').disabled = true;
+  try {
+    const r = await api('POST', ruta, { pregunta, soloValidar });
+    if (soloValidar) return mostrarResultadoEditor(true, 'La pregunta es válida. Todavía no se guardó.', r);
+    $('dlg-editor').close();
+    if (edicion.tipo === 'publicada') {
+      modoDesafios = edicion.modo;
+      $('des-modo').value = edicion.modo;
+      await verDesafio(edicion.fecha);
+    } else await cargarReserva();
+  } catch (e) {
+    mostrarResultadoEditor(false, e.message, e.datos?.detalles);
+  } finally {
+    $('ed-guardar').disabled = false;
+    $('ed-validar').disabled = false;
+  }
+}
+
+$('ed-form').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  guardarEditor(false);
+});
+$('ed-validar').addEventListener('click', () => guardarEditor(true));
+$('ed-cerrar').addEventListener('click', () => $('dlg-editor').close());
+$('ed-agregar').addEventListener('click', () => {
+  const fila = filaRespuesta();
+  $('ed-respuestas').append(fila);
+  contarRespuestas();
+  fila.querySelector('input').focus();
+});
+$('ed-desde-json').addEventListener('click', () => {
+  try {
+    const p = JSON.parse($('ed-json').value);
+    llenarEditor({ ...p, id: $('ed-id').readOnly ? $('ed-id').value : p.id });
+    mostrarResultadoEditor(true, 'Se pasó el JSON al formulario. Revisalo y guardá.');
+  } catch (e) {
+    mostrarResultadoEditor(false, `JSON inválido: ${e.message}`);
+  }
+});
+// Al abrir el JSON se actualiza con lo que haya en el formulario.
+$('ed-json').closest('details').addEventListener('toggle', (ev) => {
+  if (ev.target.open) $('ed-json').value = JSON.stringify(leerEditor(), null, 2);
+});
+
+// ───────── Reserva ─────────
+
+let modoReserva = 'normal';
+$('reserva-modo').addEventListener('change', () => {
+  modoReserva = $('reserva-modo').value;
+  cargarReserva().catch(mostrarErrorGeneral);
+});
+$('reserva-nueva').addEventListener('click', () => {
+  const categoria = CATEGORIAS_MODO[modoReserva][0][0];
+  abrirEditor({ categoria, fuentes: [], respuestas: [{}, {}, {}, {}, {}], rechazos: [] }, { tipo: 'reserva', modo: modoReserva, nueva: true }, {
+    titulo: 'Nueva pregunta de reserva',
+    sub: `${NOMBRES_MODO[modoReserva]} · el id se completa solo si lo dejás vacío`,
+  });
+});
+
+const ORIGENES_RESERVA = { archivo: 'archivo', manual: 'cargada', ia: 'IA', edicion: 'editada' };
+
+async function cargarReserva() {
+  const { preguntas, invalidas } = await api('GET', conModo('/api/admin/reserva', modoReserva));
+  const activas = preguntas.filter((p) => p.activa).length;
+  $('reserva-nota').textContent = `${activas} activa(s) de ${preguntas.length}`;
+  const cambiar = (id, activa) => async () => {
+    await api('POST', conModo('/api/admin/reserva/estado', modoReserva), { id, activa }).catch(mostrarErrorGeneral);
+    await cargarReserva();
+  };
+  $('reserva-lista').replaceChildren(
+    ...(invalidas.length
+      ? [h('p', { class: 'error' }, `${invalidas.length} pregunta(s) guardadas ya no pasan la validación y no se usan: ${invalidas.map((i) => `${i.id} (${i.errores[0]})`).join('; ')}`)]
+      : []),
+    preguntas.length
+      ? h(
+          'div',
+          { class: 'tabla-envoltura' },
+          h(
+            'table',
+            { class: 'tabla reserva-tabla' },
+            h('thead', {}, h('tr', {}, h('th', {}, 'Pregunta'), h('th', {}, 'Categoría'), h('th', { class: 'num' }, 'Resp.'), h('th', {}, 'Origen'), h('th', {}, 'Usada'), h('th', {}, ''))),
+            h(
+              'tbody',
+              {},
+              preguntas.map((r) =>
+                h(
+                  'tr',
+                  { class: r.activa ? null : 'inactiva' },
+                  h('td', { class: 'enunciado-celda' }, h('strong', {}, r.pregunta.enunciado), h('span', { class: 'vacio' }, r.id)),
+                  h('td', {}, r.pregunta.categoria),
+                  h('td', { class: 'num' }, r.pregunta.respuestas.length),
+                  h('td', {}, h('span', { class: `etiqueta ${r.origen}` }, ORIGENES_RESERVA[r.origen] || r.origen), r.activa ? null : [' ', h('span', { class: 'etiqueta mal' }, 'inactiva')]),
+                  h('td', {}, r.usos ? `${r.usos.veces} ${r.usos.veces === 1 ? 'vez' : 'veces'} · última ${r.usos.ultima}` : 'nunca'),
+                  h(
+                    'td',
+                    {},
+                    h(
+                      'div',
+                      { class: 'acciones' },
+                      h('button', { type: 'button', class: 'secundario chico', onclick: () => abrirEditor(r.pregunta, { tipo: 'reserva', modo: modoReserva, nueva: false }, { titulo: 'Editar pregunta de reserva', sub: `${NOMBRES_MODO[modoReserva]} · ${r.id}` }) }, 'Editar'),
+                      h('button', { type: 'button', class: 'secundario chico', onclick: cambiar(r.id, !r.activa) }, r.activa ? 'Desactivar' : 'Activar'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      : h('p', { class: 'vacio' }, 'No hay preguntas en la reserva de este modo.'),
+  );
 }
 
 // ───────── Corridas ─────────

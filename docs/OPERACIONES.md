@@ -75,6 +75,7 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | 5 | `indices_consultas` | 6 índices nuevos (ver §8) | sí (solo índices) |
 | 6 | `uso_ia_en_corridas` | columnas `llamadas_ia`, `tokens_*`, `costo_estimado_usd` en `corridas` (con valores por defecto) + índice | sí (`ADD COLUMN` con default) |
 | 7 | `modos_de_juego` | `desafios` pasa de `UNIQUE(fecha)` a `UNIQUE(modo, fecha)` con la columna `modo` (default `'normal'`); índice `desafios_fecha`; columna `modo` en `corridas` | sí, con una salvedad (ver abajo) |
+| 8 | `reserva_en_la_base` | tabla `reserva` (preguntas de reserva guardadas y editadas desde el panel) + índice por modo | sí (tabla nueva) |
 
 **Reglas:** solo cambios aditivos; nunca se edita una migración publicada; cada una es idempotente y
 corre en una transacción (si dos instancias arrancan a la vez, la segunda ve la versión registrada).

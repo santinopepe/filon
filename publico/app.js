@@ -211,8 +211,27 @@ function mostrar(pantalla) {
   estado.pantalla = pantalla;
   $('panel').scrollTop = 0;
   window.scrollTo({ top: 0, behavior: 'instant' });
+  ajustarAlTeclado();
   escena.disponer();
 }
+
+// Teclado en celulares: al abrirse, la parte visible de la pantalla (visualViewport) se achica y, en
+// iOS, además se desplaza hacia arriba, llevándose la pregunta. Mientras se responde, la ronda se
+// acomoda a esa zona visible: la pregunta arriba (compacta) y el campo justo debajo.
+function ajustarAlTeclado() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const abierto = estado.pantalla === 'ronda' && innerHeight - vv.height > 120;
+  const raiz = document.documentElement.style;
+  raiz.setProperty('--vv-arriba', `${abierto ? Math.max(0, vv.offsetTop) : 0}px`);
+  raiz.setProperty('--vv-alto', `${abierto ? vv.height : innerHeight}px`);
+  if (document.body.classList.contains('teclado-abierto') !== abierto) {
+    document.body.classList.toggle('teclado-abierto', abierto);
+    escena?.disponer();
+  }
+}
+window.visualViewport?.addEventListener('resize', ajustarAlTeclado);
+window.visualViewport?.addEventListener('scroll', ajustarAlTeclado);
 
 // El scroll de la página recorre únicamente la parte de la mina que se excavó.
 function actualizarRecorrido() {

@@ -131,6 +131,12 @@ test('con IA: depura respuestas falsas por fuentes y por revisión, y publica el
   assert.ok(!canonicas.includes('Atlántida'));
   const detalle = JSON.parse((await e.db.get('SELECT detalle FROM corridas WHERE id = ?', r.corridaId)).detalle);
   assert.ok(detalle.descartes.some((d) => d.canonica === 'Atlántida' && d.etapa === 'fuentes'));
+  // Las preguntas de la IA quedan en la reserva (sin la respuesta falsa) y el día las referencia.
+  const enReserva = await e.db.all("SELECT id, pregunta FROM reserva WHERE origen = 'ia'");
+  assert.equal(enReserva.length, 7);
+  assert.ok(enReserva.every((f) => !f.pregunta.includes('Atlántida')));
+  const referencias = await e.db.all('SELECT reserva_id FROM preguntas WHERE reserva_id IS NOT NULL');
+  assert.deepEqual(new Set(referencias.map((x) => x.reserva_id)), new Set(enReserva.map((x) => x.id)));
 });
 
 test('con IA: la revisión adversarial solo puede quitar respuestas', async () => {
