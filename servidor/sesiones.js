@@ -1,9 +1,10 @@
 // Sesiones administrativas del lado del servidor.
 // - El TOKEN_ADMIN solo viaja una vez, al iniciar sesión, y se compara en tiempo constante.
 // - La sesión es un token opaco aleatorio en una cookie HttpOnly + SameSite=Strict (__Host- con HTTPS).
-// - En la base se guarda solo el SHA-256 del token: una copia de la base no permite usar sesiones.
+// - En la base se guarda solo un HMAC del token con el TOKEN_ADMIN como clave: una copia de la base no
+//   permite usar sesiones, y al rotar el TOKEN_ADMIN todas las sesiones anteriores dejan de valer.
 // - Vence por inactividad (renovable con la actividad) y por una vida máxima absoluta.
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 const sha256 = (texto) => createHash('sha256').update(String(texto)).digest();
 const RENOVAR_CADA_MS = 60_000; // no escribir en la base en cada solicitud
@@ -18,7 +19,8 @@ export function crearSesionesAdmin({ db, config, ahora = () => Date.now() }) {
   const nombreCookie = config.cookieSegura ? '__Host-filon_admin' : 'filon_admin';
   const inactividad = config.admin.inactividadMs;
   const vidaMaxima = config.admin.vidaMaximaMs;
-  const hash = (token) => sha256(token).toString('hex');
+  // La sesión queda atada a la credencial con la que se abrió: con otro TOKEN_ADMIN el hash no coincide.
+  const hash = (token) => createHmac('sha256', String(config.tokenAdmin)).update(token).digest('hex');
 
   const cookie = (valor, maxAgeMs) =>
     [

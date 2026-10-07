@@ -230,10 +230,11 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
     /**
      * Estado del día para un modo (desafío, partida de hoy y una pendiente de ayer) y, en `modos`,
      * cómo está cada uno de los tres: el límite es una partida por persona, modo y día.
+     * registrar=false no guarda la visita (el jugador se crea igual al empezar una partida).
      */
-    async estado(jugadorId, modo = MODO_POR_DEFECTO) {
+    async estado(jugadorId, modo = MODO_POR_DEFECTO, { registrar = true } = {}) {
       const t = ahora();
-      await asegurarJugador(jugadorId, t);
+      if (registrar) await asegurarJugador(jugadorId, t);
       const hoy = fechaLocal(t, zona);
       const modos = [];
       let desafio = null;
@@ -397,24 +398,30 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
     async reportar(jugadorId, partidaId, posicion, textoBruto, comentarioBruto) {
       const t = ahora();
-      const partida = await obtenerPartida(jugadorId, partidaId);
-      const ronda = await db.get('SELECT pregunta_id FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
+      // mantener() cierra las rondas vencidas: una ronda cuyo tiempo ya pasó se puede reportar.
+      const partida = await mantener(await obtenerPartida(jugadorId, partidaId), t);
+      const ronda = await db.get('SELECT pregunta_id, estado FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
       if (!ronda) throw new ErrorJuego(409, 'ronda_no_iniciada', 'Solo podés reportar respuestas de rondas que ya jugaste.');
+      if (ronda.estado === 'activa') throw new ErrorJuego(409, 'ronda_activa', 'Podés reportar cuando termine la ronda.');
       const texto = String(textoBruto ?? '').trim().replace(/\s+/g, ' ').slice(0, MAX_LARGO_RESPUESTA);
       const comentario = String(comentarioBruto ?? '').trim().slice(0, 300);
       const normalizado = normalizar(texto);
       if (!normalizado) throw new ErrorJuego(400, 'reporte_vacio', 'Escribí la respuesta que querés reportar.');
-      const cantidad = (
-        await db.get('SELECT COUNT(*) AS n FROM reportes WHERE jugador_id = ? AND pregunta_id IN (SELECT pregunta_id FROM rondas WHERE partida_id = ?)', jugadorId, partida.id)
-      ).n;
-      if (cantidad >= MAX_REPORTES_POR_PARTIDA) throw new ErrorJuego(429, 'demasiados_reportes', 'Ya enviaste muchos reportes en esta partida.');
       const ev = await evaluarTexto(db, ronda.pregunta_id, texto);
       if (ev.aceptada || ev.sugerencia) return { ok: true, yaValida: true };
-      const r = await db.run(
-        'INSERT OR IGNORE INTO reportes (jugador_id, pregunta_id, texto, normalizado, comentario, creado_en) VALUES (?, ?, ?, ?, ?, ?)',
-        jugadorId, ronda.pregunta_id, texto, normalizado, comentario || null, t,
-      );
-      return { ok: true, duplicado: r.changes === 0 };
+      // Tope, duplicado y alta en la misma transacción (BEGIN IMMEDIATE): envíos simultáneos no superan el máximo.
+      // Un reporte repetido no ocupa cupo.
+      return transaccion(db, async (tx) => {
+        const previo = await tx.get('SELECT 1 FROM reportes WHERE jugador_id = ? AND pregunta_id = ? AND normalizado = ?', jugadorId, ronda.pregunta_id, normalizado);
+        if (previo) return { ok: true, duplicado: true };
+        const { n } = await tx.get('SELECT COUNT(*) AS n FROM reportes WHERE jugador_id = ? AND pregunta_id IN (SELECT pregunta_id FROM rondas WHERE partida_id = ?)', jugadorId, partida.id);
+        if (n >= MAX_REPORTES_POR_PARTIDA) throw new ErrorJuego(429, 'demasiados_reportes', 'Ya enviaste muchos reportes en esta partida.');
+        await tx.run(
+          'INSERT INTO reportes (jugador_id, pregunta_id, texto, normalizado, comentario, creado_en) VALUES (?, ?, ?, ?, ?, ?)',
+          jugadorId, ronda.pregunta_id, texto, normalizado, comentario || null, t,
+        );
+        return { ok: true, duplicado: false };
+      });
     },
   };
 }

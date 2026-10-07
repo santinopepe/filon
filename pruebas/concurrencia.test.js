@@ -174,3 +174,23 @@ test('numeración: cargar un día anterior al primero renumera todo según la fe
     cerrar();
   }
 });
+
+test('reportes simultáneos en dos instancias no superan el máximo por partida', async () => {
+  const { db, a, b, cerrar } = await escenario();
+  try {
+    const yo = '55555555-5555-4555-8555-555555555555';
+    const p = await a.juego.iniciarPartida(yo);
+    await a.juego.iniciarRonda(yo, p.id, 1);
+    await a.juego.pasar(yo, p.id, 1);
+    const { pregunta_id: preguntaId } = await db.get('SELECT pregunta_id FROM rondas WHERE partida_id = ? AND posicion = 1', p.id);
+    for (let i = 0; i < 14; i++) {
+      await db.run('INSERT INTO reportes (jugador_id, pregunta_id, texto, normalizado, creado_en) VALUES (?, ?, ?, ?, 0)', yo, preguntaId, `previo ${i}`, `previo ${i}`);
+    }
+    const envios = await Promise.allSettled(Array.from({ length: 6 }, (_, i) => (i % 2 ? a : b).juego.reportar(yo, p.id, 1, `zzz inexistente ${i}`)));
+    assert.equal(envios.filter((r) => r.status === 'fulfilled').length, 1, 'entra uno solo');
+    assert.ok(envios.filter((r) => r.status === 'rejected').every((r) => /muchos reportes/.test(r.reason.message)));
+    assert.equal((await db.get('SELECT COUNT(*) AS n FROM reportes WHERE jugador_id = ?', yo)).n, 15);
+  } finally {
+    await cerrar();
+  }
+});

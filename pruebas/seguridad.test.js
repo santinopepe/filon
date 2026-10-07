@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { leerCookies, ipCliente, CABECERAS_SEGURIDAD } from '../servidor/http.js';
 import { crearRegistro } from '../servidor/registro.js';
 import { iniciarServidor } from '../servidor/index.js';
+import { cargarConfig } from '../servidor/config.js';
 
 test('cookies con percent-encoding inválido no rompen nada; IP del cliente sin confiar en encabezados falsos', async () => {
   assert.deepEqual(leerCookies({ headers: { cookie: 'a=%E0%A4%A; b=ok; c=%zz' } }), { b: 'ok' });
@@ -38,4 +39,10 @@ test('los logs estructurados ocultan secretos, cookies e IPs', () => {
   assert.equal(dato.ruta, '/api/x');
   assert.equal(dato.anidado.ok, 1);
   assert.ok(!/abc|Bearer x|filon_admin=1|1\.2\.3\.4|sk-1/.test(lineas[0]));
+});
+
+test('en Vercel la cookie siempre es Secure, aunque se copie COOKIE_SEGURA=0 de un .env local', () => {
+  assert.equal(cargarConfig({ sinArchivoEnv: true, env: { VERCEL: '1', COOKIE_SEGURA: '0' } }).cookieSegura, true);
+  assert.equal(cargarConfig({ sinArchivoEnv: true, env: { VERCEL: '', COOKIE_SEGURA: '0' } }).cookieSegura, false);
+  assert.equal(cargarConfig({ sinArchivoEnv: true, env: { VERCEL: '', COOKIE_SEGURA: '1' } }).cookieSegura, true);
 });

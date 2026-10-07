@@ -277,6 +277,8 @@ test('reportar una respuesta faltante', async () => {
   let p = await e.juego.iniciarPartida(yo);
   await assert.rejects(() => e.juego.reportar(yo, p.id, 1, 'algo'), (err) => err.codigo === 'ronda_no_iniciada');
   p = await e.juego.iniciarRonda(yo, p.id, 1);
+  await assert.rejects(() => e.juego.reportar(yo, p.id, 1, 'Respuesta Nueva'), (err) => err.codigo === 'ronda_activa', 'con la ronda en juego no se reporta');
+  p = await e.juego.pasar(yo, p.id, 1);
   assert.deepEqual(await e.juego.reportar(yo, p.id, 1, 'Respuesta Nueva', 'Está en tal libro'), { ok: true, duplicado: false });
   assert.deepEqual(await e.juego.reportar(yo, p.id, 1, 'respuesta nueva'), { ok: true, duplicado: true });
   const valida = (await respuestasDe(e.db, '2026-10-05', 1))[0].canonica;

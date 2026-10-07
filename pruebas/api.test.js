@@ -323,3 +323,25 @@ test('administración: estadísticas de jugadores, distribución y preguntas del
     await app.cerrar();
   }
 });
+
+test('visitas sin cookie: el registro de jugadores tiene un tope por IP compartido entre instancias', async () => {
+  const ruta = join(dir, `${Math.random().toString(36).slice(2)}.db`);
+  const a = await levantar({ RUTA_BD: ruta, PROGRAMADOR_INTERNO: '0' });
+  const b = await levantar({ RUTA_BD: ruta, PROGRAMADOR_INTERNO: '0' });
+  try {
+    const sinCookie = (app) => fetch(`http://127.0.0.1:${app.puerto}/api/estado`).then((r) => r.status);
+    const estados = [];
+    for (let i = 0; i < 20; i++) estados.push(await sinCookie(a), await sinCookie(b));
+    assert.ok(estados.every((e) => e === 200), 'el juego responde igual pasado el tope');
+    assert.equal((await a.db.get('SELECT COUNT(*) AS n FROM jugadores')).n, 30, '40 visitas sin cookie, 30 registradas');
+    // Con cookie, el jugador se registra aunque la IP haya pasado el tope; y al jugar, siempre.
+    const c = cliente(a.puerto);
+    await c.pedir('GET', '/api/estado');
+    assert.equal((await a.db.get('SELECT COUNT(*) AS n FROM jugadores')).n, 30);
+    await c.pedir('GET', '/api/estado');
+    assert.equal((await a.db.get('SELECT COUNT(*) AS n FROM jugadores')).n, 31, 'la segunda visita (con cookie) sí queda');
+  } finally {
+    await a.cerrar();
+    await b.cerrar();
+  }
+});

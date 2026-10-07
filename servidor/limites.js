@@ -9,6 +9,8 @@ export const POLITICAS = Object.freeze({
   login_admin: { max: 5, ventanaMs: 15 * 60_000, alFallar: 'denegar' },
   admin: { max: 240, ventanaMs: 60_000 },
   partida: { max: 30, ventanaMs: 60_000 },
+  // Visitantes nuevos registrados por IP (sin cookie). Pasado el máximo se juega igual, pero no se guarda la visita.
+  visitante: { max: 30, ventanaMs: 10 * 60_000 },
   respuesta: { max: 90, ventanaMs: 60_000 },
   revelado: { max: 60, ventanaMs: 60_000 },
   reporte: { max: 20, ventanaMs: 10 * 60_000 },
