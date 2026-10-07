@@ -111,7 +111,7 @@ npm run generar -- --modo farandula      # un solo modo (por defecto, los tres)
 - **Recarga**: el estado vive en el servidor. Recargar vuelve a la misma ronda con el tiempo restante real; pedir de nuevo una ronda ya empezada no reinicia el reloj; no se puede saltar ni volver a una ronda.
 - **Medianoche**: la partida queda atada a su desafío. Si empezaste a las 23:58, terminás con esas preguntas aunque ya sea el día siguiente (tenés hasta 12 h después del fin del día; luego las rondas sin jugar caducan). El desafío nuevo es otra partida.
 - **Validación de respuestas** contra el banco almacenado. La respuesta y el banco de una ronda nunca se envían al navegador hasta que la ronda termina.
-- **Reportes**: después de cada ronda se puede reportar una respuesta válida que falte. Se revisan en el panel (`/admin` → Reportes) o con `npm run admin -- reportes`. Las puntuaciones del día no cambian.
+- **Reportes**: después de cada ronda (no mientras está en juego) se puede reportar una respuesta válida que falte. Se revisan en el panel (`/admin` → Reportes) o con `npm run admin -- reportes`. Las puntuaciones del día no cambian.
 - **Concurrencia**: el tope de intentos por ronda, el cierre de la ronda y la suma de puntos se deciden en una misma transacción; dos envíos simultáneos (doble clic, dos pestañas, dos instancias) no superan el máximo ni puntúan dos veces.
 - **Límites**: una partida por identificador anónimo (una cookie). Sin cuentas, borrar las cookies o usar otro navegador permite volver a jugar; el ranking cuenta lo que llega.
 
@@ -151,10 +151,10 @@ npm run verificar               # todo lo que corre el CI, en el mismo orden
 | --- | --- |
 | `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
 | `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
-| `npm test` | 102 pruebas unitarias y de integración (`node:test`) |
+| `npm test` | 107 pruebas unitarias y de integración (`node:test`) |
 | `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
 | `npm run validar-reserva` | los tres bancos: Normal (21, 3 por categoría), Farándula (9) y Geografía (13), cada temático con al menos 7 |
-| `npm run test:navegador` | 18 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
+| `npm run test:navegador` | 19 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
 | `npm run test:recorrido` | recorrido histórico en navegador (19 comprobaciones, guarda capturas en `capturas/`) |
 | `npm run explicar-consultas` | `EXPLAIN QUERY PLAN` de las consultas principales |
 

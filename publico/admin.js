@@ -62,6 +62,7 @@ function mostrarIngreso(mensaje = '') {
   $('panel').hidden = true;
   $('nav').hidden = true;
   $('salir').hidden = true;
+  $('error-salir').hidden = true;
   $('estado-base').textContent = '';
   $('ingreso').hidden = false;
   $('error-ingreso').textContent = mensaje;
@@ -86,9 +87,22 @@ $('ingreso').addEventListener('submit', async (ev) => {
   }
 });
 
+// Solo se da por cerrada cuando el servidor confirma que la sesión ya no vale; si la red o el servidor
+// fallan, el panel queda como está y se puede reintentar (la cookie HttpOnly sigue sirviendo hasta revocarla).
 $('salir').addEventListener('click', async () => {
-  await api('DELETE', '/api/admin/sesion').catch(() => {}); // revoca la sesión en el servidor
-  mostrarIngreso('Cerraste la sesión.');
+  $('salir').disabled = true;
+  $('error-salir').hidden = true;
+  try {
+    await api('DELETE', '/api/admin/sesion');
+    const { autenticado } = await api('GET', '/api/admin/sesion');
+    if (autenticado) throw new Error('La sesión sigue activa.');
+    mostrarIngreso('Cerraste la sesión.');
+  } catch {
+    $('error-salir').textContent = 'No se pudo cerrar la sesión. Revisá la conexión y volvé a tocar «Salir».';
+    $('error-salir').hidden = false;
+  } finally {
+    $('salir').disabled = false;
+  }
 });
 
 async function iniciarPanel() {

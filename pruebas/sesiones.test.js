@@ -171,3 +171,45 @@ test('transición: Bearer TOKEN_ADMIN sigue sirviendo para scripts, salvo con AD
     await estricto.cerrar();
   }
 });
+
+test('rotar el TOKEN_ADMIN invalida las sesiones abiertas con el anterior (también en otra instancia)', async () => {
+  const ruta = join(dir, `${Math.random().toString(36).slice(2)}.db`);
+  const vieja = await levantar({ RUTA_BD: ruta, ADMIN_PERMITIR_BEARER: '0' });
+  const b = navegador(vieja.puerto);
+  try {
+    assert.equal((await b.pedir('POST', '/api/admin/sesion', { token: TOKEN })).estado, 200);
+    assert.equal((await b.pedir('GET', '/api/admin/desafios')).estado, 200);
+  } finally {
+    await vieja.cerrar();
+  }
+  const nueva = await levantar({ RUTA_BD: ruta, TOKEN_ADMIN: 'otro-token-maestro-456', ADMIN_PERMITIR_BEARER: '0' });
+  try {
+    const conCookieVieja = navegador(nueva.puerto);
+    for (const [k, v] of b.frasco) conCookieVieja.frasco.set(k, v);
+    assert.equal((await conCookieVieja.pedir('GET', '/api/admin/desafios')).estado, 401, 'la cookie emitida con el token anterior ya no vale');
+    assert.equal((await conCookieVieja.pedir('GET', '/api/admin/sesion')).datos.autenticado, false);
+    assert.equal((await conCookieVieja.pedir('POST', '/api/admin/sesion', { token: TOKEN })).estado, 401, 'el token anterior tampoco');
+    const c = navegador(nueva.puerto);
+    assert.equal((await c.pedir('POST', '/api/admin/sesion', { token: 'otro-token-maestro-456' })).estado, 200);
+    assert.equal((await c.pedir('GET', '/api/admin/desafios')).estado, 200, 'una sesión con el token nuevo funciona');
+  } finally {
+    await nueva.cerrar();
+  }
+});
+
+test('las tareas programadas no aceptan la cookie del panel: solo «Authorization: Bearer»', async () => {
+  const app = await levantar({ CRON_SECRET: 'secreto-cron', ADMIN_PERMITIR_BEARER: '1' });
+  try {
+    const b = navegador(app.puerto);
+    assert.equal((await b.pedir('POST', '/api/admin/sesion', { token: TOKEN })).estado, 200);
+    const ajeno = { origin: 'https://otro.ejemplo', 'sec-fetch-site': 'same-site' };
+    for (const tarea of ['hoy', 'manana', 'limpieza']) {
+      assert.equal((await b.pedir('GET', `/api/cron/${tarea}`, undefined, ajeno)).estado, 401, `${tarea}: con la cookie sola no corre`);
+    }
+    assert.equal((await app.db.get('SELECT COUNT(*) AS n FROM desafios')).n, 0, 'nada se publicó');
+    assert.equal((await b.pedir('GET', '/api/cron/hoy', undefined, { authorization: 'Bearer secreto-cron' })).estado, 200);
+    assert.equal((await b.pedir('GET', '/api/cron/limpieza', undefined, { authorization: `Bearer ${TOKEN}` })).estado, 200, 'Bearer TOKEN_ADMIN sigue sirviendo en la transición');
+  } finally {
+    await app.cerrar();
+  }
+});

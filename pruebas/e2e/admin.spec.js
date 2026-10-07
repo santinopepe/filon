@@ -43,6 +43,23 @@ test('login y logout: sesión en cookie HttpOnly, nada en el almacenamiento, rev
   expect(errores).toEqual([]);
 });
 
+test('logout: si la revocación falla, el panel lo dice y deja reintentar', async ({ page, context }) => {
+  await ingresar(page);
+  await expect(page.locator('#nav')).toBeVisible();
+  await page.route('**/api/admin/sesion', (r) => (r.request().method() === 'DELETE' ? r.abort() : r.continue()));
+  await page.click('#salir');
+  await expect(page.locator('#error-salir')).toContainText('No se pudo cerrar la sesión');
+  await expect(page.locator('#nav')).toBeVisible();
+  await expect(page.locator('#ingreso')).toBeHidden();
+  expect((await context.request.get('/api/admin/desafios')).status()).toBe(200); // la sesión sigue: no se dijo lo contrario
+
+  await page.unroute('**/api/admin/sesion');
+  await page.click('#salir');
+  await expect(page.locator('#error-ingreso')).toHaveText('Cerraste la sesión.');
+  await expect(page.locator('#error-salir')).toBeHidden();
+  expect((await context.request.get('/api/admin/desafios')).status()).toBe(401);
+});
+
 test('importación JSON: inválida no guarda nada; válida publica el día', async ({ page }) => {
   await ingresar(page);
   await page.click('#tab-crear');

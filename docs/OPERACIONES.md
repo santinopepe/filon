@@ -55,8 +55,8 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | --- | --- | --- |
 | `BD_URL`, `BD_TOKEN` | sí | base principal de Turso (prioridad sobre `TURSO_*`) |
 | `SECRETO_SESION` | sí | firma cookies y es la sal del hash de IPs; rotarlo cierra todas las sesiones de jugadores |
-| `TOKEN_ADMIN` | para el panel | solo se usa para iniciar sesión |
-| `CRON_SECRET` | sí | Vercel Cron lo envía a `/api/cron/*` |
+| `TOKEN_ADMIN` | para el panel | solo se usa para iniciar sesión; rotarlo invalida todas las sesiones del panel abiertas con el anterior |
+| `CRON_SECRET` | sí | Vercel Cron lo envía a `/api/cron/*`; esas rutas solo aceptan `Authorization: Bearer` (la cookie del panel no sirve) |
 | `ADMIN_PERMITIR_BEARER` | no (1) | poner `0` cuando ya nadie use `Authorization: Bearer TOKEN_ADMIN` |
 
 ---
@@ -234,7 +234,8 @@ Tarea diaria `GET /api/cron/limpieza` (Vercel Cron, 07:00 UTC). Borra por tandas
   | `login_admin` | 5 / 15 min (si la base falla, se niega) |
   | `admin` (resto del panel) | 240 / min |
   | `partida` | 30 / min · `respuesta` 90 / min · `revelado` 60 / min |
-  | `reporte` | 20 / 10 min |
+  | `visitante` (visitas sin cookie que se registran) | 30 / 10 min; pasado el tope se responde igual, sin guardar la visita |
+  | `reporte` | 20 / 10 min (además, 15 por partida, controlado dentro de una transacción) |
   | `importar` | 20 / h · `generar` 10 / h · `cron` 30 / h |
 
 - **Por instancia** (primera barrera, en memoria): ~8 solicitudes/s por IP.

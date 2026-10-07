@@ -99,8 +99,12 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     return null;
   }
 
-  const esCron = async (req, cookies) =>
-    secretoCoincide(bearer(req), config.secretoCron) || Boolean(await autorizarAdmin(req, cookies));
+  // Las tareas programadas solo aceptan credenciales en Authorization (el navegador nunca las agrega solo):
+  // la cookie del panel no sirve, así una página ajena no puede dispararlas con la sesión del administrador.
+  const esCron = (req) => {
+    const token = bearer(req);
+    return secretoCoincide(token, config.secretoCron) || (config.admin.permitirBearer && secretoCoincide(token, config.tokenAdmin));
+  };
 
   // Defensa adicional contra CSRF (además de SameSite=Strict) para cambios hechos con la cookie de sesión.
   const mismoOrigen = (req) => {
@@ -121,7 +125,12 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return { ok: true, fecha: hoy, desafioPublicado: modos[MODO_POR_DEFECTO], modos };
     }, { publica: true }],
     // ?modo=normal|farandula|geografia (por defecto, normal).
-    ['GET', /^\/api\/estado$/, ({ jugadorId, req }) => juego.estado(jugadorId, modoDe(req))],
+    // Una visita sin cookie crea un jugador: se cuentan por IP en la base (vale entre instancias) y, pasado el
+    // máximo, se responde igual pero sin guardarla, para que pedidos sin cookie no llenen la tabla.
+    ['GET', /^\/api\/estado$/, async ({ jugadorId, req, nueva }) => {
+      const registrar = !nueva || (await limites.consumir('visitante', ip(req))).permitido;
+      return juego.estado(jugadorId, modoDe(req), { registrar });
+    }],
     ['POST', /^\/api\/partidas$/, async ({ jugadorId, cuerpo }) => ({ partida: await juego.iniciarPartida(jugadorId, leerModo(cuerpo.modo)) }), { limite: 'partida' }],
     ['GET', /^\/api\/partidas\/([0-9a-f-]{36})$/, async ({ jugadorId, m }) => ({ partida: await juego.verPartida(jugadorId, m[1]) })],
     // Revelado paginado: ?desde=0&limite=100&buscar=texto (limite ≤ LIMITES.paginaRevelado).
@@ -533,7 +542,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         enviarJson(res, 403, { error: 'origen_invalido' });
         return true;
       }
-      if (opciones.cron && !(await esCron(req, cookies))) {
+      if (opciones.cron && !esCron(req)) {
         registro.warn('cron_no_autorizado', { ruta: camino });
         enviarJson(res, 401, { error: 'no_autorizado' });
         return true;
@@ -555,7 +564,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     if (ident.nueva) cabeceras['set-cookie'] = ident.nueva;
     try {
       const cuerpo = metodo === 'POST' ? await leerJson(req, opciones.limiteJson ?? LIMITES.cuerpoJson) : {};
-      const resultado = await fn({ jugadorId: ident.jugadorId, m, cuerpo, req, cookies, cabeceras });
+      const resultado = await fn({ jugadorId: ident.jugadorId, nueva: Boolean(ident.nueva), m, cuerpo, req, cookies, cabeceras });
       if (resultado?.[CRUDO]) {
         const { tipo, cuerpo: datos, archivo } = resultado[CRUDO];
         res.writeHead(200, {

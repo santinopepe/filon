@@ -136,6 +136,7 @@ button.chico { padding: 4px 10px; font-size: .85rem; }
 .resultado.ok { border-left: 4px solid var(--cian); }
 .resultado.mal { border-left: 4px solid var(--alerta); }
 .error { color: var(--alerta); margin: 0; }
+.error-salir { font-size: 13px; max-width: 280px; }
 
 .pestanas { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
 .pestanas button {

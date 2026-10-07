@@ -79,7 +79,8 @@ export function cargarConfig(sobrescrituras = {}) {
     horasParaRetomar: num(e.HORAS_PARA_RETOMAR, 12),
     maxIntentosPorRonda: num(e.MAX_INTENTOS_POR_RONDA, 40),
     secretoSesion: e.SECRETO_SESION || '',
-    cookieSegura: bool(e.COOKIE_SEGURA, enVercel),
+    // En Vercel siempre es HTTPS: COOKIE_SEGURA=0 (p. ej. copiado de un .env local) no saca el Secure.
+    cookieSegura: enVercel || bool(e.COOKIE_SEGURA, false),
     confiarProxy: bool(e.CONFIAR_PROXY, enVercel),
     tokenAdmin: e.TOKEN_ADMIN || '',
     // Multiplica los máximos de los límites de solicitudes (1 en producción; más alto solo en pruebas E2E).
