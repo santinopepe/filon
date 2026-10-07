@@ -173,3 +173,33 @@ test('crear por modo: pestañas Normal, Farándula y Geografía con prompt e his
   await expect(page.locator('#detalle .cabecera-detalle')).toContainText('Geografía');
   expect(errores).toEqual([]);
 });
+
+test('editar una pregunta publicada y la reserva desde el panel', async ({ page }) => {
+  const errores = vigilarErrores(page);
+  await ingresar(page);
+  await page.click('#tab-desafios');
+  await page.selectOption('#des-modo', 'geografia');
+  await expect(page.locator('#detalle .pregunta')).toHaveCount(7);
+  await page.locator('#detalle .pregunta').nth(1).getByRole('button', { name: 'Editar pregunta' }).click();
+  const editor = page.locator('#dlg-editor');
+  await expect(editor).toBeVisible();
+  await expect(page.locator('#ed-categoria')).toBeDisabled();
+  const original = await page.inputValue('#ed-enunciado');
+  await page.fill('#ed-enunciado', 'x');
+  await page.click('#ed-validar');
+  await expect(page.locator('#ed-resultado')).toHaveClass(/mal/);
+  await page.fill('#ed-enunciado', `${original.replace(/\.$/, '')} (editada).`);
+  await page.click('#ed-agregar');
+  await page.locator('#ed-respuestas tr').last().getByRole('button', { name: 'Quitar esta respuesta' }).click();
+  await page.click('#ed-guardar');
+  await expect(editor).toBeHidden();
+  await expect(page.locator('#detalle .pregunta').nth(1).locator('.enunciado')).toHaveText(/\(editada\)\.$/);
+
+  await page.click('#tab-reserva');
+  await page.selectOption('#reserva-modo', 'geografia');
+  await expect(page.locator('.reserva-tabla tbody tr', { hasText: '(editada).' })).toContainText('editada');
+  const fila = page.locator('.reserva-tabla tbody tr').first();
+  await fila.getByRole('button', { name: 'Desactivar' }).click();
+  await expect(page.locator('#reserva-nota')).toContainText('activa(s) de');
+  expect(errores).toEqual([]);
+});

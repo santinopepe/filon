@@ -333,7 +333,7 @@ export function crearEscenaViaje(canvas, { mundo, alCambiarProfundidad = () => {
     vista.P = limitar(Math.round(vista.alto / PIXELES_POR_ALTURA), 2, 6);
     vista.pose = ['bajando', 'festejando', 'cavando', 'triste'].find((c) => minero?.classList.contains(c)) ?? null;
     const cuerpo = document.body.classList;
-    vista.mostrarFilon = !cuerpo.contains('en-final') || cuerpo.contains('en-recorrido');
+    vista.mostrarFilon = (!cuerpo.contains('en-final') || cuerpo.contains('en-recorrido')) && !cuerpo.contains('teclado-abierto');
     if (animacion) {
       const p = limitar((ahora - animacion.inicio) / animacion.duracion, 0, 1);
       const anterior = vista.x;

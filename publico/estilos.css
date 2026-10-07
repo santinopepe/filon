@@ -1019,6 +1019,30 @@ body.modo-farandula .burbuja, body.modo-geografia .burbuja {
   .modo-opcion[aria-current="true"]::after { top: 9px; left: 9px; padding: 0 6px; font-size: .62rem; }
 }
 
+/* ───────── Celulares: teclado abierto y barra de progreso ─────────
+   Con el teclado abierto, todo lo fijo se acomoda a la parte visible (--vv-arriba y --vv-alto los
+   actualiza app.js): la pregunta queda arriba y el campo de respuesta justo debajo, sin scrollear. */
+@media (max-width: 859px) {
+  body.teclado-abierto .barra { top: var(--vv-arriba, 0px); }
+  body.teclado-abierto .profundimetro { top: calc(var(--vv-arriba, 0px) + 60px); }
+  body.teclado-abierto.en-excavacion .panel {
+    top: calc(var(--vv-arriba, 0px) + 100px);
+    bottom: auto;
+    height: calc(var(--vv-alto, 100dvh) - 100px);
+    padding-bottom: 8px;
+  }
+  body.teclado-abierto.en-excavacion .pantalla { justify-content: flex-start; gap: 8px; }
+  body.teclado-abierto .ronda-arriba { padding: 8px 12px 10px; gap: 4px; }
+  body.teclado-abierto .ronda-arriba .pepitas { display: none; }
+  body.teclado-abierto .enunciado { font-size: 1.05rem; }
+  body.teclado-abierto .alcance { font-size: .8rem; }
+  body.teclado-abierto .ronda-abajo { padding: 10px 12px 6px; gap: 8px; }
+  body.teclado-abierto .gusano, body.teclado-abierto .burbuja { visibility: hidden !important; }
+  /* En las pantallas con scroll (inicio y final), la barra de progreso queda en su lugar de la página
+     en vez de flotar sobre el contenido. */
+  body.en-pagina .profundimetro { position: absolute; }
+}
+
 /* ───────── Movimiento reducido ───────── */
 .movimiento-reducido *, .movimiento-reducido *::before, .movimiento-reducido *::after {
   animation: none !important;

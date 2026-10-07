@@ -290,6 +290,26 @@ export const MIGRACIONES = [
       if (!deCorridas.has('modo')) await tx.run("ALTER TABLE corridas ADD COLUMN modo TEXT NOT NULL DEFAULT 'normal'");
     },
   },
+  {
+    version: 8,
+    nombre: 'reserva_en_la_base',
+    // Reserva editable desde el panel (en Vercel los archivos de datos/ son de solo lectura). Se suma a
+    // los bancos de datos/reserva*.json: una fila con el mismo id que una pregunta del archivo la
+    // reemplaza (edición) o la saca de circulación (activa = 0). Cada pregunta que se publica (manual o
+    // de la IA) queda guardada acá para reutilizarse.
+    sentencias: [
+      `CREATE TABLE IF NOT EXISTS reserva (
+         id TEXT PRIMARY KEY,
+         modo TEXT NOT NULL,
+         pregunta TEXT NOT NULL,
+         origen TEXT NOT NULL CHECK (origen IN ('manual', 'ia', 'edicion')),
+         activa INTEGER NOT NULL DEFAULT 1,
+         creada_en INTEGER NOT NULL,
+         actualizada_en INTEGER NOT NULL
+       )`,
+      'CREATE INDEX IF NOT EXISTS reserva_modo ON reserva(modo, activa)',
+    ],
+  },
 ];
 
 async function migrar(db, cliente, registro) {

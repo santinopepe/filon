@@ -16,6 +16,7 @@
       <button type="button" role="tab" id="tab-resumen" aria-controls="pestana-resumen" tabindex="0" data-pestana="resumen" aria-selected="true">Resumen</button>
       <button type="button" role="tab" id="tab-desafios" aria-controls="pestana-desafios" tabindex="-1" data-pestana="desafios" aria-selected="false">Desafíos</button>
       <button type="button" role="tab" id="tab-crear" aria-controls="pestana-crear" tabindex="-1" data-pestana="crear" aria-selected="false">Crear</button>
+      <button type="button" role="tab" id="tab-reserva" aria-controls="pestana-reserva" tabindex="-1" data-pestana="reserva" aria-selected="false">Reserva</button>
       <button type="button" role="tab" id="tab-corridas" aria-controls="pestana-corridas" tabindex="-1" data-pestana="corridas" aria-selected="false">Corridas</button>
       <button type="button" role="tab" id="tab-reportes" aria-controls="pestana-reportes" tabindex="-1" data-pestana="reportes" aria-selected="false">Reportes <span class="insignia" id="insignia-reportes" hidden></span></button>
     </nav>
@@ -199,10 +200,67 @@
           <p class="estado-copia" data-id="prompt-estado" role="status" aria-live="polite"></p>
         </section>
       </template>
+      <section id="pestana-reserva" class="pestana" role="tabpanel" aria-labelledby="tab-reserva" tabindex="0" hidden>
+        <div class="filtros">
+          <label class="filtro">Modo
+            <select id="reserva-modo">
+              <option value="normal">Normal</option>
+              <option value="farandula">Farándula Argentina</option>
+              <option value="geografia">Geografía</option>
+            </select>
+          </label>
+          <button type="button" id="reserva-nueva">Nueva pregunta</button>
+          <p class="filtro-nota" id="reserva-nota"></p>
+        </div>
+        <p class="sub">La reserva arma los días que no se cargaron a mano. Cada pregunta que se publica (cargada a mano o generada con IA) queda acá para reutilizarse. Las que no están activas no se eligen.</p>
+        <div id="reserva-lista"></div>
+      </section>
       <section id="pestana-corridas" class="pestana" role="tabpanel" aria-labelledby="tab-corridas" tabindex="0" hidden></section>
       <section id="pestana-reportes" class="pestana" role="tabpanel" aria-labelledby="tab-reportes" tabindex="0" hidden></section>
     </div>
   </main>
+  <dialog class="editor" id="dlg-editor" aria-labelledby="ed-titulo">
+    <form id="ed-form" novalidate>
+      <header class="editor-cabecera">
+        <div>
+          <h2 id="ed-titulo">Editar pregunta</h2>
+          <p class="sub" id="ed-sub"></p>
+        </div>
+        <button type="button" class="secundario chico" id="ed-cerrar" aria-label="Cerrar el editor">Cerrar</button>
+      </header>
+      <div class="editor-cuerpo">
+        <div class="editor-fila">
+          <label>Id <input id="ed-id" autocomplete="off" spellcheck="false"></label>
+          <label>Categoría <select id="ed-categoria"></select></label>
+        </div>
+        <label>Enunciado <input id="ed-enunciado" maxlength="180" autocomplete="off"></label>
+        <label>Alcance <textarea id="ed-alcance" rows="2" maxlength="260"></textarea></label>
+        <label>Fuentes <span class="sub">— una por línea: URL | título</span><textarea id="ed-fuentes" rows="2" spellcheck="false"></textarea></label>
+        <div class="editor-respuestas-cabecera">
+          <h3>Respuestas <span class="sub" id="ed-cuenta"></span></h3>
+          <button type="button" class="secundario chico" id="ed-agregar">Agregar respuesta</button>
+        </div>
+        <div class="tabla-envoltura editor-tabla">
+          <table class="tabla">
+            <thead><tr><th>Respuesta</th><th>Variantes <span class="sub">(separadas por coma)</span></th><th>Rareza</th><th>Explicación</th><th></th></tr></thead>
+            <tbody id="ed-respuestas"></tbody>
+          </table>
+        </div>
+        <label>Rechazos <span class="sub">— uno por línea: texto, otro texto | motivo</span><textarea id="ed-rechazos" rows="2"></textarea></label>
+        <details class="formato-json">
+          <summary>Editar como JSON</summary>
+          <textarea id="ed-json" rows="12" spellcheck="false"></textarea>
+          <div class="acciones"><button type="button" class="secundario chico" id="ed-desde-json">Pasar el JSON al formulario</button></div>
+        </details>
+        <p class="sub" id="ed-aviso"></p>
+        <pre class="resultado" id="ed-resultado" hidden></pre>
+      </div>
+      <footer class="acciones editor-pie">
+        <button type="submit" id="ed-guardar">Guardar</button>
+        <button type="button" class="secundario" id="ed-validar">Solo validar</button>
+      </footer>
+    </form>
+  </dialog>
   <div class="tooltip" id="tooltip" role="status" hidden></div>
   <p class="estado-global" id="estado-global" role="alert" hidden></p>
 </body>
