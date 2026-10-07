@@ -155,7 +155,9 @@ Se ignoran mayúsculas, espacios repetidos, tildes, diéresis y signos de puntua
 **Tolerancia: nunca se acepta algo distinto sin que el jugador lo confirme.**
 - Si lo escrito es exactamente el nombre canónico (con la normalización de arriba), se acepta.
 - Si coincide con una **variante** registrada (nombre alternativo, título original, abreviatura) o con una forma sin artículo, el juego responde «¿Quisiste decir «X»?» con el nombre canónico; al confirmar con Enter se acepta y vale los mismos puntos.
-- Si se parece a una sola respuesta (5 letras o más, a una distancia de edición de hasta el 20 % del largo, con un máximo de 3), también **sugiere** el nombre; si hay dos candidatas igual de cercanas, no sugiere nada. Así un error de tipeo no pierde la ronda, pero «Austria» nunca se convierte sola en «Australia».
+- También **sugiere** por apellidos o palabras completas (desde 4 caracteres), palabras en otro orden u omitidas, y subcadenas (desde 5 caracteres): «Márquez», «Márquez Gabriel» o «garciamarq» completan «Gabriel García Márquez» sin necesitar una variante registrada. Si el fragmento corresponde a varias respuestas, no elige ninguna. Los conectores y números solos no alcanzan.
+- Corrige errores de tipeo tanto en nombres completos como en fragmentos: «tolkein» completa «J. R. R. Tolkien». Exige al menos 5 caracteres y tolera una distancia de edición de hasta el 20 % del largo, con un máximo de 3; si hay dos candidatas igual de cercanas, no sugiere nada. Las formas exactas y variantes registradas tienen prioridad. Así «Austria» nunca se convierte sola en «Australia».
+- El autocompletado ocurre al enviar. La sugerencia conserva la ronda abierta y no consume un intento; hace falta otro Enter para confirmar y recibir los puntos. Los rechazos explícitos conservan su explicación.
 
 Al terminar la partida, cada fila del resumen final abre **todas las respuestas válidas** de esa pregunta (ordenadas de mayor a menor puntaje, de a 100, con buscador si son muchas). Durante el juego no se revelan: el servidor las entrega solo para rondas ya cerradas.
 

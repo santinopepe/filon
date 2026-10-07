@@ -22,7 +22,7 @@
       "id": "gm-centroamerica",
       "categoria": "geografia",
       "enunciado": "Nombrá un país de América Central.",
-      "alcance": "Los siete Estados soberanos del istmo centroamericano, de Guatemala a Panamá. No cuentan México ni las islas del Caribe.",
+      "alcance": "Los siete Estados soberanos del istmo centroamericano. No cuentan México ni las islas del Caribe.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/América_Central", "titulo": "América Central — Wikipedia" }],
       "respuestas": [
         { "canonica": "Costa Rica", "variantes": [], "rareza": "grava", "explicacion": "Está entre Nicaragua y Panamá; abolió su ejército en 1948." },
@@ -73,7 +73,7 @@
       "id": "gm-capitales-sudamerica",
       "categoria": "geografia",
       "enunciado": "Nombrá la capital de un país de América del Sur.",
-      "alcance": "Capitales de los 12 Estados soberanos sudamericanos. De Bolivia valen Sucre (capital constitucional) y La Paz (sede del gobierno).",
+      "alcance": "Capitales de los 12 Estados soberanos sudamericanos. Se aceptan tanto la capital constitucional como la sede del gobierno cuando sean ciudades distintas.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/América_del_Sur", "titulo": "América del Sur — Wikipedia" }],
       "respuestas": [
         { "canonica": "Buenos Aires", "variantes": [], "rareza": "grava", "explicacion": "Capital de la Argentina, a orillas del Río de la Plata." },
@@ -126,7 +126,7 @@
       "id": "gm-danubio",
       "categoria": "geografia",
       "enunciado": "Nombrá un país por donde pase el río Danubio.",
-      "alcance": "Los diez países que el Danubio atraviesa o bordea, desde la Selva Negra alemana hasta su delta en el mar Negro.",
+      "alcance": "Los diez países que el Danubio atraviesa o bordea en su recorrido. No cuentan los países que solo forman parte de su cuenca hidrográfica.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Danubio", "titulo": "Danubio — Wikipedia" }],
       "respuestas": [
         { "canonica": "Austria", "variantes": [], "rareza": "grava", "explicacion": "El río cruza Viena, su capital." },
@@ -203,7 +203,7 @@
       "id": "gm-caribe-insular",
       "categoria": "geografia",
       "enunciado": "Nombrá un país insular del Caribe.",
-      "alcance": "Los 13 Estados soberanos formados solo por islas en el Caribe y las Antillas, incluidas las Bahamas. No cuentan territorios dependientes como Puerto Rico o Aruba.",
+      "alcance": "Los 13 Estados soberanos del Caribe insular. No cuentan territorios dependientes ni países con territorio continental.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Antillas", "titulo": "Antillas — Wikipedia" }],
       "respuestas": [
         { "canonica": "Cuba", "variantes": [], "rareza": "grava", "explicacion": "Es la isla más grande del Caribe." },
@@ -248,7 +248,7 @@
       "id": "gm-continentes",
       "categoria": "geografia",
       "enunciado": "Nombrá un continente.",
-      "alcance": "Los seis continentes del modelo más usado en el mundo hispanohablante, en el que América cuenta como uno solo.",
+      "alcance": "Los seis continentes del modelo más usado en el mundo hispanohablante.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Continente", "titulo": "Continente — Wikipedia" }],
       "respuestas": [
         { "canonica": "América", "variantes": [], "rareza": "grava", "explicacion": "Se extiende de Alaska a Tierra del Fuego; en este modelo es un solo continente." },
