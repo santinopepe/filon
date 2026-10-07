@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 // Valida en modo estricto el banco de reserva de cada modo de juego.
 //   node scripts/validar-reserva.js            # estructura, duplicados y contradicciones
-//   node scripts/validar-reserva.js --fuentes  # además, comprueba cada respuesta contra sus fuentes (requiere internet)
 import { cargarConfig } from '../servidor/config.js';
 import { cargarReserva } from '../servidor/generador/reserva.js';
-import { crearVerificador } from '../servidor/verificacion.js';
 import { CATEGORIAS, MODOS, CLAVES_MODOS, PREGUNTAS_POR_DESAFIO } from '../servidor/dominio.js';
 
 const config = cargarConfig();
@@ -34,20 +32,4 @@ for (const { modo, reserva } of reservas) {
   problemas += reserva.invalidas.length;
 }
 
-if (process.argv.includes('--fuentes')) {
-  const verificador = crearVerificador({ ...config.fuentes, modo: 'estricta' });
-  console.log('\nVerificando contra las fuentes…');
-  for (const p of reservas.flatMap((r) => r.reserva.preguntas)) {
-    const r = await verificador.verificarPregunta(p);
-    if (!r.verificada) {
-      problemas++;
-      console.log(`✗ ${p.id}: no se pudo leer ninguna fuente (${r.errores.join('; ')})`);
-    } else if (r.descartadas.length) {
-      problemas++;
-      console.log(`△ ${p.id}: sin confirmar en la fuente → ${r.descartadas.map((d) => d.canonica).join(', ')}`);
-    } else {
-      console.log(`✓ ${p.id}: ${r.respuestas.length} respuestas confirmadas`);
-    }
-  }
-}
 process.exit(problemas ? 1 : 0);

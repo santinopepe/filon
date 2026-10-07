@@ -1,4 +1,4 @@
-// Servidor para las pruebas E2E: base temporal, sin IA, con el desafío de hoy publicado desde la reserva.
+// Servidor para las pruebas E2E: base temporal, con el desafío de hoy publicado desde la reserva.
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,9 +12,6 @@ const app = await iniciarServidor({
     PUERTO: process.env.PUERTO_E2E || '4317',
     HOST: '127.0.0.1',
     RUTA_BD: join(dir, 'e2e.db'),
-    IA_PROVEEDOR: 'ninguno',
-    ANTHROPIC_API_KEY: '',
-    OPENAI_API_KEY: '',
     TURSO_DATABASE_URL: '',
     BD_URL: '',
     TOKEN_ADMIN: TOKEN_ADMIN_E2E,

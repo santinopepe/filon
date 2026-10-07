@@ -17,8 +17,10 @@ export const masRara = (banco, n) => [...banco.preguntas[n - 1].respuestas].sort
  * Siete preguntas válidas (una por categoría) de la reserva, para la carga manual.
  * `usadas`: enunciados ya publicados (por ejemplo, el historial reciente) que se evitan.
  */
+export const preguntasDeReserva = () => JSON.parse(readFileSync(new URL('../../datos/reserva.json', import.meta.url), 'utf8')).preguntas;
+
 export function lotePorCategoria(usadas = []) {
-  const reserva = JSON.parse(readFileSync(new URL('../../datos/reserva.json', import.meta.url), 'utf8'));
+  const reserva = { preguntas: preguntasDeReserva() };
   const evitar = new Set(usadas);
   return ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'].map(
     (c) => reserva.preguntas.find((p) => p.categoria === c && !evitar.has(p.enunciado)) ?? reserva.preguntas.find((p) => p.categoria === c),

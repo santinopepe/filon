@@ -162,20 +162,17 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return { ok: true };
     }, { publica: true, soloMismoOrigen: true }],
 
-    // Tarea diaria (Vercel Cron, ver vercel.json). Idempotente.
-    //   hoy: asegura el desafío de hoy de cada modo (Normal con IA si quedan intentos; si no, reserva)
-    //   manana-ia: prepara mañana solo con IA, solo el modo Normal (si falla queda pendiente)
-    //   manana: prepara mañana de cada modo; si la IA falla, publica la reserva
+    // Tarea diaria (Vercel Cron, ver vercel.json). Idempotente. Completa con la reserva de cada modo:
+    //   hoy: el desafío de hoy (red de seguridad) · manana: el de mañana, si no se cargó a mano.
     // La respuesta es la de Normal, con el resultado de cada modo en `modos`.
-    ['GET', /^\/api\/cron\/(hoy|manana|manana-ia)$/, async ({ m }) => {
-      if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La generación no está disponible.');
+    ['GET', /^\/api\/cron\/(hoy|manana)$/, async ({ m }) => {
+      if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La publicación no está disponible.');
       const hoy = fechaLocal(ahora(), config.zona);
       const fecha = m[1] === 'hoy' ? hoy : sumarDias(hoy, 1);
       const modos = {};
       for (const modo of CLAVES_MODOS) {
-        if (m[1] === 'manana-ia' && !MODOS[modo].iaAutomatica) continue;
         const inicio = Date.now();
-        const r = await asegurarDesafio({ db, config, fecha, modo, ...contexto, permitirReserva: m[1] !== 'manana-ia', ahora, registro });
+        const r = await asegurarDesafio({ db, config, fecha, modo, ...contexto, ahora });
         registro[r.resultado === 'fallo' ? 'error' : 'info']('cron', { tarea: m[1], fecha, modo, resultado: r.resultado, origen: r.origen, duracionMs: Date.now() - inicio, error: r.error });
         modos[modo] = r;
       }
@@ -211,14 +208,13 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return {
         hoy: fechaLocal(ahora(), config.zona),
         modo,
-        modos: CLAVES_MODOS.map((clave) => ({ clave, nombre: MODOS[clave].nombre, iaAutomatica: MODOS[clave].iaAutomatica })),
-        ia: contexto?.proveedor ? { nombre: contexto.proveedor.nombre, modelo: contexto.proveedor.modelo } : null,
+        modos: CLAVES_MODOS.map((clave) => ({ clave, nombre: MODOS[clave].nombre })),
         bd: /^(libsql|https?|wss?):/.test(config.rutaBD) ? new URL(config.rutaBD).host : 'archivo local',
         desafios: await listarDesafios(db, { modo }),
       };
     }, { admin: true }],
     // Publica un día pegado como JSON, con el mismo formato de datos/reserva.json.
-    // No llama a ningún proveedor de IA ni verifica fuentes por red: solo aplica las validaciones
+    // No consulta servicios externos ni verifica fuentes por red: solo aplica las validaciones
     // estructurales locales y publica las siete preguntas en una transacción.
     // En los modos temáticos, una pregunta sin «categoria» toma la del modo.
     ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/importar$/, async ({ m, cuerpo, req }) => {
@@ -318,23 +314,14 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         diasSimilitud,
       };
     }, { admin: true, limiteJson: LIMITES.cuerpoImportacion, limite: 'importar' }],
-    // Generar o regenerar un día a mano. ?modo= es el modo de juego; en el cuerpo:
-    //   modo: estrategia de generación, 'auto' (IA y, si falla, reserva) | 'ia' (solo IA; si falla no
-    //         cambia nada) | 'reserva'. Los modos temáticos no tienen IA automática: solo 'reserva'
-    //         (o 'auto', que en ellos es lo mismo).
-    //   reemplazar: true para regenerar un día que ya existe
+    // Publicar o rearmar un día a mano con la reserva del modo (?modo=). En el cuerpo:
+    //   reemplazar: true para rearmar un día que ya existe
     //   forzar: true si ese día ya tiene partidas (se borran junto con el desafío anterior)
     ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/generar$/, async ({ m, cuerpo, req }) => {
       const fecha = m[1];
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
-      if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La generación no está disponible.');
+      if (!contexto) throw new ErrorJuego(503, 'sin_generador', 'La publicación no está disponible.');
       const modoJuego = modoDe(req);
-      const modo = cuerpo.modo ?? 'auto';
-      if (!['auto', 'ia', 'reserva'].includes(modo)) throw new ErrorJuego(400, 'modo_invalido', 'El modo tiene que ser auto, ia o reserva.');
-      if (modo === 'ia' && !MODOS[modoJuego].iaAutomatica) {
-        throw new ErrorJuego(400, 'sin_ia', `${MODOS[modoJuego].nombre} no se genera con la IA automática: usá la reserva o cargá un JSON hecho con su prompt.`);
-      }
-      if (modo === 'ia' && !contexto.proveedor) throw new ErrorJuego(400, 'sin_ia', 'La IA no está configurada (falta ANTHROPIC_API_KEY).');
       const existente = await desafioPorFecha(db, fecha, modoJuego);
       if (existente && !cuerpo.reemplazar) throw new ErrorJuego(409, 'ya_existe', `Ya hay un desafío de ${MODOS[modoJuego].nombre} para ${fecha}. Mandá reemplazar: true para regenerarlo.`);
       if (existente) {
@@ -343,9 +330,8 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
           throw new ErrorJuego(409, 'hay_partidas', `Ese día ya tiene ${n} partida(s); al regenerarlo se borran. Mandá forzar: true para confirmar.`);
         }
       }
-      const ctx = modo === 'reserva' ? { ...contexto, proveedor: null } : contexto;
-      const r = await asegurarDesafio({ db, config, fecha, modo: modoJuego, ...ctx, permitirReserva: modo !== 'ia', reemplazar: Boolean(existente), forzarIA: true, ahora, registro });
-      registro.info('admin_generar', { fecha, modoJuego, modo, resultado: r.resultado, origen: r.origen, corridaId: r.corridaId });
+      const r = await asegurarDesafio({ db, config, fecha, modo: modoJuego, ...contexto, reemplazar: Boolean(existente), ahora });
+      registro.info('admin_generar', { fecha, modo: modoJuego, resultado: r.resultado, corridaId: r.corridaId });
       return r;
     }, { admin: true, limite: 'generar' }],
     // Estadísticas: ?fecha=AAAA-MM-DD (día en detalle) &desde=…&hasta=… (serie diaria, hasta 366 días).
@@ -404,7 +390,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return { modo, texto: leerPrompt(modo) };
     }, { admin: true }],
     ['GET', /^\/api\/admin\/corridas$/, async () => ({
-      corridas: (await db.all('SELECT id, fecha_objetivo, modo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
+      corridas: (await db.all('SELECT id, fecha_objetivo, modo, iniciada_en, terminada_en, resultado, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
         .map((c) => ({ ...c, detalle: c.detalle ? JSON.parse(c.detalle) : null })),
     }), { admin: true }],
     // Editar una pregunta ya publicada (?modo=). GET la devuelve en el formato de la reserva, con todas

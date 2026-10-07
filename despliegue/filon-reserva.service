@@ -1,6 +1,6 @@
-# /etc/systemd/system/filon-reserva.service — red de seguridad antes de medianoche
+# /etc/systemd/system/filon-reserva.service — prepara mañana antes de medianoche
 [Unit]
-Description=Filón: completar mañana con la reserva si la IA no llegó
+Description=Filón: preparar mañana con la reserva
 
 [Service]
 Type=oneshot

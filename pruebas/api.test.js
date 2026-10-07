@@ -17,7 +17,7 @@ async function levantar(env = {}) {
   return iniciarServidor({
     sinArchivoEnv: true,
     log: silencioso,
-    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', ...env },
+    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', ...env },
   });
 }
 
@@ -173,8 +173,7 @@ test('tarea diaria por HTTP (Vercel Cron): protegida e idempotente', async () =>
     assert.equal((await c.pedir('GET', '/api/cron/hoy')).estado, 401);
     assert.equal((await c.pedir('GET', '/api/cron/hoy', null, { authorization: 'Bearer otro' })).estado, 401);
     const cron = { authorization: 'Bearer secreto-cron' };
-    const manana = await c.pedir('GET', '/api/cron/manana-ia', null, cron);
-    assert.equal(manana.datos.resultado, 'pendiente', 'sin IA ni reserva, mañana queda pendiente');
+    assert.equal((await c.pedir('GET', '/api/cron/manana-ia', null, cron)).estado, 404);
     const hoy = await c.pedir('GET', '/api/cron/hoy', null, cron);
     assert.equal(hoy.datos.resultado, 'publicado');
     assert.equal((await c.pedir('GET', '/api/cron/hoy', null, cron)).datos.resultado, 'ya_existia');
@@ -192,13 +191,11 @@ test('administración: generar y regenerar días a mano', async () => {
     const generar = (fecha, cuerpo) => c.pedir('POST', `/api/admin/desafios/${fecha}/generar`, cuerpo, admin);
     const hoy = (await c.pedir('GET', '/api/salud')).datos.fecha;
 
-    assert.equal((await c.pedir('POST', `/api/admin/desafios/${hoy}/generar`, { modo: 'reserva' })).estado, 401);
-    assert.equal((await generar(hoy, { modo: 'ia' })).datos.error, 'sin_ia');
-    assert.equal((await generar(hoy, { modo: 'otro' })).estado, 400);
+    assert.equal((await c.pedir('POST', `/api/admin/desafios/${hoy}/generar`, {})).estado, 401);
 
-    const primero = await generar(hoy, { modo: 'reserva' });
+    const primero = await generar(hoy, {});
     assert.equal(primero.datos.resultado, 'publicado');
-    assert.equal((await generar(hoy, { modo: 'reserva' })).datos.error, 'ya_existe');
+    assert.equal((await generar(hoy, {})).datos.error, 'ya_existe');
 
     const verPreguntas = async () => (await c.pedir('GET', `/api/admin/desafios/${hoy}`, null, admin)).datos.preguntas.map((p) => p.enunciado);
     const antes = await verPreguntas();
@@ -207,11 +204,11 @@ test('administración: generar y regenerar días a mano', async () => {
     const iniciada = (await c.pedir('POST', `/api/partidas/${p.id}/rondas/1/iniciar`)).datos.partida;
     assert.equal(iniciada.rondas[0].enunciado, antes[0]);
 
-    const conPartidas = await generar(hoy, { modo: 'reserva', reemplazar: true });
+    const conPartidas = await generar(hoy, { reemplazar: true });
     assert.equal(conPartidas.estado, 409);
     assert.equal(conPartidas.datos.error, 'hay_partidas');
 
-    const regenerado = await generar(hoy, { modo: 'reserva', reemplazar: true, forzar: true });
+    const regenerado = await generar(hoy, { reemplazar: true, forzar: true });
     assert.equal(regenerado.datos.resultado, 'reemplazado');
     const despues = await verPreguntas();
     assert.equal(despues.length, 7);
@@ -234,7 +231,7 @@ test('administración: generar y regenerar días a mano', async () => {
   }
 });
 
-test('administración: importa un desafío manual desde JSON sin usar IA', async () => {
+test('administración: importa un desafío manual desde JSON', async () => {
   const app = await levantar({ PROGRAMADOR_INTERNO: '0' });
   const admin = { authorization: 'Bearer secreto-admin' };
   try {
@@ -256,7 +253,7 @@ test('administración: importa un desafío manual desde JSON sin usar IA', async
     assert.equal(importado.estado, 200);
     assert.equal(importado.datos.resultado, 'publicado');
     assert.equal(importado.datos.origen, 'manual');
-    assert.equal((await app.db.get('SELECT COUNT(*) AS n FROM corridas')).n, 0, 'la carga manual no crea corridas de IA');
+    assert.equal((await app.db.get('SELECT COUNT(*) AS n FROM corridas')).n, 0, 'la carga manual no crea corridas');
 
     const detalle = await c.pedir('GET', `/api/admin/desafios/${fecha}`, null, admin);
     assert.equal(detalle.datos.desafio.modelo, 'manual');

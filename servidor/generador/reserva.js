@@ -68,7 +68,6 @@ export function aFormatoReserva(p) {
     categoria: p.categoria,
     enunciado: p.enunciado,
     alcance: p.alcance,
-    ...(p.datosEstructurados ? { datosEstructurados: p.datosEstructurados } : {}),
     fuentes: (p.fuentes || []).map((f) => ({ url: f.url, titulo: f.titulo })),
     respuestas: (p.respuestas || []).map((r) => ({
       canonica: r.canonica,

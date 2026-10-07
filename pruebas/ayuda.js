@@ -6,7 +6,6 @@ import { cargarConfig } from '../servidor/config.js';
 import { abrirBD } from '../servidor/db.js';
 import { cargarReserva } from '../servidor/generador/reserva.js';
 import { asegurarDesafio } from '../servidor/generador/generar.js';
-import { crearVerificador } from '../servidor/verificacion.js';
 import { fechaLocal } from '../servidor/tiempo.js';
 
 export function crearReloj(inicio) {
@@ -29,20 +28,19 @@ export function rutaTemporal() {
 }
 
 export async function prepararEntorno({ inicio = '2026-10-05T15:00:00-03:00', env = {} } = {}) {
-  const config = cargarConfig({ sinArchivoEnv: true, env: { IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '', ...env } });
+  const config = cargarConfig({ sinArchivoEnv: true, env: { TURSO_DATABASE_URL: '', BD_URL: '', ...env } });
   config.rutaBD = rutaTemporal();
   const db = await abrirBD(config.rutaBD);
   const reloj = crearReloj(inicio);
   const reserva = cargarReserva(config.rutaReserva, { dominios: config.fuentes.dominios });
   const reservas = { normal: reserva };
   for (const [modo, ruta] of Object.entries(config.rutasReserva)) reservas[modo] = cargarReserva(ruta, { dominios: config.fuentes.dominios, modo });
-  const verificador = crearVerificador({ dominios: config.fuentes.dominios, modo: 'desactivada' });
-  return { config, db, reloj, reserva, reservas, verificador };
+  return { config, db, reloj, reserva, reservas };
 }
 
 /** Publica (con la reserva) el desafío del día actual del reloj. */
 export async function publicarHoy(entorno, fecha = fechaLocal(entorno.reloj.ahora(), entorno.config.zona)) {
-  const r = await asegurarDesafio({ db: entorno.db, config: entorno.config, fecha, reserva: entorno.reserva, verificador: entorno.verificador, proveedor: null, ahora: entorno.reloj.ahora });
+  const r = await asegurarDesafio({ db: entorno.db, config: entorno.config, fecha, reserva: entorno.reserva, ahora: entorno.reloj.ahora });
   if (r.resultado !== 'publicado' && r.resultado !== 'ya_existia') throw new Error(`No se pudo publicar ${fecha}: ${JSON.stringify(r)}`);
   return r;
 }
@@ -55,9 +53,4 @@ export function respuestasDe(db, fecha, posicion) {
     fecha,
     posicion,
   );
-}
-
-/** Respuesta HTML falsa que nombra todos los textos dados (para simular fuentes). */
-export function paginaCon(textos) {
-  return `<html><body><h1>Lista</h1><ul>${textos.map((t) => `<li>${t}</li>`).join('')}</ul></body></html>`;
 }

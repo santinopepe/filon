@@ -93,7 +93,7 @@ async function levantar(env = {}) {
   return iniciarServidor({
     sinArchivoEnv: true,
     log: silencioso,
-    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', PROGRAMADOR_INTERNO: '0', ...env },
+    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', PROGRAMADOR_INTERNO: '0', ...env },
   });
 }
 

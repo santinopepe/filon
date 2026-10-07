@@ -58,7 +58,6 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | `TOKEN_ADMIN` | para el panel | solo se usa para iniciar sesión |
 | `CRON_SECRET` | sí | Vercel Cron lo envía a `/api/cron/*` |
 | `ADMIN_PERMITIR_BEARER` | no (1) | poner `0` cuando ya nadie use `Authorization: Bearer TOKEN_ADMIN` |
-| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | no | sin clave, todo funciona con la reserva |
 
 ---
 
@@ -73,7 +72,7 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | 3 | `limites_distribuidos` | tabla `limites` + índice por vencimiento | sí (tabla nueva) |
 | 4 | `puntajes_agregados` | tabla `puntajes_desafio` y la llena desde `partidas` | sí (tabla nueva) |
 | 5 | `indices_consultas` | 6 índices nuevos (ver §8) | sí (solo índices) |
-| 6 | `uso_ia_en_corridas` | columnas `llamadas_ia`, `tokens_*`, `costo_estimado_usd` en `corridas` (con valores por defecto) + índice | sí (`ADD COLUMN` con default) |
+| 6 | `uso_ia_en_corridas` | columnas `llamadas_ia`, `tokens_*`, `costo_estimado_usd` en `corridas` (con valores por defecto) + índice; quedaron sin uso desde que se sacó la IA automática | sí (`ADD COLUMN` con default) |
 | 7 | `modos_de_juego` | `desafios` pasa de `UNIQUE(fecha)` a `UNIQUE(modo, fecha)` con la columna `modo` (default `'normal'`); índice `desafios_fecha`; columna `modo` en `corridas` | sí, con una salvedad (ver abajo) |
 | 8 | `reserva_en_la_base` | tabla `reserva` (preguntas de reserva guardadas y editadas desde el panel) + índice por modo | sí (tabla nueva) |
 
@@ -192,8 +191,7 @@ campos con nombres sensibles (`token`, `secreto`, `clave`, `cookie`, `authorizat
 | `admin_no_autorizado`, `admin_origen_rechazado`, `cron_no_autorizado`, `origen_rechazado` | warn | autorización rechazada |
 | `limite_excedido`, `limite_error` | warn / error | rate limiting (una línea por ventana y origen) |
 | `migracion`, `migracion_fallida` | info / error | al arrancar |
-| `ia` | info | cada corrida con IA: proveedor, modelo, duración, llamadas, tokens, costo estimado |
-| `admin_generar` | info | generación manual desde el panel |
+| `admin_generar` | info | publicación desde la reserva lanzada desde el panel |
 
 ### Alertas recomendadas (Vercel → Observability / Log Drains → su herramienta de alertas)
 
@@ -204,7 +202,6 @@ campos con nombres sensibles (`token`, `secreto`, `clave`, `cookie`, `authorizat
 | Cron | ausencia del evento `cron` con `tarea: "hoy"` entre 00:00 y 01:30 (Buenos Aires), o `resultado: "fallo"` |
 | Desafío del día | `GET /api/salud` con `desafioPublicado: false` después de las 00:30 |
 | Abuso | > 50 `limite_excedido` en 10 min, o > 20 `admin_login_fallido` en 1 h |
-| Costo de IA | suma diaria de `costoEstimadoUsd` (o de `llamadas`) por encima del presupuesto |
 | Migraciones | cualquier `migracion_fallida` |
 
 ---
@@ -265,7 +262,7 @@ falla si alguna recorre completa una tabla grande. Resumen (base con 3.000 parti
 | visitantes por período, limpieza | `SEARCH jugadores USING COVERING INDEX jugadores_creado` |
 | reportes pendientes | `SEARCH reportes USING COVERING INDEX reportes_estado` |
 | limpieza de intentos / límites / sesiones | `SEARCH … USING COVERING INDEX intentos_en / limites_vence / admin_sesiones_vence` |
-| IA del día | `SEARCH corridas USING INDEX corridas_iniciada` |
+| reserva de un modo | `SEARCH reserva USING INDEX reserva_modo (modo=?)` |
 
 Única excepción aceptada: `SCAN desafios` en la serie del panel (una fila por día, ~365 por año).
 Los totales históricos del panel (`COUNT(DISTINCT jugador_id)`) recorren el índice completo de

@@ -7,8 +7,6 @@ import { normalizar, formasRegistrables } from './normalizar.js';
 
 export const MIN_RESPUESTAS = 5;
 export const MAX_RESPUESTAS = 80;
-export const MIN_RESPUESTAS_ESTRUCTURADAS = 1000;
-export const MAX_RESPUESTAS_ESTRUCTURADAS = 1500;
 
 const PALABRAS_VACIAS = new Set(
   'nombra nombre nombrá menciona escribi decí deci un una uno unos unas de del la el los las lo que en y a al por con para alguien haya hayan sido sea fue algun alguna cualquier se su sus o como mas sobre entre'.split(' '),
@@ -68,8 +66,6 @@ export function prepararCandidata(c = {}) {
     categoria: texto(c.categoria).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''),
     enunciado: texto(c.enunciado),
     alcance: texto(c.alcance),
-    datosEstructurados: c.datosEstructurados === 'wikidata' ? 'wikidata' : null,
-    consultaWikidata: texto(c.consultaWikidata ?? c.consulta_wikidata),
     fuentes,
     respuestas: (Array.isArray(c.respuestas) ? c.respuestas : []).map((r) => ({
       canonica: texto(r?.canonica),
@@ -209,9 +205,8 @@ export function validarPregunta(entrada, { dominios = [], recientes = [], estric
 
   // 4) Cantidad y variedad de rarezas.
   candidatas = candidatas.filter((r) => formasPorRespuesta.get(r.clave).size > 0);
-  const estructurada = p.datosEstructurados === 'wikidata';
-  const minimo = estructurada ? MIN_RESPUESTAS_ESTRUCTURADAS : MIN_RESPUESTAS;
-  const maximo = estructurada ? MAX_RESPUESTAS_ESTRUCTURADAS : MAX_RESPUESTAS;
+  const minimo = MIN_RESPUESTAS;
+  const maximo = MAX_RESPUESTAS;
   if (candidatas.length < minimo) errores.push(`Hacen falta al menos ${minimo} respuestas válidas (hay ${candidatas.length}).`);
   if (candidatas.length > maximo) errores.push(`Demasiadas respuestas (${candidatas.length}); el conjunto debe estar acotado a ${maximo}.`);
   const rarezas = new Set(candidatas.map((r) => r.rareza));

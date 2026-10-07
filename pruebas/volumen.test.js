@@ -23,7 +23,7 @@ async function levantar() {
     log: silencioso,
     env: {
       PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`),
-      IA_PROVEEDOR: 'ninguno', TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'volumen-admin', PROGRAMADOR_INTERNO: '0',
+      TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'volumen-admin', PROGRAMADOR_INTERNO: '0',
     },
   });
 }

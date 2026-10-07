@@ -19,7 +19,7 @@ before(() => (dir = mkdtempSync(join(tmpdir(), 'filon-concurrencia-'))));
 after(() => rmSync(dir, { recursive: true, force: true }));
 
 const nuevaRuta = () => join(dir, `${Math.random().toString(36).slice(2)}.db`);
-const ENV = { IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', OPENAI_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '', SECRETO_SESION: 'secreto-compartido' };
+const ENV = { TURSO_DATABASE_URL: '', BD_URL: '', SECRETO_SESION: 'secreto-compartido' };
 
 /** Una instancia en su propio hilo (event loop propio), como otra función de Vercel. */
 async function instancia(ruta, inicio) {
@@ -56,7 +56,6 @@ async function escenario() {
     config: principal.config,
     reloj,
     reserva: cargarReserva(principal.config.rutaReserva, { dominios: principal.config.fuentes.dominios }),
-    verificador: principal.contexto.verificador,
   });
   const a = await instancia(ruta, reloj.ahora());
   const b = await instancia(ruta, reloj.ahora());

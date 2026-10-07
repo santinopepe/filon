@@ -17,7 +17,7 @@ test('limpieza diaria: retención, sesiones y límites vencidos, conciliación d
     log: { info() {}, warn() {}, error() {} },
     ahora: reloj.ahora,
     env: {
-      PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, 'f.db'), IA_PROVEEDOR: 'ninguno', TURSO_DATABASE_URL: '', BD_URL: '',
+      PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, 'f.db'), TURSO_DATABASE_URL: '', BD_URL: '',
       PROGRAMADOR_INTERNO: '0', CRON_SECRET: 'cron-limpieza',
     },
   });

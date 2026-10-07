@@ -36,7 +36,7 @@ export async function iniciarServidor(sobrescrituras = {}) {
 
   await new Promise((ok) => servidor.listen(config.puerto, config.host, ok));
   const direccion = servidor.address();
-  log.info(`[filon] escuchando en http://${config.host === '0.0.0.0' ? 'localhost' : config.host}:${direccion.port} — IA: ${contexto.proveedor ? contexto.proveedor.nombre + ' / ' + contexto.proveedor.modelo : 'sin configurar (se usa la reserva)'}`);
+  log.info(`[filon] escuchando en http://${config.host === '0.0.0.0' ? 'localhost' : config.host}:${direccion.port}`);
 
   async function cerrar() {
     programador.detener();

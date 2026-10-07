@@ -25,7 +25,7 @@ const SEGUNDOS = 8;
 const app = await iniciarServidor({
   sinArchivoEnv: true,
   log: silencioso,
-  env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, 'e2e.db'), IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '', SEGUNDOS_POR_PREGUNTA: String(SEGUNDOS) },
+  env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, 'e2e.db'), TURSO_DATABASE_URL: '', BD_URL: '', SEGUNDOS_POR_PREGUNTA: String(SEGUNDOS) },
 });
 const BASE = `http://127.0.0.1:${app.puerto}`;
 const hoy = (await app.db.get('SELECT fecha FROM desafios ORDER BY fecha LIMIT 1')).fecha;

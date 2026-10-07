@@ -284,7 +284,7 @@ test('reportar una respuesta faltante', async () => {
   assert.equal((await e.db.get('SELECT COUNT(*) AS n FROM reportes')).n, 1);
 });
 
-test('la partida nunca consulta a la IA', async () => {
+test('la partida no hace solicitudes externas', async () => {
   const e = await armar();
   await publicarHoy(e);
   const original = globalThis.fetch;

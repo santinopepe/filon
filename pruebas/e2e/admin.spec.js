@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TOKEN_ADMIN_E2E, lotePorCategoria, enunciadosRecientes, vigilarErrores } from './ayuda.js';
+import { TOKEN_ADMIN_E2E, lotePorCategoria, preguntasDeReserva, enunciadosRecientes, vigilarErrores } from './ayuda.js';
 
 async function ingresar(page, token = TOKEN_ADMIN_E2E) {
   await page.goto('/admin');
@@ -10,7 +10,7 @@ async function ingresar(page, token = TOKEN_ADMIN_E2E) {
 
 test('administración sin autenticación: la API rechaza y el panel pide ingresar', async ({ page }) => {
   expect((await page.request.get('/api/admin/desafios')).status()).toBe(401);
-  expect((await page.request.post('/api/admin/desafios/2030-01-01/generar', { data: { modo: 'reserva' } })).status()).toBe(401);
+  expect((await page.request.post('/api/admin/desafios/2030-01-01/generar', { data: {} })).status()).toBe(401);
   await page.goto('/admin');
   await expect(page.locator('#ingreso')).toBeVisible();
   await expect(page.locator('#panel')).toBeHidden();
@@ -56,7 +56,7 @@ test('importación JSON: inválida no guarda nada; válida publica el día', asy
   const recientes = await enunciadosRecientes(page.request);
   const lote = lotePorCategoria(recientes);
   // Un lote con una pregunta ya publicada hoy: «Solo validar» la marca como repetida y no publica.
-  const yaPublicada = lotePorCategoria([]).find((p) => recientes.includes(p.enunciado));
+  const yaPublicada = preguntasDeReserva().find((p) => recientes.includes(p.enunciado));
   await page.fill('#normal-imp-json', JSON.stringify({ preguntas: lote.map((p) => (p.categoria === yaPublicada.categoria ? yaPublicada : p)) }));
   await page.click('#normal-imp-validar');
   await expect(page.locator('#normal-imp-resultado')).toHaveClass(/mal/);
@@ -150,7 +150,6 @@ test('crear por modo: pestañas Normal, Farándula y Geografía con prompt e his
   await expect(page.locator('#crear-farandula')).toBeVisible();
   await expect(page.locator('#crear-normal')).toBeHidden();
   await expect(page.locator('#farandula-prompt-texto')).toHaveValue(/modo Farándula Argentina/);
-  await expect(page.locator('#farandula-gen-modo option')).toHaveCount(1); // sin IA automática: solo reserva
   const [json] = await Promise.all([page.waitForEvent('download'), page.click('#farandula-hist-json')]);
   expect(json.suggestedFilename()).toMatch(/^filon-historial-farandula-/);
   const datos = JSON.parse(await (await json.createReadStream()).toArray().then((p) => Buffer.concat(p).toString('utf8')));
