@@ -4,6 +4,7 @@ import { validarPregunta, buscarRepeticion } from '../validacion.js';
 import { generadorConSemilla } from '../azar.js';
 import { normalizar } from '../normalizar.js';
 import { categoriaDeRanura, MODO_POR_DEFECTO } from '../dominio.js';
+import { preguntaParaEditar } from '../banco.js';
 
 /** Carga y valida (en modo estricto) todo el banco de reserva de un modo. */
 export function cargarReserva(ruta, { dominios, modo = MODO_POR_DEFECTO }) {
@@ -132,4 +133,39 @@ export async function reservaCompleta(db, modo, base, { dominios, conInactivas =
   }
   const entradas = [...porId.values()].filter((e) => conInactivas || e.activa);
   return { modo, preguntas: entradas.map((e) => e.pregunta), entradas, invalidas };
+}
+
+/**
+ * Copia a la reserva de la base las preguntas ya publicadas de un modo (las que no vienen del banco de
+ * archivo ni están ya guardadas), y deja cada día vinculado a su pregunta de reserva para contar los
+ * usos. Idempotente: correrla de nuevo no duplica nada. Con `seco` solo informa qué haría.
+ */
+export async function copiarPublicadasAReserva(db, modo, { idsArchivo = new Set(), dominios = [], seco = false, ahora = Date.now() } = {}) {
+  const filas = await db.all(
+    `SELECT p.id, p.reserva_id, p.origen, d.fecha FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
+     WHERE d.modo = ? ORDER BY d.fecha, p.posicion`,
+    modo,
+  );
+  const informe = { revisadas: filas.length, delArchivo: 0, yaEstaban: 0, copiadas: 0, invalidas: [] };
+  for (const f of filas) {
+    if (f.reserva_id && idsArchivo.has(f.reserva_id)) {
+      informe.delArchivo++;
+      continue;
+    }
+    const pregunta = await preguntaParaEditar(db, f.id);
+    if (await db.get('SELECT 1 AS si FROM reserva WHERE id = ?', pregunta.id)) {
+      informe.yaEstaban++;
+      continue;
+    }
+    const v = validarPregunta(pregunta, { dominios, estricta: true, modo });
+    if (!v.ok) {
+      informe.invalidas.push({ id: pregunta.id, fecha: f.fecha, errores: v.errores });
+      continue;
+    }
+    informe.copiadas++;
+    if (seco) continue;
+    await guardarEnReserva(db, modo, [{ ...v.pregunta, id: pregunta.id }], { origen: f.origen === 'ia' ? 'ia' : 'manual', ahora });
+    if (!f.reserva_id) await db.run('UPDATE preguntas SET reserva_id = ? WHERE id = ?', pregunta.id, f.id);
+  }
+  return informe;
 }

@@ -5,10 +5,12 @@
 //   node scripts/admin.js corridas [n]             # últimas corridas de la tarea diaria
 //   node scripts/admin.js desafio <AAAA-MM-DD> [modo]   # banco completo de un desafío (modo: normal por defecto)
 //   node scripts/admin.js desafios [modo]          # lista de desafíos publicados (todos los modos si no se indica)
+//   node scripts/admin.js copiar-reserva [modo] [--seco]   # copia a la reserva de la base las preguntas ya publicadas
 import { cargarConfig } from '../servidor/config.js';
 import { abrirBD } from '../servidor/db.js';
 import { desafioPorFecha, preguntasDeDesafio, respuestasDePregunta } from '../servidor/banco.js';
 import { CLAVES_MODOS, esModo } from '../servidor/dominio.js';
+import { cargarReserva, copiarPublicadasAReserva } from '../servidor/generador/reserva.js';
 
 function modoArgumento(valor, porDefecto) {
   if (valor === undefined) return porDefecto;
@@ -87,7 +89,19 @@ switch (comando) {
     }
     break;
   }
+  case 'copiar-reserva': {
+    const seco = resto.includes('--seco');
+    const modo = modoArgumento(resto.find((x) => !x.startsWith('--')), null);
+    for (const m of modo ? [modo] : CLAVES_MODOS) {
+      const ruta = m === 'normal' ? config.rutaReserva : config.rutasReserva[m];
+      const idsArchivo = new Set(cargarReserva(ruta, { dominios: config.fuentes.dominios, modo: m }).preguntas.map((p) => p.id));
+      const r = await copiarPublicadasAReserva(db, m, { idsArchivo, dominios: config.fuentes.dominios, seco });
+      console.log(`${m}: ${r.revisadas} publicadas · ${r.copiadas} ${seco ? 'se copiarían' : 'copiadas'} · ${r.yaEstaban} ya estaban · ${r.delArchivo} del archivo · ${r.invalidas.length} no validan`);
+      for (const i of r.invalidas) console.log(`   ✗ ${i.id} (${i.fecha}): ${i.errores.join(' ')}`);
+    }
+    break;
+  }
   default:
-    console.log('Comandos: reportes · reporte <id> <estado> · corridas [n] · desafios [modo] · desafio <AAAA-MM-DD> [modo]');
+    console.log('Comandos: reportes · reporte <id> <estado> · corridas [n] · desafios [modo] · desafio <AAAA-MM-DD> [modo] · copiar-reserva [modo] [--seco]');
 }
 db.close();

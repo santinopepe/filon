@@ -259,3 +259,36 @@ test('modos: el menú ☰ abre el selector y cada modo tiene su ambientación y 
   await expect(page.locator('#final-sobre')).toContainText('Ya desfilaste hoy');
   expect(errores).toEqual([]);
 });
+
+test('celular: con el teclado abierto la ronda se compacta sola, sin esperar a que se scrollee', async ({ browser }) => {
+  const contexto = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await contexto.newPage();
+  // visualViewport simulado: el teclado «sube» sin disparar ningún evento (como pasa en iOS).
+  await page.addInitScript(() => {
+    const vv = new EventTarget();
+    let alto = 844;
+    Object.defineProperties(vv, {
+      height: { get: () => alto },
+      width: { get: () => 390 },
+      offsetTop: { get: () => 0 },
+      offsetLeft: { get: () => 0 },
+      scale: { get: () => 1 },
+    });
+    Object.defineProperty(window, 'visualViewport', { get: () => vv });
+    window.__teclado = (abierto) => (alto = abierto ? 480 : 844);
+  });
+  await page.goto('/?modo=geografia');
+  await page.click('#btn-comenzar');
+  await expect(page.locator('#p-ronda')).toBeVisible({ timeout: 8000 });
+  await page.locator('#campo-respuesta').focus();
+  await page.evaluate(() => window.__teclado(true));
+  await expect(page.locator('body')).toHaveClass(/teclado-abierto/);
+  const pregunta = await page.locator('#ronda-enunciado').boundingBox();
+  const campo = await page.locator('#campo-respuesta').boundingBox();
+  expect(pregunta.y).toBeGreaterThan(0);
+  expect(campo.y + campo.height).toBeLessThanOrEqual(480);
+  await page.evaluate(() => window.__teclado(false));
+  await page.locator('#campo-respuesta').blur();
+  await expect(page.locator('body')).not.toHaveClass(/teclado-abierto/);
+  await contexto.close();
+});
