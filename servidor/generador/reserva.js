@@ -53,3 +53,83 @@ export function elegirDeReserva({ reserva, categorias, recientes, usos, fecha })
   }
   return { elegidas, avisos };
 }
+
+// ───── Reserva en la base (editable desde el panel) ─────
+
+/**
+ * Pasa una pregunta validada (forma interna) al formato de los bancos de reserva (datos/reserva.json):
+ * sin puntos ni formas normalizadas, con la fuente de cada respuesta solo si difiere de la general.
+ */
+export function aFormatoReserva(p) {
+  const general = p.fuentes?.[0]?.url;
+  return {
+    id: p.id,
+    categoria: p.categoria,
+    enunciado: p.enunciado,
+    alcance: p.alcance,
+    ...(p.datosEstructurados ? { datosEstructurados: p.datosEstructurados } : {}),
+    fuentes: (p.fuentes || []).map((f) => ({ url: f.url, titulo: f.titulo })),
+    respuestas: (p.respuestas || []).map((r) => ({
+      canonica: r.canonica,
+      variantes: r.variantes || [],
+      rareza: r.rareza,
+      explicacion: r.explicacion,
+      ...(r.fuente?.url && r.fuente.url !== general ? { fuente: { url: r.fuente.url, titulo: r.fuente.titulo } } : {}),
+    })),
+    rechazos: (p.rechazos || []).map((x) => ({ textos: x.textos, motivo: x.motivo })),
+  };
+}
+
+/**
+ * Guarda preguntas (ya validadas) en la reserva de un modo. Sin `reemplazar` no pisa una que ya esté
+ * (por ejemplo, editada a mano). Las que ya están en el banco de archivo (`idsArchivo`) no se duplican.
+ */
+export async function guardarEnReserva(db, modo, preguntas, { origen, reemplazar = false, idsArchivo = new Set(), ahora = Date.now() } = {}) {
+  let guardadas = 0;
+  for (const p of preguntas) {
+    if (!p.id || (!reemplazar && idsArchivo.has(p.id))) continue;
+    const datos = JSON.stringify(aFormatoReserva(p));
+    const sql = reemplazar
+      ? `INSERT INTO reserva (id, modo, pregunta, origen, activa, creada_en, actualizada_en) VALUES (?, ?, ?, ?, 1, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET pregunta = excluded.pregunta, origen = excluded.origen, modo = excluded.modo, actualizada_en = excluded.actualizada_en`
+      : 'INSERT OR IGNORE INTO reserva (id, modo, pregunta, origen, activa, creada_en, actualizada_en) VALUES (?, ?, ?, ?, 1, ?, ?)';
+    const r = await db.run(sql, p.id, modo, datos, origen, ahora, ahora);
+    guardadas += r.changes;
+  }
+  return guardadas;
+}
+
+/** Activa o saca de circulación una pregunta de la reserva (también una del archivo). */
+export async function cambiarEstadoReserva(db, modo, id, activa, { base = null, ahora = Date.now() } = {}) {
+  const r = await db.run('UPDATE reserva SET activa = ?, actualizada_en = ? WHERE id = ? AND modo = ?', activa ? 1 : 0, ahora, id, modo);
+  if (r.changes) return true;
+  // Una pregunta del archivo se desactiva con una fila que la reemplaza.
+  const delArchivo = base?.preguntas.find((p) => p.id === id);
+  if (!delArchivo) return false;
+  await db.run(
+    "INSERT INTO reserva (id, modo, pregunta, origen, activa, creada_en, actualizada_en) VALUES (?, ?, ?, 'edicion', ?, ?, ?)",
+    id, modo, JSON.stringify(aFormatoReserva(delArchivo)), activa ? 1 : 0, ahora, ahora,
+  );
+  return true;
+}
+
+/**
+ * Reserva completa de un modo: el banco de archivo más lo guardado en la base. Una fila de la base con
+ * el mismo id reemplaza a la del archivo; las inactivas no se usan. Las filas que ya no validan
+ * (por ejemplo, un dominio de fuentes que se quitó de la configuración) quedan en `invalidas`.
+ */
+export async function reservaCompleta(db, modo, base, { dominios, conInactivas = false } = {}) {
+  const filas = await db.all('SELECT id, pregunta, origen, activa, creada_en, actualizada_en FROM reserva WHERE modo = ?', modo);
+  const porId = new Map((base?.preguntas || []).map((p) => [p.id, { pregunta: p, origen: 'archivo', activa: true }]));
+  const invalidas = [];
+  for (const f of filas) {
+    const r = validarPregunta(JSON.parse(f.pregunta), { dominios, estricta: true, modo });
+    if (!r.ok) {
+      invalidas.push({ id: f.id, errores: r.errores });
+      if (f.activa) continue;
+    }
+    porId.set(f.id, { pregunta: { ...r.pregunta, id: f.id, origen: 'reserva' }, origen: f.origen, activa: Boolean(f.activa), actualizadaEn: f.actualizada_en, valida: r.ok });
+  }
+  const entradas = [...porId.values()].filter((e) => conInactivas || e.activa);
+  return { modo, preguntas: entradas.map((e) => e.pregunta), entradas, invalidas };
+}

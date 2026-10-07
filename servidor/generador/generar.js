@@ -11,7 +11,7 @@ import { normalizar } from '../normalizar.js';
 import { mezclar } from '../azar.js';
 import { tomarBloqueo, liberarBloqueo } from '../db.js';
 import { desafioPorFecha, publicarDesafio, preguntasRecientes, usosDeReserva } from '../banco.js';
-import { elegirDeReserva } from './reserva.js';
+import { elegirDeReserva, reservaCompleta, guardarEnReserva } from './reserva.js';
 import { fechaLocal, inicioDeFecha } from '../tiempo.js';
 
 async function enParalelo(items, limite, fn) {
@@ -223,7 +223,9 @@ export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFEC
   const anterior = await desafioPorFecha(db, fecha, modo);
   if (anterior && !reemplazar) return { resultado: 'ya_existia', fecha, modo };
   const proveedor = MODOS[modo].iaAutomatica ? proveedorIA : null;
-  const reserva = reservas?.[modo] ?? (modo === MODO_POR_DEFECTO ? reservaNormal : null) ?? { preguntas: [] };
+  // Reserva del modo: el banco de archivo más lo guardado y editado desde el panel.
+  const base = reservas?.[modo] ?? (modo === MODO_POR_DEFECTO ? reservaNormal : null) ?? { preguntas: [] };
+  const reserva = await reservaCompleta(db, modo, base, { dominios: config.fuentes.dominios });
 
   // Tope diario de llamadas (todas las corridas del día): si se agotó, se sigue sin IA.
   const restantesHoy = proveedor ? config.ia.maxLlamadasPorDia - (await llamadasIADelDia(db, config, ahora())) : 0;
@@ -313,10 +315,15 @@ export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFEC
       return { resultado: 'fallo', fecha, modo, corridaId, errores: lote.errores };
     }
 
+    // Las preguntas de la IA reciben un id para quedar en la reserva y poder reutilizarse.
+    preguntas = preguntas.map((p) => (p.id ? p : { ...p, id: `ia-${fecha}-${p.categoria}-${corridaId}` }));
     const deIA = preguntas.filter((p) => p.origen === 'ia').length;
     const origen = deIA === preguntas.length ? 'ia' : deIA === 0 ? 'reserva' : 'mixto';
     const pub = await publicarDesafio(db, { fecha, modo, preguntas, origen, modelo: deIA ? proveedor?.modelo : null, corridaId, ahora: ahora(), reemplazar });
     detalle.publicadas = preguntas.map((p) => ({ categoria: p.categoria, enunciado: p.enunciado, origen: p.origen, respuestas: p.respuestas.length }));
+    if (pub.publicado && deIA) {
+      detalle.guardadasEnReserva = await guardarEnReserva(db, modo, preguntas.filter((p) => p.origen === 'ia'), { origen: 'ia', ahora: ahora() });
+    }
     await finalizarCorrida(db, corridaId, pub.publicado ? `publicado_${origen}` : 'ya_existia', detalle, ahora());
     return pub.publicado
       ? { resultado: anterior && reemplazar ? 'reemplazado' : 'publicado', fecha, modo, origen, desafioId: pub.desafioId, numero: pub.numero, corridaId }

@@ -336,3 +336,34 @@ ul.lista li { margin: 2px 0; }
 #prompt-texto { margin: 4px 0 10px; min-height: 260px; }
 .estado-copia { margin: 10px 0 0; color: var(--cal-2); min-height: 1.5em; }
 .solo-lector { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ───────── Editor de preguntas (desafíos publicados y reserva) ───────── */
+.editor {
+  width: min(1100px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0;
+  color: var(--cal); background: var(--pizarra); border: 1px solid var(--borde); border-radius: 14px;
+}
+.editor::backdrop { background: rgb(8 6 18 / .7); }
+.editor form { display: flex; flex-direction: column; max-height: calc(100dvh - 26px); }
+.editor-cabecera, .editor-pie { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 20px; }
+.editor-cabecera { border-bottom: 1px solid var(--pizarra-2); }
+.editor-cabecera h2 { margin: 0; }
+.editor-pie { justify-content: flex-start; border-top: 1px solid var(--pizarra-2); margin: 0; }
+.editor-cuerpo { display: flex; flex-direction: column; gap: 12px; padding: 16px 20px; overflow-y: auto; min-height: 0; }
+.editor-cuerpo > * { flex-shrink: 0; }
+.editor-cuerpo > label, .editor-fila label { display: grid; gap: 4px; font-weight: 700; color: var(--cal-2); }
+.editor-fila { display: grid; grid-template-columns: 1fr 220px; gap: 12px; }
+.editor-respuestas-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.editor-respuestas-cabecera h3 { margin: 0; }
+.editor-tabla { max-height: 46vh; overflow-y: auto; border: 1px solid var(--pizarra-2); border-radius: 8px; }
+.editor-tabla td { padding: 4px 6px; vertical-align: middle; }
+.editor-tabla input, .editor-tabla select { width: 100%; padding: 5px 7px; font-size: .88rem; }
+.editor-tabla td:nth-child(1) { min-width: 160px; }
+.editor-tabla td:nth-child(2) { min-width: 160px; }
+.editor-tabla td:nth-child(4) { min-width: 260px; }
+@media (max-width: 700px) { .editor-fila { grid-template-columns: 1fr; } }
+
+/* ───────── Reserva ───────── */
+.reserva-tabla .enunciado-celda strong { display: block; }
+.reserva-tabla .inactiva { opacity: .55; }
+.etiqueta.archivo { background: #2c2f4d; color: var(--cal-2); }
+.etiqueta.edicion { background: #3f3420; color: var(--oro); }

@@ -32,7 +32,11 @@ import {
   publicarDesafio,
   listarDesafios,
   sincronizarCaches,
+  preguntaParaEditar,
+  editarPregunta,
+  usosDeReserva,
 } from './banco.js';
+import { guardarEnReserva, reservaCompleta, cambiarEstadoReserva, aFormatoReserva } from './generador/reserva.js';
 import { esFechaValida, fechaLocal, sumarDias } from './tiempo.js';
 import { asegurarDesafio } from './generador/generar.js';
 import { estadisticasAdmin } from './estadisticas.js';
@@ -48,6 +52,23 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
   const limitar = crearLimitador({ capacidad: 40 * escala, porSegundo: 8 * escala });
   const limites = crearLimitadorDistribuido({ db, secreto, ahora, registro, escala: config.limitesEscala });
   const sesiones = crearSesionesAdmin({ db, config, ahora });
+  // Banco de reserva de archivo de cada modo (la base suma lo guardado y editado desde el panel).
+  const reservaArchivo = (modo) => contexto?.reservas?.[modo] ?? (modo === MODO_POR_DEFECTO ? contexto?.reserva : null) ?? { preguntas: [] };
+
+  /** Valida una pregunta escrita en el panel (formato de reserva), en modo estricto y para su modo. */
+  function validarEdicion(entrada, modo, { categoria = null } = {}) {
+    if (!entrada || typeof entrada !== 'object' || Array.isArray(entrada)) throw new ErrorJuego(400, 'pregunta_invalida', 'Falta la pregunta.');
+    const candidata = { ...entrada, ...(categoria ? { categoria } : {}) };
+    if (MODOS[modo].categorias.length === 1 && !candidata.categoria) candidata.categoria = MODOS[modo].categorias[0];
+    const v = validarPregunta(candidata, { dominios: config.fuentes.dominios, estricta: true, modo });
+    if (!v.ok) {
+      const error = new ErrorJuego(422, 'pregunta_invalida', `La pregunta tiene ${v.errores.length} problema(s). No se guardó nada.`);
+      error.detalles = { errores: v.errores, advertencias: v.advertencias, descartadas: v.descartadas };
+      throw error;
+    }
+    return v;
+  }
+
   const prompts = new Map();
   const leerPrompt = (modo) => {
     if (!prompts.has(modo)) prompts.set(modo, readFileSync(config.rutasPrompt?.[modo] ?? resolve(RAIZ, 'datos/prompt-generacion.txt'), 'utf8'));
@@ -283,8 +304,12 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         ahora: ahora(),
       });
       if (!publicado.publicado) throw new ErrorJuego(409, 'ya_existe', `Otro proceso publicó ${fecha} antes que esta carga.`);
+      // Todo lo que se carga queda también en la reserva del modo, para poder reutilizarlo.
+      const idsArchivo = new Set(reservaArchivo(modo).preguntas.map((p) => p.id));
+      const enReserva = await guardarEnReserva(db, modo, preguntas, { origen: 'manual', idsArchivo, ahora: ahora() });
       return {
         ...publicado,
+        enReserva,
         resultado: existente ? 'reemplazado' : 'publicado',
         modo,
         origen: 'manual',
@@ -359,6 +384,70 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       corridas: (await db.all('SELECT id, fecha_objetivo, modo, iniciada_en, terminada_en, resultado, uso_ia, detalle FROM corridas ORDER BY id DESC LIMIT ?', LIMITES.paginaCorridas))
         .map((c) => ({ ...c, detalle: c.detalle ? JSON.parse(c.detalle) : null })),
     }), { admin: true }],
+    // Editar una pregunta ya publicada (?modo=). GET la devuelve en el formato de la reserva, con todas
+    // sus respuestas; POST { pregunta, soloValidar } la valida y la reemplaza. Las respuestas que siguen
+    // conservan su id (las rondas jugadas no cambian); no se puede quitar una que ya dio algún jugador.
+    // La versión editada también se guarda en la reserva.
+    ['GET', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/preguntas\/([1-7])$/, async ({ m, req }) => {
+      const modo = modoDe(req);
+      const d = await desafioPorFecha(db, m[1], modo);
+      if (!d) throw new ErrorJuego(404, 'sin_desafio', `No hay desafío de ${MODOS[modo].nombre} para esa fecha.`);
+      const p = (await preguntasDeDesafio(db, d.id)).find((x) => x.posicion === Number(m[2]));
+      if (!p) throw new ErrorJuego(404, 'sin_pregunta', 'No existe esa pregunta.');
+      const partidas = (await db.get('SELECT COUNT(*) AS n FROM rondas WHERE pregunta_id = ?', p.id)).n;
+      return { preguntaId: p.id, posicion: p.posicion, jugadas: partidas, pregunta: await preguntaParaEditar(db, p.id) };
+    }, { admin: true }],
+    ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/preguntas\/([1-7])$/, async ({ m, req, cuerpo }) => {
+      const modo = modoDe(req);
+      const d = await desafioPorFecha(db, m[1], modo);
+      if (!d) throw new ErrorJuego(404, 'sin_desafio', `No hay desafío de ${MODOS[modo].nombre} para esa fecha.`);
+      const p = (await preguntasDeDesafio(db, d.id)).find((x) => x.posicion === Number(m[2]));
+      if (!p) throw new ErrorJuego(404, 'sin_pregunta', 'No existe esa pregunta.');
+      // La categoría no cambia: el día tiene que seguir teniendo su reparto de categorías.
+      const v = validarEdicion({ ...cuerpo.pregunta, id: p.reserva_id || p.id }, modo, { categoria: p.categoria });
+      if (cuerpo.soloValidar) return { resultado: 'valido', advertencias: v.advertencias };
+      const r = await editarPregunta(db, p.id, v.pregunta);
+      if (!r.editada) {
+        throw new ErrorJuego(409, 'respuesta_en_uso', `No se puede quitar ${r.enUso.map((x) => `«${x}»`).join(', ')}: ya la dio algún jugador. Podés cambiarle la rareza o la explicación.`);
+      }
+      await guardarEnReserva(db, modo, [v.pregunta], { origen: 'edicion', reemplazar: true, ahora: ahora() });
+      registro.info('admin_editar_pregunta', { fecha: m[1], modo, posicion: p.posicion });
+      return { resultado: 'editada', advertencias: v.advertencias, pregunta: aFormatoReserva(v.pregunta) };
+    }, { admin: true, limiteJson: LIMITES.cuerpoImportacion }],
+
+    // Reserva de un modo (?modo=): banco de archivo + lo guardado en la base, con el estado y el uso de cada pregunta.
+    ['GET', /^\/api\/admin\/reserva$/, async ({ req }) => {
+      const modo = modoDe(req);
+      const completa = await reservaCompleta(db, modo, reservaArchivo(modo), { dominios: config.fuentes.dominios, conInactivas: true });
+      const usos = await usosDeReserva(db, modo);
+      return {
+        modo,
+        preguntas: completa.entradas
+          .map((e) => ({ id: e.pregunta.id, origen: e.origen, activa: e.activa, usos: usos.get(e.pregunta.id) ?? null, pregunta: aFormatoReserva(e.pregunta) }))
+          .sort((a, b) => Number(b.activa) - Number(a.activa) || (a.usos?.ultima ?? '').localeCompare(b.usos?.ultima ?? '') || a.id.localeCompare(b.id)),
+        invalidas: completa.invalidas,
+      };
+    }, { admin: true }],
+    // Agregar o editar una pregunta de la reserva: { pregunta, soloValidar }. Sin id, se crea una nueva.
+    ['POST', /^\/api\/admin\/reserva$/, async ({ req, cuerpo }) => {
+      const modo = modoDe(req);
+      const id = String(cuerpo.pregunta?.id || `manual-${modo}-${ahora().toString(36)}`).trim();
+      if (!/^[\w-]{1,80}$/.test(id)) throw new ErrorJuego(400, 'id_invalido', 'El id solo puede tener letras, números, guiones y guiones bajos (hasta 80).');
+      const v = validarEdicion({ ...cuerpo.pregunta, id }, modo);
+      if (cuerpo.soloValidar) return { resultado: 'valido', id, advertencias: v.advertencias };
+      const delArchivo = reservaArchivo(modo).preguntas.some((p) => p.id === id);
+      const existia = delArchivo || Boolean(await db.get('SELECT 1 AS si FROM reserva WHERE id = ?', id));
+      await guardarEnReserva(db, modo, [{ ...v.pregunta, id }], { origen: existia ? 'edicion' : 'manual', reemplazar: true, ahora: ahora() });
+      registro.info('admin_reserva', { modo, id, accion: existia ? 'editada' : 'agregada' });
+      return { resultado: existia ? 'editada' : 'agregada', id, advertencias: v.advertencias };
+    }, { admin: true, limiteJson: LIMITES.cuerpoImportacion }],
+    // Sacar de circulación (o volver a usar) una pregunta de la reserva: { id, activa }.
+    ['POST', /^\/api\/admin\/reserva\/estado$/, async ({ req, cuerpo }) => {
+      const modo = modoDe(req);
+      const ok = await cambiarEstadoReserva(db, modo, String(cuerpo.id || ''), Boolean(cuerpo.activa), { base: reservaArchivo(modo), ahora: ahora() });
+      if (!ok) throw new ErrorJuego(404, 'sin_pregunta', 'No existe esa pregunta en la reserva.');
+      return { ok: true };
+    }, { admin: true }],
     ['GET', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})$/, async ({ m, req }) => {
       if (!esFechaValida(m[1])) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
       const modo = modoDe(req);
