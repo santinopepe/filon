@@ -2,7 +2,7 @@
 import { transaccion } from './db.js';
 import { compactar, crearIndice, buscarEnIndice, buscarParecidoEnIndice, normalizar, sinArticulo } from './normalizar.js';
 import { diasEntre, sumarDias } from './tiempo.js';
-import { MODO_POR_DEFECTO } from './dominio.js';
+import { MODO_POR_DEFECTO, RAREZAS } from './dominio.js';
 
 // Lo publicado solo cambia si un administrador regenera un día: desafíos, preguntas y respuestas se
 // cachean en memoria por base, y cada reemplazo sube `version_banco` para que todas las instancias
@@ -111,6 +111,20 @@ export async function respuestasDePregunta(db, preguntaId) {
     const filas = await db.all('SELECT * FROM respuestas WHERE pregunta_id = ? ORDER BY puntos, id', preguntaId);
     return filas.length ? filas : null;
   }) ?? [];
+}
+
+// El revelado solo necesita nombres, rarezas y puntos. Se conserva el orden español del
+// juego en memoria: SQLite no tiene esa misma colación. La versión del banco invalida
+// también esta caché al regenerar un desafío, incluidas las formas de búsqueda.
+const ordenEspanol = new Intl.Collator('es');
+export async function catalogoParaRevelar(db, preguntaId) {
+  return recordar(cacheDe(db, 'revelado'), preguntaId, async () => {
+    const filas = await db.all('SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? ORDER BY id', preguntaId);
+    const respuestas = filas
+      .map((r) => ({ ...r, nombreRareza: RAREZAS[r.rareza].nombre }))
+      .sort((a, b) => b.puntos - a.puntos || ordenEspanol.compare(a.canonica, b.canonica));
+    return { respuestas, normalizadas: respuestas.map((r) => normalizar(r.canonica)) };
+  });
 }
 
 /** Borra un desafío con todo lo que depende de él (partidas, rondas, intentos y reportes incluidos). */

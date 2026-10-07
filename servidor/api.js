@@ -383,7 +383,6 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
   return async function manejar(req, res, ruta) {
     const camino = ruta.split('?')[0];
     if (!camino.startsWith('/api/')) return false;
-    await sincronizarCaches(db);
     if (!limitar(ip(req))) {
       enviarJson(res, 429, { error: 'demasiadas_solicitudes', mensaje: 'Vas muy rápido. Esperá un momento.' }, { 'retry-after': '2' });
       return true;
@@ -409,6 +408,14 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     const cookies = leerCookies(req);
     const cabeceras = {};
     try {
+      // El catálogo se consulta después de ambas operaciones. La comprobación de
+      // versión y el contador atómico son independientes y evitan un viaje en serie.
+      let limiteRevelado;
+      if (opciones.limite === 'revelado') {
+        [, limiteRevelado] = await Promise.all([sincronizarCaches(db), limites.consumir('revelado', ip(req))]);
+      } else {
+        await sincronizarCaches(db);
+      }
       if (opciones.admin) {
         const auth = await autorizarAdmin(req, cookies);
         if (!auth) {
@@ -435,7 +442,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       }
       const politica = opciones.limite ?? (opciones.admin ? 'admin' : null);
       if (politica) {
-        const l = await limites.consumir(politica, ip(req));
+        const l = limiteRevelado ?? await limites.consumir(politica, ip(req));
         if (!l.permitido) {
           enviarJson(res, 429, { error: 'demasiadas_solicitudes', mensaje: 'Demasiados intentos. Esperá un momento.' }, { 'retry-after': String(l.reintentarEn) });
           return true;

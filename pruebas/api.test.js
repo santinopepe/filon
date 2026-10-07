@@ -116,6 +116,37 @@ test('el catálogo de respuestas se descarga aparte y solo después de cerrar la
   }
 });
 
+test('revelado final: versión de caché y limitador se consultan en paralelo sin perder los permisos', async () => {
+  const app = await levantar();
+  try {
+    const c = cliente(app.puerto);
+    const p = (await c.pedir('POST', '/api/partidas')).datos.partida;
+    for (let n = 1; n <= 7; n++) {
+      await c.pedir('POST', `/api/partidas/${p.id}/rondas/${n}/iniciar`);
+      await c.pedir('POST', `/api/partidas/${p.id}/rondas/${n}/pasar`);
+    }
+    const eventos = [];
+    const get = app.db.get.bind(app.db);
+    app.db.get = async (sql, ...args) => {
+      const nombre = sql.includes('version_banco') ? 'version' : sql.includes('INSERT INTO limites') ? 'limite' : null;
+      if (nombre) eventos.push(`inicio:${nombre}`);
+      const resultado = await get(sql, ...args);
+      if (nombre) eventos.push(`fin:${nombre}`);
+      return resultado;
+    };
+    const ruta = `/api/partidas/${p.id}/rondas/1/respuestas`;
+    const catalogo = await c.pedir('GET', ruta);
+    assert.equal(catalogo.estado, 200);
+    assert.equal(catalogo.res.headers.get('cache-control'), 'no-store');
+    assert.ok(catalogo.datos.respuestas.length > 0);
+    assert.ok(eventos.indexOf('inicio:limite') < eventos.indexOf('fin:version'), 'ambas consultas comienzan antes de terminar la primera');
+    assert.equal(eventos.filter((e) => e === 'inicio:limite').length, 1, 'el contador se consume una sola vez');
+    assert.equal((await cliente(app.puerto).pedir('GET', ruta)).estado, 404, 'la caché no permite ver la partida ajena');
+  } finally {
+    await app.cerrar();
+  }
+});
+
 test('validaciones HTTP: JSON obligatorio, rutas inexistentes y administración protegida', async () => {
   const app = await levantar();
   try {

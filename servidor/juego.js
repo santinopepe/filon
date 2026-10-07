@@ -4,7 +4,7 @@ import { transaccion } from './db.js';
 import { CATEGORIAS, RAREZAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO, LIMITES, MODOS, CLAVES_MODOS, MODO_POR_DEFECTO } from './dominio.js';
 import { normalizar } from './normalizar.js';
 import { fechaLocal, inicioDeFecha, sumarDias, proximaMedianoche } from './tiempo.js';
-import { desafioPorFecha, desafioPorId, preguntasDeDesafio, respuestasDePregunta, conteoRespuestasDeDesafio, respuestasPorIds, evaluarTexto } from './banco.js';
+import { desafioPorFecha, desafioPorId, preguntasDeDesafio, catalogoParaRevelar, conteoRespuestasDeDesafio, respuestasPorIds, evaluarTexto } from './banco.js';
 
 export class ErrorJuego extends Error {
   constructor(estado, codigo, mensaje) {
@@ -96,12 +96,6 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       }
       return fila;
     });
-  }
-
-  function respuestasPublicas(respuestas) {
-    return respuestas
-      .map((r) => ({ canonica: r.canonica, rareza: r.rareza, nombreRareza: RAREZAS[r.rareza].nombre, puntos: r.puntos }))
-      .sort((a, b) => b.puntos - a.puntos || a.canonica.localeCompare(b.canonica, 'es'));
   }
 
   /** Ranking y distribución del día a partir del histograma agregado (≤ 141 filas, no todas las partidas). */
@@ -283,14 +277,26 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
     async respuestasValidas(jugadorId, partidaId, posicion, { desde = 0, limite = LIMITES.paginaRevelado, buscar = '' } = {}) {
       const t = ahora();
-      const partida = await mantener(await obtenerPartida(jugadorId, partidaId), t);
-      const ronda = await db.get('SELECT r.estado, r.pregunta_id AS preguntaId FROM rondas r WHERE r.partida_id = ? AND r.posicion = ?', partida.id, posicion);
+      // Al finalizar, la partida y sus rondas ya no cambian: autorización y ronda en
+      // un solo viaje a Turso. En curso se mantiene el vencimiento y se relee la ronda.
+      const partida = await db.get(
+        `SELECT p.*, r.estado AS estadoRonda, r.pregunta_id AS preguntaId
+         FROM partidas p LEFT JOIN rondas r ON r.partida_id = p.id AND r.posicion = ?
+         WHERE p.id = ? AND p.jugador_id = ?`,
+        posicion, partidaId, jugadorId,
+      );
+      if (!partida) throw new ErrorJuego(404, 'partida_inexistente', 'No encontramos esa partida.');
+      let ronda = partida.preguntaId == null ? null : { estado: partida.estadoRonda, preguntaId: partida.preguntaId };
+      if (!partida.terminada_en) {
+        await mantener(partida, t);
+        ronda = await db.get('SELECT r.estado, r.pregunta_id AS preguntaId FROM rondas r WHERE r.partida_id = ? AND r.posicion = ?', partida.id, posicion);
+      }
       if (!ronda) throw new ErrorJuego(409, 'ronda_no_iniciada', 'Esa ronda todavía no empezó.');
       if (ronda.estado === 'activa') throw new ErrorJuego(409, 'ronda_activa', 'Las respuestas se revelan cuando termina la ronda.');
       if (ronda.estado === 'caducada') throw new ErrorJuego(410, 'ronda_caducada', 'Esa ronda quedó sin jugar.');
-      const todas = respuestasPublicas(await respuestasDePregunta(db, ronda.preguntaId));
+      const { respuestas: todas, normalizadas } = await catalogoParaRevelar(db, ronda.preguntaId);
       const filtro = normalizar(buscar);
-      const filtradas = filtro ? todas.filter((r) => normalizar(r.canonica).includes(filtro)) : todas;
+      const filtradas = filtro ? todas.filter((_, i) => normalizadas[i].includes(filtro)) : todas;
       const tope = Math.min(Math.max(1, limite), LIMITES.paginaRevelado);
       const pagina = filtradas.slice(desde, desde + tope);
       return {
