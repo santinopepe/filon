@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "revisado": "2026-10-05",
+  "revisado": "2026-10-06",
   "descripcion": "Banco de reserva curado a mano. Se usa cuando la generación con IA falla o no está configurada. Cada pregunta pasa la validación estricta (npm run validar-reserva) y sus datos se contrastaron con las fuentes indicadas.",
   "preguntas": [
     {
@@ -33,7 +33,7 @@
       "id": "geo-ecuador",
       "categoria": "geografia",
       "enunciado": "Nombrá un país cuyo territorio terrestre atraviese la línea del ecuador.",
-      "alcance": "Los 11 países en los que el ecuador cruza tierra firme o una isla; no cuentan aguas territoriales sin tierra atravesada.",
+      "alcance": "Los 11 países donde esa línea atraviesa tierra firme o una isla; no cuentan aguas territoriales sin tierra atravesada.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Ecuador_terrestre", "titulo": "Ecuador terrestre — Wikipedia" }],
       "respuestas": [
         { "canonica": "Ecuador", "variantes": ["República del Ecuador"], "rareza": "grava", "explicacion": "El país toma su nombre de la línea ecuatorial que cruza su territorio." },
@@ -100,7 +100,7 @@
       "id": "his-emperadores",
       "categoria": "historia",
       "enunciado": "Nombrá un emperador romano que haya gobernado en el siglo I.",
-      "alcance": "Emperadores que reinaron en algún momento entre los años 1 y 100 d. C., de Augusto a Trajano.",
+      "alcance": "Emperadores que reinaron en algún momento entre los años 1 y 100 d. C.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Anexo:Emperadores_romanos", "titulo": "Anexo: Emperadores romanos — Wikipedia" }],
       "respuestas": [
         { "canonica": "Nerón", "variantes": [], "rareza": "grava", "explicacion": "Gobernó del 54 al 68. Reinaba cuando ocurrió el gran incendio de Roma, en el 64." },
@@ -402,7 +402,7 @@
       "id": "mus-verdi",
       "categoria": "musica",
       "enunciado": "Nombrá una ópera de Giuseppe Verdi.",
-      "alcance": "Las 28 óperas de Verdi, de Oberto (1839) a Falstaff (1893), con su título original o en español.",
+      "alcance": "Las 28 óperas de Verdi, estrenadas entre 1839 y 1893, con su título original o en español.",
       "fuentes": [
         { "url": "https://es.wikipedia.org/wiki/Giuseppe_Verdi", "titulo": "Giuseppe Verdi — Wikipedia" },
         { "url": "https://en.wikipedia.org/wiki/List_of_compositions_by_Giuseppe_Verdi", "titulo": "List of compositions by Giuseppe Verdi — Wikipedia" }
@@ -519,7 +519,7 @@
       "id": "lit-ficciones",
       "categoria": "literatura",
       "enunciado": "Nombrá un cuento del libro «Ficciones», de Jorge Luis Borges.",
-      "alcance": "Los 17 cuentos de la edición definitiva de 1956, en sus dos partes: «El jardín de senderos que se bifurcan» y «Artificios».",
+      "alcance": "Los 17 cuentos incluidos en las dos partes de la edición definitiva de 1956.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Ficciones", "titulo": "Ficciones — Wikipedia" }],
       "respuestas": [
         { "canonica": "La biblioteca de Babel", "variantes": [], "rareza": "grava", "explicacion": "Imagina el universo como una biblioteca infinita con todas las combinaciones de letras." },

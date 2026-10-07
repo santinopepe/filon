@@ -614,12 +614,19 @@ function montarCrear(modo) {
       let texto = q('prompt-texto').value;
       let detalle = '';
       if (conHistorial) {
-        const { res } = await pedirHistorial('json');
+        // El historial es toda la reserva del modo en la base (lo publicado, lo cargado y lo editado),
+        // no solo los últimos días: así la IA no repite ninguna pregunta que ya tenemos.
+        const res = await fetch(conModo('/api/admin/historial?fuente=reserva&formato=json', modo), { credentials: 'same-origin' });
+        if (res.status === 401) {
+          mostrarIngreso('La sesión venció o se cerró. Volvé a ingresar.');
+          throw new ErrorApi(401, { mensaje: 'Sesión vencida.' });
+        }
+        if (!res.ok) throw new ErrorApi(res.status, await res.json().catch(() => null));
         const datos = await res.json();
         // Lo justo para comparar: sin ids ni números internos.
-        const historial = datos.preguntas.map(({ fecha, categoria, enunciado, alcance, respuestas }) => ({ fecha, categoria, enunciado, alcance, respuestas }));
+        const historial = datos.preguntas.map(({ fecha, categoria, enunciado, alcance, respuestas }) => ({ ...(fecha ? { usada: fecha } : {}), categoria, enunciado, alcance, respuestas }));
         texto = insertarHistorial(texto, historial);
-        detalle = ` con ${historial.length} preguntas de ${NOMBRES_MODO[modo]} desde el ${datos.desde}`;
+        detalle = ` con las ${historial.length} preguntas de la reserva de ${NOMBRES_MODO[modo]}`;
       }
       await copiarTexto(texto);
       avisarPrompt(`Prompt copiado${detalle}. Pegalo en la IA.`);

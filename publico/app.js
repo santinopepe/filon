@@ -218,10 +218,20 @@ function mostrar(pantalla) {
 // Teclado en celulares: al abrirse, la parte visible de la pantalla (visualViewport) se achica y, en
 // iOS, además se desplaza hacia arriba, llevándose la pregunta. Mientras se responde, la ronda se
 // acomoda a esa zona visible: la pregunta arriba (compacta) y el campo justo debajo.
+// El teclado se detecta comparando la zona visible con su alto «completo» (el último medido sin el
+// campo enfocado): en iOS innerHeight también puede achicarse, así que no sirve de referencia.
+let altoCompleto = window.visualViewport?.height ?? innerHeight;
+let vigiaTeclado = null;
+const campoEnfocado = () => document.activeElement?.id === 'campo-respuesta';
+
 function ajustarAlTeclado() {
   const vv = window.visualViewport;
   if (!vv) return;
-  const abierto = estado.pantalla === 'ronda' && innerHeight - vv.height > 120;
+  if (!campoEnfocado()) {
+    altoCompleto = Math.max(vv.height, innerHeight);
+    clearInterval(vigiaTeclado); // el campo se deshabilitó o perdió el foco sin avisar
+  }
+  const abierto = estado.pantalla === 'ronda' && campoEnfocado() && altoCompleto - vv.height > 120;
   const raiz = document.documentElement.style;
   raiz.setProperty('--vv-arriba', `${abierto ? Math.max(0, vv.offsetTop) : 0}px`);
   raiz.setProperty('--vv-alto', `${abierto ? vv.height : innerHeight}px`);
@@ -232,6 +242,20 @@ function ajustarAlTeclado() {
 }
 window.visualViewport?.addEventListener('resize', ajustarAlTeclado);
 window.visualViewport?.addEventListener('scroll', ajustarAlTeclado);
+// El aviso de «resize» suele llegar antes de que el teclado termine de subir y después no llega otro
+// hasta que se scrollea: mientras el campo tiene el foco, la zona visible se mide sola cada 150 ms.
+addEventListener('focusin', (ev) => {
+  if (ev.target.id !== 'campo-respuesta' || !window.visualViewport) return;
+  ajustarAlTeclado();
+  clearInterval(vigiaTeclado);
+  vigiaTeclado = setInterval(ajustarAlTeclado, 150);
+});
+addEventListener('focusout', (ev) => {
+  if (ev.target.id !== 'campo-respuesta') return;
+  clearInterval(vigiaTeclado);
+  // Al pasar de un campo a otro (o al tocar «Responder») el foco vuelve enseguida: se espera un poco.
+  setTimeout(ajustarAlTeclado, 120);
+});
 
 // El scroll de la página recorre únicamente la parte de la mina que se excavó.
 function actualizarRecorrido() {

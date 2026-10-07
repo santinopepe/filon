@@ -360,13 +360,36 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       if (sumarDias(desde, 366) < hasta) throw new ErrorJuego(400, 'rango_invalido', 'El rango no puede superar un año.');
       return { hoy, ...(await estadisticasAdmin(db, { zona: config.zona, desde, hasta, fecha, modo: modoDe(req) })) };
     }, { admin: true }],
-    // Historial de un modo para que una IA externa no repita preguntas: ?modo= &dias=3 (1–30) &formato=json|csv.
-    // Incluye desde hace N-1 días hasta los días ya programados a futuro.
+    // Historial de un modo para que una IA externa no repita preguntas: ?modo= &formato=json|csv y
+    //   fuente=publicadas (por defecto) &dias=3 (1–30): lo publicado desde hace N-1 días, más lo programado;
+    //   fuente=reserva: toda la reserva del modo (archivo + base, activas o no), con la última vez que se usó
+    //   cada pregunta. Es lo que usa «Copiar con historial».
     ['GET', /^\/api\/admin\/historial$/, async ({ req }) => {
       const q = consulta(req);
       const modo = modoDe(req);
-      const dias = Math.min(30, Math.max(1, Math.floor(Number(q.get('dias')) || 3)));
       const formato = q.get('formato') === 'csv' ? 'csv' : 'json';
+      if (q.get('fuente') === 'reserva') {
+        const completa = await reservaCompleta(db, modo, reservaArchivo(modo), { dominios: config.fuentes.dominios, conInactivas: true });
+        const usos = await usosDeReserva(db, modo);
+        const maxRespuestas = 30; // lo justo para reconocer el conjunto sin inflar el prompt
+        const preguntas = completa.entradas
+          .map(({ pregunta: p }) => ({
+            fecha: usos.get(p.id)?.ultima ?? null,
+            numero: null,
+            posicion: null,
+            categoria: p.categoria,
+            enunciado: p.enunciado,
+            alcance: p.alcance,
+            totalRespuestas: p.respuestas.length,
+            respuestas: p.respuestas.slice(0, maxRespuestas).map((r) => r.canonica),
+          }))
+          .sort((a, b) => (b.fecha ?? '').localeCompare(a.fecha ?? '') || a.enunciado.localeCompare(b.enunciado, 'es'));
+        const archivo = `filon-reserva-${modo}.${formato}`;
+        if (formato === 'csv') return { [CRUDO]: { tipo: 'text/csv; charset=utf-8', cuerpo: historialACsv(preguntas), archivo } };
+        const cuerpo = JSON.stringify({ modo, fuente: 'reserva', generado: new Date(ahora()).toISOString(), preguntas }, null, 2);
+        return { [CRUDO]: { tipo: 'application/json; charset=utf-8', cuerpo, archivo } };
+      }
+      const dias = Math.min(30, Math.max(1, Math.floor(Number(q.get('dias')) || 3)));
       const hoy = fechaLocal(ahora(), config.zona);
       const desde = sumarDias(hoy, -(dias - 1));
       const preguntas = await historialDesde(db, desde, { modo });

@@ -122,10 +122,12 @@ test('generar con otra IA: prompt a mano, descargas del historial y copia con hi
   expect(csv.suggestedFilename()).toMatch(/\.csv$/);
 
   await page.click('#normal-prompt-copiar-historial');
-  await expect(page.locator('#normal-prompt-estado')).toContainText('Prompt copiado con');
+  // El historial es toda la reserva del modo: lo publicado (con la fecha en que se usó) y lo que no.
+  await expect(page.locator('#normal-prompt-estado')).toContainText('preguntas de la reserva de Normal');
   const copiado = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copiado).toContain('Historial reciente:\n[\n  {"fecha":');
+  expect(copiado).toContain('Historial reciente:\n[\n  {"usada":');
   expect(copiado).toContain(datos.preguntas[0].enunciado);
+  expect(copiado).toContain('"categoria":"literatura"');
   expect(copiado).toContain('Generá ahora el desafío completo.');
 
   // Las ediciones quedan en este navegador y se pueden descartar.

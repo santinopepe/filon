@@ -7,7 +7,8 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { prepararEntorno } from './ayuda.js';
-import { reservaCompleta, guardarEnReserva, cambiarEstadoReserva, elegirDeReserva } from '../servidor/generador/reserva.js';
+import { reservaCompleta, guardarEnReserva, cambiarEstadoReserva, elegirDeReserva, copiarPublicadasAReserva } from '../servidor/generador/reserva.js';
+import { publicarDesafio } from '../servidor/banco.js';
 import { ranurasDeModo } from '../servidor/dominio.js';
 import { iniciarServidor } from '../servidor/index.js';
 
@@ -36,6 +37,37 @@ test('la reserva completa suma lo de la base, la edición pisa al archivo y las 
   // Sin `reemplazar`, guardar de nuevo no pisa una edición.
   await guardarEnReserva(e.db, 'farandula', [original], { origen: 'manual' });
   assert.equal((await reservaCompleta(e.db, 'farandula', base, { dominios })).preguntas.find((p) => p.id === 'far-bandana').alcance, 'Alcance corregido desde el panel.');
+});
+
+test('copiar a la reserva lo ya publicado: sin duplicar lo del archivo y sin repetir al correrlo de nuevo', async () => {
+  const e = await prepararEntorno();
+  const dominios = e.config.fuentes.dominios;
+  const base = e.reservas.geografia;
+  const idsArchivo = new Set(base.preguntas.map((p) => p.id));
+  // Un día publicado como antes de la reserva en la base: tres preguntas «de IA» sin id de reserva y
+  // cuatro del banco de archivo.
+  const deIA = base.preguntas.slice(0, 3).map((p) => ({ ...p, id: null, origen: 'ia', enunciado: `${p.enunciado.replace(/\.$/, '')} (versión publicada).` }));
+  const delArchivo = base.preguntas.slice(3, 7);
+  await publicarDesafio(e.db, { fecha: '2026-09-01', modo: 'geografia', preguntas: [...deIA, ...delArchivo], origen: 'mixto' });
+
+  const seco = await copiarPublicadasAReserva(e.db, 'geografia', { idsArchivo, dominios, seco: true });
+  assert.deepEqual({ ...seco, invalidas: seco.invalidas.length }, { revisadas: 7, delArchivo: 4, yaEstaban: 0, copiadas: 3, invalidas: 0 });
+  assert.equal((await e.db.get('SELECT COUNT(*) AS n FROM reserva')).n, 0, 'en seco no se escribe nada');
+
+  const r = await copiarPublicadasAReserva(e.db, 'geografia', { idsArchivo, dominios });
+  assert.equal(r.copiadas, 3);
+  const filas = await e.db.all("SELECT id, origen FROM reserva WHERE modo = 'geografia'");
+  assert.equal(filas.length, 3);
+  assert.ok(filas.every((f) => f.origen === 'ia'));
+  // Cada día queda vinculado a su pregunta de reserva (para contar los usos).
+  assert.equal((await e.db.get("SELECT COUNT(*) AS n FROM preguntas WHERE reserva_id IS NULL")).n, 0);
+  const completa = await reservaCompleta(e.db, 'geografia', base, { dominios });
+  assert.equal(completa.preguntas.length, base.preguntas.length + 3);
+  assert.ok(completa.preguntas.some((p) => p.enunciado.endsWith('(versión publicada).')));
+
+  const otra = await copiarPublicadasAReserva(e.db, 'geografia', { idsArchivo, dominios });
+  assert.equal(otra.copiadas, 0);
+  assert.equal(otra.yaEstaban, 3);
 });
 
 let dir;
@@ -102,6 +134,15 @@ test('API: lo cargado a mano queda en la reserva y la reserva se edita y se desa
     assert.equal(despues.find((p) => p.id === 'gm-oceanos').activa, false);
     assert.equal(despues.find((p) => p.id === cargadas[0].id).pregunta.enunciado, 'Nombrá un país limítrofe de la República Argentina.');
     assert.equal((await pedir('GET', '/api/admin/reserva?modo=geografia')).estado, 401, 'solo con sesión de administración');
+
+    // El historial para el prompt sale de la reserva completa (archivo + base, activas o no).
+    const res = await fetch(`http://127.0.0.1:${app.puerto}/api/admin/historial?modo=geografia&fuente=reserva`, { headers: ADMIN });
+    assert.match(res.headers.get('content-disposition'), /filon-reserva-geografia\.json/);
+    const historial = await res.json();
+    assert.equal(historial.fuente, 'reserva');
+    assert.equal(historial.preguntas.length, despues.length);
+    assert.ok(historial.preguntas.some((p) => p.enunciado === 'Nombrá un país limítrofe de la República Argentina.' && p.fecha === '2030-05-10'));
+    assert.ok(historial.preguntas.every((p) => p.respuestas.length <= 30 && p.categoria === 'geografia'));
   } finally {
     await app.cerrar();
   }

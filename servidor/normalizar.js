@@ -6,6 +6,7 @@
 
 const MARCA_ENIE = '\u0001';
 const ARTICULO_INICIAL = /^(el|la|los|las|lo|un|una|unos|unas|the)\s+/;
+const CONECTORES = new Set(['de', 'del', 'la', 'las', 'el', 'los', 'lo', 'un', 'una', 'unos', 'unas', 'y', 'e', 'en', 'a', 'of', 'the', 'and', 'da', 'do', 'dos', 'di', 'van', 'von']);
 
 export function normalizar(texto) {
   return String(texto ?? '')
@@ -28,7 +29,7 @@ export const sinArticulo = (normalizado) => normalizado.replace(ARTICULO_INICIAL
 // Hace equivalentes nombres con las mismas palabras en distinto orden. Las
 // iniciales consecutivas se agrupan: «J R R Tolkien» y «Tolkien JRR» comparten
 // la misma firma.
-function firmaPalabras(normalizado) {
+function agruparPalabras(normalizado) {
   const palabras = normalizado.split(' ').filter(Boolean);
   const agrupadas = [];
   for (let i = 0; i < palabras.length; i++) {
@@ -40,8 +41,10 @@ function firmaPalabras(normalizado) {
       agrupadas.push(palabras[i]);
     }
   }
-  return agrupadas.sort().join('|');
+  return agrupadas;
 }
+
+const firmaPalabras = (normalizado) => agruparPalabras(normalizado).sort().join('|');
 
 /** Formas que se registran para una variante: la normalizada y, si corresponde, sin artículo. */
 export function formasRegistrables(texto) {
@@ -62,7 +65,13 @@ export function crearIndice(entradas) {
   const compacto = new Map();
   const palabras = new Map();
   const formas = [];
+  const parciales = [];
+  const registradas = new Map();
   for (const { respuestaId, normalizada } of entradas) {
+    if (!normalizada) continue;
+    if (!registradas.has(respuestaId)) registradas.set(respuestaId, new Set());
+    if (registradas.get(respuestaId).has(normalizada)) continue;
+    registradas.get(respuestaId).add(normalizada);
     if (!exacto.has(normalizada)) exacto.set(normalizada, respuestaId);
     const c = compactar(normalizada);
     if (!compacto.has(c)) compacto.set(c, respuestaId);
@@ -72,8 +81,9 @@ export function crearIndice(entradas) {
     else if (palabras.get(f) !== respuestaId) palabras.set(f, null);
     formas.push({ respuestaId, normalizada: c });
     if (f !== c) formas.push({ respuestaId, normalizada: f });
+    parciales.push({ respuestaId, compacta: c, palabras: agruparPalabras(normalizada) });
   }
-  return { exacto, compacto, palabras, formas };
+  return { exacto, compacto, palabras, formas, parciales };
 }
 
 /** Busca un texto ingresado en el índice. Devuelve el id de respuesta o null. */
@@ -119,31 +129,98 @@ function distanciaAcotada(a, b, limite) {
   return anterior[b.length];
 }
 
+// Una palabra completa de cuatro letras (Bach, King) alcanza. Para un
+// fragmento interno o un error de tipeo se exigen cinco. Conectores y números
+// solos no identifican una respuesta.
+function esFragmentoSignificativo(palabras) {
+  return palabras.some((p) => !CONECTORES.has(p) && /\p{L}/u.test(p) && p.length >= 4);
+}
+
+function contienePalabras(candidata, entrada) {
+  const disponibles = [...candidata];
+  for (const palabra of entrada) {
+    const i = disponibles.indexOf(palabra);
+    if (i < 0) return false;
+    disponibles.splice(i, 1);
+  }
+  return true;
+}
+
+// Genera sólo los tramos del largo buscado, sin guardar todas las combinaciones
+// en el índice. Permite corregir «garciamarqez» o «marqez garcia» dentro de un
+// nombre largo, además de un apellido suelto como «tolkein».
+function* fragmentosDe(palabras, largo, limite) {
+  for (let i = 0; i < palabras.length; i++) {
+    let compacta = '';
+    for (let j = i; j < palabras.length; j++) {
+      compacta += palabras[j];
+      if (compacta.length > largo + limite) break;
+      if (compacta.length < largo - limite) continue;
+      const tramo = palabras.slice(i, j + 1);
+      if (!esFragmentoSignificativo(tramo)) continue;
+      yield compacta;
+      if (tramo.length > 1) yield [...tramo].sort().join('|');
+    }
+  }
+}
+
 /**
- * Busca una única respuesta inequívoca con pocos errores de tipeo.
- * No completa prefijos cortos: exige al menos cinco caracteres y tolera como
- * máximo un 20 % de ediciones (hasta tres), para no convertirlo en un buscador
- * que revele el banco durante la ronda.
+ * Sugiere una respuesta por palabras completas, subcadenas o pocos errores.
+ * Las coincidencias exactas ganan; un fragmento compartido nunca se desempata
+ * por el largo del nombre ni por cuántas variantes tenga cada respuesta.
+ * Las correcciones toleran hasta un 20 % de ediciones, con un máximo de tres.
  */
 export function buscarParecidoEnIndice(indice, texto) {
   const normalizado = normalizar(texto);
   if (!normalizado) return null;
-  const entradas = [normalizado, sinArticulo(normalizado)]
-    .filter((forma, i, todas) => forma && todas.indexOf(forma) === i)
+  const exacta = buscarEnIndice(indice, texto);
+  if (exacta != null) return exacta;
+  const consultas = [normalizado, sinArticulo(normalizado)]
+    .filter((forma, i, todas) => forma && todas.indexOf(forma) === i);
+  const parciales = new Set();
+  for (const consulta of consultas) {
+    const palabras = agruparPalabras(consulta);
+    if (!esFragmentoSignificativo(palabras)) continue;
+    const compacta = compactar(consulta);
+    for (const forma of indice.parciales || []) {
+      if (contienePalabras(forma.palabras, palabras) || (compacta.length >= 5 && forma.compacta.includes(compacta))) {
+        parciales.add(forma.respuestaId);
+        if (parciales.size > 1) return null;
+      }
+    }
+  }
+  if (parciales.size) return parciales.values().next().value;
+
+  const entradas = consultas
     .flatMap((forma) => [compactar(forma), firmaPalabras(forma)])
     .filter((forma, i, todas) => todas.indexOf(forma) === i)
-    .filter((forma) => forma.length >= 5);
+    .filter((forma) => forma.replace(/\|/g, '').length >= 5);
   if (!entradas.length) return null;
 
   const mejores = new Map();
+  const permiteFragmentos = consultas.some((c) => esFragmentoSignificativo(agruparPalabras(c)));
+  const registrar = (entrada, candidata, respuestaId) => {
+    const largo = Math.max(entrada.replace(/\|/g, '').length, candidata.replace(/\|/g, '').length);
+    const limite = Math.min(3, Math.floor(largo * 0.2));
+    if (limite < 1) return;
+    const distancia = distanciaAcotada(entrada, candidata, limite);
+    if (distancia > limite) return;
+    const previa = mejores.get(respuestaId);
+    if (previa === undefined || distancia < previa) mejores.set(respuestaId, distancia);
+  };
   for (const entrada of entradas) {
     for (const forma of indice.formas || []) {
-      const limite = Math.min(3, Math.floor(Math.max(entrada.length, forma.normalizada.length) * 0.2));
-      if (limite < 1) continue;
-      const distancia = distanciaAcotada(entrada, forma.normalizada, limite);
-      if (distancia < 1 || distancia > limite) continue;
-      const previa = mejores.get(forma.respuestaId);
-      if (previa === undefined || distancia < previa) mejores.set(forma.respuestaId, distancia);
+      registrar(entrada, forma.normalizada, forma.respuestaId);
+    }
+    if (!permiteFragmentos) continue;
+    const largo = entrada.replace(/\|/g, '').length;
+    // Si faltan letras, el 20 % se calcula sobre el candidato más largo:
+    // nueve letras pueden aproximar un tramo de once con dos omisiones.
+    const limite = Math.min(3, Math.floor(largo / 4));
+    for (const forma of indice.parciales || []) {
+      for (const fragmento of fragmentosDe(forma.palabras, largo, limite)) {
+        registrar(entrada, fragmento, forma.respuestaId);
+      }
     }
   }
   if (!mejores.size) return null;

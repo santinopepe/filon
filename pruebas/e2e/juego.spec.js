@@ -1,5 +1,33 @@
 import { test, expect } from '@playwright/test';
 import { bancoDeHoy, masRara, vigilarErrores, BEARER } from './ayuda.js';
+import { normalizar } from '../../servidor/normalizar.js';
+
+test('un fragmento autocompleta el campo y un segundo Enter confirma la respuesta', async ({ page, request }) => {
+  const banco = await bancoDeHoy(request);
+  const respuestas = banco.preguntas[0].respuestas;
+  const opciones = respuestas.map((r) => ({
+    canonica: r.canonica,
+    fragmento: normalizar(r.canonica).slice(0, -2),
+    formas: [r.canonica, ...r.variantes].map(normalizar),
+  }));
+  const elegida = opciones.find((r) => r.fragmento.length >= 5
+    && !opciones.some((otra) => otra.formas.includes(r.fragmento))
+    && opciones.filter((otra) => otra.formas.some((f) => f.includes(r.fragmento))).length === 1);
+  expect(elegida).toBeTruthy();
+  await page.goto('/');
+  await page.click('#btn-comenzar');
+  await page.fill('#campo-respuesta', elegida.fragmento);
+  await page.press('#campo-respuesta', 'Enter');
+  await expect(page.locator('#campo-respuesta')).toHaveValue(elegida.canonica);
+  await expect(page.locator('#ronda-mensaje')).toContainText('Enter de nuevo para confirmarla');
+  await expect(page.locator('#campo-respuesta')).toBeFocused();
+  const { partidaHoy } = await (await page.request.get('/api/estado')).json();
+  expect(partidaHoy.rondas[0].estado).toBe('activa');
+  expect(partidaHoy.rondas[0].intentos).toEqual([]);
+  await page.press('#campo-respuesta', 'Enter');
+  await expect(page.locator('#p-resultado')).toBeVisible();
+  await expect(page.locator('#res-respuesta')).toContainText(elegida.canonica);
+});
 
 test('carga inicial: portada, cuenta regresiva y sin errores', async ({ page }) => {
   const errores = vigilarErrores(page);
@@ -230,4 +258,37 @@ test('modos: el menú ☰ abre el selector y cada modo tiene su ambientación y 
   await expect(page.locator('#p-final')).toBeVisible();
   await expect(page.locator('#final-sobre')).toContainText('Ya desfilaste hoy');
   expect(errores).toEqual([]);
+});
+
+test('celular: con el teclado abierto la ronda se compacta sola, sin esperar a que se scrollee', async ({ browser }) => {
+  const contexto = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await contexto.newPage();
+  // visualViewport simulado: el teclado «sube» sin disparar ningún evento (como pasa en iOS).
+  await page.addInitScript(() => {
+    const vv = new EventTarget();
+    let alto = 844;
+    Object.defineProperties(vv, {
+      height: { get: () => alto },
+      width: { get: () => 390 },
+      offsetTop: { get: () => 0 },
+      offsetLeft: { get: () => 0 },
+      scale: { get: () => 1 },
+    });
+    Object.defineProperty(window, 'visualViewport', { get: () => vv });
+    window.__teclado = (abierto) => (alto = abierto ? 480 : 844);
+  });
+  await page.goto('/?modo=geografia');
+  await page.click('#btn-comenzar');
+  await expect(page.locator('#p-ronda')).toBeVisible({ timeout: 8000 });
+  await page.locator('#campo-respuesta').focus();
+  await page.evaluate(() => window.__teclado(true));
+  await expect(page.locator('body')).toHaveClass(/teclado-abierto/);
+  const pregunta = await page.locator('#ronda-enunciado').boundingBox();
+  const campo = await page.locator('#campo-respuesta').boundingBox();
+  expect(pregunta.y).toBeGreaterThan(0);
+  expect(campo.y + campo.height).toBeLessThanOrEqual(480);
+  await page.evaluate(() => window.__teclado(false));
+  await page.locator('#campo-respuesta').blur();
+  await expect(page.locator('body')).not.toHaveClass(/teclado-abierto/);
+  await contexto.close();
 });
