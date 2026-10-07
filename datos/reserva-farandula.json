@@ -7,7 +7,7 @@
       "id": "far-casados-con-hijos",
       "categoria": "farandula",
       "enunciado": "Nombrá a un integrante de los Argento o de los Fuseneco en «Casados con hijos».",
-      "alcance": "Personajes fijos de la versión argentina (Telefe, 2005-2006): las familias Argento y Fuseneco, perro incluido.",
+      "alcance": "Personajes fijos de las dos familias de la versión argentina (Telefe, 2005-2006).",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Casados_con_hijos_(Argentina)", "titulo": "Casados con hijos (Argentina) — Wikipedia" }],
       "respuestas": [
         { "canonica": "Pepe Argento", "variantes": ["Pepe"], "rareza": "grava", "explicacion": "El padre, vendedor de zapatos, interpretado por Guillermo Francella." },
@@ -73,7 +73,7 @@
       "id": "far-campanella",
       "categoria": "farandula",
       "enunciado": "Nombrá una película dirigida por Juan José Campanella.",
-      "alcance": "Sus largometrajes estrenados entre 1999 y 2019, de «El mismo amor, la misma lluvia» a «El cuento de las comadrejas».",
+      "alcance": "Sus largometrajes como director estrenados entre 1999 y 2019.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Juan_José_Campanella", "titulo": "Juan José Campanella — Wikipedia" }],
       "respuestas": [
         { "canonica": "El secreto de sus ojos", "variantes": [], "rareza": "grava", "explicacion": "Con Ricardo Darín y Soledad Villamil; ganó el Óscar en 2010." },
@@ -89,7 +89,7 @@
       "id": "far-soda-stereo",
       "categoria": "farandula",
       "enunciado": "Nombrá un álbum de estudio de Soda Stereo.",
-      "alcance": "Los siete discos de estudio, de «Soda Stereo» (1984) a «Sueño Stereo» (1995). No cuentan los discos en vivo.",
+      "alcance": "Los siete discos de estudio publicados entre 1984 y 1995. No cuentan los discos en vivo.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Soda_Stereo", "titulo": "Soda Stereo — Wikipedia" }],
       "respuestas": [
         { "canonica": "Canción animal", "variantes": [], "rareza": "grava", "explicacion": "Disco de 1990, con «De música ligera»." },
@@ -109,7 +109,7 @@
       "id": "far-redondos",
       "categoria": "farandula",
       "enunciado": "Nombrá un álbum de estudio de Patricio Rey y sus Redonditos de Ricota.",
-      "alcance": "Los nueve discos de estudio, de «Gulp!» (1985) a «Momo Sampler» (2000). «Lobo suelto, cordero atado» cuenta como uno.",
+      "alcance": "Los nueve discos de estudio publicados entre 1985 y 2000. Un lanzamiento en dos volúmenes cuenta como un solo álbum.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Patricio_Rey_y_sus_Redonditos_de_Ricota", "titulo": "Patricio Rey y sus Redonditos de Ricota — Wikipedia" }],
       "respuestas": [
         { "canonica": "Oktubre", "variantes": [], "rareza": "grava", "explicacion": "Segundo disco, de 1986, con «Fuegos de octubre» y «Jijiji»." },
@@ -128,7 +128,7 @@
       "id": "far-canales-historicos",
       "categoria": "farandula",
       "enunciado": "Nombrá uno de los cinco canales históricos de la televisión abierta porteña.",
-      "alcance": "Los canales 2, 7, 9, 11 y 13 de Buenos Aires, por su nombre actual. También vale su número, como «Canal 11».",
+      "alcance": "Los cinco canales históricos de la televisión abierta de Buenos Aires, por su nombre actual o su número de canal.",
       "fuentes": [{ "url": "https://es.wikipedia.org/wiki/Televisión_en_Argentina", "titulo": "Televisión en Argentina — Wikipedia" }],
       "respuestas": [
         { "canonica": "Telefe", "variantes": ["Canal 11"], "rareza": "grava", "explicacion": "El canal 11; su nombre viene de «Televisión Federal»." },

@@ -1,5 +1,33 @@
 import { test, expect } from '@playwright/test';
 import { bancoDeHoy, masRara, vigilarErrores, BEARER } from './ayuda.js';
+import { normalizar } from '../../servidor/normalizar.js';
+
+test('un fragmento autocompleta el campo y un segundo Enter confirma la respuesta', async ({ page, request }) => {
+  const banco = await bancoDeHoy(request);
+  const respuestas = banco.preguntas[0].respuestas;
+  const opciones = respuestas.map((r) => ({
+    canonica: r.canonica,
+    fragmento: normalizar(r.canonica).slice(0, -2),
+    formas: [r.canonica, ...r.variantes].map(normalizar),
+  }));
+  const elegida = opciones.find((r) => r.fragmento.length >= 5
+    && !opciones.some((otra) => otra.formas.includes(r.fragmento))
+    && opciones.filter((otra) => otra.formas.some((f) => f.includes(r.fragmento))).length === 1);
+  expect(elegida).toBeTruthy();
+  await page.goto('/');
+  await page.click('#btn-comenzar');
+  await page.fill('#campo-respuesta', elegida.fragmento);
+  await page.press('#campo-respuesta', 'Enter');
+  await expect(page.locator('#campo-respuesta')).toHaveValue(elegida.canonica);
+  await expect(page.locator('#ronda-mensaje')).toContainText('Enter de nuevo para confirmarla');
+  await expect(page.locator('#campo-respuesta')).toBeFocused();
+  const { partidaHoy } = await (await page.request.get('/api/estado')).json();
+  expect(partidaHoy.rondas[0].estado).toBe('activa');
+  expect(partidaHoy.rondas[0].intentos).toEqual([]);
+  await page.press('#campo-respuesta', 'Enter');
+  await expect(page.locator('#p-resultado')).toBeVisible();
+  await expect(page.locator('#res-respuesta')).toContainText(elegida.canonica);
+});
 
 test('carga inicial: portada, cuenta regresiva y sin errores', async ({ page }) => {
   const errores = vigilarErrores(page);

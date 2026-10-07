@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { prepararEntorno, publicarHoy, respuestasDe } from './ayuda.js';
 import { crearJuego, ErrorJuego } from '../servidor/juego.js';
-import { conciliarPuntajes } from '../servidor/banco.js';
+import { conciliarPuntajes, publicarDesafio } from '../servidor/banco.js';
 
 async function armar(opciones) {
   const e = await prepararEntorno(opciones);
@@ -144,6 +144,38 @@ test('un error de tipeo inequívoco se completa y requiere un segundo envío', a
   r = await e.juego.responder(yo, p.id, 1, r.sugerencia);
   assert.equal(r.resultado, 'aceptada');
   assert.equal(r.partida.rondas[0].respuesta.canonica, respuesta.canonica);
+});
+
+test('apellidos y fragmentos se completan sin consumir intentos y se puntúan al confirmar', async () => {
+  const e = await armar();
+  const categorias = ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'];
+  const preguntas = categorias.map((categoria) => e.reserva.preguntas.find((p) =>
+    categoria === 'literatura' ? p.id === 'lit-nobel-espanol' : p.categoria === categoria));
+  await publicarDesafio(e.db, { fecha: '2026-10-05', preguntas, origen: 'reserva' });
+  const yo = '35353535-3535-4535-8535-353535353535';
+  let p = await e.juego.iniciarPartida(yo);
+  for (let n = 1; n < 7; n++) {
+    p = await e.juego.iniciarRonda(yo, p.id, n);
+    p = await e.juego.pasar(yo, p.id, n);
+  }
+  p = await e.juego.iniciarRonda(yo, p.id, 7);
+  for (const texto of ['Márquez', 'marqez', 'garciamarq', 'Márquez Gabriel']) {
+    const r = await e.juego.responder(yo, p.id, 7, texto);
+    assert.equal(r.resultado, 'sugerida', texto);
+    assert.equal(r.sugerencia, 'Gabriel García Márquez');
+    assert.equal(r.partida.rondas[6].estado, 'activa');
+    assert.deepEqual(r.partida.rondas[6].intentos, []);
+    assert.equal(r.partida.puntos, 0);
+  }
+  const ambigua = await e.juego.responder(yo, p.id, 7, 'Gabriel');
+  assert.equal(ambigua.resultado, 'rechazada', 'también es subcadena de Gabriela Mistral');
+  const rechazo = await e.juego.responder(yo, p.id, 7, 'García Lorca');
+  assert.equal(rechazo.resultado, 'rechazada');
+  assert.match(rechazo.motivo, /sin recibir el Nobel/, 'se conserva el rechazo explícito');
+  const confirmada = await e.juego.responder(yo, p.id, 7, 'Gabriel García Márquez');
+  assert.equal(confirmada.resultado, 'aceptada');
+  assert.equal(confirmada.partida.rondas[6].respuesta.canonica, 'Gabriel García Márquez');
+  assert.equal(confirmada.partida.puntos, 10);
 });
 
 test('el tiempo vence en el servidor: 25 s más un margen de red', async () => {

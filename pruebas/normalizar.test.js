@@ -84,3 +84,93 @@ test('no completa una coincidencia difusa ambigua', () => {
   ]);
   assert.equal(buscarParecidoEnIndice(indice, 'mariaa'), null);
 });
+
+test('completa apellidos y palabras omitidas sin exigir variantes registradas', () => {
+  const indice = crearIndice([
+    { respuestaId: 1, normalizada: 'gabriel garcia marquez' },
+    { respuestaId: 2, normalizada: 'j r r tolkien' },
+    { respuestaId: 3, normalizada: 'johann sebastian bach' },
+  ]);
+  for (const texto of ['Márquez', 'García Márquez', 'Márquez García', 'Gabriel Márquez']) {
+    assert.equal(buscarParecidoEnIndice(indice, texto), 1, texto);
+  }
+  assert.equal(buscarParecidoEnIndice(indice, 'Tolkien'), 2);
+  assert.equal(buscarParecidoEnIndice(indice, 'Bach'), 3, 'una palabra completa de cuatro letras alcanza');
+  assert.equal(buscarEnIndice(indice, 'Márquez'), null, 'un fragmento se sugiere, no se acepta como exacto');
+});
+
+test('completa subcadenas internas, prefijos y frases compactas suficientemente largas', () => {
+  const indice = crearIndice([
+    { respuestaId: 1, normalizada: 'gabriel garcia marquez' },
+    { respuestaId: 2, normalizada: 'el señor de los anillos' },
+  ]);
+  for (const texto of ['marqu', 'arquez', 'garciamarq', 'riel garcia']) {
+    assert.equal(buscarParecidoEnIndice(indice, texto), 1, texto);
+  }
+  assert.equal(buscarParecidoEnIndice(indice, 'señor de los'), 2);
+  for (const texto of ['mar', 'marq', 'de los', 'los', 'el']) {
+    assert.equal(buscarParecidoEnIndice(indice, texto), null, texto);
+  }
+});
+
+test('corrige errores en un apellido o frase dentro de un nombre largo', () => {
+  const indice = crearIndice([
+    { respuestaId: 1, normalizada: 'gabriel garcia marquez' },
+    { respuestaId: 2, normalizada: 'j r r tolkien' },
+    { respuestaId: 3, normalizada: 'johann sebastian bach' },
+    { respuestaId: 4, normalizada: 'harry potter y la piedra filosofal' },
+  ]);
+  for (const texto of ['marqez', 'garcia marqez', 'marqez garcia', 'garciamarqez']) {
+    assert.equal(buscarParecidoEnIndice(indice, texto), 1, texto);
+  }
+  assert.equal(buscarParecidoEnIndice(indice, 'tolkein'), 2);
+  assert.equal(buscarParecidoEnIndice(indice, 'bachh'), 3);
+  assert.equal(buscarParecidoEnIndice(indice, 'hary poter'), 4, 'tolera dos omisiones dentro de un título largo');
+  assert.equal(buscarParecidoEnIndice(indice, 'marxx'), null, 'demasiados errores en una entrada corta');
+});
+
+test('no desempata fragmentos compartidos por el largo del nombre o sus variantes', () => {
+  const indice = crearIndice([
+    { respuestaId: 1, normalizada: 'john smith' },
+    { respuestaId: 1, normalizada: 'j smith' },
+    { respuestaId: 2, normalizada: 'maggie smith' },
+    { respuestaId: 3, normalizada: 'gabriel garcia marquez' },
+    { respuestaId: 4, normalizada: 'gabriela mistral' },
+  ]);
+  for (const texto of ['Smith', 'smiht', 'Gabriel', 'gabri']) {
+    assert.equal(buscarParecidoEnIndice(indice, texto), null, texto);
+  }
+  assert.equal(buscarParecidoEnIndice(indice, 'John Smith'), 1);
+  assert.equal(buscarParecidoEnIndice(indice, 'Maggie'), 2);
+});
+
+test('las formas exactas y variantes tienen prioridad sobre coincidencias parciales', () => {
+  const indice = crearIndice([
+    { respuestaId: 1, normalizada: 'austria' },
+    { respuestaId: 2, normalizada: 'australia' },
+    { respuestaId: 3, normalizada: 'johann strauss' },
+    { respuestaId: 3, normalizada: 'strauss' },
+    { respuestaId: 4, normalizada: 'richard strauss' },
+  ]);
+  assert.equal(buscarParecidoEnIndice(indice, 'Austria'), 1);
+  assert.equal(buscarParecidoEnIndice(indice, 'Strauss'), 3);
+  assert.equal(buscarParecidoEnIndice(indice, 'straus'), null);
+});
+
+test('no completa números solos ni reutiliza una palabra para cubrir dos', () => {
+  const indice = crearIndice([{ respuestaId: 1, normalizada: 'maria antonieta 19842' }]);
+  assert.equal(buscarParecidoEnIndice(indice, '19842'), null);
+  assert.equal(buscarParecidoEnIndice(indice, 'Maria Maria'), null);
+  assert.equal(buscarParecidoEnIndice(indice, '   !!!'), null);
+});
+
+test('variantes y filas duplicadas de una misma respuesta no crean ambigüedad', () => {
+  const indice = crearIndice([
+    { respuestaId: 1, normalizada: 'gabriel garcia marquez' },
+    { respuestaId: 1, normalizada: 'garcia marquez' },
+    { respuestaId: 1, normalizada: 'garcia marquez' },
+    { respuestaId: 1, normalizada: '' },
+  ]);
+  assert.equal(buscarParecidoEnIndice(indice, 'Marquez'), 1);
+  assert.equal(buscarParecidoEnIndice(indice, 'marqez'), 1);
+});
