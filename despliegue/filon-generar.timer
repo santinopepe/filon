@@ -1,10 +1,9 @@
 # /etc/systemd/system/filon-generar.timer
-# 21:00 prepara mañana con IA; 23:40 completa con reserva si hace falta; 00:00:30 asegura el día nuevo.
+# 00:00:30 asegura el día nuevo (23:40, filon-reserva.timer, prepara mañana).
 [Unit]
 Description=Filón: horarios de la tarea diaria
 
 [Timer]
-OnCalendar=*-*-* 21:00:00 America/Argentina/Buenos_Aires
 OnCalendar=*-*-* 00:00:30 America/Argentina/Buenos_Aires
 Persistent=true
 

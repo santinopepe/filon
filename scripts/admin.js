@@ -54,10 +54,9 @@ switch (comando) {
     for (const c of await db.all('SELECT * FROM corridas ORDER BY id DESC LIMIT ?', n)) {
       const d = c.detalle ? JSON.parse(c.detalle) : {};
       console.log(
-        `#${c.id} ${c.fecha_objetivo} · ${c.modo} · ${c.resultado} · IA:${c.uso_ia ? 'sí' : 'no'} · ${fechaHora(c.iniciada_en)}` +
-          (d.rechazadas?.length ? ` · preguntas rechazadas ${d.rechazadas.length}` : '') +
-          (d.descartes?.length ? ` · respuestas descartadas ${d.descartes.length}` : '') +
-          (d.errorIA ? ` · error IA: ${d.errorIA}` : ''),
+        `#${c.id} ${c.fecha_objetivo} · ${c.modo} · ${c.resultado} · ${fechaHora(c.iniciada_en)}` +
+          (d.avisos?.length ? ` · avisos: ${d.avisos.join(' ')}` : '') +
+          (d.errorLote ? ` · lote inválido: ${d.errorLote.join(' ')}` : ''),
       );
     }
     break;

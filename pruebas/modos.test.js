@@ -19,7 +19,7 @@ const silencioso = { info() {}, warn() {}, error() {} };
 const YO = '22222222-2222-4222-8222-222222222222';
 
 async function publicar(e, modo, fecha = '2026-10-05') {
-  const r = await asegurarDesafio({ db: e.db, config: e.config, fecha, modo, reservas: e.reservas, reserva: e.reserva, verificador: e.verificador, proveedor: null, ahora: e.reloj.ahora });
+  const r = await asegurarDesafio({ db: e.db, config: e.config, fecha, modo, reservas: e.reservas, reserva: e.reserva, ahora: e.reloj.ahora });
   assert.equal(r.resultado, 'publicado', JSON.stringify(r));
   return r;
 }
@@ -65,7 +65,7 @@ test('cada modo publica su propio desafío del día, numerado por separado', asy
   const geo = await publicar(e, 'geografia');
   assert.equal(far.numero, 1, 'el primer desafío de Farándula es el #1 aunque Normal ya tenga dos');
   assert.equal(geo.numero, 1);
-  const repetido = await asegurarDesafio({ db: e.db, config: e.config, fecha: '2026-10-05', modo: 'farandula', reservas: e.reservas, verificador: e.verificador, ahora: e.reloj.ahora });
+  const repetido = await asegurarDesafio({ db: e.db, config: e.config, fecha: '2026-10-05', modo: 'farandula', reservas: e.reservas, ahora: e.reloj.ahora });
   assert.equal(repetido.resultado, 'ya_existia');
 
   for (const [modo, categoria] of [['farandula', 'farandula'], ['geografia', 'geografia']]) {
@@ -80,15 +80,6 @@ test('cada modo publica su propio desafío del día, numerado por separado', asy
   const normal = await preguntasDeDesafio(e.db, (await desafioPorFecha(e.db, '2026-10-05')).id);
   assert.equal(new Set(normal.map((p) => p.categoria)).size, 7, 'Normal sigue con una pregunta por categoría');
   assert.equal(normal[0].id, '2026-10-05-p1', 'Normal conserva el formato de id');
-});
-
-test('los modos temáticos no usan la IA automática', async () => {
-  const e = await prepararEntorno();
-  let llamadas = 0;
-  const proveedor = { nombre: 'espia', modelo: 'x', generarPreguntas: async () => (llamadas++, { preguntas: [] }), revisarPreguntas: async () => ({ revisiones: [] }) };
-  const r = await asegurarDesafio({ db: e.db, config: e.config, fecha: '2026-10-05', modo: 'geografia', reservas: e.reservas, verificador: e.verificador, proveedor, ahora: e.reloj.ahora });
-  assert.equal(r.origen, 'reserva');
-  assert.equal(llamadas, 0);
 });
 
 test('una partida por persona, modo y día: jugar un modo no bloquea los otros', async () => {
@@ -135,17 +126,15 @@ test('una partida por persona, modo y día: jugar un modo no bloquea los otros',
   assert.equal(pendienteGeo.partidaPendiente?.id, geo.id, 'la de Geografía de ayer se puede terminar desde su modo');
 });
 
-test('el programador asegura hoy en los tres modos; mañana temático, recién cerca de medianoche', async () => {
+test('el programador asegura hoy en los tres modos; mañana, recién cerca de medianoche', async () => {
   const e = await prepararEntorno({ inicio: '2026-10-05T10:00:00-03:00' });
-  const prog = crearProgramador({ db: e.db, config: e.config, contexto: { proveedor: null, verificador: e.verificador, reserva: e.reserva, reservas: e.reservas }, ahora: e.reloj.ahora, log: silencioso });
+  const prog = crearProgramador({ db: e.db, config: e.config, contexto: { reserva: e.reserva, reservas: e.reservas }, ahora: e.reloj.ahora, log: silencioso });
   await prog.revisar();
   for (const modo of CLAVES_MODOS) assert.ok(await desafioPorFecha(e.db, '2026-10-05', modo), `hoy existe en ${modo}`);
-  assert.ok(await desafioPorFecha(e.db, '2026-10-06', 'normal'), 'Normal sin IA prepara mañana enseguida');
-  assert.equal(await desafioPorFecha(e.db, '2026-10-06', 'farandula'), null, 'el temático deja tiempo para la carga manual');
+  for (const modo of CLAVES_MODOS) assert.equal(await desafioPorFecha(e.db, '2026-10-06', modo), null, `${modo} deja tiempo para la carga manual`);
   e.reloj.fijar('2026-10-05T23:45:00-03:00');
   await prog.revisar();
-  assert.ok(await desafioPorFecha(e.db, '2026-10-06', 'farandula'));
-  assert.ok(await desafioPorFecha(e.db, '2026-10-06', 'geografia'));
+  for (const modo of CLAVES_MODOS) assert.ok(await desafioPorFecha(e.db, '2026-10-06', modo), `mañana existe en ${modo}`);
   prog.detener();
 });
 
@@ -158,7 +147,7 @@ async function levantar(env = {}) {
   return iniciarServidor({
     sinArchivoEnv: true,
     log: silencioso,
-    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', ...env },
+    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', ...env },
   });
 }
 
@@ -256,10 +245,8 @@ test('API de administración: carga, historial, prompt y listados separados por 
     assert.match(await prompt('normal'), /una por categoría/);
     for (const m of CLAVES_MODOS) assert.match(await prompt(m), /Historial reciente:\n\[\]\n\nFuentes verificadas disponibles:/, `${m}: el panel puede insertar el historial`);
 
-    // Generar: los temáticos solo desde la reserva.
-    const ia = await pedir('POST', '/api/admin/desafios/2030-05-11/generar?modo=farandula', { modo: 'ia' }, ADMIN);
-    assert.equal(ia.estado, 400);
-    const reserva = await pedir('POST', '/api/admin/desafios/2030-05-11/generar?modo=farandula', { modo: 'reserva' }, ADMIN);
+    // Publicar desde la reserva del modo.
+    const reserva = await pedir('POST', '/api/admin/desafios/2030-05-11/generar?modo=farandula', {}, ADMIN);
     assert.equal(reserva.datos.resultado, 'publicado');
     assert.equal(reserva.datos.modo, 'farandula');
     const corridas = (await pedir('GET', '/api/admin/corridas', null, ADMIN)).datos.corridas;
@@ -272,16 +259,17 @@ test('API de administración: carga, historial, prompt y listados separados por 
   }
 });
 
-test('tarea diaria por HTTP: hoy asegura los tres modos; manana-ia solo Normal', async () => {
+test('tarea diaria por HTTP: hoy y mañana aseguran los tres modos; manana-ia ya no existe', async () => {
   const app = await levantar({ PROGRAMADOR_INTERNO: '0', CRON_SECRET: 'cron' });
   try {
     const pedir = cliente(app.puerto);
     const cron = { authorization: 'Bearer cron' };
-    const ia = (await pedir('GET', '/api/cron/manana-ia', null, cron)).datos;
-    assert.deepEqual(Object.keys(ia.modos), ['normal']);
+    assert.equal((await pedir('GET', '/api/cron/manana-ia', null, cron)).estado, 404);
     const hoy = (await pedir('GET', '/api/cron/hoy', null, cron)).datos;
     assert.equal(hoy.resultado, 'publicado');
     assert.deepEqual(Object.fromEntries(Object.entries(hoy.modos).map(([m, r]) => [m, r.resultado])), { normal: 'publicado', farandula: 'publicado', geografia: 'publicado' });
+    const manana = (await pedir('GET', '/api/cron/manana', null, cron)).datos;
+    assert.deepEqual(Object.keys(manana.modos), ['normal', 'farandula', 'geografia']);
   } finally {
     await app.cerrar();
   }

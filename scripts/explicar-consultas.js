@@ -72,7 +72,7 @@ export const CONSULTAS = [
     sql: `SELECT rowid FROM jugadores WHERE creado_en < ? AND NOT EXISTS (SELECT 1 FROM partidas p WHERE p.jugador_id = jugadores.id) LIMIT 5000`,
     args: [0],
   },
-  { nombre: 'llamadas a la IA del día', sql: 'SELECT COALESCE(SUM(llamadas_ia), 0) AS n FROM corridas WHERE iniciada_en >= ?', args: [0] },
+  { nombre: 'reserva de un modo', sql: 'SELECT id, pregunta, origen, activa FROM reserva WHERE modo = ?', args: ['normal'] },
 ];
 
 export async function explicar(db) {

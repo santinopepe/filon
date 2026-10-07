@@ -319,7 +319,6 @@ export async function preguntaParaEditar(db, preguntaId) {
     categoria: p.categoria,
     enunciado: p.enunciado,
     alcance: p.alcance,
-    ...(respuestas.length > 80 ? { datosEstructurados: 'wikidata' } : {}),
     fuentes,
     respuestas: respuestas.map((r) => ({
       canonica: r.canonica,

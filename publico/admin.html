@@ -21,7 +21,7 @@
       <button type="button" role="tab" id="tab-reportes" aria-controls="pestana-reportes" tabindex="-1" data-pestana="reportes" aria-selected="false">Reportes <span class="insignia" id="insignia-reportes" hidden></span></button>
     </nav>
     <div class="barra-derecha">
-      <p class="estado-ia" id="estado-ia"></p>
+      <p class="estado-base" id="estado-base"></p>
       <button type="button" class="secundario chico" id="salir" hidden>Salir</button>
     </div>
   </header>
@@ -126,27 +126,20 @@
       <!-- Herramientas de creación: admin.js clona esta plantilla una vez por modo (los id llevan el modo como prefijo). -->
       <template id="plantilla-crear">
       <section class="tarjeta">
-        <h2 data-id="gen-titulo">Generar con IA o reserva</h2>
-        <p class="sub" data-id="gen-sub">Para un día nuevo o para regenerar uno existente.</p>
+        <h2 data-id="gen-titulo">Publicar desde la reserva</h2>
+        <p class="sub" data-id="gen-sub">Arma el día con preguntas de la reserva, para un día nuevo o para rearmar uno existente. Para preguntas nuevas, usá el prompt de abajo y la carga manual.</p>
         <form class="generar" data-id="form-generar">
           <label>Fecha <input type="date" data-id="gen-fecha" required></label>
-          <label>Origen
-            <select data-id="gen-modo">
-              <option value="auto">IA, y si falla, reserva</option>
-              <option value="ia">Solo IA (si falla no cambia nada)</option>
-              <option value="reserva">Solo reserva (sin IA)</option>
-            </select>
-          </label>
-          <button type="submit" data-id="gen-boton">Generar</button>
+          <button type="submit" data-id="gen-boton">Publicar</button>
         </form>
         <div class="aviso" data-id="gen-confirmar" hidden>
           <p data-id="gen-confirmar-texto"></p>
           <div class="acciones">
-            <button type="button" class="peligro" data-id="gen-confirmar-si">Regenerar</button>
+            <button type="button" class="peligro" data-id="gen-confirmar-si">Rearmar</button>
             <button type="button" class="secundario" data-id="gen-confirmar-no">Cancelar</button>
           </div>
         </div>
-        <p class="progreso" data-id="gen-progreso" hidden>Generando… con IA puede tardar hasta 4 minutos. No cierres la pestaña.</p>
+        <p class="progreso" data-id="gen-progreso" hidden>Publicando…</p>
         <pre class="resultado" data-id="gen-resultado" hidden></pre>
       </section>
 

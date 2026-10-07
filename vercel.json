@@ -4,7 +4,7 @@
   "outputDirectory": "publico",
   "functions": {
     "api/index.js": {
-      "maxDuration": 300,
+      "maxDuration": 60,
       "includeFiles": "datos/**"
     }
   },
@@ -80,10 +80,6 @@
     }
   ],
   "crons": [
-    {
-      "path": "/api/cron/manana-ia",
-      "schedule": "0 0 * * *"
-    },
     {
       "path": "/api/cron/manana",
       "schedule": "30 1 * * *"

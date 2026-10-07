@@ -1,14 +1,13 @@
 // Tarea programada interna: garantiza el desafío de hoy y prepara el de mañana, para cada modo.
 // - Corre al iniciar, cada N minutos y justo después de cada medianoche local.
-// - Normal: mañana se prepara con IA por adelantado; si la IA falla, reintenta en las siguientes
-//   revisiones y recién usa la reserva en los últimos minutos antes de la medianoche.
-// - Modos temáticos (sin IA automática): mañana se completa con su reserva recién en esa última
-//   ventana, para dejar tiempo a la carga manual desde el panel sin tener que reemplazar nada.
+// - Hoy se completa con la reserva enseguida (nadie se queda sin jugar).
+// - Mañana se completa con la reserva recién en los últimos minutos antes de la medianoche, para dejar
+//   tiempo a la carga manual desde el panel sin tener que reemplazar nada.
 import { asegurarDesafio } from './generador/generar.js';
-import { CLAVES_MODOS, MODOS } from './dominio.js';
+import { CLAVES_MODOS } from './dominio.js';
 import { fechaLocal, sumarDias, inicioDeFecha, proximaMedianoche } from './tiempo.js';
 
-/** Asegura hoy (con reserva si hace falta) y prepara mañana; la reserva de mañana solo cerca de medianoche. */
+/** Asegura hoy y, cerca de la medianoche, prepara mañana; ambos con la reserva de cada modo. */
 export async function revisarDesafios({ db, config, contexto, ahora = () => Date.now() }) {
   const t = ahora();
   const hoy = fechaLocal(t, config.zona);
@@ -16,10 +15,8 @@ export async function revisarDesafios({ db, config, contexto, ahora = () => Date
   const ventanaReserva = inicioDeFecha(manana, config.zona) - config.programador.minutosReservaAntesDeMedianoche * 60_000;
   const resultados = [];
   for (const modo of CLAVES_MODOS) {
-    resultados.push(await asegurarDesafio({ db, config, fecha: hoy, modo, ...contexto, permitirReserva: true, ahora }));
-    // Normal sin IA publica mañana enseguida (como siempre); con IA, y en los temáticos, espera la ventana.
-    const esperarVentana = MODOS[modo].iaAutomatica ? Boolean(contexto.proveedor) : true;
-    resultados.push(await asegurarDesafio({ db, config, fecha: manana, modo, ...contexto, permitirReserva: !esperarVentana || t >= ventanaReserva, ahora }));
+    resultados.push(await asegurarDesafio({ db, config, fecha: hoy, modo, ...contexto, ahora }));
+    if (t >= ventanaReserva) resultados.push(await asegurarDesafio({ db, config, fecha: manana, modo, ...contexto, ahora }));
   }
   return resultados;
 }
@@ -36,7 +33,7 @@ export function crearProgramador({ db, config, contexto, ahora = () => Date.now(
       try {
         resultados = await revisarDesafios({ db, config, contexto, ahora });
         for (const r of resultados) {
-          if (r.resultado !== 'ya_existia' && r.resultado !== 'pendiente') log.info(`[programador] ${r.fecha} · ${r.modo}: ${r.resultado}${r.origen ? ` (${r.origen})` : ''}${r.error ? ` — ${r.error}` : ''}`);
+          if (r.resultado !== 'ya_existia') log.info(`[programador] ${r.fecha} · ${r.modo}: ${r.resultado}${r.origen ? ` (${r.origen})` : ''}${r.error ? ` — ${r.error}` : ''}`);
         }
       } catch (e) {
         log.error('[programador] error inesperado', e);

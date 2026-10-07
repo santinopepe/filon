@@ -78,8 +78,8 @@ a { color: var(--cian); }
 .marca { margin: 0; font-family: var(--titulo); font-weight: 900; font-size: 1.5rem; letter-spacing: .03em; white-space: nowrap; }
 .marca span { color: var(--lampara); }
 .barra-derecha { margin-left: auto; display: flex; align-items: center; gap: 12px; min-width: 0; }
-.estado-ia { margin: 0; color: var(--cal-3); font-size: .8rem; text-align: right; line-height: 1.35; }
-.estado-ia strong { color: var(--cal-2); font-weight: 700; }
+.estado-base { margin: 0; color: var(--cal-3); font-size: .8rem; text-align: right; line-height: 1.35; }
+.estado-base strong { color: var(--cal-2); font-weight: 700; }
 
 .tarjeta {
   background: var(--pizarra); border: 1px solid var(--grilla); border-radius: 14px;
@@ -308,7 +308,7 @@ ul.lista li { margin: 2px 0; }
   .barra { flex-wrap: wrap; padding-left: 16px; padding-right: 16px; }
   .pestanas { order: 3; width: 100%; }
   .pestanas button[aria-selected='true']::after { bottom: -5px; }
-  .estado-ia { display: none; }
+  .estado-base { display: none; }
   main { padding: 16px 16px 48px; }
   .kpi-valor { font-size: 1.6rem; }
   /* Preguntas del día: una tarjeta por pregunta en vez de una tabla ancha */

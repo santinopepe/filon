@@ -62,7 +62,7 @@ function mostrarIngreso(mensaje = '') {
   $('panel').hidden = true;
   $('nav').hidden = true;
   $('salir').hidden = true;
-  $('estado-ia').textContent = '';
+  $('estado-base').textContent = '';
   $('ingreso').hidden = false;
   $('error-ingreso').textContent = mensaje;
   $('error-ingreso').hidden = !mensaje;
@@ -162,10 +162,7 @@ $('des-modo').addEventListener('change', () => {
 async function cargarDesafios() {
   const datos = await api('GET', conModo('/api/admin/desafios', modoDesafios));
   hoy = datos.hoy;
-  $('estado-ia').replaceChildren(
-    'IA ',
-    h('strong', {}, datos.ia ? `${datos.ia.nombre === 'openai' ? 'OpenAI' : datos.ia.nombre === 'anthropic' ? 'Anthropic' : datos.ia.nombre} · ${datos.ia.modelo}` : 'sin configurar'),
-    h('br'),
+  $('estado-base').replaceChildren(
     'base ',
     h('strong', { title: datos.bd || '' }, (datos.bd || '—').split('.')[0]),
   );
@@ -222,10 +219,10 @@ async function verDesafio(fecha) {
   const modo = modoDesafios;
   const { desafio, preguntas } = await api('GET', conModo(`/api/admin/desafios/${fecha}`, modo));
   if (mio !== pedidoDetalle) return;
-  const regenerar = (estrategia) => async () => {
+  const rearmar = async () => {
     await irA('crear');
     await elegirModoCrear(modo);
-    crear[modo].regenerar(fecha, estrategia);
+    crear[modo].rearmar(fecha);
   };
   $('detalle').replaceChildren(
     h(
@@ -234,8 +231,7 @@ async function verDesafio(fecha) {
       h('h2', {}, `Desafío #${desafio.numero} · ${desafio.fecha}`),
       etiquetaModo(modo),
       etiquetaOrigen(origenDesafio(desafio)),
-      modo === 'normal' ? h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('auto') }, 'Regenerar') : null,
-      h('button', { type: 'button', class: 'secundario chico', onclick: regenerar('reserva') }, 'Regenerar con reserva'),
+      h('button', { type: 'button', class: 'secundario chico', onclick: rearmar }, 'Rearmar con la reserva'),
     ),
     ...preguntas.map((p) =>
       h(
@@ -323,10 +319,9 @@ const EJEMPLO_JSON = (categoria, id) => `{
 
 const EXPLICACION = {
   publicado: 'Publicado.',
-  reemplazado: 'Regenerado: el día anterior se reemplazó.',
-  pendiente: 'La IA no logró completar el día y el modo «solo IA» no usa la reserva: no se cambió nada. Mirá la corrida para ver por qué.',
-  ocupado: 'Hay otra generación en curso para esa fecha. Probá en unos minutos.',
-  fallo: 'Falló la generación. Mirá la corrida para el detalle.',
+  reemplazado: 'Rearmado: el día anterior se reemplazó.',
+  ocupado: 'Hay otra publicación en curso para esa fecha. Probá en unos minutos.',
+  fallo: 'No se pudo armar el día con la reserva. Mirá la corrida para el detalle.',
   error: 'Error.',
 };
 
@@ -352,11 +347,6 @@ function montarCrear(modo) {
     ? `{"preguntas":[{"id":"${modo}-ejemplo","categoria":"${categoria}","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}`
     : '{"preguntas":[{"id":"geo-ejemplo","categoria":"geografia","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}';
   if (tematico) {
-    // Los modos temáticos no tienen IA automática: se publican desde su reserva o con un JSON.
-    q('gen-titulo').textContent = 'Publicar desde la reserva';
-    q('gen-sub').textContent = `Arma el día con el banco de reserva de ${NOMBRES_MODO[modo]}. Para preguntas nuevas, usá el prompt de abajo y la carga manual.`;
-    for (const opcion of q('gen-modo').querySelectorAll('option')) if (opcion.value !== 'reserva') opcion.remove();
-    q('gen-boton').textContent = 'Publicar';
     q('ayuda-json').textContent = `Elegí la fecha y pegá un JSON con las siete preguntas de ${NOMBRES_MODO[modo]}. Usa el mismo formato que los bancos de reserva y no llama a ninguna IA.`;
     q('prompt-titulo').textContent = `Generar ${NOMBRES_MODO[modo]} con otra IA`;
   }
@@ -365,7 +355,7 @@ function montarCrear(modo) {
   let pendiente = null;
   q('form-generar').addEventListener('submit', (ev) => {
     ev.preventDefault();
-    generar({ modo: q('gen-modo').value });
+    generar({});
   });
   q('gen-confirmar-no').addEventListener('click', () => {
     q('gen-confirmar').hidden = true;
@@ -379,7 +369,7 @@ function montarCrear(modo) {
   async function generar(opciones) {
     const fecha = q('gen-fecha').value;
     if (!fecha) return;
-    const cuerpo = { modo: opciones.modo, reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar) };
+    const cuerpo = { reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar) };
     q('gen-confirmar').hidden = true;
     q('gen-resultado').hidden = true;
     q('gen-progreso').hidden = false;
@@ -390,7 +380,7 @@ function montarCrear(modo) {
       await mostrarDesafioCreado(modo, fecha);
     } catch (e) {
       if (e.datos?.error === 'ya_existe') {
-        pedirConfirmacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Lo regenero? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });
+        pedirConfirmacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Lo rearmo con otras preguntas de la reserva? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });
       } else if (e.datos?.error === 'hay_partidas') {
         pedirConfirmacion(`${e.datos.mensaje} Esto no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
       } else {
@@ -647,9 +637,8 @@ function montarCrear(modo) {
       if (!q('gen-fecha').value) q('gen-fecha').value = fecha;
       if (!q('imp-fecha').value) q('imp-fecha').value = fecha;
     },
-    regenerar(fecha, estrategia) {
+    rearmar(fecha) {
       q('gen-fecha').value = fecha;
-      q('gen-modo').value = q('gen-modo').querySelector(`option[value="${estrategia}"]`) ? estrategia : 'reserva';
       q('form-generar').requestSubmit();
       q('form-generar').scrollIntoView({ behavior: 'smooth' });
     },
@@ -745,7 +734,6 @@ function llenarEditor(p) {
   $('ed-fuentes').value = (p.fuentes || []).map((f) => `${f.url}${f.titulo ? ` | ${f.titulo}` : ''}`).join('\n');
   $('ed-respuestas').replaceChildren(...(p.respuestas || []).map(filaRespuesta));
   $('ed-rechazos').value = (p.rechazos || []).map((x) => `${(x.textos || []).join(', ')} | ${x.motivo}`).join('\n');
-  $('ed-form').dataset.estructurada = p.datosEstructurados || '';
   $('ed-json').value = JSON.stringify(p, null, 2);
   contarRespuestas();
 }
@@ -776,7 +764,6 @@ function leerEditor() {
       return { textos: (i < 0 ? l : l.slice(0, i)).split(',').map((x) => x.trim()).filter(Boolean), motivo: i < 0 ? '' : l.slice(i + 1).trim() };
     }),
   };
-  if ($('ed-form').dataset.estructurada) p.datosEstructurados = $('ed-form').dataset.estructurada;
   return p;
 }
 
@@ -962,14 +949,12 @@ async function cargarCorridas() {
               h('strong', {}, `#${c.id} · ${c.fecha_objetivo}`),
               etiquetaModo(c.modo),
               h('span', { class: `etiqueta ${ok ? 'ia' : c.resultado === 'en_curso' ? '' : 'mal'}` }, c.resultado),
-              c.uso_ia ? h('span', { class: 'etiqueta' }, `IA ${d.modelo || ''}`) : null,
-              d.reemplaza ? h('span', { class: 'etiqueta mixto' }, 'regeneración') : null,
+              d.reemplaza ? h('span', { class: 'etiqueta mixto' }, 'rearmado') : null,
               h('span', { class: 'vacio' }, `${fechaHora(c.iniciada_en)}${c.terminada_en ? ` · ${Math.round((c.terminada_en - c.iniciada_en) / 1000)} s` : ''}`),
             ),
             h(
               'div',
               { class: 'cuerpo' },
-              d.errorIA ? h('p', { class: 'error' }, `Error de IA: ${d.errorIA}`) : null,
               d.error ? h('p', { class: 'error' }, `Error: ${String(d.error).split('\n')[0]}`) : null,
               d.errorLote ? h('p', { class: 'error' }, `Lote inválido: ${d.errorLote.join(' ')}`) : null,
               ...lista('Publicadas', d.publicadas, (p) => [`${p.categoria} · `, etiquetaOrigen(p.origen), ` · ${p.respuestas} resp. · ${p.enunciado}`]),

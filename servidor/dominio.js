@@ -29,9 +29,9 @@ export const PREGUNTAS_POR_DESAFIO = 7;
 // Modos de juego. Cada uno tiene su propio desafío diario (una partida por persona, modo y día),
 // su banco de reserva y su prompt. Normal mezcla las siete categorías; los temáticos usan una sola.
 export const MODOS = Object.freeze({
-  normal: { clave: 'normal', nombre: 'Normal', categorias: CLAVES_CATEGORIAS, iaAutomatica: true },
-  farandula: { clave: 'farandula', nombre: 'Farándula Argentina', categorias: ['farandula'], iaAutomatica: false },
-  geografia: { clave: 'geografia', nombre: 'Geografía', categorias: ['geografia'], iaAutomatica: false },
+  normal: { clave: 'normal', nombre: 'Normal', categorias: CLAVES_CATEGORIAS },
+  farandula: { clave: 'farandula', nombre: 'Farándula Argentina', categorias: ['farandula'] },
+  geografia: { clave: 'geografia', nombre: 'Geografía', categorias: ['geografia'] },
 });
 export const CLAVES_MODOS = Object.keys(MODOS);
 export const MODO_POR_DEFECTO = 'normal';

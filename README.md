@@ -10,7 +10,7 @@ Juego web diario de cultura general ambientado en un viaje por las capas de la T
 | Oro — poco conocida | 85 | 850 m |
 | Diamante — excepcional | 100 | 1.000 m |
 
-La rareza es una estimación editorial (de la IA o de la curaduría de la reserva), no un porcentaje de jugadores. Así se presenta en la interfaz.
+La rareza es una estimación editorial (de quien arma la pregunta), no un porcentaje de jugadores. Así se presenta en la interfaz.
 
 ## Modos de juego
 
@@ -25,7 +25,7 @@ Hay tres modos, con la misma mecánica (siete preguntas, 25 s, rarezas y puntos)
 - **Una partida por día en cada modo.** Cada modo tiene su propio desafío diario (`desafios` es único por `modo` y `fecha`), así que la restricción histórica «una partida por jugador y desafío» queda en una por jugador, modo y día. Jugar un modo no bloquea los otros. Cambia a las 00:00 de Buenos Aires, como siempre, y como vive en la base sobrevive a recargas y a cerrar el navegador (mientras se conserve la cookie).
 - **Cada pregunta es de su modo.** Normal valida las siete categorías; Farándula solo acepta la categoría `farandula` y Geografía solo `geografia`. El historial, la detección de repeticiones y la numeración de desafíos son independientes por modo.
 - El modo elegido viaja en la URL (`/?modo=farandula`, `/?modo=geografia`), así una recarga o un enlace compartido abren el mismo.
-- La IA automática (Wikidata, alcance global) solo arma Normal. Los modos temáticos se publican desde su banco de reserva (`datos/reserva-farandula.json`, `datos/reserva-geografia.json`) o con la carga manual del panel, usando el prompt de cada modo (`datos/prompt-farandula.txt`, `datos/prompt-geografia.txt`) en otra IA. El programador completa mañana con la reserva recién en los últimos 30 minutos antes de medianoche, para dejar tiempo a la carga manual sin tener que reemplazar nada.
+- Cada modo se publica desde su reserva (`datos/reserva.json`, `datos/reserva-farandula.json`, `datos/reserva-geografia.json` más lo guardado en la base) o con la carga manual del panel, usando el prompt de cada modo (`datos/prompt*.txt`) en otra IA. El programador completa mañana con la reserva recién en los últimos 30 minutos antes de medianoche, para dejar tiempo a la carga manual sin tener que reemplazar nada.
 
 ---
 
@@ -39,40 +39,17 @@ npm start
 # → http://localhost:3000
 ```
 
-Al arrancar, el servidor publica el desafío de hoy de cada modo y prepara el de mañana. Sin clave de IA usa los **bancos de reserva** (`datos/reserva.json`: 21 preguntas curadas de Normal, 3 por categoría, 239 respuestas con variantes, explicaciones y fuentes; `datos/reserva-farandula.json`: 9; `datos/reserva-geografia.json`: 13), así que se puede jugar de inmediato.
+Al arrancar, el servidor publica el desafío de hoy de cada modo con los **bancos de reserva** (`datos/reserva.json`: 21 preguntas curadas de Normal, 3 por categoría, 239 respuestas con variantes, explicaciones y fuentes; `datos/reserva-farandula.json`: 9; `datos/reserva-geografia.json`: 13), así que se puede jugar de inmediato.
 
 Para ver el banco del día: `npm run admin -- desafio AAAA-MM-DD [normal|farandula|geografia]`.
 
-## Activar la IA
+## Preguntas nuevas
 
-Alcanza con **una** clave, de Anthropic o de OpenAI:
-
-```bash
-cp .env.example .env
-# editá .env y completá una de las dos:
-ANTHROPIC_API_KEY=sk-ant-...         # https://console.anthropic.com → API Keys
-OPENAI_API_KEY=sk-...                # https://platform.openai.com → API keys
-CONTACTO_FUENTES=tu-correo@dominio   # Wikipedia pide un contacto en el User-Agent
-URL_PUBLICA=https://tu-dominio
-```
-
-El proveedor se detecta por la clave; con las dos se usa Anthropic, salvo que `IA_PROVEEDOR=openai`. Las dos APIs reciben las mismas instrucciones y el mismo esquema (uso forzado de herramienta en Anthropic, llamada a función forzada en Chat Completions de OpenAI), y lo que devuelven pasa por la misma validación, verificación contra fuentes y revisión adversarial.
-
-Además, el servidor necesita salida a internet hacia `api.anthropic.com` o `api.openai.com` (generación y revisión) y hacia los dominios de las fuentes (`es.wikipedia.org` y los de `DOMINIOS_FUENTES`) para la verificación factual. Para probar la generación sin esperar a medianoche, con una fecha que todavía no exista:
-
-```bash
-npm run generar -- --fecha 2026-12-01 --sin-reserva
-npm run admin -- corridas        # resumen de lo generado, rechazado y descartado
-npm run admin -- desafio 2026-12-01
-```
-
-Modelos por defecto: con Anthropic, `claude-opus-5-5` para generar y `claude-sonnet-5-5` para la revisión adversarial; con OpenAI, `gpt-5` y `gpt-5-mini` (un modelo distinto reduce errores correlacionados). Se cambian con `IA_MODELO` e `IA_MODELO_REVISOR`; un modelo del otro proveedor se ignora. Los identificadores vigentes están en https://docs.claude.com y https://platform.openai.com/docs/models.
-
-Para desarrollar el circuito de generación sin red: `IA_PROVEEDOR=simulado VERIFICAR_FUENTES=desactivada` (usa preguntas de la reserva e introduce una respuesta falsa para mostrar la depuración).
+El juego no genera preguntas por su cuenta. Las nuevas se arman con otra IA (ChatGPT, Claude…) usando el prompt de cada modo del panel (**Crear → Generar con otra IA**) y se cargan con la **carga manual** (JSON). Todo lo que se publica queda en la reserva para reutilizarse.
 
 ## Stack y por qué
 
-- **Node.js 24 con una sola dependencia de producción** (`@libsql/client`): `node:http` para el servidor local, `fetch` para la IA y las fuentes, `node:test` para las pruebas. Playwright y ESLint son solo de desarrollo. No tiene paso de compilación.
+- **Node.js 24 con una sola dependencia de producción** (`@libsql/client`): `node:http` para el servidor local, `node:test` para las pruebas. Playwright y ESLint son solo de desarrollo. No tiene paso de compilación.
 - **libSQL / SQLite**: en tu máquina, un archivo (`datos/filon.db`, modo WAL); en Vercel, una base **Turso** (mismo dialecto SQL). La restricción `UNIQUE(fecha)` garantiza que nunca haya dos desafíos para el mismo día, aunque corran dos procesos a la vez. Lo publicado (desafíos, preguntas, respuestas) se cachea en memoria porque no cambia.
 - **Frontend sin framework**: HTML, CSS y módulos de JavaScript. La mina es un `<canvas>` procedural; la minera, un SVG animado con CSS. Tipografías incluidas (Big Shoulders Stencil y Atkinson Hyperlegible, licencia OFL) para no depender de servicios externos.
 
@@ -80,20 +57,19 @@ Para desarrollar el circuito de generación sin red: `IA_PROVEEDOR=simulado VERI
 
 ```
 servidor/
-  app.js                arma base, juego, API y generación (lo comparten el servidor local y Vercel)
+  app.js                arma base, juego, API y publicación (lo comparten el servidor local y Vercel)
   index.js              servidor local: programador, API y estáticos
   config.js             variables de entorno (+ .env opcional)
   db.js                 esquema, cliente libSQL (archivo o Turso), transacciones y bloqueos
   tiempo.js             fechas en America/Argentina/Buenos_Aires
   normalizar.js         normalización de respuestas e índice de búsqueda
-  validacion.js         validación estructural y de consistencia (sin IA)
-  verificacion.js       verificación contra fuentes externas (sin IA)
+  validacion.js         validación estructural y de consistencia
   dominio.js            rarezas, categorías y modos de juego
   banco.js              publicación y lectura del banco congelado (por fecha y modo)
   juego.js              partidas, rondas, tiempos, puntos y reportes
   api.js, http.js       rutas, cookies firmadas, límites y seguridad
   programador.js        tarea programada interna (solo servidor local)
-  generador/            IA (Anthropic u OpenAI), instrucciones, reserva y circuito de generación
+  generador/            reserva y publicación diaria
 api/index.js            función de Vercel: atiende /api/* (incluye /api/cron/*)
 vercel.json             estáticos, reescrituras, cabeceras de seguridad y crons
 scripts/                generar-desafio.js · validar-reserva.js · admin.js
@@ -105,36 +81,27 @@ pruebas/                pruebas automáticas y recorrido en navegador
 despliegue/             systemd, cron (alternativa a Vercel)
 ```
 
-## Generación diaria
+## Publicación diaria
 
-**Cuándo.** Con `PROGRAMADOR_INTERNO=1` (por defecto) el servidor revisa al iniciar, cada 10 minutos y 1,5 s después de cada medianoche de Buenos Aires. En cada revisión:
+**Cuándo.** Con `PROGRAMADOR_INTERNO=1` (por defecto) el servidor revisa al iniciar, cada 10 minutos y 1,5 s después de cada medianoche de Buenos Aires. En cada revisión, para cada modo:
 
-1. Si falta el desafío de **hoy**, lo genera; si la IA falla, publica la reserva en el acto (nadie se queda sin jugar).
-2. Prepara el de **mañana** con la IA por adelantado. Si falla, reintenta en las revisiones siguientes (máximo `IA_MAX_INTENTOS_POR_DIA`) y recién en los últimos 30 minutos antes de medianoche lo completa con la reserva.
+1. Si falta el desafío de **hoy**, lo publica en el acto con la reserva (nadie se queda sin jugar).
+2. En los últimos 30 minutos antes de medianoche (`MINUTOS_RESERVA_ANTES_DE_MEDIANOCHE`), si todavía no se cargó a mano el de **mañana**, lo arma con la reserva.
 
-Así, a las 00:00 el desafío nuevo ya está publicado y el cambio es instantáneo. Abrir la página o jugar **nunca** genera preguntas: si por algún motivo no hubiera desafío, la API responde «la mina se está preparando».
+Así, a las 00:00 el desafío nuevo ya está publicado y el cambio es instantáneo. Abrir la página o jugar **nunca** publica preguntas: si por algún motivo no hubiera desafío, la API responde «la mina se está preparando».
 
-**Idempotencia.** Cada ejecución verifica primero si la fecha ya existe; toma un bloqueo con vencimiento en la base (`bloqueos`) para que dos procesos no generen a la vez; y publica las 7 preguntas en **una sola transacción**. Si otra ejecución ganó la carrera, la publicación se descarta sin reemplazar nada. Los desafíos anteriores se conservan.
+**Idempotencia.** Cada ejecución verifica primero si la fecha ya existe; toma un bloqueo con vencimiento en la base (`bloqueos`) para que dos procesos no publiquen a la vez; y publica las 7 preguntas en **una sola transacción**. Si otra ejecución ganó la carrera, la publicación se descarta sin reemplazar nada. Los desafíos anteriores se conservan.
 
-**Cómo** (`servidor/generador/generar.js`):
+**Cómo** (`servidor/generador/generar.js`): en Normal se ordenan las 7 categorías de forma reproducible según la fecha; en los temáticos son siete ranuras de su categoría. Para cada una se elige de la reserva una pregunta que no se haya usado en los últimos 60 días (`DIAS_SIN_REPETIR`), priorizando la que hace más tiempo que no sale (si todas se usaron hace poco, se repite la menos reciente y queda un aviso); se valida el lote (sin solapamientos) y se publica. Todo queda en `corridas.detalle` para auditoría.
 
-1. Se ordenan las 7 categorías (geografía, historia, ciencia, deportes, cine, música, literatura) de forma reproducible según la fecha.
-2. Por categoría se piden candidatas globales a la IA, junto con los enunciados de los últimos 60 días. La IA define el enunciado, el alcance y una consulta SPARQL restringida; no intenta escribir miles de respuestas.
-3. **Catálogo estructurado**: el servidor ejecuta la consulta en Wikidata, recupera etiquetas en español o inglés por lotes y exige entre 1.000 y 1.500 respuestas únicas. Las ordena localmente por popularidad para asignar las cinco rarezas. Wikidata solo se consulta al publicar: nunca durante una partida.
-4. **Validación estructural** (código, sin IA): solo admite `SELECT DISTINCT`, bloquea operaciones de escritura, servicios federados y ordenamientos remotos; contrasta el criterio, la cantidad, duplicados, contradicciones, fuentes permitidas y similitud con preguntas recientes.
-5. **Revisión adversarial** con un segundo modelo: audita que enunciado, alcance y consulta coincidan, que el conjunto sea realmente global y que no haya sesgo nacional. Revisa una muestra del catálogo sin intentar volver a enumerarlo.
-6. Revalidación, elección de la mejor candidata por categoría y validación del lote (7 categorías distintas, sin solapamientos).
-7. Si faltan categorías, se completan con la reserva (el desafío queda como «mixto» y cada pregunta registra su origen). Todo el proceso se guarda en `corridas.detalle` para auditoría.
-
-**Reserva.** `datos/reserva.json` (y `reserva-farandula.json`, `reserva-geografia.json`) es el respaldo curado para instalaciones sin IA o si Wikidata no responde. A ese banco de archivo se suma la tabla `reserva` de la base: **cada pregunta que se publica (cargada a mano o generada con IA) queda guardada ahí** para reutilizarse, y desde el panel (pestaña **Reserva**) se pueden agregar, editar y desactivar preguntas de cualquiera de las dos fuentes (una fila con el mismo id que una pregunta del archivo la reemplaza). En Vercel los archivos de `datos/` son de solo lectura: lo editable vive en la base. También se globalizó: ya no contiene preguntas centradas en provincias, presidentes o clubes argentinos. Se valida en modo estricto al iniciar y con `npm run validar-reserva`.
+**Reserva.** `datos/reserva.json` (y `reserva-farandula.json`, `reserva-geografia.json`) es el banco curado de archivo. A ese banco de archivo se suma la tabla `reserva` de la base: **cada pregunta que se publica (cargada a mano o editada) queda guardada ahí** para reutilizarse, y desde el panel (pestaña **Reserva**) se pueden agregar, editar y desactivar preguntas de cualquiera de las dos fuentes (una fila con el mismo id que una pregunta del archivo la reemplaza). En Vercel los archivos de `datos/` son de solo lectura: lo editable vive en la base. También se globalizó: ya no contiene preguntas centradas en provincias, presidentes o clubes argentinos. Se valida en modo estricto al iniciar y con `npm run validar-reserva`.
 
 **Tarea externa (opcional).** Si preferís cron o systemd, poné `PROGRAMADOR_INTERNO=0` y usá `scripts/generar-desafio.js` (ver `despliegue/crontab.ejemplo` y los `.timer`). Ambas variantes pueden convivir sin riesgo gracias al bloqueo y a la idempotencia.
 
 ```bash
-npm run generar                         # hoy (con reserva si la IA falla)
-npm run generar -- --manana --sin-reserva   # mañana solo con IA (código 2 si queda pendiente)
+npm run generar                         # hoy
+npm run generar -- --manana             # mañana
 npm run generar -- --modo farandula      # un solo modo (por defecto, los tres)
-npm run generar -- --solo-reserva        # sin llamar a la IA
 ```
 
 ## Partida
@@ -143,7 +110,7 @@ npm run generar -- --solo-reserva        # sin llamar a la IA
 - **Tiempo validado en el servidor**: al empezar una ronda se guarda el inicio y el límite (25 s). Una respuesta que llega después del límite más 1,5 s de margen de red no cuenta y la ronda se cierra con 0 puntos. El navegador solo muestra la mecha.
 - **Recarga**: el estado vive en el servidor. Recargar vuelve a la misma ronda con el tiempo restante real; pedir de nuevo una ronda ya empezada no reinicia el reloj; no se puede saltar ni volver a una ronda.
 - **Medianoche**: la partida queda atada a su desafío. Si empezaste a las 23:58, terminás con esas preguntas aunque ya sea el día siguiente (tenés hasta 12 h después del fin del día; luego las rondas sin jugar caducan). El desafío nuevo es otra partida.
-- **Validación de respuestas** contra el banco almacenado, sin IA. La respuesta y el banco de una ronda nunca se envían al navegador hasta que la ronda termina.
+- **Validación de respuestas** contra el banco almacenado. La respuesta y el banco de una ronda nunca se envían al navegador hasta que la ronda termina.
 - **Reportes**: después de cada ronda se puede reportar una respuesta válida que falte. Se revisan en el panel (`/admin` → Reportes) o con `npm run admin -- reportes`. Las puntuaciones del día no cambian.
 - **Concurrencia**: el tope de intentos por ronda, el cierre de la ronda y la suma de puntos se deciden en una misma transacción; dos envíos simultáneos (doble clic, dos pestañas, dos instancias) no superan el máximo ni puntúan dos veces.
 - **Límites**: una partida por identificador anónimo (una cookie). Sin cuentas, borrar las cookies o usar otro navegador permite volver a jugar; el ranking cuenta lo que llega.
@@ -184,14 +151,14 @@ npm run verificar               # todo lo que corre el CI, en el mismo orden
 | --- | --- |
 | `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
 | `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
-| `npm test` | 103 pruebas unitarias y de integración (`node:test`) |
+| `npm test` | 102 pruebas unitarias y de integración (`node:test`) |
 | `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
 | `npm run validar-reserva` | los tres bancos: Normal (21, 3 por categoría), Farándula (9) y Geografía (13), cada temático con al menos 7 |
-| `npm run test:navegador` | 15 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
+| `npm run test:navegador` | 18 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
 | `npm run test:recorrido` | recorrido histórico en navegador (19 comprobaciones, guarda capturas en `capturas/`) |
 | `npm run explicar-consultas` | `EXPLAIN QUERY PLAN` de las consultas principales |
 
-Cubren, entre otras cosas: normalización y sugerencias; validación y reserva; generación (idempotencia, ejecuciones simultáneas, caída a la reserva, cancelación real de la IA por tiempo, topes de llamadas por corrida y por día, bloqueo global); partida (tiempos, recarga, medianoche, caducidad, doble envío y tope de intentos con dos instancias en hilos separados); sesiones del panel (login, revocación, inactividad, vida máxima, límite de intentos, origen, `__Host-`); rate limiting compartido entre instancias; migraciones (base nueva, base heredada con datos, arranque simultáneo); SSRF (redirecciones, cuerpos grandes, timeout, redes privadas); volumen (3.000 partidas, preguntas de 1.500 respuestas) y la limpieza diaria. El E2E prueba carga inicial, partida completa, doble envío, recarga, revelado final, móvil y teclado, panel sin autenticación, login/logout, importación JSON válida e inválida y la navegación por teclado de las pestañas.
+Cubren, entre otras cosas: normalización y sugerencias; validación y reserva; publicación (idempotencia, ejecuciones simultáneas, reserva sin repeticiones, bloqueo global, ventana previa a medianoche); partida (tiempos, recarga, medianoche, caducidad, doble envío y tope de intentos con dos instancias en hilos separados); sesiones del panel (login, revocación, inactividad, vida máxima, límite de intentos, origen, `__Host-`); rate limiting compartido entre instancias; migraciones (base nueva, base heredada con datos, arranque simultáneo); volumen (3.000 partidas, preguntas de 1.500 respuestas) y la limpieza diaria. El E2E prueba carga inicial, partida completa, doble envío, recarga, revelado final, móvil y teclado, panel sin autenticación, login/logout, importación JSON válida e inválida y la navegación por teclado de las pestañas.
 
 ## Decisiones tomadas
 
@@ -211,26 +178,20 @@ Todas son opcionales; están documentadas en `.env.example`. Las principales:
 
 | Variable | Por defecto | Para qué |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` | — | Activa la generación con IA (alcanza con una) |
-| `IA_PROVEEDOR` | según la clave | `anthropic` u `openai` si están las dos |
-| `IA_MODELO` / `IA_MODELO_REVISOR` | según el proveedor | Modelos de generación y revisión |
-| `VERIFICAR_FUENTES` | `estricta` | `desactivada` solo para desarrollo sin internet |
-| `WIKIDATA_TIEMPO_LIMITE_MS` | `45000` | Límite por consulta al catálogo global |
-| `CONTACTO_FUENTES`, `URL_PUBLICA` | — | Identificación del verificador ante Wikipedia |
 | `BD_URL`, `BD_TOKEN` | — | Base principal (prioridad sobre `TURSO_*`) |
 | `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | — | Base Turso (en Vercel las inyecta la integración) |
 | `PUERTO`, `HOST`, `RUTA_BD` | `3000`, `0.0.0.0`, `datos/filon.db` | Servidor local y base en archivo |
 | `ZONA_HORARIA` | `America/Argentina/Buenos_Aires` | Cambio de desafío a las 00:00 |
 | `SEGUNDOS_POR_PREGUNTA` | `25` | Duración de la mecha |
 | `PROGRAMADOR_INTERNO` | `1` (`0` en Vercel) | `0` para usar cron/systemd/Vercel Cron |
+| `MINUTOS_RESERVA_ANTES_DE_MEDIANOCHE` | `30` | Desde cuándo se prepara mañana con la reserva |
+| `DOMINIOS_FUENTES` | lista por defecto | Dominios aceptados como fuente de las preguntas |
 | `COOKIE_SEGURA`, `CONFIAR_PROXY` | `0` (`1` en Vercel) | Producción detrás de HTTPS / proxy |
 | `TOKEN_ADMIN` | — | Habilita el panel (solo se usa para iniciar sesión) |
 | `ADMIN_INACTIVIDAD_MIN`, `ADMIN_VIDA_HORAS` | `30`, `8` | Vencimiento de la sesión del panel |
 | `ADMIN_PERMITIR_BEARER` | `1` | Transición: acepta `Authorization: Bearer TOKEN_ADMIN` en scripts; poné `0` para exigir sesión |
-| `IA_MAX_LLAMADAS_POR_CORRIDA`, `IA_MAX_LLAMADAS_POR_DIA` | `30`, `90` | Topes de costo de la IA |
 | `RETENER_*` | ver `.env.example` | Retención de datos (ver docs/OPERACIONES.md) |
 | `CRON_SECRET` | — | Protege `/api/cron/*` (Vercel Cron lo envía solo) |
-| `IA_PRESUPUESTO_MS` | `0` (`200000` en Vercel) | Tope de la IA por corrida; después se completa con la reserva |
 | `RELOJ_DESFASE_MS` | `0` | Probar la medianoche sin esperar |
 
 ## Despliegue
@@ -242,25 +203,24 @@ Todo corre en Vercel: `publico/` lo sirve la CDN, `/api/*` es una función (`api
 1. `vercel link` (o importá el repositorio en vercel.com/new). No hace falta configurar framework ni comando de build.
 2. En el proyecto: **Storage → Create Database → Turso**, conectada a Production (y Preview si querés). Eso agrega `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`. Elegí la región de Turso cercana a la de las funciones (por defecto Vercel usa `iad1`, Washington → AWS `us-east-1`).
    **Importante:** la integración puede crear una rama de la base por despliegue (el host empieza con `dpl-…`), que arranca vacía en cada deploy. Para Production cargá `BD_URL` y `BD_TOKEN` con la URL y el token de la base principal: tienen prioridad sobre las `TURSO_*`. El panel `/admin` muestra qué base está usando.
-3. **Settings → Environment Variables → Import .env** con el `.env` del proyecto (secretos ya generados; falta solo `ANTHROPIC_API_KEY` y, si querés, `CONTACTO_FUENTES`).
+3. **Settings → Environment Variables → Import .env** con el `.env` del proyecto (secretos ya generados).
 4. `vercel --prod`. El esquema de la base se crea solo en la primera solicitud.
 5. Publicá el primer desafío sin esperar al cron: `curl -H "Authorization: Bearer $CRON_SECRET" https://<tu-dominio>/api/cron/hoy`.
 
-Crons (hora UTC; Buenos Aires es UTC−3 todo el año). `hoy` y `manana` recorren los tres modos; `manana-ia` solo Normal. Funcionan también en el plan Hobby, que dispara cada cron una vez por día con precisión de una hora:
+Crons (hora UTC; Buenos Aires es UTC−3 todo el año). Los dos recorren los tres modos. Funcionan también en el plan Hobby, que dispara cada cron una vez por día con precisión de una hora:
 
 | Ruta | UTC | Buenos Aires | Qué hace |
 | --- | --- | --- | --- |
-| `/api/cron/manana-ia` | 00:00 | 21:00 | Prepara mañana solo con IA; si falla, queda pendiente |
-| `/api/cron/manana` | 01:30 | 22:30 | Reintenta mañana con IA y, si falla, publica la reserva |
+| `/api/cron/manana` | 01:30 | 22:30 | Si no se cargó a mano, arma mañana con la reserva |
 | `/api/cron/hoy` | 03:05 | 00:05 | Red de seguridad: asegura el desafío de hoy |
 
-La función tiene `maxDuration: 300` s; la IA corta a los `IA_PRESUPUESTO_MS` (200 s) y completa lo que falte con la reserva, así una corrida nunca queda a medias. Con plan Pro podés subir ambos valores. El límite de solicitudes por IP es por instancia de la función, así que en Vercel es orientativo.
+La función tiene `maxDuration: 60` s. El límite de solicitudes por IP es por instancia de la función, así que en Vercel es orientativo.
 
 ### Administración
 
 Panel web en **`/admin`**. Se ingresa una vez con el `TOKEN_ADMIN`: el servidor lo compara en tiempo constante y abre una **sesión** (token aleatorio en una cookie `HttpOnly`, `SameSite=Strict`, `__Host-` con HTTPS; en la base solo se guarda su hash). La sesión vence a los 30 minutos sin actividad y, como máximo, a las 8 horas; «Salir» la revoca en el servidor. El token maestro **no** se guarda en el navegador. El login tiene un límite de 5 intentos cada 15 minutos.
 
-El panel abre en un **resumen** con estadísticas (con un selector de modo): jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos (filtrados por modo, con **«Editar pregunta»** en cada una), creación (IA, reserva o JSON), **reserva**, corridas y reportes. El editor de preguntas es un formulario (enunciado, alcance, fuentes, tabla de respuestas con variantes, rareza y explicación, y rechazos) que también se puede editar como JSON; valida igual que la carga manual. Al editar una pregunta ya publicada, las respuestas que siguen conservan su id (las partidas jugadas mantienen sus puntos), no se puede quitar una respuesta que algún jugador ya dio ni cambiar la categoría, y la versión editada se guarda también en la reserva. **Crear** tiene tres pestañas, **Normal**, **Farándula Argentina** y **Geografía**, cada una con las mismas herramientas y su propio estado: publicar (Normal con IA o reserva; los temáticos, desde su reserva), carga manual con «Solo validar», el prompt del modo y su historial. En **Crear → Generar con otra IA** está el prompt para usar con ChatGPT, Claude u otra IA (editable, y con «Copiar con historial» que completa el historial con toda la reserva del modo —lo publicado, lo cargado y lo editado— para que no repita ninguna pregunta) y la descarga en **JSON o CSV** de las preguntas de los últimos N días (por defecto 3, incluidos los ya programados): `GET /api/admin/historial?dias=3&formato=json|csv`. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
+El panel abre en un **resumen** con estadísticas (con un selector de modo): jugadores y finalización por día, la campana de profundidad del día con su ajuste normal, promedio/mediana/cuartiles y, por pregunta, cuántos acertaron, pasaron o se quedaron sin tiempo, qué rarezas encontraron y los intentos fallidos más repetidos (pistas de respuestas que faltan). Además: desafíos (filtrados por modo, con **«Editar pregunta»** en cada una), creación (reserva o JSON), **reserva**, corridas y reportes. El editor de preguntas es un formulario (enunciado, alcance, fuentes, tabla de respuestas con variantes, rareza y explicación, y rechazos) que también se puede editar como JSON; valida igual que la carga manual. Al editar una pregunta ya publicada, las respuestas que siguen conservan su id (las partidas jugadas mantienen sus puntos), no se puede quitar una respuesta que algún jugador ya dio ni cambiar la categoría, y la versión editada se guarda también en la reserva. **Crear** tiene tres pestañas, **Normal**, **Farándula Argentina** y **Geografía**, cada una con las mismas herramientas y su propio estado: publicar desde la reserva, carga manual con «Solo validar», el prompt del modo y su historial. En **Crear → Generar con otra IA** está el prompt para usar con ChatGPT, Claude u otra IA (editable, y con «Copiar con historial» que completa el historial con toda la reserva del modo —lo publicado, lo cargado y lo editado— para que no repita ninguna pregunta) y la descarga en **JSON o CSV** de las preguntas de los últimos N días (por defecto 3, incluidos los ya programados): `GET /api/admin/historial?dias=3&formato=json|csv`. Las pestañas siguen el patrón ARIA (flechas, Inicio y Fin).
 
 La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `ADMIN_PERMITIR_BEARER=1` (transición). Todas las rutas de desafíos, el historial, el prompt y las estadísticas aceptan `?modo=normal|farandula|geografia` (sin el parámetro, Normal); un modo desconocido responde `400 modo_invalido`. En el juego, `GET /api/estado?modo=…` devuelve además `modos` (el estado de hoy de los tres) y `POST /api/partidas` recibe `{"modo": "…"}`.
 
@@ -269,8 +229,8 @@ La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `
 | `GET /api/admin/estadisticas?fecha=…&desde=…&hasta=…` | Totales, serie diaria de jugadores y detalle del día (distribución de profundidad, resultados por pregunta e intentos fallidos frecuentes) |
 | `GET /api/admin/desafios` | Desafíos publicados, con cantidad de partidas |
 | `GET /api/admin/desafios/AAAA-MM-DD` | Banco completo de un día |
-| `POST /api/admin/desafios/AAAA-MM-DD/generar` | Genera o regenera un día (ver abajo) |
-| `POST /api/admin/desafios/AAAA-MM-DD/importar` | Valida y publica siete preguntas desde JSON, sin IA |
+| `POST /api/admin/desafios/AAAA-MM-DD/generar` | Publica o rearma un día con la reserva (ver abajo) |
+| `POST /api/admin/desafios/AAAA-MM-DD/importar` | Valida y publica siete preguntas desde JSON |
 | `GET /api/admin/corridas` | Últimas corridas con su detalle |
 | `GET /api/admin/desafios/AAAA-MM-DD/preguntas/N` · `POST` | Una pregunta publicada en formato de reserva; `POST {"pregunta": …, "soloValidar": bool}` la reemplaza (409 `respuesta_en_uso` si se quita una respuesta ya dada) |
 | `GET /api/admin/reserva` · `POST` | Reserva del modo (archivo + base, con origen, estado y usos); `POST {"pregunta": …}` agrega o edita (sin id, se asigna uno) |
@@ -278,11 +238,9 @@ La misma API, desde scripts, con `Authorization: Bearer $TOKEN_ADMIN` mientras `
 | `GET /api/admin/historial?fuente=reserva` | Toda la reserva del modo (archivo + base) con la última fecha de uso de cada pregunta; es lo que usa «Copiar con historial» |
 | `GET /api/admin/reportes` · `POST /api/admin/reportes/:id` | Reportes y cambio de estado (`{"estado":"aceptado"}`) |
 
-`POST …/generar?modo=…` recibe `{"modo": "auto" | "ia" | "reserva", "reemplazar": bool, "forzar": bool}` (en el cuerpo, `modo` es la estrategia de generación; en Farándula y Geografía `ia` responde 400 porque no tienen IA automática):
-- `auto` usa IA y completa con la reserva; `ia` solo publica si la IA arma el día completo (si no, no cambia nada); `reserva` no usa IA.
-- Para regenerar un día que ya existe hace falta `reemplazar: true`. El anterior se borra recién cuando el nuevo se publicó bien, y las preguntas reemplazadas no se repiten.
+`POST …/generar?modo=…` recibe `{"reemplazar": bool, "forzar": bool}` y arma el día con la reserva del modo:
+- Para rearmar un día que ya existe hace falta `reemplazar: true`. El anterior se borra recién cuando el nuevo se publicó bien, y las preguntas reemplazadas no se repiten.
 - Si ese día ya tiene partidas, responde `409 hay_partidas`; con `forzar: true` se borran junto con el desafío anterior.
-- La generación manual no cuenta para `IA_MAX_INTENTOS_POR_DIA`. Con IA puede tardar varios minutos.
 
 **Carga manual (JSON) y repeticiones.** Además de las reglas de formato, cada pregunta se compara con las publicadas en los últimos días (por defecto 3, `SIMILITUD_DIAS`, o los «Días de historial» del panel; incluye los días ya programados) y con las otras del mismo JSON. Se comparan las raíces de las palabras del enunciado («termina»/«termine», «país»/«países») y las respuestas en común:
 - **repetida** (no se publica): enunciado muy parecido (≥ 60 %), o el mismo conjunto (≥ 60 % de las respuestas y al menos 4), o enunciado parecido (≥ 45 %) con la mitad de las respuestas en común (al menos 3);
@@ -291,7 +249,7 @@ El aviso dice con qué pregunta y fecha, el porcentaje y qué respuestas compart
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN_ADMIN" -H 'content-type: application/json' \
-  -d '{"modo":"ia","reemplazar":true}' https://<tu-dominio>/api/admin/desafios/2026-10-07/generar
+  -d '{"reemplazar":true}' https://<tu-dominio>/api/admin/desafios/2026-10-07/generar
 ```
 
 `POST …/importar?modo=…` recibe `{"preguntas":[…], "reemplazar":false, "forzar":false}`. Las preguntas usan exactamente el formato de `datos/reserva.json`. En Normal la API exige siete categorías distintas; en los temáticos, siete preguntas de la categoría del modo (si una no trae `categoria`, toma la del modo). En todos, valida fuentes, respuestas, variantes, rarezas y repeticiones, y guarda todo en una única transacción. Un error devuelve el detalle y no escribe nada. El cuerpo puede medir hasta 1 MB.

@@ -60,7 +60,7 @@ test('importación: compara con los últimos días; repetida bloquea, parecida a
   const app = await iniciarServidor({
     sinArchivoEnv: true,
     log: { info() {}, warn() {}, error() {} },
-    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, 'f.db'), IA_PROVEEDOR: 'ninguno', TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'adm', PROGRAMADOR_INTERNO: '0' },
+    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, 'f.db'), TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'adm', PROGRAMADOR_INTERNO: '0' },
   });
   const base = `http://127.0.0.1:${app.puerto}`;
   const importar = async (fecha, cuerpo) => {

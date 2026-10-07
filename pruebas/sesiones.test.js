@@ -19,7 +19,7 @@ async function levantar(env = {}, extra = {}) {
     ahora: extra.ahora,
     env: {
       PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`),
-      IA_PROVEEDOR: 'ninguno', ANTHROPIC_API_KEY: '', OPENAI_API_KEY: '', TURSO_DATABASE_URL: '', BD_URL: '',
+      TURSO_DATABASE_URL: '', BD_URL: '',
       TOKEN_ADMIN: TOKEN, PROGRAMADOR_INTERNO: '0', ...env,
     },
   });

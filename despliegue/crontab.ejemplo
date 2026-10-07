@@ -3,12 +3,10 @@
 #
 # Con cronie (Fedora, RHEL, Arch) podés fijar la zona horaria:
 CRON_TZ=America/Argentina/Buenos_Aires
-0 21 * * *  cd /opt/filon && node --disable-warning=ExperimentalWarning scripts/generar-desafio.js --manana --sin-reserva >> /var/log/filon/generar.log 2>&1
 40 23 * * * cd /opt/filon && node --disable-warning=ExperimentalWarning scripts/generar-desafio.js --manana >> /var/log/filon/generar.log 2>&1
 1 0 * * *   cd /opt/filon && node --disable-warning=ExperimentalWarning scripts/generar-desafio.js >> /var/log/filon/generar.log 2>&1
 #
 # En Debian/Ubuntu (cron sin CRON_TZ), con el servidor en UTC: Buenos Aires es UTC−3 todo el año,
-# así que 21:00 → 00:00 UTC, 23:40 → 02:40 UTC y 00:01 → 03:01 UTC:
-# 0 0 * * *   cd /opt/filon && node --disable-warning=ExperimentalWarning scripts/generar-desafio.js --manana --sin-reserva >> /var/log/filon/generar.log 2>&1
+# así que 23:40 → 02:40 UTC y 00:01 → 03:01 UTC:
 # 40 2 * * *  cd /opt/filon && node --disable-warning=ExperimentalWarning scripts/generar-desafio.js --manana >> /var/log/filon/generar.log 2>&1
 # 1 3 * * *   cd /opt/filon && node --disable-warning=ExperimentalWarning scripts/generar-desafio.js >> /var/log/filon/generar.log 2>&1

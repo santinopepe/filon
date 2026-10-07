@@ -23,8 +23,6 @@ jobs:
     timeout-minutes: 20
     env:
       # Las pruebas nunca usan servicios externos ni credenciales reales.
-      ANTHROPIC_API_KEY: ''
-      OPENAI_API_KEY: ''
       TURSO_DATABASE_URL: ''
       BD_URL: ''
     steps:
