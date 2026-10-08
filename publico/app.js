@@ -3,6 +3,7 @@
 // y sus textos; el modo elegido viaja en la URL (?modo=…) para que una recarga vuelva al mismo.
 import { MODOS, esModo, crearFormato } from './modos.js';
 import { crearSonido } from './sonido.js';
+import { normalizar } from './normalizar-texto.js';
 
 const $ = (id) => document.getElementById(id);
 const PROFUNDIDAD_MAXIMA = 7000;
@@ -117,9 +118,9 @@ function pintarTextosDelModo() {
 }
 
 // ───────── Utilidades de interfaz ─────────
-async function api(metodo, ruta, cuerpo) {
+async function api(metodo, ruta, cuerpo, { signal } = {}) {
   const t0 = Date.now();
-  const opciones = { method: metodo, credentials: 'same-origin', headers: {} };
+  const opciones = { method: metodo, credentials: 'same-origin', headers: {}, signal };
   if (metodo !== 'GET') {
     opciones.headers['content-type'] = 'application/json';
     opciones.body = JSON.stringify(cuerpo ?? {});
@@ -127,8 +128,9 @@ async function api(metodo, ruta, cuerpo) {
   let res;
   try {
     res = await fetch(ruta, opciones);
-  } catch {
-    throw new Error('No pudimos conectar con la expedición. Revisá tu conexión.');
+  } catch (e) {
+    if (e?.name === 'AbortError') throw e; // cancelado a propósito (otra búsqueda u otra página)
+    throw new Error('No pudimos conectar con la expedición. Revisá tu conexión.', { cause: e });
   }
   const t1 = Date.now();
   let datos = {};
@@ -753,8 +755,86 @@ function botonRespuestas(r, texto) {
   return boton;
 }
 
-// Revelado paginado: se piden y se dibujan de a 100 (el servidor no entrega más por página).
-const revelado = { n: null, buscar: '', siguiente: 0, pidiendo: false, espera: null };
+// ───────── Respuestas válidas (revelado) ─────────
+// Al llegar al final se piden en segundo plano, en un solo pedido, las primeras 100 respuestas de cada
+// pregunta (casi siempre son todas). Esa promesa y esos datos se reutilizan: abrir, cerrar o cambiar de
+// pregunta no vuelve a pedir nada. Si una pregunta tiene más de 100, el resto se recorre por páginas que
+// busca y filtra el servidor sobre el conjunto completo. Nunca hay más de 100 filas montadas.
+const POR_PAGINA = 100;
+const PAGINAS_GUARDADAS = 60;
+const revelado = {
+  partidaId: null,
+  final: null, // promesa del pedido del final (compartida por todos los que la necesiten)
+  preguntas: new Map(), // posición → { total, conteos, respuestas, completa, normalizadas }
+  paginas: new Map(), // clave → promesa de una página del servidor (las últimas PAGINAS_GUARDADAS)
+  vista: { n: null, buscar: '', rareza: null, desde: 0 },
+  turno: 0, // cada cambio de vista descarta lo que llegue tarde de la anterior
+  control: null, // AbortController del pedido de página de la vista actual
+  espera: null,
+};
+
+/** Respuestas del final de la partida actual: un solo pedido, reutilizado; si falla, se puede reintentar. */
+function cargarRespuestasDelFinal() {
+  const p = estado.partida;
+  if (!p?.terminada) return Promise.reject(new Error('Las respuestas se ven al terminar la partida.'));
+  if (revelado.partidaId !== p.id) {
+    // Otra partida (otro día u otro modo): nada de lo guardado sirve.
+    revelado.partidaId = p.id;
+    revelado.final = null;
+    revelado.preguntas.clear();
+    revelado.paginas.clear();
+  }
+  if (!revelado.final) {
+    const id = p.id;
+    const pedido = api('GET', `/api/partidas/${id}/respuestas`).then((datos) => {
+      if (revelado.partidaId !== id) return; // llegó tarde: ya se cambió de partida
+      for (const q of datos.preguntas) {
+        const respuestas = q.respuestas.map(([canonica, rareza]) => ({ canonica, rareza, nombreRareza: datos.rarezas[rareza].nombre, puntos: datos.rarezas[rareza].puntos }));
+        revelado.preguntas.set(q.posicion, { total: q.total, conteos: q.conteos, respuestas, completa: respuestas.length >= q.total, normalizadas: null });
+      }
+    });
+    revelado.final = pedido;
+    pedido.catch(() => {
+      if (revelado.final === pedido) revelado.final = null; // el próximo intento vuelve a pedir
+    });
+  }
+  return revelado.final;
+}
+
+const RAREZAS_DE_MAYOR_A_MENOR = ['diamante', 'oro', 'plata', 'cobre', 'grava'];
+function contarPorRareza(respuestas) {
+  const conteos = Object.fromEntries(RAREZAS_DE_MAYOR_A_MENOR.map((r) => [r, 0]));
+  for (const r of respuestas) conteos[r.rareza]++;
+  return conteos;
+}
+
+/** La página que corresponde a una vista ({ n, buscar, rareza, desde }), desde lo guardado o del servidor. */
+async function paginaDeVista(v, signal) {
+  await cargarRespuestasDelFinal();
+  const q = revelado.preguntas.get(v.n);
+  if (!q) throw new Error('No encontramos las respuestas de esa pregunta.');
+  const filtro = normalizar(v.buscar);
+  if (q.completa) {
+    // Están todas en el navegador: búsqueda y filtro locales, con las mismas reglas que el servidor.
+    q.normalizadas ??= q.respuestas.map((r) => normalizar(r.canonica));
+    const buscadas = filtro ? q.respuestas.filter((_, i) => q.normalizadas[i].includes(filtro)) : q.respuestas;
+    const coinciden = v.rareza ? buscadas.filter((r) => r.rareza === v.rareza) : buscadas;
+    return { respuestas: coinciden.slice(v.desde, v.desde + POR_PAGINA), total: q.total, coincidencias: coinciden.length, conteos: filtro ? contarPorRareza(buscadas) : q.conteos, desde: v.desde };
+  }
+  if (!filtro && !v.rareza && v.desde === 0) return { respuestas: q.respuestas, total: q.total, coincidencias: q.total, conteos: q.conteos, desde: 0 };
+  const clave = `${revelado.partidaId}|${v.n}|${filtro}|${v.rareza ?? ''}|${v.desde}`;
+  let pedido = revelado.paginas.get(clave);
+  if (!pedido) {
+    const q2 = new URLSearchParams({ desde: String(v.desde), limite: String(POR_PAGINA) });
+    if (filtro) q2.set('buscar', v.buscar.slice(0, 60));
+    if (v.rareza) q2.set('rareza', v.rareza);
+    pedido = api('GET', `/api/partidas/${revelado.partidaId}/rondas/${v.n}/respuestas?${q2}`, undefined, { signal });
+    revelado.paginas.set(clave, pedido);
+    pedido.catch(() => revelado.paginas.get(clave) === pedido && revelado.paginas.delete(clave));
+    while (revelado.paginas.size > PAGINAS_GUARDADAS) revelado.paginas.delete(revelado.paginas.keys().next().value);
+  }
+  return pedido;
+}
 
 function filaRespuesta(respuesta, propia) {
   const li = document.createElement('li');
@@ -780,71 +860,139 @@ function filaRespuesta(respuesta, propia) {
   return li;
 }
 
-async function pedirPaginaRespuestas({ reiniciar = false } = {}) {
-  const r = ronda(revelado.n);
-  if (!r || revelado.pidiendo || (!reiniciar && revelado.siguiente == null)) return;
-  revelado.pidiendo = true;
-  const lista = $('lista-respuestas');
-  const mas = $('respuestas-mas');
-  if (reiniciar) {
-    revelado.siguiente = 0;
-    const carga = document.createElement('li');
-    carga.className = 'respuestas-cargando';
-    carga.textContent = 'Extrayendo el catálogo de la veta…';
-    lista.replaceChildren(carga);
+function filaEstado(texto, reintentar = null) {
+  const li = document.createElement('li');
+  li.className = 'respuestas-cargando';
+  li.append(texto);
+  if (reintentar) {
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'boton secundario respuestas-reintentar';
+    boton.textContent = 'Reintentar';
+    boton.addEventListener('click', reintentar);
+    li.append(document.createElement('br'), boton);
   }
-  mas.disabled = true;
+  return li;
+}
+
+/** Filtros por rareza con sus cantidades (sobre todo lo que coincide con la búsqueda). */
+function pintarRarezas(conteos, total) {
+  const caja = $('respuestas-rarezas');
+  const opciones = [[null, 'Todas', RAREZAS_DE_MAYOR_A_MENOR.reduce((s, r) => s + conteos[r], 0)]];
+  for (const r of RAREZAS_DE_MAYOR_A_MENOR) opciones.push([r, r[0].toUpperCase() + r.slice(1), conteos[r]]);
+  const enfocada = document.activeElement?.closest?.('#respuestas-rarezas') ? document.activeElement.dataset.filtro : undefined;
+  caja.replaceChildren(
+    ...opciones.map(([clave, nombre, cantidad]) => {
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.className = 'filtro-rareza';
+      boton.dataset.filtro = clave ?? '';
+      if (clave) boton.dataset.rareza = clave;
+      const elegida = revelado.vista.rareza === clave;
+      boton.setAttribute('aria-pressed', String(elegida));
+      boton.disabled = !cantidad && !elegida;
+      boton.append(nombre, ' ');
+      const n = document.createElement('span');
+      n.className = 'filtro-cantidad';
+      n.textContent = fmt(cantidad);
+      boton.append(n);
+      boton.addEventListener('click', () => {
+        revelado.vista = { ...revelado.vista, rareza: clave, desde: 0 };
+        pintarRespuestas();
+      });
+      return boton;
+    }),
+  );
+  caja.hidden = total <= 30;
+  if (enfocada !== undefined) caja.querySelector(`[data-filtro="${enfocada}"]`)?.focus({ preventScroll: true });
+}
+
+/** Dibuja la vista actual del diálogo. Lo que llegue tarde de una vista anterior se descarta. */
+async function pintarRespuestas() {
+  const v = { ...revelado.vista };
+  const turno = ++revelado.turno;
+  revelado.control?.abort();
+  const control = (revelado.control = new AbortController());
+  const r = ronda(v.n);
+  const lista = $('lista-respuestas');
+  // Si los datos ya están, el reemplazo ocurre antes de que el navegador pinte: no hay parpadeo.
+  lista.setAttribute('aria-busy', 'true');
+  lista.replaceChildren(filaEstado('Extrayendo el catálogo de la veta…'));
+  $('respuestas-anterior').disabled = true;
+  $('respuestas-siguiente').disabled = true;
+  let pagina;
   try {
-    const q = new URLSearchParams({ desde: String(revelado.siguiente), limite: '100' });
-    if (revelado.buscar) q.set('buscar', revelado.buscar);
-    const datos = await api('GET', `/api/partidas/${estado.partida.id}/rondas/${revelado.n}/respuestas?${q}`);
-    if (reiniciar) lista.replaceChildren();
-    const fragmento = document.createDocumentFragment();
-    for (const respuesta of datos.respuestas) fragmento.append(filaRespuesta(respuesta, r.respuesta?.canonica));
-    lista.append(fragmento);
-    if (!datos.coincidencias) {
-      const vacio = document.createElement('li');
-      vacio.className = 'respuestas-cargando';
-      vacio.textContent = 'Ninguna respuesta válida coincide con esa búsqueda.';
-      lista.append(vacio);
-    }
-    revelado.siguiente = datos.siguiente;
-    const mostradas = lista.querySelectorAll('li:not(.respuestas-cargando)').length;
-    $('respuestas-ayuda').textContent = revelado.buscar
-      ? `${fmt(datos.coincidencias)} de ${fmt(datos.total)} respuestas coinciden. Mostrando ${fmt(mostradas)}.`
-      : `${fmt(datos.total)} respuestas, ordenadas de mayor a menor puntaje.${datos.total > mostradas ? ` Mostrando ${fmt(mostradas)}.` : ''}`;
-    mas.hidden = datos.siguiente == null;
+    pagina = await paginaDeVista(v, control.signal);
   } catch (e) {
-    lista.replaceChildren(Object.assign(document.createElement('li'), { className: 'respuestas-cargando', textContent: e.message }));
-  } finally {
-    revelado.pidiendo = false;
-    mas.disabled = false;
+    if (turno !== revelado.turno) return;
+    if (e?.name === 'AbortError') return void pintarRespuestas();
+    lista.setAttribute('aria-busy', 'false');
+    lista.replaceChildren(filaEstado(e.message, () => pintarRespuestas()));
+    $('respuestas-paginas').hidden = true;
+    return;
+  }
+  if (turno !== revelado.turno) return;
+  const fragmento = document.createDocumentFragment();
+  for (const respuesta of pagina.respuestas) fragmento.append(filaRespuesta(respuesta, r?.respuesta?.canonica));
+  if (!pagina.coincidencias) fragmento.append(filaEstado('Ninguna respuesta válida coincide con esa búsqueda.'));
+  lista.replaceChildren(fragmento);
+  lista.setAttribute('aria-busy', 'false');
+  lista.scrollTop = 0;
+  const hasta = pagina.desde + pagina.respuestas.length;
+  const rango = pagina.coincidencias > POR_PAGINA ? ` Mostrando ${fmt(pagina.desde + 1)}–${fmt(hasta)}.` : '';
+  $('respuestas-ayuda').textContent =
+    normalizar(v.buscar) || v.rareza
+      ? `${fmt(pagina.coincidencias)} de ${fmt(pagina.total)} respuestas coinciden.${rango}`
+      : `${fmt(pagina.total)} respuestas, ordenadas de mayor a menor puntaje.${rango}`;
+  $('respuestas-buscar-caja').hidden = pagina.total <= 30;
+  pintarRarezas(pagina.conteos, pagina.total);
+  const paginado = pagina.coincidencias > POR_PAGINA;
+  $('respuestas-paginas').hidden = !paginado;
+  $('respuestas-rango').textContent = paginado ? `${fmt(pagina.desde + 1)}–${fmt(hasta)} de ${fmt(pagina.coincidencias)}` : '';
+  const anterior = $('respuestas-anterior');
+  const siguiente = $('respuestas-siguiente');
+  anterior.disabled = pagina.desde === 0;
+  siguiente.disabled = hasta >= pagina.coincidencias;
+  // Si el botón que se usó quedó deshabilitado (primera o última página), el foco pasa al otro.
+  if (document.activeElement === document.body || (document.activeElement?.disabled && document.activeElement.closest('#respuestas-paginas'))) {
+    (siguiente.disabled ? anterior : siguiente).focus({ preventScroll: true });
   }
 }
 
-async function abrirRespuestas(n) {
+function abrirRespuestas(n) {
   const r = ronda(n);
   if (!r?.totalRespuestas) return;
-  revelado.n = n;
-  revelado.buscar = '';
+  clearTimeout(revelado.espera);
+  revelado.vista = { n, buscar: '', rareza: null, desde: 0 };
   $('respuestas-ronda').textContent = `Pregunta ${r.posicion} de 7 · ${r.categoria}`;
   $('respuestas-pregunta').textContent = r.enunciado;
   $('respuestas-ayuda').textContent = `${fmt(r.totalRespuestas)} respuestas, ordenadas de mayor a menor puntaje.`;
   $('respuestas-buscar').value = '';
   $('respuestas-buscar-caja').hidden = r.totalRespuestas <= 30;
-  $('respuestas-mas').hidden = true;
+  $('respuestas-rarezas').hidden = true;
+  $('respuestas-paginas').hidden = true;
   const dlg = $('dlg-respuestas');
   if (!dlg.open) dlg.showModal();
-  await pedirPaginaRespuestas({ reiniciar: true });
+  pintarRespuestas();
 }
 
-$('respuestas-mas').addEventListener('click', () => pedirPaginaRespuestas());
+$('respuestas-anterior').addEventListener('click', () => {
+  revelado.vista = { ...revelado.vista, desde: Math.max(0, revelado.vista.desde - POR_PAGINA) };
+  pintarRespuestas();
+});
+$('respuestas-siguiente').addEventListener('click', () => {
+  revelado.vista = { ...revelado.vista, desde: revelado.vista.desde + POR_PAGINA };
+  pintarRespuestas();
+});
 $('respuestas-buscar').addEventListener('input', () => {
   clearTimeout(revelado.espera);
-  revelado.espera = setTimeout(() => {
-    revelado.buscar = $('respuestas-buscar').value.trim().slice(0, 60);
-    pedirPaginaRespuestas({ reiniciar: true });
-  }, 250);
+  const aplicar = () => {
+    revelado.vista = { ...revelado.vista, buscar: $('respuestas-buscar').value.trim().slice(0, 60), desde: 0 };
+    pintarRespuestas();
+  };
+  // Con la lista completa en el navegador se filtra al instante; si no, se espera a que se deje de tipear.
+  if (revelado.preguntas.get(revelado.vista.n)?.completa) aplicar();
+  else revelado.espera = setTimeout(aplicar, 250);
 });
 
 function mostrarResultado(n, { animar = false, enCurso = false } = {}) {
@@ -1056,6 +1204,8 @@ function mostrarFinal({ completada = false } = {}) {
   $('final-guardado').textContent = 'Tu resultado quedó guardado.';
   tickCuentas();
   $('final-titulo').focus({ preventScroll: true });
+  // Las respuestas de las siete preguntas se piden ya, en segundo plano: al tocar una, están listas.
+  if (p.terminada) cargarRespuestasDelFinal().catch(() => {});
   decir(t.despedida(p.profundidad), 4500);
   anunciar(`Partida terminada. Llegaste a ${formato.valor(p.profundidad)} ${modo().unidad.palabra}.`);
 }

@@ -3,6 +3,7 @@ import { createClient } from '@libsql/client';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { randomBytes } from 'node:crypto';
+import { prepararRevelado } from './revelado.js';
 
 const ESQUEMA = `
 CREATE TABLE IF NOT EXISTS meta (
@@ -309,6 +310,93 @@ export const MIGRACIONES = [
        )`,
       'CREATE INDEX IF NOT EXISTS reserva_modo ON reserva(modo, activa)',
     ],
+  },
+  {
+    version: 9,
+    nombre: 'revelado_preparado',
+    // Orden del revelado y forma de búsqueda de cada respuesta, y conteos por pregunta, calculados al
+    // publicar (servidor/revelado.js) en vez de en cada lectura. Columnas nuevas que admiten NULL: el
+    // código anterior las ignora. Lo ya publicado se completa acá; si una instancia vieja publica durante
+    // el despliegue, la lectura detecta `conteos` en NULL y lo prepara en ese momento.
+    async aplicar(tx) {
+      const deRespuestas = new Set((await tx.all('PRAGMA table_info(respuestas)')).map((c) => c.name));
+      if (!deRespuestas.has('orden')) await tx.run('ALTER TABLE respuestas ADD COLUMN orden INTEGER');
+      if (!deRespuestas.has('normalizada')) await tx.run('ALTER TABLE respuestas ADD COLUMN normalizada TEXT');
+      const dePreguntas = new Set((await tx.all('PRAGMA table_info(preguntas)')).map((c) => c.name));
+      if (!dePreguntas.has('conteos')) await tx.run('ALTER TABLE preguntas ADD COLUMN conteos TEXT');
+      await tx.run('CREATE INDEX IF NOT EXISTS respuestas_revelado ON respuestas(pregunta_id, orden)');
+      await tx.run('CREATE INDEX IF NOT EXISTS respuestas_revelado_rareza ON respuestas(pregunta_id, rareza, orden)');
+      for (const { id } of await tx.all('SELECT id FROM preguntas WHERE conteos IS NULL')) await prepararRevelado(tx, id);
+    },
+  },
+  {
+    version: 10,
+    nombre: 'generador_por_catalogos',
+    // Segunda excepción documentada a «solo aditivas»: el CHECK de `origen` no se puede cambiar con ALTER
+    // TABLE, y las preguntas armadas por el generador de catálogos tienen su propio origen («catalogo»).
+    // `desafios` y `preguntas` se reconstruyen con las mismas columnas (y las mismas filas e ids); a
+    // `preguntas` se le suman columnas que admiten NULL: firma semántica, huella del conjunto de
+    // respuestas, metadatos de generación (JSON) y modo de coincidencia de las respuestas. El código
+    // anterior sigue leyendo y escribiendo las mismas columnas de siempre.
+    reconstruye: ['desafios', 'preguntas'],
+    async aplicar(tx) {
+      const sql = (tabla) => tx.get("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?", tabla).then((f) => f.sql);
+      const columnas = async (tabla) => (await tx.all(`PRAGMA table_info(${tabla})`)).map((c) => c.name);
+      async function reconstruir(tabla, crear) {
+        const anteriores = await columnas(tabla);
+        await tx.run(`CREATE TABLE ${tabla}_copia AS SELECT * FROM ${tabla}`);
+        await tx.run(`DROP TABLE ${tabla}`);
+        await tx.run(crear);
+        const nuevas = new Set(await columnas(tabla));
+        const comunes = anteriores.filter((c) => nuevas.has(c)).join(', ');
+        await tx.run(`INSERT INTO ${tabla} (${comunes}) SELECT ${comunes} FROM ${tabla}_copia`);
+        await tx.run(`DROP TABLE ${tabla}_copia`);
+      }
+      await tx.run('PRAGMA defer_foreign_keys = ON');
+      if (!(await sql('desafios')).includes("'catalogo'")) {
+        await reconstruir(
+          'desafios',
+          `CREATE TABLE desafios (
+             id INTEGER PRIMARY KEY,
+             fecha TEXT NOT NULL,
+             numero INTEGER NOT NULL,
+             origen TEXT NOT NULL CHECK (origen IN ('ia', 'reserva', 'mixto', 'catalogo')),
+             modelo TEXT,
+             corrida_id INTEGER,
+             publicado_en INTEGER NOT NULL,
+             modo TEXT NOT NULL DEFAULT 'normal',
+             UNIQUE (modo, fecha)
+           )`,
+        );
+      }
+      if (!(await sql('preguntas')).includes("'catalogo'")) {
+        await reconstruir(
+          'preguntas',
+          `CREATE TABLE preguntas (
+             id TEXT PRIMARY KEY,
+             desafio_id INTEGER NOT NULL REFERENCES desafios(id),
+             posicion INTEGER NOT NULL CHECK (posicion BETWEEN 1 AND 7),
+             categoria TEXT NOT NULL,
+             enunciado TEXT NOT NULL,
+             alcance TEXT NOT NULL,
+             huella TEXT NOT NULL,
+             origen TEXT NOT NULL CHECK (origen IN ('ia', 'reserva', 'catalogo')),
+             reserva_id TEXT,
+             fuentes TEXT NOT NULL,
+             rechazos TEXT NOT NULL DEFAULT '[]',
+             conteos TEXT,
+             firma TEXT,
+             conjunto TEXT,
+             generacion TEXT,
+             coincidencia TEXT NOT NULL DEFAULT 'flexible' CHECK (coincidencia IN ('flexible', 'exacta')),
+             UNIQUE (desafio_id, posicion)
+           )`,
+        );
+      }
+      await tx.run('CREATE INDEX IF NOT EXISTS desafios_fecha ON desafios(fecha)');
+      await tx.run('CREATE INDEX IF NOT EXISTS preguntas_reserva ON preguntas(reserva_id)');
+      await tx.run('CREATE INDEX IF NOT EXISTS preguntas_firma ON preguntas(firma)');
+    },
   },
 ];
 

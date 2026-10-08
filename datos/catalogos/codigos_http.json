@@ -1,0 +1,97 @@
+{
+  "id": "codigos_http",
+  "nombre": "Códigos de estado HTTP",
+  "descripcion": "Los códigos de estado HTTP registrados por la IANA, con su clase.",
+  "version": "2026-10-08.b2205ac544",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "IANA HTTP Status Code Registry",
+      "url": "https://www.iana.org/assignments/http-status-codes/",
+      "licencia": "registro público de la IANA",
+      "detalle": "http-status-codes-1.csv (huella 4a9550d4b4ae)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Sin dato de popularidad: todos valen 0 y la rareza sigue el número de código (estable).",
+    "nota": "No es una estadística de uso."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todos los códigos asignados en el registro «HTTP Status Code Registry» de la IANA (sin los rangos sin asignar ni los temporales).",
+    "verificacion": [
+      "están 200, 301, 404 y 500 (y no los marcados como sin uso)",
+      "todos tienen clase (1xx a 5xx)"
+    ]
+  },
+  "atributos": {
+    "clase": {
+      "tipo": "texto",
+      "etiqueta": "clase"
+    }
+  },
+  "fuenteEntidades": "https://www.iana.org/assignments/http-status-codes/",
+  "correcciones": [],
+  "entidades": [
+    {"id":"100","nombre":"100 Continue","alias":["100","Continue"],"popularidad":0,"atributos":{"clase":"información"}},
+    {"id":"101","nombre":"101 Switching Protocols","alias":["101","Switching Protocols"],"popularidad":0,"atributos":{"clase":"información"}},
+    {"id":"102","nombre":"102 Processing","alias":["102","Processing"],"popularidad":0,"atributos":{"clase":"información"}},
+    {"id":"103","nombre":"103 Early Hints","alias":["103","Early Hints"],"popularidad":0,"atributos":{"clase":"información"}},
+    {"id":"200","nombre":"200 OK","alias":["200","OK"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"201","nombre":"201 Created","alias":["201","Created"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"202","nombre":"202 Accepted","alias":["202","Accepted"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"203","nombre":"203 Non-Authoritative Information","alias":["203","Non-Authoritative Information"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"204","nombre":"204 No Content","alias":["204","No Content"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"205","nombre":"205 Reset Content","alias":["205","Reset Content"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"206","nombre":"206 Partial Content","alias":["206","Partial Content"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"207","nombre":"207 Multi-Status","alias":["207","Multi-Status"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"208","nombre":"208 Already Reported","alias":["208","Already Reported"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"226","nombre":"226 IM Used","alias":["226","IM Used"],"popularidad":0,"atributos":{"clase":"éxito"}},
+    {"id":"300","nombre":"300 Multiple Choices","alias":["300","Multiple Choices"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"301","nombre":"301 Moved Permanently","alias":["301","Moved Permanently"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"302","nombre":"302 Found","alias":["302","Found"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"303","nombre":"303 See Other","alias":["303","See Other"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"304","nombre":"304 Not Modified","alias":["304","Not Modified"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"305","nombre":"305 Use Proxy","alias":["305","Use Proxy"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"308","nombre":"308 Permanent Redirect","alias":["308","Permanent Redirect"],"popularidad":0,"atributos":{"clase":"redirección"}},
+    {"id":"400","nombre":"400 Bad Request","alias":["400","Bad Request"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"401","nombre":"401 Unauthorized","alias":["401","Unauthorized"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"402","nombre":"402 Payment Required","alias":["402","Payment Required"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"403","nombre":"403 Forbidden","alias":["403","Forbidden"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"404","nombre":"404 Not Found","alias":["404","Not Found"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"405","nombre":"405 Method Not Allowed","alias":["405","Method Not Allowed"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"406","nombre":"406 Not Acceptable","alias":["406","Not Acceptable"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"407","nombre":"407 Proxy Authentication Required","alias":["407","Proxy Authentication Required"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"408","nombre":"408 Request Timeout","alias":["408","Request Timeout"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"409","nombre":"409 Conflict","alias":["409","Conflict"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"410","nombre":"410 Gone","alias":["410","Gone"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"411","nombre":"411 Length Required","alias":["411","Length Required"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"412","nombre":"412 Precondition Failed","alias":["412","Precondition Failed"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"413","nombre":"413 Content Too Large","alias":["413","Content Too Large"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"414","nombre":"414 URI Too Long","alias":["414","URI Too Long"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"415","nombre":"415 Unsupported Media Type","alias":["415","Unsupported Media Type"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"416","nombre":"416 Range Not Satisfiable","alias":["416","Range Not Satisfiable"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"417","nombre":"417 Expectation Failed","alias":["417","Expectation Failed"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"421","nombre":"421 Misdirected Request","alias":["421","Misdirected Request"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"422","nombre":"422 Unprocessable Content","alias":["422","Unprocessable Content"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"423","nombre":"423 Locked","alias":["423","Locked"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"424","nombre":"424 Failed Dependency","alias":["424","Failed Dependency"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"425","nombre":"425 Too Early","alias":["425","Too Early"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"426","nombre":"426 Upgrade Required","alias":["426","Upgrade Required"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"428","nombre":"428 Precondition Required","alias":["428","Precondition Required"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"429","nombre":"429 Too Many Requests","alias":["429","Too Many Requests"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"431","nombre":"431 Request Header Fields Too Large","alias":["431","Request Header Fields Too Large"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"451","nombre":"451 Unavailable For Legal Reasons","alias":["451","Unavailable For Legal Reasons"],"popularidad":0,"atributos":{"clase":"error del cliente"}},
+    {"id":"500","nombre":"500 Internal Server Error","alias":["500","Internal Server Error"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"501","nombre":"501 Not Implemented","alias":["501","Not Implemented"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"502","nombre":"502 Bad Gateway","alias":["502","Bad Gateway"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"503","nombre":"503 Service Unavailable","alias":["503","Service Unavailable"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"504","nombre":"504 Gateway Timeout","alias":["504","Gateway Timeout"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"505","nombre":"505 HTTP Version Not Supported","alias":["505","HTTP Version Not Supported"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"506","nombre":"506 Variant Also Negotiates","alias":["506","Variant Also Negotiates"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"507","nombre":"507 Insufficient Storage","alias":["507","Insufficient Storage"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"508","nombre":"508 Loop Detected","alias":["508","Loop Detected"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"510","nombre":"510 Not Extended (OBSOLETED)","alias":["510","Not Extended (OBSOLETED)"],"popularidad":0,"atributos":{"clase":"error del servidor"}},
+    {"id":"511","nombre":"511 Network Authentication Required","alias":["511","Network Authentication Required"],"popularidad":0,"atributos":{"clase":"error del servidor"}}
+  ]
+}

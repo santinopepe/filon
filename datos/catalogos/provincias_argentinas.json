@@ -1,0 +1,185 @@
+{
+  "id": "provincias_argentinas",
+  "nombre": "Provincias argentinas",
+  "descripcion": "Las 23 provincias argentinas, con sus provincias vecinas y sus límites internacionales.",
+  "version": "2026-10-08.01f9549869",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "provincias (P31 Q44753), límites (P47) y país de cada vecino (P17)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Las 23 provincias argentinas; límites entre provincias simétricos y límites con países vecinos verificados contra el mapa político.",
+    "verificacion": [
+      "24 jurisdicciones (23 provincias y la Ciudad de Buenos Aires)",
+      "los límites entre jurisdicciones son simétricos (diferencias: ninguna)",
+      "limitan con Chile: Jujuy, Salta, Catamarca, La Rioja, San Juan, Mendoza, Neuquén, Río Negro, Chubut, Santa Cruz, Tierra del Fuego",
+      "limitan con Bolivia: Jujuy, Salta",
+      "limitan con Paraguay: Salta, Formosa, Chaco, Corrientes, Misiones",
+      "limitan con Brasil: Misiones, Corrientes",
+      "limitan con Uruguay: Entre Ríos, Corrientes, Buenos Aires",
+      "Córdoba limita con Buenos Aires, Catamarca, La Pampa, La Rioja, San Luis, Santa Fe, Santiago del Estero"
+    ]
+  },
+  "atributos": {
+    "limitrofes": {
+      "tipo": "lista",
+      "etiqueta": "país limítrofe"
+    },
+    "vecinas": {
+      "tipo": "lista",
+      "etiqueta": "jurisdicción vecina"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Q44754",
+      "detalle": "«Buenos Aires» en vez de «Provincia de Buenos Aires»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44758",
+      "detalle": "«Corrientes» en vez de «Provincia de Corrientes»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44759",
+      "detalle": "«Córdoba» en vez de «Provincia de Córdoba»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44756",
+      "detalle": "«Catamarca» en vez de «Provincia de Catamarca»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44757",
+      "detalle": "«Chaco» en vez de «Provincia de Chaco»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44762",
+      "detalle": "«Entre Ríos» en vez de «Provincia de Entre Ríos»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44761",
+      "detalle": "«Formosa» en vez de «Provincia de Formosa»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44764",
+      "detalle": "«Jujuy» en vez de «Provincia de Jujuy»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44795",
+      "detalle": "«La Pampa» en vez de «Provincia de La Pampa»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44798",
+      "detalle": "«Misiones» en vez de «Provincia de Misiones»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44796",
+      "detalle": "«La Rioja» en vez de «Provincia de La Rioja»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44797",
+      "detalle": "«Mendoza» en vez de «Provincia de Mendoza»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44802",
+      "detalle": "«Río Negro» en vez de «Provincia de Río Negro»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44803",
+      "detalle": "«Salta» en vez de «Provincia de Salta»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44800",
+      "detalle": "«Neuquén» en vez de «Provincia de Neuquén»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44805",
+      "detalle": "«San Juan» en vez de «Provincia de San Juan»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44818",
+      "detalle": "«San Luis» en vez de «Provincia de San Luis»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44823",
+      "detalle": "«Santa Fe» en vez de «Provincia de Santa Fe»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44821",
+      "detalle": "«Santa Cruz» en vez de «Provincia de Santa Cruz»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44827",
+      "detalle": "«Santiago del Estero» en vez de «Provincia de Santiago del Estero»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44829",
+      "detalle": "«Tucumán» en vez de «Provincia de Tucumán»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q44832",
+      "detalle": "«Tierra del Fuego» en vez de «Provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    },
+    {
+      "entidad": "Q45007",
+      "detalle": "«Chubut» en vez de «Provincia de Chubut»",
+      "motivo": "Nombre corto habitual de la jurisdicción."
+    }
+  ],
+  "entidades": [
+    {"id":"Q44754","nombre":"Buenos Aires","alias":["Provincia de Buenos Aires"],"popularidad":98,"atributos":{"limitrofes":["Uruguay"],"vecinas":["Córdoba","Entre Ríos","La Pampa","Río Negro","Santa Fe"]},"fuente":"https://www.wikidata.org/wiki/Q44754"},
+    {"id":"Q44756","nombre":"Catamarca","alias":["Provincia de Catamarca"],"popularidad":89,"atributos":{"limitrofes":["Chile"],"vecinas":["Córdoba","La Rioja","Salta","Santiago del Estero","Tucumán"]},"fuente":"https://www.wikidata.org/wiki/Q44756"},
+    {"id":"Q44757","nombre":"Chaco","alias":["Provincia de Chaco"],"popularidad":88,"atributos":{"limitrofes":["Paraguay"],"vecinas":["Corrientes","Formosa","Salta","Santa Fe","Santiago del Estero"]},"fuente":"https://www.wikidata.org/wiki/Q44757"},
+    {"id":"Q44758","nombre":"Corrientes","alias":["Provincia de Corrientes"],"popularidad":88,"atributos":{"limitrofes":["Brasil","Paraguay","Uruguay"],"vecinas":["Chaco","Entre Ríos","Misiones","Santa Fe"]},"fuente":"https://www.wikidata.org/wiki/Q44758"},
+    {"id":"Q44759","nombre":"Córdoba","alias":["Provincia de Córdoba"],"popularidad":90,"atributos":{"limitrofes":[],"vecinas":["Buenos Aires","Catamarca","La Pampa","La Rioja","San Luis","Santa Fe","Santiago del Estero"]},"fuente":"https://www.wikidata.org/wiki/Q44759"},
+    {"id":"Q44761","nombre":"Formosa","alias":["Provincia de Formosa"],"popularidad":86,"atributos":{"limitrofes":["Paraguay"],"vecinas":["Chaco","Salta"]},"fuente":"https://www.wikidata.org/wiki/Q44761"},
+    {"id":"Q44762","nombre":"Entre Ríos","alias":["Provincia de Entre Ríos"],"popularidad":88,"atributos":{"limitrofes":["Uruguay"],"vecinas":["Buenos Aires","Corrientes","Santa Fe"]},"fuente":"https://www.wikidata.org/wiki/Q44762"},
+    {"id":"Q44764","nombre":"Jujuy","alias":["Provincia de Jujuy"],"popularidad":91,"atributos":{"limitrofes":["Bolivia","Chile"],"vecinas":["Salta"]},"fuente":"https://www.wikidata.org/wiki/Q44764"},
+    {"id":"Q44795","nombre":"La Pampa","alias":["Provincia de La Pampa"],"popularidad":85,"atributos":{"limitrofes":[],"vecinas":["Buenos Aires","Córdoba","Mendoza","Neuquén","Río Negro","San Luis"]},"fuente":"https://www.wikidata.org/wiki/Q44795"},
+    {"id":"Q44796","nombre":"La Rioja","alias":["Provincia de La Rioja"],"popularidad":86,"atributos":{"limitrofes":["Chile"],"vecinas":["Catamarca","Córdoba","San Juan","San Luis"]},"fuente":"https://www.wikidata.org/wiki/Q44796"},
+    {"id":"Q44797","nombre":"Mendoza","alias":["Provincia de Mendoza"],"popularidad":93,"atributos":{"limitrofes":["Chile"],"vecinas":["La Pampa","Neuquén","San Juan","San Luis"]},"fuente":"https://www.wikidata.org/wiki/Q44797"},
+    {"id":"Q44798","nombre":"Misiones","alias":["Provincia de Misiones"],"popularidad":88,"atributos":{"limitrofes":["Brasil","Paraguay"],"vecinas":["Corrientes"]},"fuente":"https://www.wikidata.org/wiki/Q44798"},
+    {"id":"Q44800","nombre":"Neuquén","alias":["Provincia de Neuquén"],"popularidad":88,"atributos":{"limitrofes":["Chile"],"vecinas":["La Pampa","Mendoza","Río Negro"]},"fuente":"https://www.wikidata.org/wiki/Q44800"},
+    {"id":"Q44802","nombre":"Río Negro","alias":["Provincia de Río Negro","Provincia del Río Negro"],"popularidad":86,"atributos":{"limitrofes":["Chile"],"vecinas":["Buenos Aires","Chubut","La Pampa","Neuquén"]},"fuente":"https://www.wikidata.org/wiki/Q44802"},
+    {"id":"Q44803","nombre":"Salta","alias":["Provincia de Salta"],"popularidad":92,"atributos":{"limitrofes":["Bolivia","Chile","Paraguay"],"vecinas":["Catamarca","Chaco","Formosa","Jujuy","Santiago del Estero","Tucumán"]},"fuente":"https://www.wikidata.org/wiki/Q44803"},
+    {"id":"Q44805","nombre":"San Juan","alias":["Provincia de San Juan"],"popularidad":86,"atributos":{"limitrofes":["Chile"],"vecinas":["La Rioja","Mendoza","San Luis"]},"fuente":"https://www.wikidata.org/wiki/Q44805"},
+    {"id":"Q44818","nombre":"San Luis","alias":["Provincia de San Luis"],"popularidad":87,"atributos":{"limitrofes":[],"vecinas":["Córdoba","La Pampa","La Rioja","Mendoza","San Juan"]},"fuente":"https://www.wikidata.org/wiki/Q44818"},
+    {"id":"Q44821","nombre":"Santa Cruz","alias":["Provincia de Santa Cruz"],"popularidad":90,"atributos":{"limitrofes":["Chile"],"vecinas":["Chubut","Tierra del Fuego"]},"fuente":"https://www.wikidata.org/wiki/Q44821"},
+    {"id":"Q44823","nombre":"Santa Fe","alias":["Provincia de Santa Fe"],"popularidad":91,"atributos":{"limitrofes":[],"vecinas":["Buenos Aires","Chaco","Corrientes","Córdoba","Entre Ríos","Santiago del Estero"]},"fuente":"https://www.wikidata.org/wiki/Q44823"},
+    {"id":"Q44827","nombre":"Santiago del Estero","alias":["Provincia de Santiago del Estero"],"popularidad":85,"atributos":{"limitrofes":[],"vecinas":["Catamarca","Chaco","Córdoba","Salta","Santa Fe","Tucumán"]},"fuente":"https://www.wikidata.org/wiki/Q44827"},
+    {"id":"Q44829","nombre":"Tucumán","alias":["Provincia de Tucumán"],"popularidad":87,"atributos":{"limitrofes":[],"vecinas":["Catamarca","Salta","Santiago del Estero"]},"fuente":"https://www.wikidata.org/wiki/Q44829"},
+    {"id":"Q44832","nombre":"Tierra del Fuego","popularidad":82,"atributos":{"limitrofes":["Chile"],"vecinas":["Santa Cruz"]},"fuente":"https://www.wikidata.org/wiki/Q44832"},
+    {"id":"Q45007","nombre":"Chubut","alias":["Provincia de Chubut"],"popularidad":94,"atributos":{"limitrofes":["Chile"],"vecinas":["Río Negro","Santa Cruz"]},"fuente":"https://www.wikidata.org/wiki/Q45007"}
+  ]
+}

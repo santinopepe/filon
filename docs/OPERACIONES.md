@@ -75,6 +75,8 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | 6 | `uso_ia_en_corridas` | columnas `llamadas_ia`, `tokens_*`, `costo_estimado_usd` en `corridas` (con valores por defecto) + índice; quedaron sin uso desde que se sacó la IA automática | sí (`ADD COLUMN` con default) |
 | 7 | `modos_de_juego` | `desafios` pasa de `UNIQUE(fecha)` a `UNIQUE(modo, fecha)` con la columna `modo` (default `'normal'`); índice `desafios_fecha`; columna `modo` en `corridas` | sí, con una salvedad (ver abajo) |
 | 8 | `reserva_en_la_base` | tabla `reserva` (preguntas de reserva guardadas y editadas desde el panel) + índice por modo | sí (tabla nueva) |
+| 9 | `revelado_preparado` | columnas `orden` y `normalizada` en `respuestas`, `conteos` en `preguntas`, índices `respuestas_revelado (pregunta_id, orden)` y `respuestas_revelado_rareza (pregunta_id, rareza, orden)`; completa lo ya publicado | sí (columnas que admiten NULL; si una instancia vieja publica durante el despliegue, la lectura lo prepara) |
+| 10 | `generador_por_catalogos` | reconstruye `desafios` y `preguntas` (mismas filas e ids) para admitir el origen `catalogo`; suma a `preguntas` `firma`, `conjunto`, `generacion` y `coincidencia` | sí, con la salvedad de la reconstrucción (como la 7; las pruebas verifican filas, columnas y claves foráneas) |
 
 **Reglas:** solo cambios aditivos; nunca se edita una migración publicada; cada una es idempotente y
 corre en una transacción (si dos instancias arrancan a la vez, la segunda ve la versión registrada).
@@ -251,7 +253,7 @@ Tarea diaria `GET /api/cron/limpieza` (Vercel Cron, 07:00 UTC). Borra por tandas
 
 ## 8. Índices y evidencia (EXPLAIN QUERY PLAN)
 
-`npm run explicar-consultas` imprime el plan de 22 consultas principales; `pruebas/volumen.test.js`
+`npm run explicar-consultas` imprime el plan de 29 consultas principales; `pruebas/volumen.test.js`
 falla si alguna recorre completa una tabla grande. Resumen (base con 3.000 partidas):
 
 | Consulta | Plan |
@@ -264,6 +266,9 @@ falla si alguna recorre completa una tabla grande. Resumen (base con 3.000 parti
 | reportes pendientes | `SEARCH reportes USING COVERING INDEX reportes_estado` |
 | limpieza de intentos / límites / sesiones | `SEARCH … USING COVERING INDEX intentos_en / limites_vence / admin_sesiones_vence` |
 | reserva de un modo | `SEARCH reserva USING INDEX reserva_modo (modo=?)` |
+| revelado: página, primeras del final | `SEARCH respuestas USING INDEX respuestas_revelado (pregunta_id=? AND orden>? AND orden<?)` (rango, sin ordenar) |
+| revelado por rareza | `SEARCH respuestas USING INDEX respuestas_revelado_rareza (pregunta_id=? AND rareza=?)` |
+| búsqueda en el revelado | `SEARCH respuestas USING INDEX respuestas_revelado (pregunta_id=?)` + ordena solo las coincidencias de esa pregunta |
 
 Única excepción aceptada: `SCAN desafios` en la serie del panel (una fila por día, ~365 por año).
 Los totales históricos del panel (`COUNT(DISTINCT jugador_id)`) recorren el índice completo de

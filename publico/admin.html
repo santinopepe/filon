@@ -127,11 +127,18 @@
       <!-- Herramientas de creación: admin.js clona esta plantilla una vez por modo (los id llevan el modo como prefijo). -->
       <template id="plantilla-crear">
       <section class="tarjeta">
-        <h2 data-id="gen-titulo">Publicar desde la reserva</h2>
-        <p class="sub" data-id="gen-sub">Arma el día con preguntas de la reserva, para un día nuevo o para rearmar uno existente. Para preguntas nuevas, usá el prompt de abajo y la carga manual.</p>
+        <h2 data-id="gen-titulo">Publicar un día</h2>
+        <p class="sub" data-id="gen-sub">Arma el día para una fecha nueva o rearma uno existente. En Normal podés elegir el generador por catálogos (sin IA) o la reserva; en los modos temáticos se usa la reserva. Para preguntas nuevas, usá el prompt de abajo y la carga manual.</p>
         <form class="generar" data-id="form-generar">
           <label>Fecha <input type="date" data-id="gen-fecha" required></label>
+          <label data-id="gen-generador-caja" hidden>Armar con
+            <select data-id="gen-generador">
+              <option value="catalogos">Catálogos (sin IA)</option>
+              <option value="reserva">Reserva</option>
+            </select>
+          </label>
           <button type="submit" data-id="gen-boton">Publicar</button>
+          <button type="button" class="secundario" data-id="gen-vista-previa" hidden>Vista previa</button>
         </form>
         <div class="aviso" data-id="gen-confirmar" hidden>
           <p data-id="gen-confirmar-texto"></p>

@@ -1,0 +1,91 @@
+{
+  "id": "campeones_mundial",
+  "nombre": "Selecciones campeonas del Mundial de fútbol",
+  "descripcion": "Selecciones masculinas que ganaron la Copa Mundial de la FIFA, con los años de sus títulos.",
+  "version": "2026-10-07.e2fb5e1d19",
+  "importado": "2026-10-07",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "ediciones de la Copa Mundial (P1346 ganador, P17 sede)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Campeones de todas las ediciones disputadas, 1930–2026 (1930–2022 verificadas una por una).",
+    "verificacion": [
+      "Mundial 1930: campeón UY",
+      "Mundial 1930: sede UY",
+      "Mundial 1934: campeón IT",
+      "Mundial 1934: sede IT",
+      "Mundial 1938: campeón IT",
+      "Mundial 1938: sede FR",
+      "Mundial 1950: campeón UY",
+      "Mundial 1950: sede BR",
+      "Mundial 1954: campeón DE",
+      "Mundial 1954: sede CH",
+      "Mundial 1958: campeón BR",
+      "Mundial 1958: sede SE",
+      "Mundial 1962: campeón BR",
+      "Mundial 1962: sede CL",
+      "Mundial 1966: campeón GB-ENG",
+      "Mundial 1966: sede GB",
+      "Mundial 1970: campeón BR",
+      "Mundial 1970: sede MX",
+      "Mundial 1974: campeón DE",
+      "Mundial 1974: sede DE",
+      "Mundial 1978: campeón AR",
+      "Mundial 1978: sede AR",
+      "Mundial 1982: campeón IT",
+      "Mundial 1982: sede ES",
+      "Mundial 1986: campeón AR",
+      "Mundial 1986: sede MX",
+      "Mundial 1990: campeón DE",
+      "Mundial 1990: sede IT",
+      "Mundial 1994: campeón BR",
+      "Mundial 1994: sede US",
+      "Mundial 1998: campeón FR",
+      "Mundial 1998: sede FR",
+      "Mundial 2002: campeón BR",
+      "Mundial 2002: sede KR y JP",
+      "Mundial 2006: campeón IT",
+      "Mundial 2006: sede DE",
+      "Mundial 2010: campeón ES",
+      "Mundial 2010: sede ZA",
+      "Mundial 2014: campeón DE",
+      "Mundial 2014: sede BR",
+      "Mundial 2018: campeón FR",
+      "Mundial 2018: sede RU",
+      "Mundial 2022: campeón AR",
+      "Mundial 2022: sede QA",
+      "Mundial 2026: sedes Canadá, Estados Unidos y México",
+      "8 selecciones campeonas"
+    ],
+    "sinVerificarManualmente": [
+      "Campeón del Mundial 2026 según Wikidata: ES (posterior a la verificación manual)"
+    ]
+  },
+  "atributos": {
+    "titulos": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año del título"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"AR","nombre":"Argentina","alias":["Nación Argentina","República Argentina"],"popularidad":372,"atributos":{"titulos":[1978,1986,2022]},"fuente":"https://www.wikidata.org/wiki/Q79800"},
+    {"id":"BR","nombre":"Brasil","alias":["República Federativa de Brasil","República Federativa del Brasil"],"popularidad":387,"atributos":{"titulos":[1958,1962,1970,1994,2002]},"fuente":"https://www.wikidata.org/wiki/Q83459"},
+    {"id":"DE","nombre":"Alemania","alias":["República Federal de Alemania"],"popularidad":405,"atributos":{"titulos":[1954,1974,1990,2014]},"fuente":"https://www.wikidata.org/wiki/Q43310"},
+    {"id":"ES","nombre":"España","alias":["Reino de España"],"popularidad":396,"atributos":{"titulos":[2010,2026]},"fuente":"https://www.wikidata.org/wiki/Q42267"},
+    {"id":"FR","nombre":"Francia","alias":["República Francesa"],"popularidad":428,"atributos":{"titulos":[1998,2018]},"fuente":"https://www.wikidata.org/wiki/Q47774"},
+    {"id":"GB-ENG","nombre":"Inglaterra","alias":[],"popularidad":327,"atributos":{"titulos":[1966]},"fuente":"https://www.wikidata.org/wiki/Q47762"},
+    {"id":"IT","nombre":"Italia","alias":["República Italiana"],"popularidad":409,"atributos":{"titulos":[1934,1938,1982,2006]},"fuente":"https://www.wikidata.org/wiki/Q676899"},
+    {"id":"UY","nombre":"Uruguay","alias":["República Oriental de Uruguay"],"popularidad":324,"atributos":{"titulos":[1930,1950]},"fuente":"https://www.wikidata.org/wiki/Q134916"}
+  ]
+}

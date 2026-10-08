@@ -45,7 +45,13 @@ Para ver el banco del día: `npm run admin -- desafio AAAA-MM-DD [normal|farandu
 
 ## Preguntas nuevas
 
-El juego no genera preguntas por su cuenta. Las nuevas se arman con otra IA (ChatGPT, Claude…) usando el prompt de cada modo del panel (**Crear → Generar con otra IA**) y se cargan con la **carga manual** (JSON). Todo lo que se publica queda en la reserva para reutilizarse.
+Hay tres caminos, ninguno llama a una IA desde el juego:
+
+- **Generador por catálogos** (Normal, sin IA): arma el día a partir de catálogos de datos reales y verificados (`datos/catalogos/`, 25 catálogos: países con fronteras, monedas e idiomas, capitales, provincias argentinas, elementos, constelaciones, sistema solar, Pokémon, elementos HTML, códigos HTTP, papas, presidentes de EE. UU., Mundiales, Champions, F1, Óscar, discos, Nobel, Cervantes y un diccionario rioplatense) y de plantillas declarativas (`datos/plantillas.json`). Se activa con `GENERADOR_NORMAL=catalogos`; `npm run generar -- --vista-previa` muestra qué armaría. Una consigna no se repite hasta pasados 60 días calendario (`CATALOGOS_DIAS_SIN_REPETIR`); `npm run capacidad-catalogos` y `npm run simular-calendario` miden cuántas hay y simulan meses de calendario en una base temporal. Todo el detalle (fuentes, licencias, cobertura, reglas, repeticiones y cómo sumar catálogos o plantillas) está en **[docs/GENERADOR.md](docs/GENERADOR.md)**.
+- **Reserva**: el banco curado de cada modo (y lo que se guardó desde el panel).
+- **Carga manual**: preguntas armadas con otra IA (ChatGPT, Claude…) usando el prompt de cada modo del panel (**Crear → Generar con otra IA**). Todo lo que se carga queda en la reserva para reutilizarse.
+
+Las siete preguntas de Normal son generales: hasta dos de una misma categoría y al menos cuatro distintas (geografía, historia, ciencia, deportes, cine, música, literatura, **gramática**, informática, astronomía, videojuegos o idiomas; las cinco últimas, solo con el generador por catálogos).
 
 ## Stack y por qué
 
@@ -66,15 +72,17 @@ servidor/
   validacion.js         validación estructural y de consistencia
   dominio.js            rarezas, categorías y modos de juego
   banco.js              publicación y lectura del banco congelado (por fecha y modo)
+  revelado.js           orden, forma de búsqueda y conteos del revelado (se preparan al publicar)
   juego.js              partidas, rondas, tiempos, puntos y reportes
   api.js, http.js       rutas, cookies firmadas, límites y seguridad
   programador.js        tarea programada interna (solo servidor local)
   generador/            reserva y publicación diaria
 api/index.js            función de Vercel: atiende /api/* (incluye /api/cron/*)
 vercel.json             estáticos, reescrituras, cabeceras de seguridad y crons
-scripts/                generar-desafio.js · validar-reserva.js · admin.js
+scripts/                generar-desafio.js · validar-reserva.js · admin.js · medir-revelado.mjs
 datos/                  reserva*.json (bancos de reserva por modo) · prompt-*.txt (prompts para otra IA por modo)
 publico/                index.html · estilos.css · app.js · modos.js (textos y escena de cada modo) · sonido.js
+                        normalizar-texto.js (normalización compartida con el servidor)
                         escena.js (la mina) · escena-viaje.js (motor pixel art de las escenas horizontales) · pixel.js
                         escena-farandula.js (alfombra roja) · escena-geografia.js (avión) · paisaje-geografia.js (vuelta al mundo)
 pruebas/                pruebas automáticas y recorrido en navegador
@@ -126,7 +134,7 @@ Se ignoran mayúsculas, espacios repetidos, tildes, diéresis y signos de puntua
 - Corrige errores de tipeo tanto en nombres completos como en fragmentos: «tolkein» completa «J. R. R. Tolkien». Exige al menos 5 caracteres y tolera una distancia de edición de hasta el 20 % del largo, con un máximo de 3; si hay dos candidatas igual de cercanas, no sugiere nada. Las formas exactas y variantes registradas tienen prioridad. Así «Austria» nunca se convierte sola en «Australia».
 - El autocompletado ocurre al enviar. La sugerencia conserva la ronda abierta y no consume un intento; hace falta otro Enter para confirmar y recibir los puntos. Los rechazos explícitos conservan su explicación.
 
-Al terminar la partida, cada fila del resumen final abre **todas las respuestas válidas** de esa pregunta (ordenadas de mayor a menor puntaje, de a 100, con buscador si son muchas). Durante el juego no se revelan: el servidor las entrega solo para rondas ya cerradas.
+Al terminar la partida, cada fila del resumen final abre **todas las respuestas válidas** de esa pregunta (ordenadas de mayor a menor puntaje). Apenas aparece el final, la página pide en segundo plano, en un solo pedido, las primeras 100 respuestas de las siete preguntas (casi siempre son todas): abrir, cerrar o cambiar de pregunta no vuelve a pedir nada, y si se abre antes de que lleguen se muestra la carga (y, si falla, «Reintentar»). Con más de 100, el detalle se recorre por páginas de 100 (nunca hay más filas montadas) y el buscador y el filtro por rareza trabajan en el servidor sobre el conjunto completo; con menos, filtran al instante en el navegador con las mismas reglas de normalización (`publico/normalizar-texto.js`, compartido con el servidor). El orden del revelado, la forma de búsqueda y los conteos por rareza se calculan al publicar (`servidor/revelado.js`), no en cada lectura. Durante el juego no se revelan: el servidor las entrega solo para rondas ya cerradas, y el resumen del final solo con la partida terminada. Para medir este recorrido: `node --expose-gc scripts/medir-revelado.mjs [--sintetico 12000] [--latencia 10] [--navegador]`.
 
 ## Pantallas
 
@@ -151,14 +159,17 @@ npm run verificar               # todo lo que corre el CI, en el mismo orden
 | --- | --- |
 | `npm run lint` | ESLint sobre servidor, navegador, scripts y pruebas |
 | `npm run chequear` | `node --check` de cada archivo y verificación de imports relativos |
-| `npm test` | 107 pruebas unitarias y de integración (`node:test`) |
+| `npm test` | 129 pruebas unitarias y de integración (`node:test`) |
 | `npm run test:cobertura` | las mismas, con umbrales de cobertura (líneas 85 %, funciones 85 %, ramas 70 %) |
 | `npm run validar-reserva` | los tres bancos: Normal (21, 3 por categoría), Farándula (9) y Geografía (13), cada temático con al menos 7 |
-| `npm run test:navegador` | 19 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
+| `npm run test:navegador` | 24 pruebas E2E en Chromium con Playwright (levantan su propio servidor con una base temporal) |
 | `npm run test:recorrido` | recorrido histórico en navegador (19 comprobaciones, guarda capturas en `capturas/`) |
 | `npm run explicar-consultas` | `EXPLAIN QUERY PLAN` de las consultas principales |
+| `npm run importar-catalogos` | importa y verifica los catálogos del generador (usa la red; ver docs/GENERADOR.md) |
+| `npm run capacidad-catalogos` | consignas distintas utilizables por categoría, familia y plantilla (sin red) |
+| `npm run simular-calendario` | simula 180 días de Normal con el generador en una base temporal (sin red, no toca producción) |
 
-Cubren, entre otras cosas: normalización y sugerencias; validación y reserva; publicación (idempotencia, ejecuciones simultáneas, reserva sin repeticiones, bloqueo global, ventana previa a medianoche); partida (tiempos, recarga, medianoche, caducidad, doble envío y tope de intentos con dos instancias en hilos separados); sesiones del panel (login, revocación, inactividad, vida máxima, límite de intentos, origen, `__Host-`); rate limiting compartido entre instancias; migraciones (base nueva, base heredada con datos, arranque simultáneo); volumen (3.000 partidas, preguntas de 1.500 respuestas) y la limpieza diaria. El E2E prueba carga inicial, partida completa, doble envío, recarga, revelado final, móvil y teclado, panel sin autenticación, login/logout, importación JSON válida e inválida y la navegación por teclado de las pestañas.
+Cubren, entre otras cosas: normalización y sugerencias; validación y reserva; publicación (idempotencia, ejecuciones simultáneas, reserva sin repeticiones, bloqueo global, ventana previa a medianoche); partida (tiempos, recarga, medianoche, caducidad, doble envío y tope de intentos con dos instancias en hilos separados); sesiones del panel (login, revocación, inactividad, vida máxima, límite de intentos, origen, `__Host-`); rate limiting compartido entre instancias; migraciones (base nueva, base heredada con datos, arranque simultáneo); volumen (3.000 partidas, preguntas de 1.500 respuestas), revelado exacto con más de 10.000 respuestas sintéticas (páginas, búsqueda, rareza, en frío y con caché) y la limpieza diaria. El E2E prueba carga inicial, partida completa, doble envío, recarga, revelado final (precarga única, carga en curso, error y reintento, páginas de 100 con filtros y respuestas tardías descartadas), móvil y teclado, panel sin autenticación, login/logout, importación JSON válida e inválida y la navegación por teclado de las pestañas.
 
 ## Decisiones tomadas
 

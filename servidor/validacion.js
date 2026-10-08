@@ -2,7 +2,7 @@
 // Detecta: campos faltantes, enunciados subjetivos, rarezas inválidas, respuestas duplicadas,
 // variantes contradictorias (la misma forma apunta a dos respuestas), rechazos que chocan con
 // respuestas aceptadas, falta de variedad de rarezas, fuentes no permitidas y repeticiones recientes.
-import { RAREZAS, CATEGORIAS, ORDEN_RAREZAS, PREGUNTAS_POR_DESAFIO, MODOS, MODO_POR_DEFECTO } from './dominio.js';
+import { RAREZAS, CATEGORIAS, ORDEN_RAREZAS, PREGUNTAS_POR_DESAFIO, MODOS, MODO_POR_DEFECTO, VARIEDAD_NORMAL } from './dominio.js';
 import { normalizar, formasRegistrables } from './normalizar.js';
 
 export const MIN_RESPUESTAS = 5;
@@ -93,7 +93,7 @@ export function prepararCandidata(c = {}) {
  * Con `estricta`, cualquier descarte o contradicción también invalida (se usa para la reserva).
  * `modo` fija qué categorías valen: las siete de Normal o la única de un modo temático.
  */
-export function validarPregunta(entrada, { dominios = [], recientes = [], estricta = false, modo = MODO_POR_DEFECTO } = {}) {
+export function validarPregunta(entrada, { dominios = [], recientes = [], estricta = false, modo = MODO_POR_DEFECTO, maxRespuestas = MAX_RESPUESTAS } = {}) {
   const p = prepararCandidata(entrada);
   const errores = [];
   const advertencias = [];
@@ -206,7 +206,8 @@ export function validarPregunta(entrada, { dominios = [], recientes = [], estric
   // 4) Cantidad y variedad de rarezas.
   candidatas = candidatas.filter((r) => formasPorRespuesta.get(r.clave).size > 0);
   const minimo = MIN_RESPUESTAS;
-  const maximo = MAX_RESPUESTAS;
+  // Las preguntas editoriales tienen tope 80; el generador por catálogos pasa el suyo (hasta miles).
+  const maximo = maxRespuestas;
   if (candidatas.length < minimo) errores.push(`Hacen falta al menos ${minimo} respuestas válidas (hay ${candidatas.length}).`);
   if (candidatas.length > maximo) errores.push(`Demasiadas respuestas (${candidatas.length}); el conjunto debe estar acotado a ${maximo}.`);
   const rarezas = new Set(candidatas.map((r) => r.rareza));
@@ -271,16 +272,21 @@ export function buscarRepeticion(p, recientes) {
 
 /**
  * Valida el lote completo de un día (después de validar cada pregunta).
- * Normal: una pregunta de cada una de las siete categorías. Temáticos: las siete de la categoría del modo.
+ * Normal: siete preguntas variadas (ninguna categoría más de dos veces y al menos cuatro distintas).
+ * Temáticos: las siete de la categoría del modo.
  */
 export function validarLote(preguntas, modo = MODO_POR_DEFECTO) {
   const errores = [];
   if (preguntas.length !== PREGUNTAS_POR_DESAFIO) errores.push(`El lote debe tener ${PREGUNTAS_POR_DESAFIO} preguntas (tiene ${preguntas.length}).`);
   const permitidas = MODOS[modo].categorias;
   const cats = new Set(preguntas.map((p) => p.categoria));
-  if (permitidas.length === PREGUNTAS_POR_DESAFIO) {
-    if (cats.size !== preguntas.length) errores.push('Hay categorías repetidas en el lote.');
-    for (const c of permitidas) if (preguntas.length === PREGUNTAS_POR_DESAFIO && !cats.has(c)) errores.push(`Falta la categoría ${CATEGORIAS[c]}.`);
+  if (modo === MODO_POR_DEFECTO) {
+    for (const c of cats) {
+      if (!permitidas.includes(c)) errores.push(`Categoría inválida: «${c}».`);
+      const veces = preguntas.filter((p) => p.categoria === c).length;
+      if (veces > VARIEDAD_NORMAL.maxPorCategoria) errores.push(`Hay ${veces} preguntas de ${CATEGORIAS[c] ?? c}: el máximo es ${VARIEDAD_NORMAL.maxPorCategoria}.`);
+    }
+    if (cats.size < VARIEDAD_NORMAL.minCategorias) errores.push(`El lote necesita al menos ${VARIEDAD_NORMAL.minCategorias} categorías distintas (tiene ${cats.size}).`);
   } else {
     for (const c of cats) if (!permitidas.includes(c)) errores.push(`${MODOS[modo].nombre} solo admite preguntas de la categoría «${permitidas[0]}» (llegó «${c}»).`);
   }

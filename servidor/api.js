@@ -14,7 +14,7 @@ import { RAIZ } from './config.js';
 
 /** Marca para respuestas que no son JSON (descargas): { [CRUDO]: { tipo, cuerpo, archivo } }. */
 const CRUDO = Symbol('crudo');
-import { LIMITES, PREGUNTAS_POR_DESAFIO, MODOS, CLAVES_MODOS, MODO_POR_DEFECTO, esModo } from './dominio.js';
+import { LIMITES, PREGUNTAS_POR_DESAFIO, MODOS, CLAVES_MODOS, MODO_POR_DEFECTO, RAREZAS, esModo } from './dominio.js';
 
 /** Modo de juego pedido (query o cuerpo). Sin valor es Normal; un valor desconocido es un error. */
 function leerModo(valor) {
@@ -39,6 +39,7 @@ import {
 import { guardarEnReserva, reservaCompleta, cambiarEstadoReserva, aFormatoReserva } from './generador/reserva.js';
 import { esFechaValida, fechaLocal, sumarDias } from './tiempo.js';
 import { asegurarDesafio } from './generador/generar.js';
+import { generarConCatalogos, resumirDescartes } from './generador/catalogos.js';
 import { estadisticasAdmin } from './estadisticas.js';
 import { validarPregunta, validarLote } from './validacion.js';
 
@@ -133,13 +134,17 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     }],
     ['POST', /^\/api\/partidas$/, async ({ jugadorId, cuerpo }) => ({ partida: await juego.iniciarPartida(jugadorId, leerModo(cuerpo.modo)) }), { limite: 'partida' }],
     ['GET', /^\/api\/partidas\/([0-9a-f-]{36})$/, async ({ jugadorId, m }) => ({ partida: await juego.verPartida(jugadorId, m[1]) })],
-    // Revelado paginado: ?desde=0&limite=100&buscar=texto (limite ≤ LIMITES.paginaRevelado).
+    // Al terminar la partida: primeras respuestas, total y conteos por rareza de las siete preguntas.
+    ['GET', /^\/api\/partidas\/([0-9a-f-]{36})\/respuestas$/, ({ jugadorId, m }) => juego.respuestasDelFinal(jugadorId, m[1]), { limite: 'revelado' }],
+    // Revelado paginado: ?desde=0&limite=100&buscar=texto&rareza=oro (limite ≤ LIMITES.paginaRevelado).
     ['GET', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuestas$/, async ({ jugadorId, m, req }) => {
       const q = new URL(req.url, 'http://local').searchParams;
       const desde = Math.max(0, Math.floor(Number(q.get('desde')) || 0));
       const limite = Math.min(LIMITES.paginaRevelado, Math.max(1, Math.floor(Number(q.get('limite')) || LIMITES.paginaRevelado)));
       const buscar = String(q.get('buscar') || '').slice(0, 60);
-      return juego.respuestasValidas(jugadorId, m[1], Number(m[2]), { desde, limite, buscar });
+      const rareza = q.get('rareza') || null;
+      if (rareza && !Object.hasOwn(RAREZAS, rareza)) throw new ErrorJuego(400, 'rareza_invalida', 'Esa rareza no existe.');
+      return juego.respuestasValidas(jugadorId, m[1], Number(m[2]), { desde, limite, buscar, rareza });
     }, { limite: 'revelado' }],
     ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/iniciar$/, async ({ jugadorId, m }) => ({ partida: await juego.iniciarRonda(jugadorId, m[1], Number(m[2])) })],
     ['POST', /^\/api\/partidas\/([0-9a-f-]{36})\/rondas\/([1-7])\/respuesta$/, ({ jugadorId, m, cuerpo }) => juego.responder(jugadorId, m[1], Number(m[2]), cuerpo.texto), { limite: 'respuesta' }],
@@ -323,9 +328,10 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
         diasSimilitud,
       };
     }, { admin: true, limiteJson: LIMITES.cuerpoImportacion, limite: 'importar' }],
-    // Publicar o rearmar un día a mano con la reserva del modo (?modo=). En el cuerpo:
+    // Publicar o rearmar un día a mano (?modo=). En el cuerpo:
     //   reemplazar: true para rearmar un día que ya existe
     //   forzar: true si ese día ya tiene partidas (se borran junto con el desafío anterior)
+    //   generador: «catalogos» o «reserva» (solo Normal; por omisión, GENERADOR_NORMAL)
     ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/generar$/, async ({ m, cuerpo, req }) => {
       const fecha = m[1];
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
@@ -339,9 +345,17 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
           throw new ErrorJuego(409, 'hay_partidas', `Ese día ya tiene ${n} partida(s); al regenerarlo se borran. Mandá forzar: true para confirmar.`);
         }
       }
-      const r = await asegurarDesafio({ db, config, fecha, modo: modoJuego, ...contexto, reemplazar: Boolean(existente), ahora });
-      registro.info('admin_generar', { fecha, modo: modoJuego, resultado: r.resultado, corridaId: r.corridaId });
+      if (cuerpo.generador !== undefined && !['catalogos', 'reserva'].includes(cuerpo.generador)) throw new ErrorJuego(400, 'generador_invalido', 'El generador es «catalogos» o «reserva».');
+      const r = await asegurarDesafio({ db, config, fecha, modo: modoJuego, ...contexto, reemplazar: Boolean(existente), ahora, generador: cuerpo.generador ?? null });
+      registro.info('admin_generar', { fecha, modo: modoJuego, resultado: r.resultado, origen: r.origen, corridaId: r.corridaId });
       return r;
+    }, { admin: true, limite: 'generar' }],
+    // Vista previa del generador por catálogos (Normal): qué armaría para la fecha, sin publicar nada.
+    ['GET', /^\/api\/admin\/generador\/vista-previa$/, async ({ req }) => {
+      const fecha = new URL(req.url, 'http://local').searchParams.get('fecha') || sumarDias(fechaLocal(ahora(), config.zona), 1);
+      if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
+      const g = await generarConCatalogos({ db, config, fecha, modo: MODO_POR_DEFECTO });
+      return { fecha, ok: g.ok, semilla: g.semilla, versiones: g.versiones, elegidas: g.elegidas, errores: g.errores, problemas: g.problemas, descartes: resumirDescartes(g.descartes) };
     }, { admin: true, limite: 'generar' }],
     // Estadísticas: ?fecha=AAAA-MM-DD (día en detalle) &desde=…&hasta=… (serie diaria, hasta 366 días).
     ['GET', /^\/api\/admin\/estadisticas$/, async ({ req }) => {

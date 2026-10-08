@@ -1,0 +1,88 @@
+{
+  "id": "presidentes_eeuu",
+  "nombre": "Presidentes de los Estados Unidos",
+  "descripcion": "Todas las personas que fueron presidentes de los Estados Unidos.",
+  "version": "2026-10-07.f17f880472",
+  "importado": "2026-10-07",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "cargo Q11696 (P39 con ordinal P1545)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todas las presidencias numeradas (P39 con ordinal), de la 1 a la última, sin huecos.",
+    "verificacion": [
+      "ordinales 1 a 47 sin huecos (mínimo esperado 47; 1 declaraciones con ordinal no entero descartadas)",
+      "cada ordinal corresponde a una sola persona (45 personas)",
+      "cantidad de personas coherente con 47 períodos",
+      "todos tienen nombre en español",
+      "0 sin año de inicio (los filtros por año no se usan si falta alguno)"
+    ]
+  },
+  "atributos": {
+    "inicio": {
+      "tipo": "numero",
+      "etiqueta": "año en que asumió"
+    },
+    "ordinales": {
+      "tipo": "lista_numeros",
+      "etiqueta": "número de orden"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q1124","nombre":"Bill Clinton","alias":["William Jefferson Blythe III","William Jefferson Clinton"],"popularidad":223,"atributos":{"inicio":1993,"ordinales":[42]},"fuente":"https://www.wikidata.org/wiki/Q1124"},
+    {"id":"Q11613","nombre":"Harry S. Truman","alias":[],"popularidad":198,"atributos":{"inicio":1945,"ordinales":[33]},"fuente":"https://www.wikidata.org/wiki/Q11613"},
+    {"id":"Q11806","nombre":"John Adams","alias":[],"popularidad":187,"atributos":{"inicio":1797,"ordinales":[2]},"fuente":"https://www.wikidata.org/wiki/Q11806"},
+    {"id":"Q11812","nombre":"Thomas Jefferson","alias":["Presidente Jefferson"],"popularidad":225,"atributos":{"inicio":1801,"ordinales":[3]},"fuente":"https://www.wikidata.org/wiki/Q11812"},
+    {"id":"Q11813","nombre":"James Madison","alias":["James Madison Jr."],"popularidad":176,"atributos":{"inicio":1809,"ordinales":[4]},"fuente":"https://www.wikidata.org/wiki/Q11813"},
+    {"id":"Q11815","nombre":"James Monroe","alias":[],"popularidad":158,"atributos":{"inicio":1817,"ordinales":[5]},"fuente":"https://www.wikidata.org/wiki/Q11815"},
+    {"id":"Q11816","nombre":"John Quincy Adams","alias":[],"popularidad":166,"atributos":{"inicio":1825,"ordinales":[6]},"fuente":"https://www.wikidata.org/wiki/Q11816"},
+    {"id":"Q11817","nombre":"Andrew Jackson","alias":[],"popularidad":165,"atributos":{"inicio":1829,"ordinales":[7]},"fuente":"https://www.wikidata.org/wiki/Q11817"},
+    {"id":"Q11820","nombre":"Martin Van Buren","alias":[],"popularidad":146,"atributos":{"inicio":1837,"ordinales":[8]},"fuente":"https://www.wikidata.org/wiki/Q11820"},
+    {"id":"Q11869","nombre":"William Henry Harrison","alias":[],"popularidad":140,"atributos":{"inicio":1841,"ordinales":[9]},"fuente":"https://www.wikidata.org/wiki/Q11869"},
+    {"id":"Q11881","nombre":"John Tyler","alias":[],"popularidad":143,"atributos":{"inicio":1841,"ordinales":[10]},"fuente":"https://www.wikidata.org/wiki/Q11881"},
+    {"id":"Q11891","nombre":"James K. Polk","alias":["James Knox Polk"],"popularidad":144,"atributos":{"inicio":1845,"ordinales":[11]},"fuente":"https://www.wikidata.org/wiki/Q11891"},
+    {"id":"Q11896","nombre":"Zachary Taylor","alias":[],"popularidad":144,"atributos":{"inicio":1849,"ordinales":[12]},"fuente":"https://www.wikidata.org/wiki/Q11896"},
+    {"id":"Q12306","nombre":"Millard Fillmore","alias":[],"popularidad":141,"atributos":{"inicio":1850,"ordinales":[13]},"fuente":"https://www.wikidata.org/wiki/Q12306"},
+    {"id":"Q12312","nombre":"Franklin Pierce","alias":[],"popularidad":139,"atributos":{"inicio":1853,"ordinales":[14]},"fuente":"https://www.wikidata.org/wiki/Q12312"},
+    {"id":"Q12325","nombre":"James Buchanan","alias":[],"popularidad":144,"atributos":{"inicio":1857,"ordinales":[15]},"fuente":"https://www.wikidata.org/wiki/Q12325"},
+    {"id":"Q207","nombre":"George W. Bush","alias":[],"popularidad":280,"atributos":{"inicio":2001,"ordinales":[43]},"fuente":"https://www.wikidata.org/wiki/Q207"},
+    {"id":"Q22686","nombre":"Donald Trump","alias":[],"popularidad":334,"atributos":{"inicio":2017,"ordinales":[45,47]},"fuente":"https://www.wikidata.org/wiki/Q22686"},
+    {"id":"Q23","nombre":"George Washington","alias":[],"popularidad":275,"atributos":{"inicio":1789,"ordinales":[1]},"fuente":"https://www.wikidata.org/wiki/Q23"},
+    {"id":"Q23505","nombre":"George H. W. Bush","alias":["George Bush Senior","George Bush padre","George Herbert Bush"],"popularidad":196,"atributos":{"inicio":1989,"ordinales":[41]},"fuente":"https://www.wikidata.org/wiki/Q23505"},
+    {"id":"Q23685","nombre":"Jimmy Carter","alias":["39° presidente de los Estados Unidos"],"popularidad":200,"atributos":{"inicio":1977,"ordinales":[39]},"fuente":"https://www.wikidata.org/wiki/Q23685"},
+    {"id":"Q33866","nombre":"Theodore Roosevelt","alias":["Teddy Roosevelt","Teodoro Roosevelt"],"popularidad":192,"atributos":{"inicio":1901,"ordinales":[26]},"fuente":"https://www.wikidata.org/wiki/Q33866"},
+    {"id":"Q34296","nombre":"Woodrow Wilson","alias":["Presidente Wilson","Thomas Woodrow Wilson"],"popularidad":190,"atributos":{"inicio":1913,"ordinales":[28]},"fuente":"https://www.wikidata.org/wiki/Q34296"},
+    {"id":"Q34597","nombre":"James A. Garfield","alias":["James Abram Garfield","James Garfield"],"popularidad":148,"atributos":{"inicio":1881,"ordinales":[20]},"fuente":"https://www.wikidata.org/wiki/Q34597"},
+    {"id":"Q34836","nombre":"Ulysses S. Grant","alias":["Hiram Ulysses Grant","Ulysses Grant","Ulysses Simpson Grant"],"popularidad":160,"atributos":{"inicio":1869,"ordinales":[18]},"fuente":"https://www.wikidata.org/wiki/Q34836"},
+    {"id":"Q35041","nombre":"William McKinley","alias":[],"popularidad":142,"atributos":{"inicio":1897,"ordinales":[25]},"fuente":"https://www.wikidata.org/wiki/Q35041"},
+    {"id":"Q35171","nombre":"Grover Cleveland","alias":["Stephen Grover Cleveland"],"popularidad":146,"atributos":{"inicio":1885,"ordinales":[22,24]},"fuente":"https://www.wikidata.org/wiki/Q35171"},
+    {"id":"Q35236","nombre":"Herbert Hoover","alias":["Herbert C Hoover","Herbert Clark Hoover"],"popularidad":163,"atributos":{"inicio":1929,"ordinales":[31]},"fuente":"https://www.wikidata.org/wiki/Q35236"},
+    {"id":"Q35286","nombre":"Warren G. Harding","alias":["Warren Gamaliel Harding","Warren Harding"],"popularidad":141,"atributos":{"inicio":1921,"ordinales":[29]},"fuente":"https://www.wikidata.org/wiki/Q35286"},
+    {"id":"Q35498","nombre":"Chester A. Arthur","alias":["Chester Arthur"],"popularidad":132,"atributos":{"inicio":1881,"ordinales":[21]},"fuente":"https://www.wikidata.org/wiki/Q35498"},
+    {"id":"Q35648","nombre":"William Howard Taft","alias":["William H. Taft","William Taft"],"popularidad":147,"atributos":{"inicio":1909,"ordinales":[27]},"fuente":"https://www.wikidata.org/wiki/Q35648"},
+    {"id":"Q35678","nombre":"Benjamin Harrison","alias":[],"popularidad":136,"atributos":{"inicio":1889,"ordinales":[23]},"fuente":"https://www.wikidata.org/wiki/Q35678"},
+    {"id":"Q35686","nombre":"Rutherford B. Hayes","alias":["Rutherford Birchard Hayes","Rutherford Hayes"],"popularidad":139,"atributos":{"inicio":1877,"ordinales":[19]},"fuente":"https://www.wikidata.org/wiki/Q35686"},
+    {"id":"Q36023","nombre":"Calvin Coolidge","alias":["John Calvin Coolidge"],"popularidad":161,"atributos":{"inicio":1923,"ordinales":[30]},"fuente":"https://www.wikidata.org/wiki/Q36023"},
+    {"id":"Q6279","nombre":"Joe Biden","alias":["JRB Ware","Robert L. Peters","Robin Ware"],"popularidad":278,"atributos":{"inicio":2021,"ordinales":[46]},"fuente":"https://www.wikidata.org/wiki/Q6279"},
+    {"id":"Q76","nombre":"Barack Obama","alias":["Barack Hussein Obama Jr","Barack Obama Jr","Barack Obama Junior"],"popularidad":340,"atributos":{"inicio":2009,"ordinales":[44]},"fuente":"https://www.wikidata.org/wiki/Q76"},
+    {"id":"Q8007","nombre":"Franklin D. Roosevelt","alias":["Franklin Delano Roosevelt"],"popularidad":246,"atributos":{"inicio":1933,"ordinales":[32]},"fuente":"https://www.wikidata.org/wiki/Q8007"},
+    {"id":"Q8612","nombre":"Andrew Johnson","alias":[],"popularidad":145,"atributos":{"inicio":1865,"ordinales":[17]},"fuente":"https://www.wikidata.org/wiki/Q8612"},
+    {"id":"Q91","nombre":"Abraham Lincoln","alias":["Honesto Abe","Lincoln","Presidente Lincoln","Tío Abe"],"popularidad":296,"atributos":{"inicio":1861,"ordinales":[16]},"fuente":"https://www.wikidata.org/wiki/Q91"},
+    {"id":"Q9582","nombre":"Gerald Ford","alias":[],"popularidad":175,"atributos":{"inicio":1974,"ordinales":[38]},"fuente":"https://www.wikidata.org/wiki/Q9582"},
+    {"id":"Q9588","nombre":"Richard Nixon","alias":["Richard Milhous Nixon"],"popularidad":190,"atributos":{"inicio":1969,"ordinales":[37]},"fuente":"https://www.wikidata.org/wiki/Q9588"},
+    {"id":"Q9640","nombre":"Lyndon B. Johnson","alias":["Lyndon Baines Johnson"],"popularidad":175,"atributos":{"inicio":1963,"ordinales":[36]},"fuente":"https://www.wikidata.org/wiki/Q9640"},
+    {"id":"Q9696","nombre":"John F. Kennedy","alias":["John Fitzgerald Kennedy"],"popularidad":249,"atributos":{"inicio":1961,"ordinales":[35]},"fuente":"https://www.wikidata.org/wiki/Q9696"},
+    {"id":"Q9916","nombre":"Dwight D. Eisenhower","alias":["D. Eisenhower","Dwight David Eisenhower","Dwight Eisenhower","Eisenhower"],"popularidad":191,"atributos":{"inicio":1953,"ordinales":[34]},"fuente":"https://www.wikidata.org/wiki/Q9916"},
+    {"id":"Q9960","nombre":"Ronald Reagan","alias":[],"popularidad":304,"atributos":{"inicio":1981,"ordinales":[40]},"fuente":"https://www.wikidata.org/wiki/Q9960"}
+  ]
+}

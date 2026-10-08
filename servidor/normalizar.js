@@ -4,24 +4,13 @@
 // - Se registran de antemano formas sin artículo inicial ("La traviata" → "traviata").
 // - Al buscar, también se prueba la forma compacta (sin espacios: "j r r tolkien" = "jrr tolkien").
 
-const MARCA_ENIE = '\u0001';
+import { normalizar } from '../publico/normalizar-texto.js';
+
+// `normalizar` vive en publico/ para que el navegador filtre las respuestas reveladas con las mismas reglas.
+export { normalizar };
+
 const ARTICULO_INICIAL = /^(el|la|los|las|lo|un|una|unos|unas|the)\s+/;
 const CONECTORES = new Set(['de', 'del', 'la', 'las', 'el', 'los', 'lo', 'un', 'una', 'unos', 'unas', 'y', 'e', 'en', 'a', 'of', 'the', 'and', 'da', 'do', 'dos', 'di', 'van', 'von']);
-
-export function normalizar(texto) {
-  return String(texto ?? '')
-    .normalize('NFC')
-    .toLocaleLowerCase('es')
-    .replace(/ñ/g, MARCA_ENIE)
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(new RegExp(MARCA_ENIE, 'g'), 'ñ')
-    .replace(/[’‘'´`"“”«»]/g, '')
-    .replace(/&/g, ' y ')
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim()
-    .replace(/\s+/g, ' ');
-}
 
 export const compactar = (normalizado) => normalizado.replace(/ /g, '');
 export const sinArticulo = (normalizado) => normalizado.replace(ARTICULO_INICIAL, '');

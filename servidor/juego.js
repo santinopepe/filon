@@ -4,7 +4,7 @@ import { transaccion } from './db.js';
 import { CATEGORIAS, RAREZAS, METROS_POR_PUNTO, PREGUNTAS_POR_DESAFIO, LIMITES, MODOS, CLAVES_MODOS, MODO_POR_DEFECTO } from './dominio.js';
 import { normalizar } from './normalizar.js';
 import { fechaLocal, inicioDeFecha, sumarDias, proximaMedianoche } from './tiempo.js';
-import { desafioPorFecha, desafioPorId, preguntasDeDesafio, catalogoParaRevelar, conteoRespuestasDeDesafio, respuestasPorIds, evaluarTexto } from './banco.js';
+import { desafioPorFecha, desafioPorId, preguntasDeDesafio, conteoRespuestasDeDesafio, respuestasPorIds, evaluarTexto, paginaDeRespuestas, primerasRespuestas } from './banco.js';
 
 export class ErrorJuego extends Error {
   constructor(estado, codigo, mensaje) {
@@ -52,8 +52,12 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
   const rondasDe = (cx, partidaId) => cx.all('SELECT * FROM rondas WHERE partida_id = ? ORDER BY posicion', partidaId);
 
-  /** Cierra rondas vencidas, caduca partidas abandonadas y marca el fin cuando corresponde. */
-  async function mantener(partida, t = ahora()) {
+  /**
+   * Cierra rondas vencidas, caduca partidas abandonadas y marca el fin cuando corresponde.
+   * `cambio(tx, fila)` (opcional) se aplica en la misma transacción, después de cerrar lo vencido y antes de
+   * ver si la partida terminó: pasar o acertar la última ronda cierra la partida sin una segunda transacción.
+   */
+  async function mantener(partida, t = ahora(), cambio = null) {
     if (partida.terminada_en) return partida;
     const desafio = await desafioPorId(db, partida.desafio_id);
     const preguntas = await preguntasDeDesafio(db, desafio.id);
@@ -66,6 +70,7 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
       const fila = await tx.get('SELECT * FROM partidas WHERE id = ?', partida.id);
       if (fila.terminada_en) return fila;
+      if (cambio) await cambio(tx, fila);
 
       if (t > limiteParaRetomar(desafio.fecha)) {
         await tx.run(`UPDATE rondas SET estado = 'vencida', cierre_en = limite_en WHERE partida_id = ? AND estado = 'activa'`, fila.id);
@@ -139,11 +144,13 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
   async function vista(partida, t = ahora()) {
     const desafio = await desafioPorId(db, partida.desafio_id);
-    const [preguntas, conteo, filasRondas, filasIntentos] = await Promise.all([
+    // Todo en paralelo: el ranking del día (si terminó) no espera a las rondas.
+    const [preguntas, conteo, filasRondas, filasIntentos, estadisticas] = await Promise.all([
       preguntasDeDesafio(db, desafio.id),
       conteoRespuestasDeDesafio(db, desafio.id),
       rondasDe(db, partida.id),
       db.all('SELECT posicion, texto, motivo FROM intentos WHERE partida_id = ? AND aceptado = 0 ORDER BY id', partida.id),
+      partida.terminada_en ? estadisticasDe(partida) : null,
     ]);
     const rondas = new Map(filasRondas.map((r) => [r.posicion, r]));
     // Solo las respuestas aceptadas en esta partida (≤ 7), no el banco completo.
@@ -207,7 +214,7 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       cierreDesafio: finDelDia(desafio.fecha),
       retomarHasta: limiteParaRetomar(desafio.fecha),
       rondas: lista,
-      estadisticas: partida.terminada_en ? await estadisticasDe(partida) : null,
+      estadisticas,
       ahora: t,
     };
   }
@@ -276,36 +283,65 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       return vista(await mantener(await obtenerPartida(jugadorId, partidaId), t), t);
     },
 
-    async respuestasValidas(jugadorId, partidaId, posicion, { desde = 0, limite = LIMITES.paginaRevelado, buscar = '' } = {}) {
+    async respuestasValidas(jugadorId, partidaId, posicion, { desde = 0, limite = LIMITES.paginaRevelado, buscar = '', rareza = null } = {}) {
       const t = ahora();
-      // Al finalizar, la partida y sus rondas ya no cambian: autorización y ronda en
-      // un solo viaje a Turso. En curso se mantiene el vencimiento y se relee la ronda.
+      // Al finalizar, la partida y sus rondas ya no cambian: autorización, ronda y conteos de la pregunta
+      // en un solo viaje a Turso. En curso se mantiene el vencimiento y se relee la ronda.
       const partida = await db.get(
-        `SELECT p.*, r.estado AS estadoRonda, r.pregunta_id AS preguntaId
+        `SELECT p.*, r.estado AS estadoRonda, r.pregunta_id AS preguntaId, pr.conteos AS conteosPregunta
          FROM partidas p LEFT JOIN rondas r ON r.partida_id = p.id AND r.posicion = ?
+         LEFT JOIN preguntas pr ON pr.id = r.pregunta_id
          WHERE p.id = ? AND p.jugador_id = ?`,
         posicion, partidaId, jugadorId,
       );
       if (!partida) throw new ErrorJuego(404, 'partida_inexistente', 'No encontramos esa partida.');
-      let ronda = partida.preguntaId == null ? null : { estado: partida.estadoRonda, preguntaId: partida.preguntaId };
+      let ronda = partida.preguntaId == null ? null : { estado: partida.estadoRonda, preguntaId: partida.preguntaId, conteos: partida.conteosPregunta };
       if (!partida.terminada_en) {
         await mantener(partida, t);
-        ronda = await db.get('SELECT r.estado, r.pregunta_id AS preguntaId FROM rondas r WHERE r.partida_id = ? AND r.posicion = ?', partida.id, posicion);
+        ronda = await db.get(
+          'SELECT r.estado, r.pregunta_id AS preguntaId, pr.conteos FROM rondas r JOIN preguntas pr ON pr.id = r.pregunta_id WHERE r.partida_id = ? AND r.posicion = ?',
+          partida.id, posicion,
+        );
       }
       if (!ronda) throw new ErrorJuego(409, 'ronda_no_iniciada', 'Esa ronda todavía no empezó.');
       if (ronda.estado === 'activa') throw new ErrorJuego(409, 'ronda_activa', 'Las respuestas se revelan cuando termina la ronda.');
       if (ronda.estado === 'caducada') throw new ErrorJuego(410, 'ronda_caducada', 'Esa ronda quedó sin jugar.');
-      const { respuestas: todas, normalizadas } = await catalogoParaRevelar(db, ronda.preguntaId);
-      const filtro = normalizar(buscar);
-      const filtradas = filtro ? todas.filter((_, i) => normalizadas[i].includes(filtro)) : todas;
+      const pregunta = { id: ronda.preguntaId, conteos: ronda.conteos };
       const tope = Math.min(Math.max(1, limite), LIMITES.paginaRevelado);
-      const pagina = filtradas.slice(desde, desde + tope);
+      const pagina = await paginaDeRespuestas(db, pregunta, { desde, limite: tope, buscar, rareza });
       return {
-        respuestas: pagina,
-        total: todas.length,
-        coincidencias: filtradas.length,
+        ...pagina,
         desde,
-        siguiente: desde + pagina.length < filtradas.length ? desde + pagina.length : null,
+        rareza,
+        siguiente: desde + pagina.respuestas.length < pagina.coincidencias ? desde + pagina.respuestas.length : null,
+        anterior: desde > 0 ? Math.max(0, desde - tope) : null,
+      };
+    },
+
+    /**
+     * Lo que muestra el final de una partida terminada: por cada pregunta jugada, el total, la cantidad por
+     * rareza y las primeras respuestas (casi siempre, todas). Un solo pedido para las siete preguntas, con
+     * las filas compactas ([nombre, rareza]); los puntos y nombres de cada rareza van una vez.
+     */
+    async respuestasDelFinal(jugadorId, partidaId, limite = LIMITES.paginaRevelado) {
+      const filas = await db.all(
+        `SELECT p.terminada_en AS terminada, r.posicion, r.estado, r.pregunta_id AS preguntaId, pr.conteos
+         FROM partidas p LEFT JOIN rondas r ON r.partida_id = p.id LEFT JOIN preguntas pr ON pr.id = r.pregunta_id
+         WHERE p.id = ? AND p.jugador_id = ?`,
+        partidaId, jugadorId,
+      );
+      if (!filas.length) throw new ErrorJuego(404, 'partida_inexistente', 'No encontramos esa partida.');
+      if (!filas[0].terminada) throw new ErrorJuego(409, 'partida_en_curso', 'Las respuestas de todas las preguntas se ven al terminar la partida.');
+      const jugadas = filas.filter((f) => f.preguntaId && f.estado !== 'caducada').sort((a, b) => a.posicion - b.posicion);
+      const primeras = await primerasRespuestas(db, jugadas.map((f) => ({ id: f.preguntaId, conteos: f.conteos })), limite);
+      return {
+        rarezas: Object.fromEntries(Object.values(RAREZAS).map((r) => [r.clave, { nombre: r.nombre, puntos: r.puntos }])),
+        porPagina: limite,
+        preguntas: jugadas.map((f) => {
+          const { resumen, filas: lista } = primeras.get(f.preguntaId);
+          const { total, ...conteos } = resumen;
+          return { posicion: f.posicion, total, conteos, respuestas: lista.map((r) => [r.canonica, r.rareza]) };
+        }),
       };
     },
 
@@ -332,9 +368,17 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
     async responder(jugadorId, partidaId, posicion, textoBruto) {
       const t = ahora();
-      const partida = await mantener(await obtenerPartida(jugadorId, partidaId), t);
+      let partida = await obtenerPartida(jugadorId, partidaId);
       const texto = String(textoBruto ?? '').trim().replace(/\s+/g, ' ').slice(0, MAX_LARGO_RESPUESTA);
-      const ronda = await db.get('SELECT * FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
+      let ronda = await db.get('SELECT * FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
+      // Camino habitual: la ronda está en juego y en tiempo, y no hace falta cerrar nada antes de evaluar.
+      // Si no (vencida, caducada, fuera de plazo), primero se mantiene la partida, como siempre.
+      const desafio = await desafioPorId(db, partida.desafio_id);
+      const enTiempo = ronda?.estado === 'activa' && t <= ronda.limite_en + gracia && t <= limiteParaRetomar(desafio.fecha);
+      if (!enTiempo) {
+        partida = await mantener(partida, t);
+        ronda = await db.get('SELECT * FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
+      }
       if (!ronda) throw new ErrorJuego(409, 'ronda_no_iniciada', 'Esa ronda todavía no empezó.');
       if (ronda.estado !== 'activa') {
         return { resultado: ronda.estado === 'vencida' ? 'vencida' : 'cerrada', partida: await vista(partida, t) };
@@ -348,11 +392,13 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
       }
 
       // Todo lo que decide se lee y se escribe en la misma transacción (BEGIN IMMEDIATE): dos envíos
-      // simultáneos no pueden superar el máximo de intentos ni puntuar dos veces.
+      // simultáneos no pueden superar el máximo de intentos ni puntuar dos veces. La misma transacción
+      // cierra lo vencido antes y, si era la última ronda, termina la partida.
       let repetida = false;
-      const resultado = await transaccion(db, async (tx) => {
+      let resultado = 'cerrada';
+      const actualizada = await mantener(partida, t, async (tx) => {
         const actual = await tx.get('SELECT estado FROM rondas WHERE partida_id = ? AND posicion = ?', partida.id, posicion);
-        if (actual.estado !== 'activa') return 'cerrada';
+        if (actual.estado !== 'activa') return;
         const previos = await tx.get(
           'SELECT COUNT(*) AS n, COALESCE(SUM(normalizado = ?), 0) AS iguales FROM intentos WHERE partida_id = ? AND posicion = ?',
           normalizado,
@@ -360,7 +406,10 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
           posicion,
         );
         repetida = previos.iguales > 0;
-        if (previos.n >= config.maxIntentosPorRonda) return 'limite';
+        if (previos.n >= config.maxIntentosPorRonda) {
+          resultado = 'limite';
+          return;
+        }
         await tx.run(
           'INSERT INTO intentos (partida_id, posicion, texto, normalizado, aceptado, motivo, en) VALUES (?, ?, ?, ?, ?, ?, ?)',
           partida.id,
@@ -371,29 +420,27 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
           ev.aceptada ? null : ev.motivo,
           t,
         );
-        if (!ev.aceptada) return 'rechazada';
+        resultado = ev.aceptada ? 'aceptada' : 'rechazada';
+        if (!ev.aceptada) return;
         await tx.run(
           `UPDATE rondas SET estado = 'acertada', cierre_en = ?, respuesta_id = ?, texto_aceptado = ?, puntos = ? WHERE partida_id = ? AND posicion = ?`,
           t, ev.respuesta.id, texto, ev.respuesta.puntos, partida.id, posicion,
         );
         await tx.run('UPDATE partidas SET puntos = (SELECT COALESCE(SUM(puntos), 0) FROM rondas WHERE partida_id = ?) WHERE id = ?', partida.id, partida.id);
-        return 'aceptada';
       });
       if (resultado === 'limite') {
-        return { resultado: 'rechazada', motivo: 'Llegaste al máximo de intentos de esta ronda.', partida: await vista(partida, t) };
+        return { resultado: 'rechazada', motivo: 'Llegaste al máximo de intentos de esta ronda.', partida: await vista(actualizada, t) };
       }
-      const actualizada = await mantener(partida, t);
       return { resultado, motivo: ev.aceptada ? null : ev.motivo, repetida, partida: await vista(actualizada, t) };
     },
 
     async pasar(jugadorId, partidaId, posicion) {
       const t = ahora();
-      const partida = await mantener(await obtenerPartida(jugadorId, partidaId), t);
-      await db.run(
-        `UPDATE rondas SET estado = 'pasada', cierre_en = ?, puntos = 0 WHERE partida_id = ? AND posicion = ? AND estado = 'activa'`,
-        t, partida.id, posicion,
+      const partida = await obtenerPartida(jugadorId, partidaId);
+      const actualizada = await mantener(partida, t, (tx) =>
+        tx.run(`UPDATE rondas SET estado = 'pasada', cierre_en = ?, puntos = 0 WHERE partida_id = ? AND posicion = ? AND estado = 'activa'`, t, partida.id, posicion),
       );
-      return vista(await mantener(partida, t), t);
+      return vista(actualizada, t);
     },
 
     async reportar(jugadorId, partidaId, posicion, textoBruto, comentarioBruto) {

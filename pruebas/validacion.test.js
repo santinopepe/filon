@@ -115,11 +115,17 @@ test('el banco de reserva completo pasa la validación estricta', () => {
   }
 });
 
-test('el lote diario necesita 7 preguntas de categorías distintas', () => {
+test('el lote de Normal: siete preguntas variadas (hasta dos por categoría y al menos cuatro categorías)', () => {
   const reserva = cargarReserva(config.rutaReserva, { dominios });
-  const unaPorCategoria = CLAVES_CATEGORIAS.map((c) => reserva.preguntas.find((p) => p.categoria === c));
+  const de = (c, i = 0) => reserva.preguntas.filter((p) => p.categoria === c)[i];
+  const unaPorCategoria = CLAVES_CATEGORIAS.map((c) => de(c));
   assert.ok(validarLote(unaPorCategoria).ok);
-  assert.ok(!validarLote(unaPorCategoria.slice(0, 6)).ok);
-  const repetida = [...unaPorCategoria.slice(0, 6), reserva.preguntas.filter((p) => p.categoria === 'geografia')[1]];
-  assert.ok(!validarLote(repetida).ok);
+  assert.ok(!validarLote(unaPorCategoria.slice(0, 6)).ok, 'tienen que ser siete');
+  const dosDeGeografia = [...unaPorCategoria.slice(0, 6), de('geografia', 1)];
+  assert.ok(validarLote(dosDeGeografia).ok, 'dos de la misma categoría está bien');
+  const tresDeGeografia = [de('geografia'), de('geografia', 1), de('geografia', 2), ...unaPorCategoria.slice(1, 5)];
+  assert.match(validarLote(tresDeGeografia).errores.join(' '), /el máximo es 2/);
+  const pocasCategorias = ['geografia', 'historia', 'ciencia'].flatMap((c) => [de(c), de(c, 1)]).concat(de('cine'));
+  assert.ok(validarLote(pocasCategorias).ok, 'cuatro categorías alcanzan');
+  assert.match(validarLote([...pocasCategorias.slice(0, 6), de('ciencia', 2)]).errores.join(' '), /al menos 4 categorías/);
 });

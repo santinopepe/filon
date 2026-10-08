@@ -1,0 +1,493 @@
+{
+  "id": "constelaciones",
+  "nombre": "Constelaciones",
+  "descripcion": "Las 88 constelaciones de la Unión Astronómica Internacional, con su nombre en español.",
+  "version": "2026-10-08.0e2bcf45d6",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia en español: Anexo:Constelaciones",
+      "url": "https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297",
+      "licencia": "CC BY-SA 4.0",
+      "detalle": "nombres en español, origen y autor (cita IAU y Comellas)"
+    },
+    {
+      "nombre": "Unión Astronómica Internacional",
+      "url": "https://www.iau.org/public/themes/constellations/",
+      "licencia": "lista pública",
+      "detalle": "88 abreviaturas oficiales (verificación)"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Las 88 constelaciones oficiales de la IAU (verificadas contra sus 88 abreviaturas); nombres en español del anexo de Wikipedia (según J. L. Comellas, «Astronomía»).",
+    "verificacion": [
+      "88 filas con las 88 abreviaturas de la IAU (revisión 175202297 del anexo)",
+      "Lacaille: 14 nuevas más Carina, Puppis y Vela (hay 17)",
+      "47 de Ptolomeo",
+      "nombres en español: Cisne, Can Mayor (no los latinos)",
+      "los 88 nombres en español son distintos",
+      "86 con popularidad de Wikidata"
+    ]
+  },
+  "atributos": {
+    "latin": {
+      "tipo": "texto",
+      "etiqueta": "nombre en latín"
+    },
+    "autor": {
+      "tipo": "texto",
+      "etiqueta": "quién la describió"
+    },
+    "zodiacal": {
+      "tipo": "texto",
+      "etiqueta": "zodíaco"
+    },
+    "origen": {
+      "tipo": "texto",
+      "etiqueta": "origen"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Ant",
+      "detalle": "«Bomba Neumática» sin el artículo de «La Bomba Neumática»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Aps",
+      "detalle": "«Ave del Paraíso» sin el artículo de «El Ave del Paraíso»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Aql",
+      "detalle": "«Águila» sin el artículo de «El Águila»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Ara",
+      "detalle": "«Altar» sin el artículo de «El Altar»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Aur",
+      "detalle": "«Cochero» sin el artículo de «El Cochero»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Boo",
+      "detalle": "«Boyero» sin el artículo de «El Boyero»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cae",
+      "detalle": "«Cincel» sin el artículo de «El Cincel»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cam",
+      "detalle": "«Jirafa» sin el artículo de «La Jirafa»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "CVn",
+      "detalle": "«Perros de Caza» sin el artículo de «Los Perros de Caza»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "CMa",
+      "detalle": "«Can Mayor» sin el artículo de «El Can Mayor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "CMi",
+      "detalle": "«Can Menor» sin el artículo de «El Can Menor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Car",
+      "detalle": "«Quilla» sin el artículo de «La Quilla»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cen",
+      "detalle": "«Centauro» sin el artículo de «El Centauro»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cet",
+      "detalle": "«Ballena» sin el artículo de «La Ballena»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cha",
+      "detalle": "«Camaleón» sin el artículo de «El Camaleón»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cir",
+      "detalle": "«Compás» sin el artículo de «El Compás»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Col",
+      "detalle": "«Paloma» sin el artículo de «La Paloma»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Com",
+      "detalle": "«Cabellera de Berenice» sin el artículo de «La Cabellera de Berenice»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "CrA",
+      "detalle": "«Corona Austral» sin el artículo de «La Corona Austral»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "CrB",
+      "detalle": "«Corona Boreal» sin el artículo de «La Corona Boreal»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Crv",
+      "detalle": "«Cuervo» sin el artículo de «El Cuervo»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Crt",
+      "detalle": "«Copa» sin el artículo de «La Copa»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cru",
+      "detalle": "«Cruz del Sur» sin el artículo de «La Cruz del Sur»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Cyg",
+      "detalle": "«Cisne» sin el artículo de «El Cisne»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Del",
+      "detalle": "«Delfín» sin el artículo de «El Delfín»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Dor",
+      "detalle": "«Pez Dorado» sin el artículo de «El Pez Dorado»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Dra",
+      "detalle": "«Dragón» sin el artículo de «El Dragón»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Equ",
+      "detalle": "«Potro» sin el artículo de «El Potro»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Eri",
+      "detalle": "«Eridano» sin el artículo de «El Eridano»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "For",
+      "detalle": "«Horno» sin el artículo de «El Horno»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Gru",
+      "detalle": "«Grulla» sin el artículo de «La Grulla»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Hor",
+      "detalle": "«Reloj» sin el artículo de «El Reloj»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Hya",
+      "detalle": "«Hidra» sin el artículo de «La Hidra»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Hyi",
+      "detalle": "«Hidra Macho» sin el artículo de «La Hidra Macho»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Ind",
+      "detalle": "«Indio» sin el artículo de «El Indio»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Lac",
+      "detalle": "«Lagarto» sin el artículo de «El Lagarto»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "LMi",
+      "detalle": "«León Menor» sin el artículo de «El León Menor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Lep",
+      "detalle": "«Liebre» sin el artículo de «La Liebre»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Lup",
+      "detalle": "«Lobo» sin el artículo de «El Lobo»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Lyn",
+      "detalle": "«Lince» sin el artículo de «El Lince»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Lyr",
+      "detalle": "«Lira» sin el artículo de «La Lira»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Men",
+      "detalle": "«Mesa» sin el artículo de «La Mesa»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Mic",
+      "detalle": "«Microscopio» sin el artículo de «El Microscopio»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Mon",
+      "detalle": "«Unicornio» sin el artículo de «El Unicornio»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Mus",
+      "detalle": "«Mosca» sin el artículo de «La Mosca»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Nor",
+      "detalle": "«Regla» sin el artículo de «La Regla»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Oct",
+      "detalle": "«Octante» sin el artículo de «El Octante»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Pav",
+      "detalle": "«Pavo» sin el artículo de «El Pavo»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Phe",
+      "detalle": "«Ave Fénix» sin el artículo de «El Ave Fénix»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Pic",
+      "detalle": "«Caballete del Pintor» sin el artículo de «El Caballete del Pintor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "PsA",
+      "detalle": "«Pez Austral» sin el artículo de «El Pez Austral»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Pup",
+      "detalle": "«Popa» sin el artículo de «La Popa»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Pyx",
+      "detalle": "«Brújula» sin el artículo de «La Brújula»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Ret",
+      "detalle": "«Retículo» sin el artículo de «El Retículo»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Sge",
+      "detalle": "«Flecha» sin el artículo de «La Flecha»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Scl",
+      "detalle": "«Escultor» sin el artículo de «El Escultor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Sct",
+      "detalle": "«Escudo» sin el artículo de «El Escudo»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Ser",
+      "detalle": "«Serpiente» sin el artículo de «La Serpiente»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Sex",
+      "detalle": "«Sextante» sin el artículo de «El Sextante»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Tel",
+      "detalle": "«Telescopio» sin el artículo de «El Telescopio»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Tri",
+      "detalle": "«Triángulo» sin el artículo de «El Triángulo»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "TrA",
+      "detalle": "«Triángulo Austral» sin el artículo de «El Triángulo Austral»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Tuc",
+      "detalle": "«Tucán» sin el artículo de «El Tucán»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "UMa",
+      "detalle": "«Osa Mayor» sin el artículo de «La Osa Mayor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "UMi",
+      "detalle": "«Osa Menor» sin el artículo de «La Osa Menor»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Vel",
+      "detalle": "«Velas» sin el artículo de «Las Velas»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Vol",
+      "detalle": "«Pez Volador» sin el artículo de «El Pez Volador»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Vul",
+      "detalle": "«Zorra» sin el artículo de «La Zorra»",
+      "motivo": "El artículo no forma parte del nombre (igual se acepta escrito con él)."
+    }
+  ],
+  "entidades": [
+    {"id":"And","nombre":"Andrómeda","popularidad":100,"atributos":{"latin":"Andromeda","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ant","nombre":"Bomba Neumática","alias":["Antlia"],"popularidad":89,"atributos":{"latin":"Antlia","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Aps","nombre":"Ave del Paraíso","alias":["Apus"],"popularidad":84,"atributos":{"latin":"Apus","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Aql","nombre":"Águila","alias":["Aquila"],"popularidad":91,"atributos":{"latin":"Aquila","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Aqr","nombre":"Acuario","alias":["Aquarius"],"popularidad":101,"atributos":{"latin":"Aquarius","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ara","nombre":"Altar","alias":["Ara"],"popularidad":84,"atributos":{"latin":"Ara","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ari","nombre":"Aries","alias":["Carnero"],"popularidad":0,"atributos":{"latin":"Aries","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Aur","nombre":"Cochero","alias":["Auriga"],"popularidad":94,"atributos":{"latin":"Auriga","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Boo","nombre":"Boyero","alias":["Bootes"],"popularidad":93,"atributos":{"latin":"Bootes","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"CMa","nombre":"Can Mayor","alias":["Canis Maior"],"popularidad":97,"atributos":{"latin":"Canis Maior","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"CMi","nombre":"Can Menor","alias":["Canis Minor"],"popularidad":89,"atributos":{"latin":"Canis Minor","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"CVn","nombre":"Perros de Caza","alias":["Canes Venatici"],"popularidad":85,"atributos":{"latin":"Canes Venatici","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cae","nombre":"Cincel","alias":["Caelum"],"popularidad":85,"atributos":{"latin":"Caelum","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cam","nombre":"Jirafa","alias":["Camelopardalis"],"popularidad":85,"atributos":{"latin":"Camelopardalis","autor":"Petrus Plancius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cap","nombre":"Capricornio","alias":["Capricornus"],"popularidad":106,"atributos":{"latin":"Capricornus","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Car","nombre":"Quilla","alias":["Carina"],"popularidad":86,"atributos":{"latin":"Carina","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cas","nombre":"Casiopea","alias":["Cassiopeia"],"popularidad":91,"atributos":{"latin":"Cassiopeia","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cen","nombre":"Centauro","alias":["Centaurus"],"popularidad":94,"atributos":{"latin":"Centaurus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cep","nombre":"Cefeo","alias":["Cepheus"],"popularidad":88,"atributos":{"latin":"Cepheus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cet","nombre":"Ballena","alias":["Cetus"],"popularidad":87,"atributos":{"latin":"Cetus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cha","nombre":"Camaleón","alias":["Chamaeleon"],"popularidad":83,"atributos":{"latin":"Chamaeleon","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cir","nombre":"Compás","alias":["Circinus"],"popularidad":80,"atributos":{"latin":"Circinus","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cnc","nombre":"Cáncer","alias":["Cangrejo"],"popularidad":0,"atributos":{"latin":"Cancer","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Col","nombre":"Paloma","alias":["Columba"],"popularidad":83,"atributos":{"latin":"Columba","autor":"Petrus Plancius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Com","nombre":"Cabellera de Berenice","alias":["Coma Berenices"],"popularidad":89,"atributos":{"latin":"Coma Berenices","autor":"Caspar Vopel","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"CrA","nombre":"Corona Austral","alias":["Corona Australis"],"popularidad":83,"atributos":{"latin":"Corona Australis","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"CrB","nombre":"Corona Boreal","alias":["Corona Borealis"],"popularidad":90,"atributos":{"latin":"Corona Borealis","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Crt","nombre":"Copa","alias":["Crater"],"popularidad":83,"atributos":{"latin":"Crater","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cru","nombre":"Cruz del Sur","alias":["Crux"],"popularidad":96,"atributos":{"latin":"Crux","autor":"Petrus Plancius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Crv","nombre":"Cuervo","alias":["Corvus"],"popularidad":83,"atributos":{"latin":"Corvus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Cyg","nombre":"Cisne","alias":["Cygnus"],"popularidad":98,"atributos":{"latin":"Cygnus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Del","nombre":"Delfín","alias":["Delphinus"],"popularidad":86,"atributos":{"latin":"Delphinus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Dor","nombre":"Pez Dorado","alias":["Dorado"],"popularidad":82,"atributos":{"latin":"Dorado","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Dra","nombre":"Dragón","alias":["Draco"],"popularidad":91,"atributos":{"latin":"Draco","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Equ","nombre":"Potro","alias":["Equuleus"],"popularidad":88,"atributos":{"latin":"Equuleus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Eri","nombre":"Eridano","alias":["Eridanus"],"popularidad":90,"atributos":{"latin":"Eridanus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"For","nombre":"Horno","alias":["Fornax"],"popularidad":85,"atributos":{"latin":"Fornax","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Gem","nombre":"Géminis","alias":["Gemelos","Gemini"],"popularidad":112,"atributos":{"latin":"Gemini","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Gru","nombre":"Grulla","alias":["Grus"],"popularidad":82,"atributos":{"latin":"Grus","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Her","nombre":"Hércules","popularidad":90,"atributos":{"latin":"Hercules","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Hor","nombre":"Reloj","alias":["Horologium"],"popularidad":82,"atributos":{"latin":"Horologium","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Hya","nombre":"Hidra","alias":["Hydra"],"popularidad":89,"atributos":{"latin":"Hydra","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Hyi","nombre":"Hidra Macho","alias":["Hydrus"],"popularidad":86,"atributos":{"latin":"Hydrus","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ind","nombre":"Indio","alias":["Indus"],"popularidad":82,"atributos":{"latin":"Indus","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"LMi","nombre":"León Menor","alias":["Leo Minor"],"popularidad":83,"atributos":{"latin":"Leo Minor","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Lac","nombre":"Lagarto","alias":["Lacerta"],"popularidad":84,"atributos":{"latin":"Lacerta","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"nombre":"Leo","alias":["León"],"popularidad":109,"atributos":{"latin":"Leo","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Lep","nombre":"Liebre","alias":["Lepus"],"popularidad":89,"atributos":{"latin":"Lepus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Lib","nombre":"Libra","alias":["Balanza"],"popularidad":102,"atributos":{"latin":"Libra","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Lup","nombre":"Lobo","alias":["Lupus"],"popularidad":88,"atributos":{"latin":"Lupus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Lyn","nombre":"Lince","alias":["Lynx"],"popularidad":84,"atributos":{"latin":"Lynx","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Lyr","nombre":"Lira","alias":["Lyra"],"popularidad":94,"atributos":{"latin":"Lyra","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Men","nombre":"Mesa","alias":["Mensa"],"popularidad":80,"atributos":{"latin":"Mensa","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Mic","nombre":"Microscopio","alias":["Microscopium"],"popularidad":81,"atributos":{"latin":"Microscopium","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Mon","nombre":"Unicornio","alias":["Monoceros"],"popularidad":86,"atributos":{"latin":"Monoceros","autor":"Petrus Plancius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Mus","nombre":"Mosca","alias":["Musca"],"popularidad":81,"atributos":{"latin":"Musca","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Nor","nombre":"Regla","alias":["Norma"],"popularidad":79,"atributos":{"latin":"Norma","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Oct","nombre":"Octante","alias":["Octans"],"popularidad":82,"atributos":{"latin":"Octans","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Oph","nombre":"Ofiuco","alias":["Ophiuchus"],"popularidad":93,"atributos":{"latin":"Ophiuchus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ori","nombre":"Orión","popularidad":126,"atributos":{"latin":"Orion","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Pav","nombre":"Pavo","popularidad":81,"atributos":{"latin":"Pavo","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Peg","nombre":"Pegaso","alias":["Pegasus"],"popularidad":91,"atributos":{"latin":"Pegasus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Per","nombre":"Perseo","alias":["Perseus"],"popularidad":92,"atributos":{"latin":"Perseus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Phe","nombre":"Ave Fénix","alias":["Phoenix"],"popularidad":83,"atributos":{"latin":"Phoenix","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Pic","nombre":"Caballete del Pintor","alias":["Pictor"],"popularidad":81,"atributos":{"latin":"Pictor","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"PsA","nombre":"Pez Austral","alias":["Piscis Austrinus"],"popularidad":84,"atributos":{"latin":"Piscis Austrinus","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Psc","nombre":"Piscis","alias":["Pez","Pisces"],"popularidad":101,"atributos":{"latin":"Pisces","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Pup","nombre":"Popa","alias":["Puppis"],"popularidad":83,"atributos":{"latin":"Puppis","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Pyx","nombre":"Brújula","alias":["Pyxis"],"popularidad":79,"atributos":{"latin":"Pyxis","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ret","nombre":"Retículo","alias":["Reticulum"],"popularidad":78,"atributos":{"latin":"Reticulum","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Scl","nombre":"Escultor","alias":["Sculptor"],"popularidad":82,"atributos":{"latin":"Sculptor","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Sco","nombre":"Escorpio","alias":["Escorpión","Scorpius"],"popularidad":104,"atributos":{"latin":"Scorpius","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Sct","nombre":"Escudo","alias":["Scutum"],"popularidad":82,"atributos":{"latin":"Scutum","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Ser","nombre":"Serpiente","alias":["Serpens"],"popularidad":84,"atributos":{"latin":"Serpens","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Sex","nombre":"Sextante","alias":["Sextans"],"popularidad":83,"atributos":{"latin":"Sextans","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Sge","nombre":"Flecha","alias":["Sagitta"],"popularidad":84,"atributos":{"latin":"Sagitta","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Sgr","nombre":"Sagitario","alias":["Sagittarius"],"popularidad":106,"atributos":{"latin":"Sagittarius","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Tau","nombre":"Tauro","alias":["Toro","Taurus"],"popularidad":109,"atributos":{"latin":"Taurus","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Tel","nombre":"Telescopio","alias":["Telescopium"],"popularidad":80,"atributos":{"latin":"Telescopium","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"TrA","nombre":"Triángulo Austral","alias":["Triangulum Australe"],"popularidad":81,"atributos":{"latin":"Triangulum Australe","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Tri","nombre":"Triángulo","alias":["Triangulum"],"popularidad":85,"atributos":{"latin":"Triangulum","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Tuc","nombre":"Tucán","alias":["Tucana"],"popularidad":82,"atributos":{"latin":"Tucana","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"UMa","nombre":"Osa Mayor","alias":["Ursa Maior"],"popularidad":125,"atributos":{"latin":"Ursa Maior","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"UMi","nombre":"Osa Menor","alias":["Ursa Minor"],"popularidad":107,"atributos":{"latin":"Ursa Minor","autor":"Claudio Ptolomeo","zodiacal":"no zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Vel","nombre":"Velas","alias":["Vela"],"popularidad":84,"atributos":{"latin":"Vela","autor":"Nicolas-Louis de Lacaille","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Vir","nombre":"Virgo","alias":["Virgen"],"popularidad":106,"atributos":{"latin":"Virgo","autor":"Claudio Ptolomeo","zodiacal":"zodiacal","origen":"antigua"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Vol","nombre":"Pez Volador","alias":["Volans"],"popularidad":81,"atributos":{"latin":"Volans","autor":"Johann Bayer","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"},
+    {"id":"Vul","nombre":"Zorra","alias":["Vulpecula"],"popularidad":85,"atributos":{"latin":"Vulpecula","autor":"Johannes Hevelius","zodiacal":"no zodiacal","origen":"moderna"},"fuente":"https://es.wikipedia.org/wiki/Anexo:Constelaciones?oldid=175202297"}
+  ]
+}

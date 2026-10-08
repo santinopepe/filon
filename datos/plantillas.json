@@ -1,0 +1,1948 @@
+{
+  "version": "2",
+  "descripcion": "Plantillas del generador por catálogos. Son datos: operadores de una lista cerrada (servidor/catalogos/filtros.js) y parámetros que se calculan desde los catálogos. Ver docs/GENERADOR.md.",
+  "plantillas": [
+    {
+      "id": "paises-region",
+      "familia": "paises-region",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "subregion": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "region": {
+          "tipo": "valor",
+          "campo": "subregion"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "subregion",
+        "valores": [
+          "{region}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores (Ciudad del Vaticano y Palestina); regiones según la clasificación M49 de la ONU (Unicode CLDR).",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "paises-continente",
+      "familia": "paises-region",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "continente",
+        "valores": [
+          "{continente}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.05,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores (Ciudad del Vaticano y Palestina); continentes según la clasificación M49 de la ONU (Unicode CLDR).",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "paises-inicial",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores, con su nombre común en español (Unicode CLDR). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "paises-continente-final",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "continente",
+            "valores": [
+              "{continente}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.3,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores; continentes según M49 (Unicode CLDR). Se mira el nombre común en español, sin tildes.",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "paises-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "n": {
+          "tipo": "numero",
+          "valores": [
+            4,
+            5,
+            6
+          ]
+        }
+      },
+      "filtro": {
+        "op": "letras",
+        "campo": "nombre",
+        "min": "{n}",
+        "max": "{n}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores, con su nombre común en español. Se cuentan solo las letras (no los espacios ni los guiones).",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "paises-palabras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "n": {
+          "tipo": "numero",
+          "valores": [
+            3,
+            4
+          ]
+        }
+      },
+      "filtro": {
+        "op": "palabras",
+        "campo": "nombre",
+        "min": "{n}",
+        "max": "{n}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores, con su nombre común en español. Los guiones separan palabras.",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "capitales-region",
+      "familia": "capitales",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "subregion": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "region": {
+          "tipo": "valor",
+          "campo": "subregion"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "subregion",
+        "valores": [
+          "{region}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); regiones según M49 (Unicode CLDR).",
+      "explicacion": "{nombre} es capital de {pais} ({subregion})."
+    },
+    {
+      "id": "capitales-continente",
+      "familia": "capitales",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "continente",
+        "valores": [
+          "{continente}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.2,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); continentes según M49 (Unicode CLDR).",
+      "explicacion": "{nombre} es capital de {pais} ({subregion})."
+    },
+    {
+      "id": "capitales-inicial",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores, con su nombre en español (Wikidata). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre} es capital de {pais} ({subregion})."
+    },
+    {
+      "id": "elementos-inicial",
+      "familia": "elementos-nombre",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Los 118 elementos de la tabla periódica, con su nombre en español. Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre}: símbolo {simbolo}, número atómico {numero}."
+    },
+    {
+      "id": "elementos-final",
+      "familia": "elementos-nombre",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "fin": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{fin}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.3,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Los 118 elementos de la tabla periódica, con su nombre en español. Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre}: símbolo {simbolo}, número atómico {numero}."
+    },
+    {
+      "id": "elementos-simbolo-una-letra",
+      "familia": "elementos-simbolo",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "simbolo": "cuyo símbolo"
+      },
+      "parametros": {},
+      "filtro": {
+        "op": "letras",
+        "campo": "simbolo",
+        "min": 1,
+        "max": 1
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Los 118 elementos de la tabla periódica. Vale el nombre del elemento, no el símbolo.",
+      "explicacion": "{nombre}: símbolo {simbolo}, número atómico {numero}."
+    },
+    {
+      "id": "elementos-simbolo-inicial",
+      "familia": "elementos-simbolo",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "simbolo": "cuyo símbolo"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "simbolo",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "simbolo",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Los 118 elementos de la tabla periódica. Vale el nombre del elemento, no el símbolo.",
+      "explicacion": "{nombre}: símbolo {simbolo}, número atómico {numero}."
+    },
+    {
+      "id": "elementos-numero",
+      "familia": "elementos-numero",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "frases": {
+        "numero": "cuyo número atómico esté entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "rango": {
+          "tipo": "periodo",
+          "campo": "numero",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "numero",
+        "desde": "{rango.desde}",
+        "hasta": "{rango.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Los 118 elementos de la tabla periódica, por número atómico (cantidad de protones).",
+      "explicacion": "{nombre}: símbolo {simbolo}, número atómico {numero}."
+    },
+    {
+      "id": "papas-siglo",
+      "familia": "papas",
+      "categoria": "historia",
+      "catalogo": "papas",
+      "enunciado": "Nombrá un papa",
+      "frases": {
+        "inicio": "que haya asumido entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "inicio",
+          "ancho": 100,
+          "paso": 100,
+          "origen": 1
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "inicio",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Todos los papas de la Iglesia católica según la sucesión numerada de Wikidata; vale el nombre como papa.",
+      "explicacion": "{nombre} asumió como papa en {inicio}."
+    },
+    {
+      "id": "papas-nombre",
+      "familia": "papas",
+      "categoria": "historia",
+      "catalogo": "papas",
+      "enunciado": "Nombrá un papa",
+      "frases": {
+        "nombrePapal": "llamado {valor}"
+      },
+      "parametros": {
+        "nombre": {
+          "tipo": "valor",
+          "campo": "nombrePapal"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "nombrePapal",
+        "valores": [
+          "{nombre}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Todos los papas de la Iglesia católica según la sucesión numerada de Wikidata; vale el nombre como papa con su número (por ejemplo, «Pío XII»).",
+      "explicacion": "{nombre} asumió como papa en {inicio}."
+    },
+    {
+      "id": "presidentes-eeuu-periodo",
+      "familia": "presidentes-eeuu",
+      "categoria": "historia",
+      "catalogo": "presidentes_eeuu",
+      "enunciado": "Nombrá un presidente de los Estados Unidos",
+      "frases": {
+        "inicio": "que haya asumido entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "inicio",
+          "ancho": 50,
+          "paso": 50,
+          "origen": 1750
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "inicio",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Todas las personas que fueron presidentes de los Estados Unidos (por el año de su primera asunción).",
+      "explicacion": "{nombre} asumió la presidencia en {inicio}."
+    },
+    {
+      "id": "secretarios-onu",
+      "familia": "secretarios-onu",
+      "categoria": "historia",
+      "catalogo": "secretarios_onu",
+      "enunciado": "Nombrá a alguien que haya sido secretario general de la ONU",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.55,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Todas las personas que fueron secretario general de las Naciones Unidas (sin los interinos).",
+      "explicacion": "{nombre} asumió como secretario general en {inicio}."
+    },
+    {
+      "id": "campeones-mundial",
+      "familia": "mundial",
+      "categoria": "deportes",
+      "catalogo": "campeones_mundial",
+      "enunciado": "Nombrá una selección que haya ganado el Mundial de fútbol masculino",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.05,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Selecciones campeonas de la Copa Mundial de la FIFA (todas las ediciones disputadas).",
+      "explicacion": "{nombre}: campeón del mundo en {titulos}."
+    },
+    {
+      "id": "sedes-mundial",
+      "familia": "mundial",
+      "categoria": "deportes",
+      "catalogo": "sedes_mundial",
+      "enunciado": "Nombrá un país que haya sido sede de un Mundial de fútbol masculino",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Países que organizaron o coorganizaron la Copa Mundial de la FIFA, de 1930 a 2026.",
+      "explicacion": "{nombre} fue sede en {anios}."
+    },
+    {
+      "id": "sedes-mundial-periodo",
+      "familia": "mundial",
+      "categoria": "deportes",
+      "catalogo": "sedes_mundial",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "anios": "que haya sido sede de un Mundial de fútbol masculino entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anios",
+          "ancho": 40,
+          "paso": 20,
+          "origen": 1930
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anios",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Países que organizaron o coorganizaron la Copa Mundial de la FIFA, de 1930 a 2026.",
+      "explicacion": "{nombre} fue sede en {anios}."
+    },
+    {
+      "id": "campeones-f1-periodo",
+      "familia": "f1",
+      "categoria": "deportes",
+      "catalogo": "campeones_f1",
+      "enunciado": "Nombrá un piloto",
+      "frases": {
+        "titulos": "que haya sido campeón mundial de Fórmula 1 entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "titulos",
+          "ancho": 20,
+          "paso": 10,
+          "origen": 1950
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "titulos",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Campeones mundiales de pilotos de Fórmula 1 (tramo verificado de la fuente).",
+      "explicacion": "{nombre}: campeón en {titulos}."
+    },
+    {
+      "id": "oscar-periodo",
+      "familia": "oscar",
+      "categoria": "cine",
+      "catalogo": "oscar_pelicula",
+      "enunciado": "Nombrá una película",
+      "frases": {
+        "ceremonia": "que haya ganado el Óscar a «Mejor película» en una ceremonia entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "ceremonia",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1930
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "ceremonia",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.4,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ganadoras del Óscar a la mejor película, por año de la ceremonia; vale el título en español o el original.",
+      "explicacion": "Ganó en la ceremonia de {ceremonia}. Dirección: {direccion}."
+    },
+    {
+      "id": "oscar-titulo",
+      "familia": "oscar",
+      "categoria": "cine",
+      "catalogo": "oscar_pelicula",
+      "enunciado": "Nombrá una película ganadora del Óscar a «Mejor película»",
+      "sujetos": {
+        "nombre": "cuyo título"
+      },
+      "parametros": {
+        "n": {
+          "tipo": "numero",
+          "valores": [
+            1
+          ]
+        }
+      },
+      "filtro": {
+        "op": "palabras",
+        "campo": "nombre",
+        "min": "{n}",
+        "max": "{n}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.35,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ganadoras del Óscar a la mejor película; se mira el título en español registrado en Wikidata.",
+      "explicacion": "Ganó en la ceremonia de {ceremonia}. Dirección: {direccion}."
+    },
+    {
+      "id": "oscar-inicial",
+      "familia": "oscar",
+      "categoria": "cine",
+      "catalogo": "oscar_pelicula",
+      "enunciado": "Nombrá una película ganadora del Óscar a «Mejor película»",
+      "sujetos": {
+        "nombre": "cuyo título"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Ganadoras del Óscar a la mejor película; se mira el título en español registrado en Wikidata, sin tildes.",
+      "explicacion": "Ganó en la ceremonia de {ceremonia}. Dirección: {direccion}."
+    },
+    {
+      "id": "canciones-disco",
+      "familia": "canciones-disco",
+      "categoria": "musica",
+      "catalogo": "canciones",
+      "enunciado": "Nombrá una canción",
+      "frases": {
+        "disco": "del disco «{valor}»",
+        "artista": "de {valor}"
+      },
+      "parametros": {
+        "disco": {
+          "tipo": "valor",
+          "campo": "disco"
+        },
+        "artista": {
+          "tipo": "valor",
+          "campo": "artista"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "disco",
+            "valores": [
+              "{disco}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "artista",
+            "valores": [
+              "{artista}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.35,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Lista completa de temas de la primera edición oficial del disco, según MusicBrainz.",
+      "explicacion": "Tema {posicion} de «{disco}» ({artista}, {anio})."
+    },
+    {
+      "id": "nobel-literatura-periodo",
+      "familia": "nobel-literatura",
+      "categoria": "literatura",
+      "catalogo": "nobel_literatura",
+      "enunciado": "Nombrá a alguien",
+      "frases": {
+        "anios": "que haya ganado el Nobel de Literatura entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anios",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anios",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.6,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Todas las personas premiadas con el Nobel de Literatura (Wikidata).",
+      "explicacion": "{nombre}: Nobel de Literatura {anios}."
+    },
+    {
+      "id": "cervantes-pais",
+      "familia": "cervantes",
+      "categoria": "literatura",
+      "catalogo": "premio_cervantes",
+      "enunciado": "Nombrá a alguien que haya ganado el Premio Cervantes",
+      "frases": {
+        "paises": "con nacionalidad de {valor}"
+      },
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "paises"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "paises",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Todas las personas premiadas con el Premio Miguel de Cervantes, por su nacionalidad registrada en Wikidata.",
+      "explicacion": "{nombre}: Premio Cervantes. Nacionalidad: {paises}."
+    },
+    {
+      "id": "cervantes",
+      "familia": "cervantes",
+      "categoria": "literatura",
+      "catalogo": "premio_cervantes",
+      "enunciado": "Nombrá a alguien que haya ganado el Premio Cervantes",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Todas las personas premiadas con el Premio Miguel de Cervantes (desde 1976).",
+      "explicacion": "{nombre}: Premio Cervantes. Nacionalidad: {paises}."
+    },
+    {
+      "id": "palabras-dos-letras",
+      "familia": "palabras-letras",
+      "categoria": "gramatica",
+      "catalogo": "palabras",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una palabra (en singular o infinitivo)",
+      "sujetos": {
+        "nombre": "que"
+      },
+      "parametros": {
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 2
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{letras}"
+      },
+      "respuestas": {
+        "min": 30,
+        "max": 15000
+      },
+      "dificultad": 0.0,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes; la ñ es distinta de la n.",
+      "explicacion": "«{nombre}» figura en el diccionario es_AR (RLA-ES)."
+    },
+    {
+      "id": "palabras-tres-letras",
+      "familia": "palabras-letras",
+      "categoria": "gramatica",
+      "catalogo": "palabras",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una palabra (en singular o infinitivo)",
+      "sujetos": {
+        "nombre": "que"
+      },
+      "parametros": {
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 3
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{letras}"
+      },
+      "respuestas": {
+        "min": 30,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes; la ñ es distinta de la n.",
+      "explicacion": "«{nombre}» figura en el diccionario es_AR (RLA-ES)."
+    },
+    {
+      "id": "palabras-cinco-vocales",
+      "familia": "palabras-vocales",
+      "categoria": "gramatica",
+      "catalogo": "palabras",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una palabra (en singular o infinitivo)",
+      "sujetos": {
+        "nombre": "que"
+      },
+      "parametros": {},
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": [
+          "a",
+          "e",
+          "i",
+          "o",
+          "u"
+        ]
+      },
+      "respuestas": {
+        "min": 30,
+        "max": 15000
+      },
+      "dificultad": 0.5,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes.",
+      "explicacion": "«{nombre}» figura en el diccionario es_AR (RLA-ES)."
+    },
+    {
+      "id": "palabras-final",
+      "familia": "palabras-bordes",
+      "categoria": "gramatica",
+      "catalogo": "palabras",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una palabra (en singular o infinitivo)",
+      "sujetos": {
+        "nombre": "que"
+      },
+      "parametros": {
+        "fin": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 3
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{fin}"
+        ]
+      },
+      "respuestas": {
+        "min": 30,
+        "max": 15000
+      },
+      "dificultad": 0.2,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes.",
+      "explicacion": "«{nombre}» figura en el diccionario es_AR (RLA-ES)."
+    },
+    {
+      "id": "palabras-inicio-largo",
+      "familia": "palabras-bordes",
+      "categoria": "gramatica",
+      "catalogo": "palabras",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una palabra (en singular o infinitivo)",
+      "sujetos": {
+        "nombre": "que"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        },
+        "n": {
+          "tipo": "numero",
+          "valores": [
+            4,
+            5,
+            6
+          ]
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          },
+          {
+            "op": "letras",
+            "campo": "nombre",
+            "min": "{n}",
+            "max": "{n}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 30,
+        "max": 15000
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes; la ñ es distinta de la n.",
+      "explicacion": "«{nombre}» figura en el diccionario es_AR (RLA-ES)."
+    },
+    {
+      "id": "palabras-secuencia",
+      "familia": "palabras-secuencia",
+      "categoria": "gramatica",
+      "catalogo": "palabras",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una palabra (en singular o infinitivo)",
+      "sujetos": {
+        "nombre": "que"
+      },
+      "parametros": {
+        "seq": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{seq}"
+      },
+      "respuestas": {
+        "min": 30,
+        "max": 15000
+      },
+      "dificultad": 0.3,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes.",
+      "explicacion": "«{nombre}» figura en el diccionario es_AR (RLA-ES)."
+    },
+    {
+      "id": "paises-limitrofes",
+      "familia": "paises-fronteras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "vecinos": "que limite con {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "vecinos"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "vecinos",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores; fronteras terrestres según GeoNames (la Guayana Francesa cuenta como Francia).",
+      "explicacion": "{nombre} limita con {vecinos}."
+    },
+    {
+      "id": "paises-moneda",
+      "familia": "paises-moneda",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "moneda": "que use como moneda el {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "moneda": {
+          "tipo": "valor",
+          "campo": "moneda"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "moneda",
+        "valores": [
+          "{moneda}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores; la moneda principal de cada país según GeoNames, con su nombre en español (CLDR).",
+      "explicacion": "{nombre} usa el {moneda}."
+    },
+    {
+      "id": "provincias-limitrofes-pais",
+      "familia": "provincias",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "frases": {
+        "limitrofes": "que limite con {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "limitrofes"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "limitrofes",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Las 23 provincias argentinas (la Ciudad de Buenos Aires no es provincia); límites internacionales verificados.",
+      "explicacion": "{nombre} limita con {limitrofes} y con las provincias de {vecinas}."
+    },
+    {
+      "id": "provincias-vecinas",
+      "familia": "provincias",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "frases": {
+        "vecinas": "que limite con {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "vecinas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "vecinas",
+        "valores": [
+          "{provincia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Las 23 provincias argentinas (la Ciudad de Buenos Aires no es provincia); límites entre provincias según Wikidata, verificados como simétricos.",
+      "explicacion": "{nombre} limita con {vecinas}."
+    },
+    {
+      "id": "provincias-inicial",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.2,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Las 23 provincias argentinas (la Ciudad de Buenos Aires no es provincia), por su nombre corto.",
+      "explicacion": "{nombre}: limita con {vecinas}."
+    },
+    {
+      "id": "capitales-provinciales-inicial",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Las capitales de las 23 provincias argentinas, con su nombre en Wikidata.",
+      "explicacion": "{nombre} es la capital de {provincia}."
+    },
+    {
+      "id": "capitales-provinciales",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá la capital de una provincia argentina",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.2,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Las capitales de las 23 provincias argentinas (la Ciudad de Buenos Aires no es provincia).",
+      "explicacion": "{nombre} es la capital de {provincia}."
+    },
+    {
+      "id": "paises-idioma",
+      "familia": "paises-idiomas",
+      "categoria": "idiomas",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "idiomas": "donde el {valor} sea idioma oficial"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "idioma": {
+          "tipo": "valor",
+          "campo": "idiomas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "idiomas",
+        "valores": [
+          "{idioma}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores; idiomas oficiales u oficiales de hecho según Unicode CLDR (no los regionales).",
+      "explicacion": "{nombre}: idiomas oficiales {idiomas}."
+    },
+    {
+      "id": "idiomas-continente",
+      "familia": "idiomas",
+      "categoria": "idiomas",
+      "catalogo": "idiomas",
+      "enunciado": "Nombrá un idioma oficial en algún país",
+      "frases": {
+        "continentes": "de {valor}"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continentes"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "continentes",
+        "valores": [
+          "{continente}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 80
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Idiomas oficiales u oficiales de hecho de los Estados de la ONU según Unicode CLDR (no los regionales); continentes según M49.",
+      "explicacion": "{nombre}: oficial en {paises}."
+    },
+    {
+      "id": "monedas-continente",
+      "familia": "monedas",
+      "categoria": "geografia",
+      "catalogo": "monedas",
+      "enunciado": "Nombrá una moneda",
+      "frases": {
+        "continentes": "que se use en algún país de {valor}"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continentes"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "continentes",
+        "valores": [
+          "{continente}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "La moneda principal de cada Estado de la ONU según GeoNames, con su nombre en español (CLDR); continentes según M49.",
+      "explicacion": "{nombre}: se usa en {paises}."
+    },
+    {
+      "id": "constelaciones-inicial",
+      "familia": "constelaciones-letras",
+      "categoria": "astronomia",
+      "catalogo": "constelaciones",
+      "enunciado": "Nombrá una constelación",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Las 88 constelaciones de la IAU; se mira el nombre en español (también se acepta el latino).",
+      "explicacion": "{nombre} ({latin}): descrita por {autor}."
+    },
+    {
+      "id": "constelaciones-autor",
+      "familia": "constelaciones-origen",
+      "categoria": "astronomia",
+      "catalogo": "constelaciones",
+      "enunciado": "Nombrá una constelación",
+      "frases": {
+        "autor": "descrita por {valor}"
+      },
+      "parametros": {
+        "autor": {
+          "tipo": "valor",
+          "campo": "autor"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "autor",
+        "valores": [
+          "{autor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 50
+      },
+      "dificultad": 0.55,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Las 88 constelaciones de la IAU, según quién las describió (anexo de Wikipedia).",
+      "explicacion": "{nombre} ({latin}): descrita por {autor}."
+    },
+    {
+      "id": "constelaciones-zodiaco",
+      "familia": "constelaciones-origen",
+      "categoria": "astronomia",
+      "catalogo": "constelaciones",
+      "enunciado": "Nombrá una constelación",
+      "frases": {
+        "zodiacal": "{valor}"
+      },
+      "parametros": {
+        "z": {
+          "tipo": "valor",
+          "campo": "zodiacal"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "zodiacal",
+        "valores": [
+          "{z}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Las 12 constelaciones del zodíaco tradicional (sin Ofiuco), entre las 88 de la IAU.",
+      "explicacion": "{nombre} ({latin}) es una constelación zodiacal."
+    },
+    {
+      "id": "sistema-solar",
+      "familia": "sistema-solar",
+      "categoria": "astronomia",
+      "catalogo": "sistema_solar",
+      "enunciado": "Nombrá un cuerpo del sistema solar",
+      "frases": {
+        "clase": "que sea un {valor}"
+      },
+      "parametros": {
+        "clase": {
+          "tipo": "valor",
+          "campo": "clase"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "clase",
+        "valores": [
+          "{clase}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 10
+      },
+      "dificultad": 0.15,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Los 8 planetas y los 5 planetas enanos reconocidos por la Unión Astronómica Internacional.",
+      "explicacion": "{nombre}: {clase} del sistema solar."
+    },
+    {
+      "id": "pokemon-tipo-generacion",
+      "familia": "pokemon-tipos",
+      "categoria": "videojuegos",
+      "catalogo": "pokemon",
+      "enunciado": "Nombrá un Pokémon",
+      "frases": {
+        "tipos": "de tipo {valor}",
+        "generacion": "de la {valor} generación"
+      },
+      "parametros": {
+        "tipo": {
+          "tipo": "valor",
+          "campo": "tipos"
+        },
+        "gen": {
+          "tipo": "valor",
+          "campo": "generacion"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "tipos",
+            "valores": [
+              "{tipo}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "generacion",
+            "valores": [
+              "{gen}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.4,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Las 1025 especies de la Pokédex Nacional con sus tipos en español (PokeAPI); vale cualquiera de sus dos tipos.",
+      "explicacion": "{nombre}: tipo {tipos}, {generacion} generación."
+    },
+    {
+      "id": "pokemon-tipo",
+      "familia": "pokemon-tipo",
+      "categoria": "videojuegos",
+      "catalogo": "pokemon",
+      "enunciado": "Nombrá un Pokémon",
+      "frases": {
+        "tipos": "de tipo {valor}"
+      },
+      "parametros": {
+        "tipo": {
+          "tipo": "valor",
+          "campo": "tipos"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "tipos",
+        "valores": [
+          "{tipo}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 180
+      },
+      "dificultad": 0.15,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Las 1025 especies de la Pokédex Nacional con sus tipos en español (PokeAPI); vale cualquiera de sus dos tipos.",
+      "explicacion": "{nombre}: tipo {tipos}, {generacion} generación."
+    },
+    {
+      "id": "pokemon-inicial-generacion",
+      "familia": "pokemon-letras",
+      "categoria": "videojuegos",
+      "catalogo": "pokemon",
+      "enunciado": "Nombrá un Pokémon",
+      "frases": {
+        "generacion": "de la {valor} generación"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "gen": {
+          "tipo": "valor",
+          "campo": "generacion"
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "generacion",
+            "valores": [
+              "{gen}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Las 1025 especies de la Pokédex Nacional, por su nombre en español (PokeAPI) y su generación.",
+      "explicacion": "{nombre}: tipo {tipos}, {generacion} generación."
+    },
+    {
+      "id": "pokemon-especial",
+      "familia": "pokemon-legendarios",
+      "categoria": "videojuegos",
+      "catalogo": "pokemon",
+      "enunciado": "Nombrá un Pokémon",
+      "frases": {
+        "generacion": "de la {valor} generación",
+        "especial": "que sea {valor}"
+      },
+      "parametros": {
+        "gen": {
+          "tipo": "valor",
+          "campo": "generacion"
+        },
+        "clase": {
+          "tipo": "valor",
+          "campo": "especial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "generacion",
+            "valores": [
+              "{gen}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "especial",
+            "valores": [
+              "{clase}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Las 1025 especies de la Pokédex Nacional; legendarios y singulares según PokeAPI.",
+      "explicacion": "{nombre}: {especial}, {generacion} generación."
+    },
+    {
+      "id": "html-inicial",
+      "familia": "html",
+      "categoria": "informatica",
+      "catalogo": "elementos_html",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá un elemento de HTML",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Los elementos del HTML Living Standard (WHATWG), sin los obsoletos; vale el nombre de la etiqueta (por ejemplo, «div»).",
+      "explicacion": "<{nombre}>: {descripcion}."
+    },
+    {
+      "id": "http-clase",
+      "familia": "http",
+      "categoria": "informatica",
+      "catalogo": "codigos_http",
+      "enunciado": "Nombrá un código de estado HTTP",
+      "frases": {
+        "clase": "de {valor}"
+      },
+      "parametros": {
+        "clase": {
+          "tipo": "valor",
+          "campo": "clase"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "clase",
+        "valores": [
+          "{clase}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Los códigos asignados en el registro de la IANA; vale el número (por ejemplo, «404»).",
+      "explicacion": "{nombre} ({clase})."
+    },
+    {
+      "id": "champions-periodo",
+      "familia": "champions",
+      "categoria": "deportes",
+      "catalogo": "campeones_champions",
+      "enunciado": "Nombrá un club",
+      "frases": {
+        "titulos": "que haya ganado la Copa de Europa o la Champions League entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "titulos",
+          "ancho": 20,
+          "paso": 10,
+          "origen": 1956
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "titulos",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.4,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Campeones de la Copa de Campeones de Europa y de la Liga de Campeones de la UEFA, por año de la final.",
+      "explicacion": "{nombre}: campeón en {titulos}."
+    },
+    {
+      "id": "champions",
+      "familia": "champions",
+      "categoria": "deportes",
+      "catalogo": "campeones_champions",
+      "enunciado": "Nombrá un club que haya ganado la Copa de Europa o la Champions League",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Campeones de la Copa de Campeones de Europa y de la Liga de Campeones de la UEFA, desde 1956.",
+      "explicacion": "{nombre}: campeón en {titulos}."
+    },
+    {
+      "id": "mundial-femenino",
+      "familia": "mundial-femenino",
+      "categoria": "deportes",
+      "catalogo": "mundial_femenino",
+      "enunciado": "Nombrá una selección que haya ganado el Mundial de fútbol femenino",
+      "parametros": {},
+      "filtro": {
+        "y": []
+      },
+      "todos": true,
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Selecciones campeonas de la Copa Mundial Femenina de la FIFA (1991–2023).",
+      "explicacion": "{nombre}: campeona en {titulos}."
+    }
+  ]
+}

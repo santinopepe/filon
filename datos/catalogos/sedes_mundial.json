@@ -1,0 +1,105 @@
+{
+  "id": "sedes_mundial",
+  "nombre": "Países sede del Mundial de fútbol",
+  "descripcion": "Países que organizaron (o coorganizaron) la Copa Mundial de la FIFA, con los años.",
+  "version": "2026-10-07.3772ff751a",
+  "importado": "2026-10-07",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "ediciones de la Copa Mundial (P17 país sede)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Sedes de todas las ediciones 1930–2026 (verificadas una por una).",
+    "verificacion": [
+      "Mundial 1930: campeón UY",
+      "Mundial 1930: sede UY",
+      "Mundial 1934: campeón IT",
+      "Mundial 1934: sede IT",
+      "Mundial 1938: campeón IT",
+      "Mundial 1938: sede FR",
+      "Mundial 1950: campeón UY",
+      "Mundial 1950: sede BR",
+      "Mundial 1954: campeón DE",
+      "Mundial 1954: sede CH",
+      "Mundial 1958: campeón BR",
+      "Mundial 1958: sede SE",
+      "Mundial 1962: campeón BR",
+      "Mundial 1962: sede CL",
+      "Mundial 1966: campeón GB-ENG",
+      "Mundial 1966: sede GB",
+      "Mundial 1970: campeón BR",
+      "Mundial 1970: sede MX",
+      "Mundial 1974: campeón DE",
+      "Mundial 1974: sede DE",
+      "Mundial 1978: campeón AR",
+      "Mundial 1978: sede AR",
+      "Mundial 1982: campeón IT",
+      "Mundial 1982: sede ES",
+      "Mundial 1986: campeón AR",
+      "Mundial 1986: sede MX",
+      "Mundial 1990: campeón DE",
+      "Mundial 1990: sede IT",
+      "Mundial 1994: campeón BR",
+      "Mundial 1994: sede US",
+      "Mundial 1998: campeón FR",
+      "Mundial 1998: sede FR",
+      "Mundial 2002: campeón BR",
+      "Mundial 2002: sede KR y JP",
+      "Mundial 2006: campeón IT",
+      "Mundial 2006: sede DE",
+      "Mundial 2010: campeón ES",
+      "Mundial 2010: sede ZA",
+      "Mundial 2014: campeón DE",
+      "Mundial 2014: sede BR",
+      "Mundial 2018: campeón FR",
+      "Mundial 2018: sede RU",
+      "Mundial 2022: campeón AR",
+      "Mundial 2022: sede QA",
+      "Mundial 2026: sedes Canadá, Estados Unidos y México",
+      "19 países sede (se esperan 19 hasta 2026)"
+    ]
+  },
+  "atributos": {
+    "anios": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año en que fue sede"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "GB",
+      "detalle": "alias «Inglaterra»",
+      "motivo": "La sede de 1966 fue Inglaterra; en la fuente figura el Reino Unido."
+    }
+  ],
+  "entidades": [
+    {"id":"AR","nombre":"Argentina","alias":["Nación Argentina","República Argentina"],"popularidad":372,"atributos":{"anios":[1978]},"fuente":"https://www.wikidata.org/wiki/Q414"},
+    {"id":"BR","nombre":"Brasil","alias":["República Federativa de Brasil","República Federativa del Brasil"],"popularidad":387,"atributos":{"anios":[1950,2014]},"fuente":"https://www.wikidata.org/wiki/Q155"},
+    {"id":"CA","nombre":"Canadá","alias":["Dominio de Canadá","Norteamérica Británica"],"popularidad":398,"atributos":{"anios":[2026]},"fuente":"https://www.wikidata.org/wiki/Q16"},
+    {"id":"CH","nombre":"Suiza","alias":["Confederación Helvética","Confederación Suiza"],"popularidad":387,"atributos":{"anios":[1954]},"fuente":"https://www.wikidata.org/wiki/Q39"},
+    {"id":"CL","nombre":"Chile","alias":[],"popularidad":380,"atributos":{"anios":[1962]},"fuente":"https://www.wikidata.org/wiki/Q298"},
+    {"id":"DE","nombre":"Alemania","alias":["República Federal de Alemania"],"popularidad":405,"atributos":{"anios":[1974,2006]},"fuente":"https://www.wikidata.org/wiki/Q183"},
+    {"id":"ES","nombre":"España","alias":["Reino de España"],"popularidad":396,"atributos":{"anios":[1982]},"fuente":"https://www.wikidata.org/wiki/Q29"},
+    {"id":"FR","nombre":"Francia","alias":["República Francesa"],"popularidad":428,"atributos":{"anios":[1938,1998]},"fuente":"https://www.wikidata.org/wiki/Q142"},
+    {"id":"GB","nombre":"Reino Unido","alias":["Inglaterra","El Reino Unido","Reino Unido de Gran Bretaña e Irlanda del Norte","Reino Unido de la Gran Bretaña e Irlanda del Norte"],"popularidad":396,"atributos":{"anios":[1966]},"fuente":"https://www.wikidata.org/wiki/Q145"},
+    {"id":"IT","nombre":"Italia","alias":["República Italiana"],"popularidad":409,"atributos":{"anios":[1934,1990]},"fuente":"https://www.wikidata.org/wiki/Q38"},
+    {"id":"JP","nombre":"Japón","alias":["Estado de Japón"],"popularidad":419,"atributos":{"anios":[2002]},"fuente":"https://www.wikidata.org/wiki/Q17"},
+    {"id":"KR","nombre":"Corea del Sur","alias":["República de Corea","Sudcorea","Surcorea"],"popularidad":356,"atributos":{"anios":[2002]},"fuente":"https://www.wikidata.org/wiki/Q884"},
+    {"id":"MX","nombre":"México","alias":["Estados Unidos Mejicanos","Estados Unidos Mexicanos","Méjico","República Mejicana","República Mexicana"],"popularidad":401,"atributos":{"anios":[1970,1986,2026]},"fuente":"https://www.wikidata.org/wiki/Q96"},
+    {"id":"QA","nombre":"Catar","alias":["Estado de Catar"],"popularidad":290,"atributos":{"anios":[2022]},"fuente":"https://www.wikidata.org/wiki/Q846"},
+    {"id":"RU","nombre":"Rusia","alias":["Federación Rusa","Federación de Rusia"],"popularidad":421,"atributos":{"anios":[2018]},"fuente":"https://www.wikidata.org/wiki/Q159"},
+    {"id":"SE","nombre":"Suecia","alias":["Reino de Suecia"],"popularidad":370,"atributos":{"anios":[1958]},"fuente":"https://www.wikidata.org/wiki/Q34"},
+    {"id":"US","nombre":"Estados Unidos","alias":["EE. UU.","EE.UU. de América","Estados Unidos de América","Los Estados Unidos","Los Estados Unidos de América","Unión Americana","los Estados"],"popularidad":427,"atributos":{"anios":[1994,2026]},"fuente":"https://www.wikidata.org/wiki/Q30"},
+    {"id":"UY","nombre":"Uruguay","alias":["República Oriental de Uruguay"],"popularidad":324,"atributos":{"anios":[1930]},"fuente":"https://www.wikidata.org/wiki/Q77"},
+    {"id":"ZA","nombre":"Sudáfrica","alias":["República de Sudáfrica"],"popularidad":368,"atributos":{"anios":[2010]},"fuente":"https://www.wikidata.org/wiki/Q258"}
+  ]
+}
