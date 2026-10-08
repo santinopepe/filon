@@ -345,3 +345,43 @@ test('visitas sin cookie: el registro de jugadores tiene un tope por IP comparti
     await b.cerrar();
   }
 });
+
+test('generador por catálogos por HTTP: vista previa, publicación desde el panel, partida y revelado con datos reales', async () => {
+  const app = await levantar({ PROGRAMADOR_INTERNO: '0' });
+  const admin = { authorization: 'Bearer secreto-admin' };
+  try {
+    const c = cliente(app.puerto);
+    const hoy = (await c.pedir('GET', '/api/salud')).datos.fecha;
+    const previa = (await c.pedir('GET', `/api/admin/generador/vista-previa?fecha=${hoy}`, null, admin)).datos;
+    assert.equal(previa.ok, true);
+    assert.equal(previa.elegidas.length, 7);
+    assert.equal(await app.db.get('SELECT id FROM desafios'), null, 'la vista previa no publica');
+    assert.equal((await c.pedir('POST', `/api/admin/desafios/${hoy}/generar`, { generador: 'otro' }, admin)).estado, 400);
+    const r = await c.pedir('POST', `/api/admin/desafios/${hoy}/generar`, { generador: 'catalogos' }, admin);
+    assert.equal(r.datos.resultado, 'publicado');
+    assert.equal(r.datos.origen, 'catalogo');
+    const publicadas = (await c.pedir('GET', `/api/admin/desafios/${hoy}`, null, admin)).datos.preguntas.map((p) => p.enunciado);
+    assert.deepEqual(publicadas, previa.elegidas.map((e) => e.enunciado), 'se publica lo mismo que mostró la vista previa');
+
+    // Una partida: la primera ronda con un intento que no cumple (rechazo con motivo) y el resto pasadas.
+    const partida = (await c.pedir('POST', '/api/partidas')).datos.partida;
+    await c.pedir('POST', `/api/partidas/${partida.id}/rondas/1/iniciar`);
+    const p1 = await app.db.get("SELECT p.id, p.rechazos FROM preguntas p JOIN desafios d ON d.id = p.desafio_id WHERE d.fecha = ? AND p.posicion = 1", hoy);
+    const rechazo = JSON.parse(p1.rechazos)[0];
+    if (rechazo) {
+      const intento = (await c.pedir('POST', `/api/partidas/${partida.id}/rondas/1/respuesta`, { texto: rechazo.ejemplo })).datos;
+      assert.equal(intento.resultado, 'rechazada');
+      assert.equal(intento.motivo, rechazo.motivo);
+    }
+    await c.pedir('POST', `/api/partidas/${partida.id}/rondas/1/pasar`);
+    for (let n = 2; n <= 7; n++) {
+      await c.pedir('POST', `/api/partidas/${partida.id}/rondas/${n}/iniciar`);
+      await c.pedir('POST', `/api/partidas/${partida.id}/rondas/${n}/pasar`);
+    }
+    const final = (await c.pedir('GET', `/api/partidas/${partida.id}/respuestas`)).datos;
+    assert.equal(final.preguntas.length, 7);
+    assert.ok(final.preguntas.every((q) => q.total >= 5 && q.respuestas.length === Math.min(100, q.total)));
+  } finally {
+    await app.cerrar();
+  }
+});

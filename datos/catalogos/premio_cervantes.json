@@ -1,0 +1,98 @@
+{
+  "id": "premio_cervantes",
+  "nombre": "Premio Cervantes",
+  "descripcion": "Escritoras y escritores que ganaron el Premio Miguel de Cervantes.",
+  "version": "2026-10-07.f25384a37c",
+  "importado": "2026-10-07",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "Q81466 (P166 con fecha P585), nacionalidad (P27)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todos los premiados desde 1976, un año por edición (1979 compartido).",
+    "verificacion": [
+      "51 premiados (50 ediciones hasta 2025)",
+      "ningún año fuera de las ediciones esperadas",
+      "2 premiados sin año en la fuente (años sin dato: 1978, 1982): las preguntas por año no se usan",
+      "todos tienen nombre en español",
+      "0 sin nacionalidad de un país actual (los filtros por país solo se usan si no falta ninguna)"
+    ]
+  },
+  "atributos": {
+    "anios": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año del premio"
+    },
+    "paises": {
+      "tipo": "lista",
+      "etiqueta": "nacionalidad"
+    },
+    "continentes": {
+      "tipo": "lista",
+      "etiqueta": "continente"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q118936","nombre":"Rafael Alberti","alias":["Alberti","Rafael Alberti Merello","Rafael Alberti y Merello"],"popularidad":48,"atributos":{"anios":[1983],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q118936"},
+    {"id":"Q132589","nombre":"Camilo José Cela","alias":["Camilo Jose Cela Trulock","Camilo Jose Cela y Trulock","Camilo Jose de Cela Trulock","Cela","Cela Trulok"],"popularidad":98,"atributos":{"anios":[1995],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q132589"},
+    {"id":"Q1358652","nombre":"Sergio Ramírez","alias":["Sergio Ramirez Mercado"],"popularidad":32,"atributos":{"anios":[2017],"paises":["Nicaragua"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q1358652"},
+    {"id":"Q154691","nombre":"Carlos Fuentes","alias":[],"popularidad":81,"atributos":{"anios":[1987],"paises":["México"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q154691"},
+    {"id":"Q157326","nombre":"Miguel Delibes","alias":["Delibes","Miguel Delibes Setien"],"popularidad":42,"atributos":{"anios":[1993],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q157326"},
+    {"id":"Q159967","nombre":"Augusto Roa Bastos","alias":[],"popularidad":48,"atributos":{"anios":[1989],"paises":["Paraguay"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q159967"},
+    {"id":"Q16873","nombre":"Juan Carlos Onetti","alias":["Juan Carlos Onetti Borges"],"popularidad":43,"atributos":{"anios":[1980],"paises":["España","Uruguay"],"continentes":["Europa","América"]},"fuente":"https://www.wikidata.org/wiki/Q16873"},
+    {"id":"Q171672","nombre":"Jorge Edwards","alias":["Edwards Valdés, Jorge"],"popularidad":27,"atributos":{"anios":[1999],"paises":["Chile","España"],"continentes":["América","Europa"]},"fuente":"https://www.wikidata.org/wiki/Q171672"},
+    {"id":"Q186630","nombre":"Ernesto Sabato","alias":["Ernesto Roque Sábato","Sábato"],"popularidad":72,"atributos":{"anios":[1984],"paises":["Argentina"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q186630"},
+    {"id":"Q195236","nombre":"Francisco Umbral","alias":["Francisco Alejandro Perez Martinez","Francisco Perez Martinez","Paco Umbral"],"popularidad":28,"atributos":{"anios":[2000],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q195236"},
+    {"id":"Q216466","nombre":"Alejo Carpentier","alias":["Alejo Carpentier y Valmont"],"popularidad":72,"atributos":{"anios":[1977],"paises":["Francia","Cuba"],"continentes":["Europa","América"]},"fuente":"https://www.wikidata.org/wiki/Q216466"},
+    {"id":"Q235134","nombre":"María Zambrano","alias":["Maria Zambrano Alarcon","María Zambrano de Rodríguez"],"popularidad":40,"atributos":{"anios":[1988],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q235134"},
+    {"id":"Q235403","nombre":"Ana María Matute","alias":["Ana Maria Matute Ausejo"],"popularidad":39,"atributos":{"anios":[2010],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q235403"},
+    {"id":"Q251123","nombre":"Álvaro Mutis","alias":["Alvaro Mutis Jaramillo"],"popularidad":38,"atributos":{"anios":[2001],"paises":["Colombia"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q251123"},
+    {"id":"Q251215","nombre":"Álvaro Pombo","alias":[],"popularidad":18,"atributos":{"anios":[2024],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q251215"},
+    {"id":"Q261397","nombre":"Elena Poniatowska","alias":["Hélène Elizabeth Louise Amelie Paula Dolores Poniatowska"],"popularidad":38,"atributos":{"anios":[2013],"paises":["México","Francia"],"continentes":["América","Europa"]},"fuente":"https://www.wikidata.org/wiki/Q261397"},
+    {"id":"Q290502","nombre":"Cristina Peri Rossi","alias":[],"popularidad":29,"atributos":{"anios":[2021],"paises":["España","Uruguay"],"continentes":["Europa","América"]},"fuente":"https://www.wikidata.org/wiki/Q290502"},
+    {"id":"Q2917787","nombre":"Joan Margarit i Consarnau","alias":["Joan Margarit"],"popularidad":21,"atributos":{"anios":[2019],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q2917787"},
+    {"id":"Q298035","nombre":"Adolfo Bioy Casares","alias":["Adolfo Vicente Perfecto Bioy Casares","Aldofo Bioy Casares","Bioy","Bioy Casares"],"popularidad":49,"atributos":{"anios":[1990],"paises":["Argentina"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q298035"},
+    {"id":"Q302675","nombre":"Guillermo Cabrera Infante","alias":["Cabrera Infante"],"popularidad":36,"atributos":{"anios":[1997],"paises":["España","Reino Unido","Cuba"],"continentes":["Europa","América"]},"fuente":"https://www.wikidata.org/wiki/Q302675"},
+    {"id":"Q3076374","nombre":"Ida Vitale","alias":[],"popularidad":31,"atributos":{"anios":[2018],"paises":["Uruguay"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q3076374"},
+    {"id":"Q3081177","nombre":"José Manuel Caballero Bonald","alias":["Caballero Bonald","Manuel Caballero Bonald"],"popularidad":22,"atributos":{"anios":[2012],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q3081177"},
+    {"id":"Q311167","nombre":"Francisco Ayala","alias":["Francisco Ayala Garcia Duarte","Francisco Ayala y Garcia Duarte","Francisco de Paula Ayala García-Duarte"],"popularidad":38,"atributos":{"anios":[1991],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q311167"},
+    {"id":"Q312945","nombre":"Dámaso Alonso","alias":["Damaso Alonso y Fernandez de las Redondas"],"popularidad":37,"atributos":{"anios":null,"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q312945"},
+    {"id":"Q353762","nombre":"Juan Goytisolo","alias":[],"popularidad":39,"atributos":{"anios":[2014],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q353762"},
+    {"id":"Q360832","nombre":"Nicanor Parra","alias":["Nicanor Parra Sandoval","Nicanor Segundo Parra Sandoval"],"popularidad":49,"atributos":{"anios":[2011],"paises":["Chile"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q360832"},
+    {"id":"Q366729","nombre":"Rafael Cadenas","alias":[],"popularidad":28,"atributos":{"anios":[2022],"paises":["Venezuela"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q366729"},
+    {"id":"Q373044","nombre":"Antonio Buero Vallejo","alias":["Buero Vallejo"],"popularidad":26,"atributos":{"anios":[1986],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q373044"},
+    {"id":"Q381097","nombre":"Gonzalo Rojas","alias":["Rojas Pizarro, Gonzalo"],"popularidad":25,"atributos":{"anios":[2003],"paises":["Chile"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q381097"},
+    {"id":"Q3821666","nombre":"Francisco Brines","alias":["Francisco Brines Bano","Francisco Brines Baño"],"popularidad":15,"atributos":{"anios":[2020],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q3821666"},
+    {"id":"Q382815","nombre":"Gerardo Diego","alias":["Gerardo Diego Cendoya"],"popularidad":25,"atributos":{"anios":[1979],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q382815"},
+    {"id":"Q39803","nombre":"Mario Vargas Llosa","alias":[],"popularidad":131,"atributos":{"anios":[1994],"paises":["Perú","República Dominicana","España"],"continentes":["América","Europa"]},"fuente":"https://www.wikidata.org/wiki/Q39803"},
+    {"id":"Q447059","nombre":"Dulce María Loynaz","alias":["Dulce Maria Loinaz","Dulce Maria Loynaz del Castillo"],"popularidad":26,"atributos":{"anios":[1992],"paises":["Cuba"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q447059"},
+    {"id":"Q460109","nombre":"Juan Marsé","alias":["Juan Faneca Roca","Juan Marse Carbo"],"popularidad":34,"atributos":{"anios":[2008],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q460109"},
+    {"id":"Q46739","nombre":"Octavio Paz","alias":["Octavio Irineo Paz Lozano","Paz Lozano"],"popularidad":121,"atributos":{"anios":[1981],"paises":["México"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q46739"},
+    {"id":"Q500546","nombre":"Gonzalo Torrente Ballester","alias":["Gonzalo Torrente","Torrente Ballester"],"popularidad":29,"atributos":{"anios":[1985],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q500546"},
+    {"id":"Q505383","nombre":"Rafael Sánchez Ferlosio","alias":[],"popularidad":25,"atributos":{"anios":[2004],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q505383"},
+    {"id":"Q519851","nombre":"Juan Gelman","alias":[],"popularidad":35,"atributos":{"anios":[2007],"paises":["Bolivia"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q519851"},
+    {"id":"Q537776","nombre":"Luis Rosales","alias":["Luis Rosales Camacho"],"popularidad":20,"atributos":{"anios":null,"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q537776"},
+    {"id":"Q557774","nombre":"Fernando del Paso","alias":["Del Paso","Fernando del Paso Morante"],"popularidad":32,"atributos":{"anios":[2015],"paises":["México"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q557774"},
+    {"id":"Q5582187","nombre":"Gonzalo Celorio Blasco","alias":["Gonzalo Celorio","Gonzalo Edmundo Celorio y Blasco"],"popularidad":7,"atributos":{"anios":[2025],"paises":["México"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q5582187"},
+    {"id":"Q561833","nombre":"José Emilio Pacheco","alias":["Jose Emilio Pacheco Berny"],"popularidad":35,"atributos":{"anios":[2009],"paises":["México"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q561833"},
+    {"id":"Q59837","nombre":"Jorge Guillén","alias":["Guillen","Jorge Guillen Alvarez"],"popularidad":39,"atributos":{"anios":[1976],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q59837"},
+    {"id":"Q602119","nombre":"Antonio Gamoneda","alias":["Antonio Gamoneda Lobón"],"popularidad":21,"atributos":{"anios":[2006],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q602119"},
+    {"id":"Q690304","nombre":"Sergio Pitol","alias":["Sergio Pitol Deméneghi"],"popularidad":29,"atributos":{"anios":[2005],"paises":["México"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q690304"},
+    {"id":"Q72541","nombre":"Eduardo Mendoza","alias":["Eduardo Mendoza Garriga","Eduardo Mendoza i Garriga"],"popularidad":36,"atributos":{"anios":[2016],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q72541"},
+    {"id":"Q762719","nombre":"José Jiménez Lozano","alias":[],"popularidad":19,"atributos":{"anios":[2002],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q762719"},
+    {"id":"Q770123","nombre":"José Hierro","alias":["Jose Hierro del Real","Pepe Hierro","Pepe Hierro del Real"],"popularidad":22,"atributos":{"anios":[1998],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q770123"},
+    {"id":"Q9025225","nombre":"Luis Mateo Díez","alias":["Luis Mateo Díez Rodríguez"],"popularidad":13,"atributos":{"anios":[2023],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q9025225"},
+    {"id":"Q909","nombre":"Jorge Luis Borges","alias":["Borges","Jorge Francisco Isidoro Luis Borges"],"popularidad":194,"atributos":{"anios":[1979],"paises":["Argentina"],"continentes":["América"]},"fuente":"https://www.wikidata.org/wiki/Q909"},
+    {"id":"Q921366","nombre":"José García Nieto","alias":[],"popularidad":16,"atributos":{"anios":[1996],"paises":["España"],"continentes":["Europa"]},"fuente":"https://www.wikidata.org/wiki/Q921366"}
+  ]
+}

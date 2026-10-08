@@ -1,8 +1,9 @@
 // Acceso al banco de desafíos publicado (preguntas, respuestas y variantes congeladas).
 import { transaccion } from './db.js';
 import { compactar, crearIndice, buscarEnIndice, buscarParecidoEnIndice, normalizar, sinArticulo } from './normalizar.js';
-import { diasEntre, sumarDias } from './tiempo.js';
-import { MODO_POR_DEFECTO, RAREZAS } from './dominio.js';
+import { diasEntre, limitesDeVentana } from './tiempo.js';
+import { MODO_POR_DEFECTO, RAREZAS, ORDEN_RAREZAS, LIMITES } from './dominio.js';
+import { prepararRevelado, conteosVacios } from './revelado.js';
 
 // Lo publicado solo cambia si un administrador regenera un día: desafíos, preguntas y respuestas se
 // cachean en memoria por base, y cada reemplazo sube `version_banco` para que todas las instancias
@@ -71,15 +72,21 @@ export async function respuestasDeDesafio(db, desafioId) {
   }) ?? new Map();
 }
 
-/** Cantidad de respuestas válidas por pregunta de un desafío (sin traer las respuestas). */
+/** Total y cantidad por rareza de una pregunta, precalculados al publicar (los prepara si faltan). */
+export async function conteosDePregunta(db, pregunta) {
+  if (!pregunta.conteos) {
+    // Publicada por una instancia anterior a la migración 9 durante un despliegue: se prepara una vez.
+    const resumen = await transaccion(db, (tx) => prepararRevelado(tx, pregunta.id));
+    pregunta.conteos = JSON.stringify(resumen); // la fila cacheada queda completa
+  }
+  return (pregunta.conteosLeidos ??= JSON.parse(pregunta.conteos));
+}
+
+/** Cantidad de respuestas válidas por pregunta de un desafío (sin consultar la base si ya está cacheado). */
 export async function conteoRespuestasDeDesafio(db, desafioId) {
-  return recordar(cacheDe(db, 'conteoRespuestas'), desafioId, async () => {
-    const filas = await db.all(
-      'SELECT r.pregunta_id, COUNT(*) AS n FROM respuestas r JOIN preguntas p ON p.id = r.pregunta_id WHERE p.desafio_id = ? GROUP BY r.pregunta_id',
-      desafioId,
-    );
-    return filas.length ? new Map(filas.map((f) => [f.pregunta_id, f.n])) : null;
-  }) ?? new Map();
+  const conteo = new Map();
+  for (const p of await preguntasDeDesafio(db, desafioId)) conteo.set(p.id, (await conteosDePregunta(db, p)).total);
+  return conteo;
 }
 
 /** Respuestas puntuales por id (las aceptadas de una partida), con caché. */
@@ -113,18 +120,151 @@ export async function respuestasDePregunta(db, preguntaId) {
   }) ?? [];
 }
 
-// El revelado solo necesita nombres, rarezas y puntos. Se conserva el orden español del
-// juego en memoria: SQLite no tiene esa misma colación. La versión del banco invalida
-// también esta caché al regenerar un desafío, incluidas las formas de búsqueda.
-const ordenEspanol = new Intl.Collator('es');
-export async function catalogoParaRevelar(db, preguntaId) {
-  return recordar(cacheDe(db, 'revelado'), preguntaId, async () => {
-    const filas = await db.all('SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? ORDER BY id', preguntaId);
-    const respuestas = filas
-      .map((r) => ({ ...r, nombreRareza: RAREZAS[r.rareza].nombre }))
-      .sort((a, b) => b.puntos - a.puntos || ordenEspanol.compare(a.canonica, b.canonica));
-    return { respuestas, normalizadas: respuestas.map((r) => normalizar(r.canonica)) };
-  });
+// ───── Revelado de respuestas ─────
+// Una pregunta de hasta CATALOGO_EN_MEMORIA respuestas se guarda entera en memoria (ya ordenada por la
+// base) y se filtra ahí. Las más grandes se paginan en la base sobre el índice (pregunta_id, orden): ni se
+// cargan enteras ni se ordenan al servir. Las cachés tienen tope (filas y entradas), se descartan con la
+// versión del banco y son solo una ayuda: con la caché vacía (instancia nueva) el resultado es el mismo.
+export const CATALOGO_EN_MEMORIA = 1000;
+const FILAS_EN_MEMORIA = 50_000; // tope de filas de catálogos por proceso (≈ unos pocos MB)
+const PAGINAS_EN_MEMORIA = 200;
+const PRIMERA_PAGINA = LIMITES.paginaRevelado;
+
+/** LRU con peso: al pasar el tope descarta lo menos usado. */
+function lruDe(db, nombre, maxPeso) {
+  const c = cacheDe(db, nombre);
+  c.peso ??= 0;
+  return {
+    obtener(clave) {
+      const e = c.get(clave);
+      if (!e) return undefined;
+      c.delete(clave);
+      c.set(clave, e);
+      return e.valor;
+    },
+    guardar(clave, valor, peso = 1) {
+      if (peso > maxPeso) return valor;
+      if (c.has(clave)) c.peso -= c.get(clave).peso;
+      c.set(clave, { valor, peso });
+      c.peso += peso;
+      for (const [k, e] of c) {
+        if (c.peso <= maxPeso) break;
+        c.delete(k);
+        c.peso -= e.peso;
+      }
+      return valor;
+    },
+  };
+}
+
+const conRareza = (f) => ({ canonica: f.canonica, rareza: f.rareza, puntos: f.puntos, nombreRareza: RAREZAS[f.rareza].nombre });
+const escaparLike = (t) => t.replace(/[\\%_]/g, (c) => `\\${c}`);
+
+async function catalogoEnMemoria(db, pregunta, total) {
+  const cache = lruDe(db, 'catalogo', FILAS_EN_MEMORIA);
+  const guardado = cache.obtener(pregunta.id);
+  if (guardado) return guardado;
+  const filas = await db.all('SELECT canonica, rareza, puntos, normalizada FROM respuestas WHERE pregunta_id = ? ORDER BY orden', pregunta.id);
+  return cache.guardar(pregunta.id, filas, total);
+}
+
+/**
+ * Una página de respuestas válidas de una pregunta, en el orden del revelado.
+ * `buscar` (texto libre) y `rareza` filtran sobre el conjunto completo; `conteos` son las cantidades por
+ * rareza de lo que coincide con la búsqueda (sin filtrar por rareza), para los filtros de la interfaz.
+ */
+export async function paginaDeRespuestas(db, pregunta, { desde = 0, limite = 100, buscar = '', rareza = null } = {}) {
+  const resumen = await conteosDePregunta(db, pregunta);
+  const filtro = normalizar(buscar);
+  if (resumen.total <= CATALOGO_EN_MEMORIA) {
+    const todas = await catalogoEnMemoria(db, pregunta, resumen.total);
+    const buscadas = filtro ? todas.filter((r) => r.normalizada.includes(filtro)) : todas;
+    const conteos = filtro ? conteosVacios() : Object.fromEntries(ORDEN_RAREZAS.map((r) => [r, resumen[r]]));
+    if (filtro) for (const r of buscadas) conteos[r.rareza]++;
+    const coinciden = rareza ? buscadas.filter((r) => r.rareza === rareza) : buscadas;
+    return { respuestas: coinciden.slice(desde, desde + limite).map(conRareza), total: resumen.total, coincidencias: coinciden.length, conteos };
+  }
+
+  const paginas = lruDe(db, 'paginas', PAGINAS_EN_MEMORIA);
+  const clave = `${pregunta.id}|${filtro}|${rareza ?? ''}|${desde}|${limite}`;
+  const guardada = paginas.obtener(clave);
+  if (guardada) return guardada;
+  let respuestas;
+  let coincidencias;
+  let conteos = Object.fromEntries(ORDEN_RAREZAS.map((r) => [r, resumen[r]]));
+  if (!filtro && !rareza) {
+    // Sin filtros, `orden` va de 0 a total-1: la página es un rango del índice, sin OFFSET. La primera
+    // página es la misma que manda el final de la partida: comparten caché.
+    const primeras = desde === 0 && limite === PRIMERA_PAGINA ? lruDe(db, 'primeras', PAGINAS_EN_MEMORIA) : null;
+    respuestas = primeras?.obtener(pregunta.id) ??
+      (await db.all('SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? AND orden >= ? AND orden < ? ORDER BY orden', pregunta.id, desde, desde + limite));
+    primeras?.guardar(pregunta.id, respuestas, 1);
+    coincidencias = resumen.total;
+  } else {
+    const condiciones = ['pregunta_id = ?'];
+    const valores = [pregunta.id];
+    if (filtro) {
+      condiciones.push("normalizada LIKE ? ESCAPE '\\'");
+      valores.push(`%${escaparLike(filtro)}%`);
+    }
+    if (!filtro) {
+      // Solo rareza: los conteos ya se conocen; la página sale del índice (pregunta_id, rareza, orden).
+      coincidencias = conteos[rareza];
+      respuestas = coincidencias > desde
+        ? await db.all('SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? AND rareza = ? ORDER BY orden LIMIT ? OFFSET ?', pregunta.id, rareza, limite, desde)
+        : [];
+    } else {
+      // Con búsqueda: página y conteos por rareza de lo que coincide, en una sola consulta. Las funciones de
+      // ventana se calculan sobre todo lo buscado (subconsulta) y recién afuera se filtra la rareza y se
+      // pagina: solo viajan las filas de la página.
+      const sumas = ORDEN_RAREZAS.map((r) => `SUM(rareza = '${r}') OVER () AS c_${r}`).join(', ');
+      const consulta = (lim, off, conRareza) =>
+        db.all(
+          `SELECT canonica, rareza, puntos, ${ORDEN_RAREZAS.map((r) => `c_${r}`).join(', ')} FROM (
+             SELECT canonica, rareza, puntos, orden, ${sumas} FROM respuestas WHERE ${condiciones.join(' AND ')}
+           ) WHERE ? IS NULL OR rareza = ? ORDER BY orden LIMIT ? OFFSET ?`,
+          ...valores, conRareza, conRareza, lim, off,
+        );
+      const filas = await consulta(limite, desde, rareza);
+      // Página vacía (fuera de rango o rareza sin coincidencias): los conteos salen de la primera coincidencia.
+      const conConteos = filas[0] ?? (await consulta(1, 0, null))[0];
+      conteos = conteosVacios();
+      if (conConteos) for (const r of ORDEN_RAREZAS) conteos[r] = conConteos[`c_${r}`];
+      coincidencias = rareza ? conteos[rareza] : ORDEN_RAREZAS.reduce((suma, r) => suma + conteos[r], 0);
+      respuestas = filas;
+    }
+  }
+  return paginas.guardar(clave, { respuestas: respuestas.map(conRareza), total: resumen.total, coincidencias, conteos });
+}
+
+/**
+ * Las primeras `limite` respuestas de varias preguntas (para el final de la partida). Las chicas salen del
+ * catálogo en memoria; las demás, de una sola consulta para todas.
+ */
+export async function primerasRespuestas(db, preguntas, limite = PRIMERA_PAGINA) {
+  const resultado = new Map();
+  // La caché guarda primeras páginas de tamaño estándar; otro tamaño se pide sin guardar.
+  const cache = limite === PRIMERA_PAGINA ? lruDe(db, 'primeras', PAGINAS_EN_MEMORIA) : { obtener() {}, guardar: (_, v) => v };
+  const faltan = [];
+  for (const p of preguntas) {
+    const resumen = await conteosDePregunta(db, p);
+    const guardada = cache.obtener(p.id) ?? lruDe(db, 'catalogo', FILAS_EN_MEMORIA).obtener(p.id)?.slice(0, limite);
+    if (guardada) resultado.set(p.id, { resumen, filas: guardada });
+    else faltan.push([p, resumen]);
+  }
+  if (faltan.length) {
+    const filas = await db.all(
+      `SELECT pregunta_id, canonica, rareza, puntos FROM respuestas
+       WHERE pregunta_id IN (${faltan.map(() => '?').join(',')}) AND orden < ? ORDER BY pregunta_id, orden`,
+      ...faltan.map(([p]) => p.id),
+      limite,
+    );
+    for (const [p, resumen] of faltan) {
+      const deEsta = filas.filter((f) => f.pregunta_id === p.id);
+      resultado.set(p.id, { resumen, filas: cache.guardar(p.id, deEsta, 1) });
+    }
+  }
+  return resultado;
 }
 
 /** Borra un desafío con todo lo que depende de él (partidas, rondas, intentos y reportes incluidos). */
@@ -192,17 +332,25 @@ export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas,
       fecha, modo, numero, origen, modelo, corridaId, ahora,
     );
 
-    const insPregunta = `INSERT INTO preguntas (id, desafio_id, posicion, categoria, enunciado, alcance, huella, origen, reserva_id, fuentes, rechazos)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const insRespuesta = `INSERT INTO respuestas (pregunta_id, canonica, rareza, puntos, explicacion, fuente_url, fuente_titulo, variantes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    const insVariante = 'INSERT INTO variantes (pregunta_id, normalizada, respuesta_id) VALUES (?, ?, ?)';
+    // Respuestas y variantes en tandas con ids explícitos (la transacción tiene el bloqueo de escritura):
+    // una pregunta de miles de respuestas son decenas de sentencias, no miles de viajes a la base.
+    let siguienteId = (await tx.get('SELECT COALESCE(MAX(id), 0) AS m FROM respuestas')).m + 1;
+    const enTandas = async (filas, columnas, tabla, tamanio) => {
+      for (let i = 0; i < filas.length; i += tamanio) {
+        const tanda = filas.slice(i, i + tamanio);
+        await tx.run(
+          `INSERT INTO ${tabla} (${columnas.join(', ')}) VALUES ${tanda.map(() => `(${columnas.map(() => '?').join(', ')})`).join(', ')}`,
+          ...tanda.flat(),
+        );
+      }
+    };
 
     for (const [i, p] of preguntas.entries()) {
       const posicion = i + 1;
       const preguntaId = idDePregunta(fecha, modo, posicion);
       await tx.run(
-        insPregunta,
+        `INSERT INTO preguntas (id, desafio_id, posicion, categoria, enunciado, alcance, huella, origen, reserva_id, fuentes, rechazos, firma, conjunto, generacion, coincidencia)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         preguntaId,
         desafioId,
         posicion,
@@ -211,24 +359,24 @@ export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas,
         p.alcance,
         p.huella,
         p.origen,
-        p.id ?? null, // id en la reserva (las de la IA también quedan guardadas ahí)
+        p.origen === 'catalogo' ? null : (p.id ?? null), // id en la reserva
         JSON.stringify(p.fuentes),
         JSON.stringify(p.rechazos.map((r) => ({ formas: r.formas, motivo: r.motivo, ejemplo: r.textos[0] }))),
+        p.firma ?? null,
+        p.conjunto ?? null,
+        p.generacion ? JSON.stringify(p.generacion) : null,
+        p.coincidencia ?? 'flexible',
       );
+      const respuestas = [];
+      const variantes = [];
       for (const r of p.respuestas) {
-        const { lastInsertRowid: respuestaId } = await tx.run(
-          insRespuesta,
-          preguntaId,
-          r.canonica,
-          r.rareza,
-          r.puntos,
-          r.explicacion,
-          r.fuente?.url ?? p.fuentes[0].url,
-          r.fuente?.titulo ?? p.fuentes[0].titulo,
-          JSON.stringify(r.variantes),
-        );
-        for (const forma of r.formas) await tx.run(insVariante, preguntaId, forma, respuestaId);
+        const respuestaId = siguienteId++;
+        respuestas.push([respuestaId, preguntaId, r.canonica, r.rareza, r.puntos, r.explicacion, r.fuente?.url ?? p.fuentes[0].url, r.fuente?.titulo ?? p.fuentes[0].titulo, JSON.stringify(r.variantes)]);
+        for (const forma of r.formas) variantes.push([preguntaId, forma, respuestaId]);
       }
+      await enTandas(respuestas, ['id', 'pregunta_id', 'canonica', 'rareza', 'puntos', 'explicacion', 'fuente_url', 'fuente_titulo', 'variantes'], 'respuestas', 100);
+      await enTandas(variantes, ['pregunta_id', 'normalizada', 'respuesta_id'], 'variantes', 300);
+      await prepararRevelado(tx, preguntaId);
     }
     return { publicado: true, desafioId: Number(desafioId), numero };
   });
@@ -242,10 +390,10 @@ export async function indiceDePregunta(db, preguntaId) {
   let entrada = cacheIndices.get(clave);
   if (entrada && entrada.db === db) return entrada;
   const filas = await db.all('SELECT normalizada, respuesta_id AS respuestaId FROM variantes WHERE pregunta_id = ?', preguntaId);
-  const pregunta = await db.get('SELECT rechazos FROM preguntas WHERE id = ?', preguntaId);
+  const pregunta = await db.get('SELECT rechazos, coincidencia FROM preguntas WHERE id = ?', preguntaId);
   const rechazos = new Map();
   for (const r of JSON.parse(pregunta?.rechazos || '[]')) for (const f of r.formas) rechazos.set(f, r.motivo);
-  entrada = { db, indice: crearIndice(filas), rechazos };
+  entrada = { db, indice: crearIndice(filas), rechazos, exacta: pregunta?.coincidencia === 'exacta' };
   cacheIndices.set(clave, entrada);
   if (cacheIndices.size > 500) cacheIndices.delete(cacheIndices.keys().next().value);
   return entrada;
@@ -253,8 +401,16 @@ export async function indiceDePregunta(db, preguntaId) {
 
 /** Valida un texto contra el banco almacenado (sin IA). */
 export async function evaluarTexto(db, preguntaId, texto) {
-  const { indice, rechazos } = await indiceDePregunta(db, preguntaId);
+  const { indice, rechazos, exacta } = await indiceDePregunta(db, preguntaId);
   const respuestaPorId = async (id) => (await respuestasPorIds(db, [id])).get(id);
+  if (exacta) {
+    // Preguntas sobre palabras: vale solo la palabra escrita (sin tildes ni mayúsculas). Completar un
+    // fragmento o sugerir una parecida regalaría respuestas («cas» → «casa»).
+    const n = normalizar(texto);
+    const id = indice.exacto.get(n);
+    if (id != null) return { aceptada: true, respuesta: await respuestaPorId(id) };
+    return { aceptada: false, motivo: rechazos.get(n) ?? null };
+  }
   const respuestaId = buscarEnIndice(indice, texto);
   if (respuestaId != null) {
     const respuesta = await respuestaPorId(respuestaId);
@@ -275,12 +431,14 @@ export async function evaluarTexto(db, preguntaId, texto) {
   return { aceptada: false, motivo };
 }
 
-/** Preguntas publicadas de un modo en una ventana de fechas, para evitar repeticiones. */
+/**
+ * Preguntas publicadas de un modo a menos de `dias` días calendario de la fecha (hacia atrás y hacia los
+ * días ya programados), para evitar repeticiones. Lo que salió hace `dias` días o más no cuenta.
+ */
 export async function preguntasRecientes(db, fecha, dias, modo = MODO_POR_DEFECTO) {
-  const desde = sumarDias(fecha, -dias);
-  const hasta = sumarDias(fecha, dias);
+  const [desde, hasta] = limitesDeVentana(fecha, dias);
   const filas = await db.all(
-    `SELECT p.id, p.enunciado, p.huella, p.reserva_id AS reservaId, d.fecha
+    `SELECT p.id, p.enunciado, p.huella, p.reserva_id AS reservaId, p.firma, d.fecha
      FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
      WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ?`,
     modo, desde, hasta, fecha,
@@ -288,7 +446,8 @@ export async function preguntasRecientes(db, fecha, dias, modo = MODO_POR_DEFECT
   const canonicas = await db.all(
     `SELECT r.pregunta_id, r.canonica FROM respuestas r
      JOIN preguntas p ON p.id = r.pregunta_id JOIN desafios d ON d.id = p.desafio_id
-     WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ? ORDER BY r.id`,
+     WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ?
+       AND (p.firma IS NULL OR r.orden < 500) ORDER BY r.id`,
     modo, desde, hasta, fecha,
   );
   const claves = new Map(filas.map((f) => [f.id, []]));
@@ -383,6 +542,7 @@ export function editarPregunta(db, preguntaId, nueva) {
       }
       for (const forma of r.formas) await tx.run('INSERT OR IGNORE INTO variantes (pregunta_id, normalizada, respuesta_id) VALUES (?, ?, ?)', preguntaId, forma, respuestaId);
     }
+    await prepararRevelado(tx, preguntaId);
     // Todas las instancias descartan su caché del banco.
     await tx.run(
       `INSERT INTO meta (clave, valor) VALUES ('version_banco', '1')

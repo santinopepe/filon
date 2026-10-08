@@ -44,7 +44,7 @@ test('validación: cada modo solo acepta preguntas de su categoría', async () =
   // Un día temático son siete preguntas distintas de la misma categoría (Normal exige las siete distintas).
   const siete = e.reservas.geografia.preguntas.slice(0, 7);
   assert.ok(validarLote(siete, 'geografia').ok);
-  assert.match(validarLote(siete, 'normal').errores.join(' '), /categorías repetidas/);
+  assert.match(validarLote(siete, 'normal').errores.join(' '), /al menos 4 categorías/);
   assert.match(validarLote([...siete.slice(0, 6), deFarandula], 'geografia').errores.join(' '), /solo admite preguntas de la categoría «geografia»/);
 });
 

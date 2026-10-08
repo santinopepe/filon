@@ -75,6 +75,15 @@ export function diasEntre(desde, hasta) {
   return Math.round((Date.UTC(a2, m2 - 1, d2) - Date.UTC(a1, m1 - 1, d1)) / 86_400_000);
 }
 
+/**
+ * Ventana de repetición en días calendario (fechas locales AAAA-MM-DD, ya calculadas con la zona del
+ * proyecto): dos fechas están dentro si las separan menos de `dias` días. Con 60, a 59 días se rechaza y a
+ * 60 o más se permite, hacia atrás y hacia adelante (días ya programados).
+ */
+export const dentroDeVentana = (a, b, dias) => Math.abs(diasEntre(a, b)) < dias;
+/** Primer y último día que caen dentro de la ventana de `fecha` (para consultar la base). */
+export const limitesDeVentana = (fecha, dias) => [sumarDias(fecha, -(dias - 1)), sumarDias(fecha, dias - 1)];
+
 /** Instante de la próxima medianoche local posterior a `ms`. */
 export function proximaMedianoche(ms, zona) {
   return inicioDeFecha(sumarDias(fechaLocal(ms, zona), 1), zona);

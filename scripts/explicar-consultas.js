@@ -21,13 +21,35 @@ export const CONSULTAS = [
   { nombre: 'desafío de una fecha y un modo', sql: 'SELECT * FROM desafios WHERE fecha = ? AND modo = ?', args: ['2026-10-05', 'normal'] },
   { nombre: 'rondas de una partida', sql: 'SELECT * FROM rondas WHERE partida_id = ? ORDER BY posicion', args: [ID] },
   {
-    nombre: 'partida y ronda para revelado',
-    sql: `SELECT p.*, r.estado AS estadoRonda, r.pregunta_id AS preguntaId
+    nombre: 'partida, ronda y conteos para revelado',
+    sql: `SELECT p.*, r.estado AS estadoRonda, r.pregunta_id AS preguntaId, pr.conteos AS conteosPregunta
           FROM partidas p LEFT JOIN rondas r ON r.partida_id = p.id AND r.posicion = ?
+          LEFT JOIN preguntas pr ON pr.id = r.pregunta_id
           WHERE p.id = ? AND p.jugador_id = ?`,
     args: [1, ID, ID],
   },
-  { nombre: 'catálogo liviano para revelado', sql: 'SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? ORDER BY id', args: [ID] },
+  {
+    nombre: 'partida y rondas para el final (revelado)',
+    sql: `SELECT p.terminada_en AS terminada, r.posicion, r.estado, r.pregunta_id AS preguntaId, pr.conteos
+          FROM partidas p LEFT JOIN rondas r ON r.partida_id = p.id LEFT JOIN preguntas pr ON pr.id = r.pregunta_id
+          WHERE p.id = ? AND p.jugador_id = ?`,
+    args: [ID, ID],
+  },
+  { nombre: 'catálogo de una pregunta chica (revelado)', sql: 'SELECT canonica, rareza, puntos, normalizada FROM respuestas WHERE pregunta_id = ? ORDER BY orden', args: [ID] },
+  {
+    nombre: 'primeras respuestas de las siete preguntas (final)',
+    sql: 'SELECT pregunta_id, canonica, rareza, puntos FROM respuestas WHERE pregunta_id IN (?, ?) AND orden < ? ORDER BY pregunta_id, orden',
+    args: [ID, ID, 100],
+  },
+  { nombre: 'página del revelado (rango del índice)', sql: 'SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? AND orden >= ? AND orden < ? ORDER BY orden', args: [ID, 0, 100] },
+  { nombre: 'página del revelado por rareza', sql: 'SELECT canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ? AND rareza = ? ORDER BY orden LIMIT ? OFFSET ?', args: [ID, 'oro', 100, 0] },
+  {
+    nombre: 'búsqueda en el revelado (página y conteos)',
+    sql: `SELECT canonica, rareza, puntos, c_oro FROM (
+            SELECT canonica, rareza, puntos, orden, SUM(rareza = 'oro') OVER () AS c_oro FROM respuestas WHERE pregunta_id = ? AND normalizada LIKE ? ESCAPE '\\'
+          ) WHERE ? IS NULL OR rareza = ? ORDER BY orden LIMIT ? OFFSET ?`,
+    args: [ID, '%a%', null, null, 100, 0],
+  },
   {
     nombre: 'intentos de una ronda (tope, dentro de la transacción)',
     sql: 'SELECT COUNT(*) AS n, COALESCE(SUM(normalizado = ?), 0) AS iguales FROM intentos WHERE partida_id = ? AND posicion = ?',
@@ -35,11 +57,6 @@ export const CONSULTAS = [
   },
   { nombre: 'intentos fallidos de una partida', sql: 'SELECT posicion, texto, motivo FROM intentos WHERE partida_id = ? AND aceptado = 0 ORDER BY id', args: [ID] },
   { nombre: 'histograma de puntajes del día', sql: 'SELECT puntos, cantidad FROM puntajes_desafio WHERE desafio_id = ? AND cantidad > 0 ORDER BY puntos DESC', args: [1] },
-  {
-    nombre: 'cantidad de respuestas por pregunta',
-    sql: 'SELECT r.pregunta_id, COUNT(*) AS n FROM respuestas r JOIN preguntas p ON p.id = r.pregunta_id WHERE p.desafio_id = ? GROUP BY r.pregunta_id',
-    args: [1],
-  },
   { nombre: 'índice de variantes de una pregunta', sql: 'SELECT normalizada, respuesta_id FROM variantes WHERE pregunta_id = ?', args: [ID] },
   { nombre: 'respuestas aceptadas por id', sql: 'SELECT * FROM respuestas WHERE id IN (?, ?)', args: [1, 2] },
   { nombre: 'partidas de un desafío (borrado / confirmación)', sql: 'SELECT COUNT(*) AS n FROM partidas WHERE desafio_id = ?', args: [1] },

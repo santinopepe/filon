@@ -1,0 +1,61 @@
+{
+  "id": "capitales_argentinas",
+  "nombre": "Capitales de las provincias argentinas",
+  "descripcion": "Las capitales de las 23 provincias argentinas.",
+  "version": "2026-10-08.fff2cdb70b",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "capitales (P36) de las provincias"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Las capitales vigentes (P36) de las 23 provincias argentinas.",
+    "verificacion": [
+      "24 jurisdicciones (23 provincias y la Ciudad de Buenos Aires)",
+      "cada provincia tiene una sola capital vigente",
+      "La Plata y Córdoba son capitales; Rosario no",
+      "23 capitales distintas"
+    ]
+  },
+  "atributos": {
+    "provincia": {
+      "tipo": "texto",
+      "etiqueta": "provincia"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q36307","nombre":"Salta","alias":["Ciudad de Salta","Salta capital","Salta ciudad"],"popularidad":79,"atributos":{"provincia":"Salta"},"fuente":"https://www.wikidata.org/wiki/Q36307"},
+    {"id":"Q44059","nombre":"La Plata","popularidad":97,"atributos":{"provincia":"Buenos Aires"},"fuente":"https://www.wikidata.org/wiki/Q44059"},
+    {"id":"Q44162","nombre":"San Fernando del Valle de Catamarca","popularidad":57,"atributos":{"provincia":"Catamarca"},"fuente":"https://www.wikidata.org/wiki/Q44162"},
+    {"id":"Q44206","nombre":"Resistencia","alias":["Capital Nacional de las Esculturas"],"popularidad":68,"atributos":{"provincia":"Chaco"},"fuente":"https://www.wikidata.org/wiki/Q44206"},
+    {"id":"Q44208","nombre":"Rawson","popularidad":60,"atributos":{"provincia":"Chubut"},"fuente":"https://www.wikidata.org/wiki/Q44208"},
+    {"id":"Q44210","nombre":"Córdoba","popularidad":108,"atributos":{"provincia":"Córdoba"},"fuente":"https://www.wikidata.org/wiki/Q44210"},
+    {"id":"Q44211","nombre":"Corrientes","popularidad":65,"atributos":{"provincia":"Corrientes"},"fuente":"https://www.wikidata.org/wiki/Q44211"},
+    {"id":"Q44213","nombre":"Paraná","popularidad":75,"atributos":{"provincia":"Entre Ríos"},"fuente":"https://www.wikidata.org/wiki/Q44213"},
+    {"id":"Q44214","nombre":"Formosa","popularidad":60,"atributos":{"provincia":"Formosa"},"fuente":"https://www.wikidata.org/wiki/Q44214"},
+    {"id":"Q44215","nombre":"Santa Rosa","alias":["Ciudad de Santa Rosa"],"popularidad":50,"atributos":{"provincia":"La Pampa"},"fuente":"https://www.wikidata.org/wiki/Q44215"},
+    {"id":"Q44217","nombre":"San Salvador de Jujuy","alias":["La Tacita de Plata","San Salvador de Velazco en el Valle de Jujuy"],"popularidad":61,"atributos":{"provincia":"Jujuy"},"fuente":"https://www.wikidata.org/wiki/Q44217"},
+    {"id":"Q44236","nombre":"La Rioja","popularidad":65,"atributos":{"provincia":"La Rioja"},"fuente":"https://www.wikidata.org/wiki/Q44236"},
+    {"id":"Q44237","nombre":"Mendoza","popularidad":92,"atributos":{"provincia":"Mendoza"},"fuente":"https://www.wikidata.org/wiki/Q44237"},
+    {"id":"Q44238","nombre":"Posadas","popularidad":64,"atributos":{"provincia":"Misiones"},"fuente":"https://www.wikidata.org/wiki/Q44238"},
+    {"id":"Q44239","nombre":"Neuquén","popularidad":64,"atributos":{"provincia":"Neuquén"},"fuente":"https://www.wikidata.org/wiki/Q44239"},
+    {"id":"Q44240","nombre":"Viedma","popularidad":52,"atributos":{"provincia":"Río Negro"},"fuente":"https://www.wikidata.org/wiki/Q44240"},
+    {"id":"Q44241","nombre":"San Juan","alias":["Ciudad de San Juan"],"popularidad":64,"atributos":{"provincia":"San Juan"},"fuente":"https://www.wikidata.org/wiki/Q44241"},
+    {"id":"Q44242","nombre":"Río Gallegos","popularidad":58,"atributos":{"provincia":"Santa Cruz"},"fuente":"https://www.wikidata.org/wiki/Q44242"},
+    {"id":"Q44243","nombre":"San Luis","popularidad":54,"atributos":{"provincia":"San Luis"},"fuente":"https://www.wikidata.org/wiki/Q44243"},
+    {"id":"Q44244","nombre":"Santa Fe","alias":["Santa Fe de la Vera Cruz","ciudad de Santa Fe"],"popularidad":76,"atributos":{"provincia":"Santa Fe"},"fuente":"https://www.wikidata.org/wiki/Q44244"},
+    {"id":"Q44253","nombre":"Ciudad de Santiago del Estero","alias":["Santiago del Estero Capital"],"popularidad":68,"atributos":{"provincia":"Santiago del Estero"},"fuente":"https://www.wikidata.org/wiki/Q44253"},
+    {"id":"Q44254","nombre":"Ushuaia","popularidad":97,"atributos":{"provincia":"Tierra del Fuego"},"fuente":"https://www.wikidata.org/wiki/Q44254"},
+    {"id":"Q44255","nombre":"San Miguel de Tucumán","alias":["Tucuman"],"popularidad":76,"atributos":{"provincia":"Tucumán"},"fuente":"https://www.wikidata.org/wiki/Q44255"}
+  ]
+}

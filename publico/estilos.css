@@ -754,7 +754,28 @@ body.en-excavacion .pantalla {
 .respuestas-dialogo .lista-respuestas { flex: 1 1 auto; min-height: 100px; }
 .respuestas-buscar { display: grid; gap: 4px; font-size: .85rem; color: var(--cal-2); }
 .respuestas-buscar input { font: inherit; font-size: 1rem; padding: .5rem .7rem; border-radius: 8px; border: 2px solid var(--viga); background: #101126; color: var(--cal); }
-#respuestas-mas { align-self: center; }
+.respuestas-rarezas { display: flex; flex-wrap: wrap; flex-shrink: 0; gap: 6px; margin-top: 8px; }
+.filtro-rareza {
+  display: inline-flex; align-items: center; gap: 5px; min-height: 32px; padding: 3px 10px;
+  border: 1px solid var(--viga); border-radius: 999px; background: transparent; color: var(--cal-2);
+  font: inherit; font-size: .8rem; cursor: pointer;
+}
+.filtro-rareza[data-rareza] { border-color: color-mix(in srgb, var(--color-mineral) 55%, var(--viga)); }
+.filtro-rareza[aria-pressed="true"] { background: color-mix(in srgb, var(--color-mineral, var(--lampara)) 22%, transparent); border-color: var(--color-mineral, var(--lampara)); color: var(--cal); }
+.filtro-rareza:disabled { opacity: .45; cursor: default; }
+.filtro-rareza:focus-visible { outline: 2px solid var(--lampara); outline-offset: 2px; }
+.filtro-cantidad { color: var(--cal-3); font-variant-numeric: tabular-nums; }
+.respuestas-paginas { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; color: var(--cal-3); font-size: .82rem; font-variant-numeric: tabular-nums; }
+.respuestas-paginas .boton { min-height: 38px; padding: .35rem .8rem; font-size: .85rem; white-space: nowrap; }
+@media (max-width: 520px) {
+  /* En el celular, los filtros van en una sola fila desplazable y la paginación usa solo las flechas:
+     así queda más alto para la lista. */
+  .respuestas-rarezas { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+  .filtro-rareza { flex: none; }
+  .pagina-texto { display: none; }
+  .respuestas-paginas .boton { min-width: 44px; font-size: 1.1rem; }
+}
+.respuestas-reintentar { margin-top: 10px; }
 .respuestas-kicker { color: var(--cian) !important; font-family: var(--titulo); font-size: .78rem !important; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .respuestas-ayuda { color: var(--cal-3) !important; font-size: .82rem !important; }
 .lista-respuestas { list-style: none; min-height: 0; overflow-y: auto; margin: 2px -8px 0 0; padding: 0 8px 0 0; }

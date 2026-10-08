@@ -141,8 +141,9 @@ export async function reservaCompleta(db, modo, base, { dominios, conInactivas =
  */
 export async function copiarPublicadasAReserva(db, modo, { idsArchivo = new Set(), dominios = [], seco = false, ahora = Date.now() } = {}) {
   const filas = await db.all(
+    // Las del generador por catálogos no: se vuelven a armar desde los catálogos y pueden tener miles de respuestas.
     `SELECT p.id, p.reserva_id, p.origen, d.fecha FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
-     WHERE d.modo = ? ORDER BY d.fecha, p.posicion`,
+     WHERE d.modo = ? AND p.origen <> 'catalogo' ORDER BY d.fecha, p.posicion`,
     modo,
   );
   const informe = { revisadas: filas.length, delArchivo: 0, yaEstaban: 0, copiadas: 0, invalidas: [] };

@@ -22,6 +22,13 @@ const DOMINIOS_POR_DEFECTO = [
   'wikipedia.org',
   'wikidata.org',
   'query.wikidata.org',
+  'cldr.unicode.org',
+  'whatwg.org',
+  'iana.org',
+  'geonames.org',
+  'pokeapi.co',
+  'musicbrainz.org',
+  'github.com',
   'britannica.com',
   'nobelprize.org',
   'fifa.com',
@@ -108,6 +115,18 @@ export function cargarConfig(sobrescrituras = {}) {
     },
 
     diasSinRepetir: num(e.DIAS_SIN_REPETIR, 60),
+    // Cómo se arma el desafío de Normal: «reserva» (banco curado) o «catalogos» (generador sin IA a partir
+    // de catálogos verificados y plantillas; ver docs/GENERADOR.md). Los modos temáticos siguen con su reserva.
+    generadorNormal: e.GENERADOR_NORMAL === 'catalogos' ? 'catalogos' : 'reserva',
+    catalogos: {
+      dir: resolve(RAIZ, e.CATALOGOS_DIR || 'datos/catalogos'),
+      rutaPlantillas: resolve(RAIZ, e.CATALOGOS_PLANTILLAS || 'datos/plantillas.json'),
+      semilla: e.CATALOGOS_SEMILLA || 'filon',
+      maxRespuestas: num(e.CATALOGOS_MAX_RESPUESTAS, 15000),
+      diasSinRepetir: num(e.CATALOGOS_DIAS_SIN_REPETIR, 60),
+      // Si faltan candidatos para completar las siete, se completa con la reserva verificada (lote «mixto»).
+      completarConReserva: bool(e.CATALOGOS_COMPLETAR_CON_RESERVA, true),
+    },
     // Carga manual: días hacia atrás (más los ya programados) con los que se comparan las preguntas.
     similitudDias: num(e.SIMILITUD_DIAS, 3),
 

@@ -335,7 +335,7 @@ const EXPLICACION = {
   publicado: 'Publicado.',
   reemplazado: 'Rearmado: el día anterior se reemplazó.',
   ocupado: 'Hay otra publicación en curso para esa fecha. Probá en unos minutos.',
-  fallo: 'No se pudo armar el día con la reserva. Mirá la corrida para el detalle.',
+  fallo: 'No se pudo armar el día. Mirá la corrida para el detalle.',
   error: 'Error.',
 };
 
@@ -356,7 +356,7 @@ function montarCrear(modo) {
   q('formato-ejemplo').textContent = EJEMPLO_JSON(categoria || 'geografia', tematico ? `${modo}-ejemplo` : 'geo-ejemplo');
   q('formato-reglas').textContent = tematico
     ? `Las siete preguntas son de ${NOMBRES_MODO[modo]} y llevan la categoría «${categoria}» (si falta, se completa sola). Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.`
-    : 'El día debe contener exactamente una pregunta de cada categoría: geografía, historia, ciencia, deportes, cine, música y literatura. Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.';
+    : 'Siete preguntas variadas: hasta dos de una misma categoría y al menos cuatro categorías distintas (geografía, historia, ciencia, deportes, cine, música, literatura, gramática, informática, astronomía, videojuegos o idiomas). Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.';
   q('imp-json').placeholder = tematico
     ? `{"preguntas":[{"id":"${modo}-ejemplo","categoria":"${categoria}","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}`
     : '{"preguntas":[{"id":"geo-ejemplo","categoria":"geografia","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}';
@@ -380,10 +380,36 @@ function montarCrear(modo) {
     if (pendiente) generar(pendiente);
   });
 
+  // Normal elige cómo se arma (catálogos o reserva) y tiene vista previa del generador.
+  q('gen-generador-caja').hidden = tematico;
+  q('gen-vista-previa').hidden = tematico;
+  q('gen-vista-previa').addEventListener('click', async () => {
+    const fecha = q('gen-fecha').value;
+    q('gen-resultado').hidden = true;
+    q('gen-progreso').hidden = false;
+    try {
+      const r = await api('GET', `/api/admin/generador/vista-previa${fecha ? `?fecha=${fecha}` : ''}`);
+      const caja = q('gen-resultado');
+      caja.className = `resultado ${r.ok ? 'ok' : 'mal'}`;
+      caja.textContent = [
+        `Vista previa ${r.fecha} (no se publicó nada) · semilla ${r.semilla}`,
+        ...r.elegidas.map((e, i) => `${i + 1}. [${e.nombreCategoria} · ${e.dificultad.nivel}] ${e.enunciado} — ${e.respuestas} respuestas · ${e.catalogo}`),
+        ...r.errores,
+        ...r.problemas,
+        `Descartes: ${r.descartes.total} · ${Object.entries(r.descartes.porMotivo).map(([m, n]) => `${n}× ${m}`).join(' · ')}`,
+      ].join('\n');
+      caja.hidden = false;
+    } catch (e) {
+      mostrarResultado({ resultado: 'error', error: e.message });
+    } finally {
+      q('gen-progreso').hidden = true;
+    }
+  });
+
   async function generar(opciones) {
     const fecha = q('gen-fecha').value;
     if (!fecha) return;
-    const cuerpo = { reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar) };
+    const cuerpo = { reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar), ...(tematico ? {} : { generador: q('gen-generador').value }) };
     q('gen-confirmar').hidden = true;
     q('gen-resultado').hidden = true;
     q('gen-progreso').hidden = false;
@@ -394,7 +420,7 @@ function montarCrear(modo) {
       await mostrarDesafioCreado(modo, fecha);
     } catch (e) {
       if (e.datos?.error === 'ya_existe') {
-        pedirConfirmacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Lo rearmo con otras preguntas de la reserva? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });
+        pedirConfirmacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Lo rearmo con otras preguntas? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });
       } else if (e.datos?.error === 'hay_partidas') {
         pedirConfirmacion(`${e.datos.mensaje} Esto no se puede deshacer.`, { ...cuerpo, reemplazar: true, forzar: true });
       } else {
@@ -710,7 +736,7 @@ async function copiarTexto(texto) {
 // ───────── Editor de preguntas (publicadas y de la reserva) ─────────
 
 const CATEGORIAS_MODO = {
-  normal: [['geografia', 'Geografía'], ['historia', 'Historia'], ['ciencia', 'Ciencia'], ['deportes', 'Deportes'], ['cine', 'Cine'], ['musica', 'Música'], ['literatura', 'Literatura']],
+  normal: [['geografia', 'Geografía'], ['historia', 'Historia'], ['ciencia', 'Ciencia'], ['deportes', 'Deportes'], ['cine', 'Cine'], ['musica', 'Música'], ['literatura', 'Literatura'], ['gramatica', 'Gramática'], ['informatica', 'Informática'], ['astronomia', 'Astronomía'], ['videojuegos', 'Videojuegos'], ['idiomas', 'Idiomas']],
   farandula: [['farandula', 'Farándula']],
   geografia: [['geografia', 'Geografía']],
 };

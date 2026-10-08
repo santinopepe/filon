@@ -1,0 +1,55 @@
+{
+  "id": "sistema_solar",
+  "nombre": "Planetas y planetas enanos",
+  "descripcion": "Los 8 planetas del sistema solar y los 5 planetas enanos reconocidos por la IAU.",
+  "version": "2026-10-08.aa4e40d562",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "nombres, alias y popularidad"
+    },
+    {
+      "nombre": "Unión Astronómica Internacional",
+      "url": "https://www.iau.org/public/themes/pluto/",
+      "licencia": "lista pública",
+      "detalle": "definición de planeta y planetas enanos"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Los 8 planetas y los 5 planetas enanos reconocidos por la Unión Astronómica Internacional (Ceres, Plutón, Haumea, Makemake y Eris).",
+    "verificacion": [
+      "Eris: un único planeta enano con ese nombre",
+      "8 planetas y 5 planetas enanos, con su nombre en Wikidata"
+    ]
+  },
+  "atributos": {
+    "clase": {
+      "tipo": "texto",
+      "etiqueta": "clase"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q111","nombre":"Marte","alias":["planeta Marte","planeta Rojo"],"popularidad":291,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q111"},
+    {"id":"Q193","nombre":"Saturno","popularidad":262,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q193"},
+    {"id":"Q2","nombre":"Tierra","alias":["el globo","el mundo","el planeta","la Tierra","mundo","planeta Tierra"],"popularidad":369,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q2"},
+    {"id":"Q308","nombre":"Mercurio","popularidad":274,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q308"},
+    {"id":"Q313","nombre":"Venus","alias":["Lucero del Alba"],"popularidad":279,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q313"},
+    {"id":"Q319","nombre":"Júpiter","alias":["Iúpiter","Júpiter planeta","gigante gaseoso","planeta Júpiter"],"popularidad":271,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q319"},
+    {"id":"Q324","nombre":"Urano","popularidad":261,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q324"},
+    {"id":"Q332","nombre":"Neptuno","popularidad":252,"atributos":{"clase":"planeta"},"fuente":"https://www.wikidata.org/wiki/Q332"},
+    {"id":"Q339","nombre":"Plutón","alias":["(134340) Pluto"],"popularidad":223,"atributos":{"clase":"planeta enano"},"fuente":"https://www.wikidata.org/wiki/Q339"},
+    {"id":"Q596","nombre":"Ceres","alias":["(1) Ceres"],"popularidad":145,"atributos":{"clase":"planeta enano"},"fuente":"https://www.wikidata.org/wiki/Q596"},
+    {"id":"Q601","nombre":"Haumea","alias":["(136108) 2003 EL61","(136108) Haumea"],"popularidad":109,"atributos":{"clase":"planeta enano"},"fuente":"https://www.wikidata.org/wiki/Q601"},
+    {"id":"Q604","nombre":"Makemake","alias":["(136472) Makemake","2005 FY9"],"popularidad":114,"atributos":{"clase":"planeta enano"},"fuente":"https://www.wikidata.org/wiki/Q604"},
+    {"id":"Q611","nombre":"Eris","alias":["Eride","UB313"],"popularidad":121,"atributos":{"clase":"planeta enano"},"fuente":"https://www.wikidata.org/wiki/Q611"}
+  ]
+}

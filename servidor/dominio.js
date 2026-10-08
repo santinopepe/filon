@@ -19,17 +19,29 @@ export const CATEGORIAS = Object.freeze({
   musica: 'Música',
   literatura: 'Literatura',
   farandula: 'Farándula',
+  gramatica: 'Gramática',
+  informatica: 'Informática',
+  astronomia: 'Astronomía',
+  videojuegos: 'Videojuegos',
+  idiomas: 'Idiomas',
 });
 
-/** Las siete categorías del modo Normal (una pregunta de cada una por día). */
+/** Las siete categorías clásicas: la reserva de Normal arma el día con una pregunta de cada una. */
 export const CLAVES_CATEGORIAS = ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'];
+/** Categorías que admite Normal: las clásicas, Gramática (preguntas sobre palabras) y las del generador. */
+export const CATEGORIAS_NORMAL = [...CLAVES_CATEGORIAS, 'gramatica', 'informatica', 'astronomia', 'videojuegos', 'idiomas'];
+/**
+ * Normal son siete preguntas generales: variadas, pero no hace falta una por categoría. Ninguna categoría
+ * puede tener más de `maxPorCategoria` y tiene que haber al menos `minCategorias` distintas.
+ */
+export const VARIEDAD_NORMAL = Object.freeze({ maxPorCategoria: 2, minCategorias: 4 });
 
 export const PREGUNTAS_POR_DESAFIO = 7;
 
 // Modos de juego. Cada uno tiene su propio desafío diario (una partida por persona, modo y día),
-// su banco de reserva y su prompt. Normal mezcla las siete categorías; los temáticos usan una sola.
+// su banco de reserva y su prompt. Normal mezcla categorías; los temáticos usan una sola.
 export const MODOS = Object.freeze({
-  normal: { clave: 'normal', nombre: 'Normal', categorias: CLAVES_CATEGORIAS },
+  normal: { clave: 'normal', nombre: 'Normal', categorias: CATEGORIAS_NORMAL },
   farandula: { clave: 'farandula', nombre: 'Farándula Argentina', categorias: ['farandula'] },
   geografia: { clave: 'geografia', nombre: 'Geografía', categorias: ['geografia'] },
 });
@@ -42,8 +54,9 @@ export const esModo = (modo) => Object.hasOwn(MODOS, modo);
  * categoría («farandula#1» … «farandula#7»). La parte antes de «#» es la categoría.
  */
 export function ranurasDeModo(modo) {
+  // Normal: la reserva arma el día con una pregunta de cada categoría clásica.
   const { categorias } = MODOS[modo];
-  if (categorias.length === PREGUNTAS_POR_DESAFIO) return [...categorias];
+  if (modo === 'normal') return [...CLAVES_CATEGORIAS];
   return Array.from({ length: PREGUNTAS_POR_DESAFIO }, (_, i) => `${categorias[0]}#${i + 1}`);
 }
 export const categoriaDeRanura = (ranura) => ranura.split('#')[0];

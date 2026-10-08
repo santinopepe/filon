@@ -1,0 +1,48 @@
+{
+  "id": "mundial_femenino",
+  "nombre": "Campeonas del Mundial femenino de fútbol",
+  "descripcion": "Selecciones campeonas de la Copa Mundial Femenina de la FIFA, con los años de sus títulos.",
+  "version": "2026-10-08.cfc40cb5d5",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "ediciones de la Copa Mundial Femenina (P1346 ganador, P17 sede)"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Campeonas de todas las ediciones disputadas, 1991–2023 (verificadas una por una).",
+    "verificacion": [
+      "Mundial femenino 1991: campeón US",
+      "Mundial femenino 1995: campeón NO",
+      "Mundial femenino 1999: campeón US",
+      "Mundial femenino 2003: campeón DE",
+      "Mundial femenino 2007: campeón DE",
+      "Mundial femenino 2011: campeón JP",
+      "Mundial femenino 2015: campeón US",
+      "Mundial femenino 2019: campeón US",
+      "Mundial femenino 2023: campeón ES"
+    ]
+  },
+  "atributos": {
+    "titulos": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año del título"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"DE","nombre":"Alemania","alias":["República Federal de Alemania"],"popularidad":405,"atributos":{"titulos":[2003,2007]},"fuente":"https://www.wikidata.org/wiki/Q183"},
+    {"id":"ES","nombre":"España","alias":["Reino de España"],"popularidad":396,"atributos":{"titulos":[2023]},"fuente":"https://www.wikidata.org/wiki/Q29"},
+    {"id":"JP","nombre":"Japón","alias":["Estado de Japón"],"popularidad":419,"atributos":{"titulos":[2011]},"fuente":"https://www.wikidata.org/wiki/Q17"},
+    {"id":"NO","nombre":"Noruega","alias":["Reino de Noruega"],"popularidad":393,"atributos":{"titulos":[1995]},"fuente":"https://www.wikidata.org/wiki/Q20"},
+    {"id":"US","nombre":"Estados Unidos","alias":["EE. UU.","EE.UU. de América","Estados Unidos de América","Los Estados Unidos","Los Estados Unidos de América","Unión Americana","los Estados"],"popularidad":427,"atributos":{"titulos":[1991,1999,2015,2019]},"fuente":"https://www.wikidata.org/wiki/Q30"}
+  ]
+}
