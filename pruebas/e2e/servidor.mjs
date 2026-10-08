@@ -18,6 +18,8 @@ const app = await iniciarServidor({
     PROGRAMADOR_INTERNO: '1',
     // Todas las pruebas salen de la misma IP: se escalan los límites (en producción, 1).
     LIMITES_ESCALA: '50',
+    // Las pruebas recorren los tres modos (en producción, Farándula está apagada por omisión).
+    MODOS_ACTIVOS: 'normal,farandula,geografia',
   },
 });
 const cerrar = async () => {

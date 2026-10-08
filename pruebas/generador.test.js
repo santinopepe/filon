@@ -469,3 +469,70 @@ test('de punta a punta con una categoría nueva: se publica, se juega, se revela
   assert.ok(JSON.stringify(stats).includes(CATEGORIAS[nueva.categoria]), 'las estadísticas nombran la categoría');
   e.db.close();
 });
+
+test('Geografía: siete preguntas de geografía, variadas por familia y catálogo, con pocas de letras', async () => {
+  const opciones = { catalogos, plantillas, modo: 'geografia', dominios: DOMINIOS };
+  const historial = [];
+  for (let i = 0; i < 10; i++) {
+    const fecha = sumarDias('2026-11-01', i);
+    const lote = generarLote({ ...opciones, fecha, historial });
+    assert.ok(lote.ok, lote.errores.join(' '));
+    assert.deepEqual(lote, generarLote({ ...opciones, fecha, historial }), 'reproducible');
+    assert.ok(validarLote(lote.preguntas, 'geografia').ok);
+    assert.ok(lote.preguntas.every((p) => p.categoria === 'geografia'));
+    assert.equal(new Set(lote.elegidas.map((e) => e.familia)).size, 7, 'ninguna familia se repite');
+    const porCatalogo = Object.values(lote.elegidas.reduce((m, e) => ({ ...m, [e.catalogo]: (m[e.catalogo] ?? 0) + 1 }), {}));
+    assert.ok(porCatalogo.every((n) => n <= 3), 'hasta tres del mismo catálogo');
+    assert.ok(lote.preguntas.filter((p) => p.generacion.filtro.y.some((c) => c.campo === 'nombre')).length <= 5, 'hasta cinco de letras');
+    historial.push(...comoHistorial(lote, fecha));
+  }
+  // La semilla incluye el modo: Normal y Geografía arman días distintos con los mismos datos.
+  assert.notEqual(generarLote({ ...opciones, fecha: '2026-11-01' }).semilla, generarLote({ ...opciones, modo: 'normal', fecha: '2026-11-01' }).semilla);
+  assert.throws(() => generarLote({ ...opciones, modo: 'farandula', fecha: '2026-11-01' }), /no tiene generador/);
+});
+
+test('Geografía se publica con catálogos solo si GENERADOR_GEOGRAFIA=catalogos', async () => {
+  const e = await prepararEntorno({ env: { GENERADOR_GEOGRAFIA: 'catalogos' } });
+  const args = { db: e.db, config: e.config, reserva: e.reserva, reservas: e.reservas, ahora: e.reloj.ahora, modo: 'geografia' };
+  const r = await asegurarDesafio({ ...args, fecha: '2026-10-05' });
+  assert.equal(r.origen, 'catalogo');
+  assert.ok((await e.db.all("SELECT p.categoria FROM preguntas p JOIN desafios d ON d.id = p.desafio_id WHERE d.modo = 'geografia'")).every((p) => p.categoria === 'geografia'));
+  e.config.generadores.geografia = 'reserva';
+  assert.equal((await asegurarDesafio({ ...args, fecha: '2026-10-06' })).origen, 'reserva');
+  assert.equal((await asegurarDesafio({ ...args, fecha: '2026-10-07', generador: 'catalogos' })).origen, 'catalogo', 'el panel puede elegir');
+  assert.equal(cargarConfig({ sinArchivoEnv: true, env: {} }).generadores.geografia, 'reserva', 'por omisión, la reserva');
+  e.db.close();
+});
+
+test('plantillas: «solo» limita los valores de un parámetro y «modos» limita dónde se usa la plantilla', () => {
+  const estados = PL.plantillas.find((p) => p.id === 'estados-pais');
+  const enunciados = prepararCandidatos(estados, cat('subdivisiones'), { dominios: DOMINIOS }).candidatos.map((c) => c.enunciado).sort();
+  assert.deepEqual(enunciados, ['Alemania', 'Australia', 'Brasil', 'Estados Unidos', 'India', 'México', 'Venezuela'].map((p) => `Nombrá un estado de ${p}.`).sort());
+  assert.match(validarPlantilla({ ...estados, parametros: { pais: { tipo: 'letra', campo: 'nombre', posicion: 'inicial', solo: ['A'] } } }).join(' '), /«solo»/);
+  assert.match(validarPlantilla({ ...estados, modos: ['inexistente'] }).join(' '), /modos/);
+  // La copia de «países por idioma» para Geografía no entra en Normal.
+  const soloGeografia = new Set(PL.plantillas.filter((p) => p.modos && !p.modos.includes('normal')).map((p) => p.id));
+  assert.ok(soloGeografia.has('paises-idioma-geografia'));
+  const historial = [];
+  for (let i = 0; i < 6; i++) {
+    const fecha = sumarDias('2026-11-01', i);
+    const lote = generarLote({ catalogos, plantillas, fecha, dominios: DOMINIOS, historial });
+    assert.ok(lote.elegidas.every((x) => !soloGeografia.has(x.plantilla)));
+    historial.push(...comoHistorial(lote, fecha));
+  }
+});
+
+test('nombres repetidos en el catálogo: solo es ambigua la pregunta que los incluye a los dos', () => {
+  const deptos = cat('departamentos_argentinos');
+  assert.ok(deptos.entidades.filter((x) => x.nombre === 'Capital').length > 1, 'hay varios departamentos «Capital»');
+  const plantilla = PL.plantillas.find((p) => p.id === 'departamentos-provincia');
+  const { candidatos } = prepararCandidatos(plantilla, deptos, { dominios: DOMINIOS });
+  const mendoza = candidatos.find((c) => c.enunciado === 'Nombrá un departamento de Mendoza.');
+  assert.ok(mendoza?.entidades.some((x) => x.nombre === 'Capital'), 'Mendoza tiene su «Capital» y la pregunta vale');
+  // Dos «Capital» en el mismo conjunto sí es ambiguo.
+  const ambos = validarFiltro({ op: 'es', campo: 'provincia', valores: ['Mendoza', 'San Juan'] }, deptos).filtro;
+  const sintetica = { ...plantilla, id: 'prueba-ambigua', parametros: {}, filtro: ambos, respuestas: { min: 5, max: 60 } };
+  const r = prepararCandidatos(sintetica, deptos, { dominios: DOMINIOS });
+  assert.equal(r.candidatos.length, 0);
+  assert.equal(r.descartes['nombres ambiguos'], 1);
+});

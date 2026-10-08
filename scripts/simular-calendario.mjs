@@ -7,6 +7,7 @@
 //   npm run simular-calendario -- --dias 365 --semilla otra --inicio 2026-12-01
 //   npm run simular-calendario -- --manuales 7 --futuros 3  # con historial manual previo y días ya programados
 //   npm run simular-calendario -- --json salida.json        # además, el informe completo en un archivo
+//   npm run simular-calendario -- --modo geografia          # el modo Geografía (siete preguntas de geografía por día)
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -34,12 +35,13 @@ const inicio = valor('--inicio', sumarDias(fechaLocal(Date.now(), config.zona), 
 const manuales = Number(valor('--manuales', 0));
 const futuros = Number(valor('--futuros', 0));
 const ventana = config.catalogos.diasSinRepetir;
+const modo = valor('--modo', 'normal');
 
 const db = await abrirBD(config.rutaBD);
 const reserva = cargarReserva(config.rutaReserva, { dominios: config.fuentes.dominios });
 const reservas = { normal: reserva };
 for (const [modo, ruta] of Object.entries(config.rutasReserva)) reservas[modo] = cargarReserva(ruta, { dominios: config.fuentes.dominios, modo });
-const publicar = (fecha, generador) => asegurarDesafio({ db, config, fecha, modo: 'normal', reserva, reservas, generador });
+const publicar = (fecha, generador) => asegurarDesafio({ db, config, fecha, modo, reserva, reservas, generador });
 
 // Historial inicial: días previos «manuales» (desde la reserva, sin firma de generador) y días futuros ya
 // programados (también desde la reserva) dentro de la simulación.
@@ -69,7 +71,8 @@ const ms = Date.now() - t0;
 // ───── Métricas ─────
 const preguntas = await db.all(
   `SELECT d.fecha, p.categoria, p.origen, p.firma, p.conjunto, p.generacion FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
-   WHERE d.modo = 'normal' AND d.fecha BETWEEN ? AND ? ORDER BY d.fecha, p.posicion`,
+   WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? ORDER BY d.fecha, p.posicion`,
+  modo,
   inicio, sumarDias(inicio, dias - 1),
 );
 const generadas = preguntas.filter((p) => p.origen === 'catalogo').map((p) => ({ ...p, g: JSON.parse(p.generacion) }));
@@ -92,7 +95,7 @@ for (const clave of ['firma', 'conjunto']) {
 }
 const generados = resultados.filter((r) => !r.programado);
 const informe = {
-  configuracion: { inicio, dias, ventana, semilla: config.catalogos.semilla, maxRespuestas: config.catalogos.maxRespuestas, completarConReserva: config.catalogos.completarConReserva },
+  configuracion: { modo, inicio, dias, ventana, semilla: config.catalogos.semilla, maxRespuestas: config.catalogos.maxRespuestas, completarConReserva: config.catalogos.completarConReserva },
   versiones: generadas[0]?.g.versiones ?? null,
   historialInicial,
   dias: {
@@ -110,6 +113,8 @@ const informe = {
     porCatalogo: contar(generadas, (p) => p.g.catalogo.id),
     porFamilia: contar(generadas, (p) => p.g.familia),
     porDificultad: contar(generadas, (p) => p.g.dificultad.nivel),
+    // Cuántas preguntas por día tienen una condición sobre las letras del nombre (empieza, termina, tiene…).
+    deLetrasPorDia: contar(Object.values(generadas.reduce((m, p) => ({ ...m, [p.fecha]: (m[p.fecha] ?? 0) + Number(p.g.filtro.y.some((c) => c.campo === 'nombre')) }), {})), (n) => `${n} de letras`),
     categoriasPorDia: contar(Object.values(generadas.reduce((m, p) => ({ ...m, [p.fecha]: new Set([...(m[p.fecha] ?? []), p.categoria]) }), {})), (s) => `${s.size} categorías`),
   },
   segundos: Math.round(ms / 100) / 10,
@@ -119,7 +124,7 @@ rmSync(dir, { recursive: true, force: true });
 
 if (valor('--json')) writeFileSync(valor('--json'), JSON.stringify(informe, null, 2));
 const d = informe.dias;
-console.log(`Simulación: ${dias} días desde ${inicio} · ventana ${ventana} · semilla «${informe.configuracion.semilla}» · ${informe.segundos} s`);
+console.log(`Simulación ${modo}: ${dias} días desde ${inicio} · ventana ${ventana} · semilla «${informe.configuracion.semilla}» · ${informe.segundos} s`);
 if (historialInicial.length) console.log(`Historial inicial: ${historialInicial.map((h) => `${h.fecha} ${h.tipo}`).join(' · ')}`);
 console.log(`Días: ${d.publicadosSoloCatalogos} solo con catálogos · ${d.mixtos} mixtos (completados con la reserva) · ${d.soloReserva} solo reserva · ${d.fallos} fallos · ${d.programadosDeAntes} ya programados`);
 if (d.diasConReserva.length) console.log(`  usaron la reserva: ${d.diasConReserva.join(', ')}`);

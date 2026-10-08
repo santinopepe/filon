@@ -221,3 +221,26 @@ test('editar una pregunta publicada y la reserva desde el panel', async ({ page 
   await expect(page.locator('#reserva-nota')).toContainText('activa(s) de');
   expect(errores).toEqual([]);
 });
+
+test('modo desactivado en el panel: sin pestaña en «Crear», marcado en los selectores; Geografía puede usar catálogos', async ({ page }) => {
+  const errores = vigilarErrores(page);
+  // Simula MODOS_ACTIVOS=normal,geografia.
+  await page.route(/\/api\/admin\/desafios(\?|$)/, async (ruta) => {
+    const respuesta = await ruta.fetch();
+    const cuerpo = await respuesta.json();
+    cuerpo.modos = cuerpo.modos.map((m) => (m.clave === 'farandula' ? { ...m, activo: false } : m));
+    await ruta.fulfill({ response: respuesta, json: cuerpo });
+  });
+  await ingresar(page);
+  await page.click('#tab-desafios');
+  await expect(page.locator('#des-modo option[value="farandula"]')).toHaveText('Farándula Argentina (desactivado)');
+  await page.click('#tab-crear');
+  await expect(page.locator('#tab-crear-farandula')).toBeHidden();
+  await page.click('#tab-crear-geografia');
+  await expect(page.locator('#geografia-gen-generador')).toBeVisible();
+  await expect(page.locator('#geografia-gen-vista-previa')).toBeVisible();
+  // Las flechas saltan la pestaña escondida.
+  await page.locator('#tab-crear-geografia').press('ArrowLeft');
+  await expect(page.locator('#tab-crear-normal')).toBeFocused();
+  expect(errores).toEqual([]);
+});

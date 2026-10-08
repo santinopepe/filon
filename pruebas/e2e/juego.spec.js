@@ -196,6 +196,58 @@ for (const conPuntos of [false, true]) {
   });
 }
 
+test('mecha apagada: lo que quedó escrito va como último intento', async ({ page, request }) => {
+  const errores = vigilarErrores(page);
+  const banco = await bancoDeHoy(request);
+  const valida = masRara(banco, 1);
+  // El reloj del navegador se adelanta; el del servidor no, así que el último intento llega «a tiempo»,
+  // como cuando entra dentro del margen de red (GRACIA_RED_MS).
+  await page.clock.install();
+  await page.goto('/');
+  await page.click('#btn-comenzar');
+  await expect(page.locator('#p-ronda')).toBeVisible();
+  await page.fill('#campo-respuesta', valida.canonica);
+  await page.clock.fastForward(26_000);
+  await expect(page.locator('#ronda-mensaje')).toContainText('último intento');
+  await expect(page.locator('#p-resultado')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('#res-titulo')).not.toHaveText('Se apagó la mecha');
+  const { partidaHoy } = await (await page.request.get('/api/estado')).json();
+  expect(partidaHoy.rondas[0].estado).toBe('acertada');
+  expect(partidaHoy.rondas[0].respuesta.canonica).toBe(valida.canonica);
+
+  // Si lo escrito no vale, se explica por qué y la ronda se cierra igual.
+  await page.click('#btn-siguiente');
+  await expect(page.locator('#p-ronda')).toBeVisible();
+  await page.fill('#campo-respuesta', 'zzzz no existe');
+  await page.clock.fastForward(26_000);
+  await expect(page.locator('#ronda-mensaje')).toContainText('«zzzz no existe»');
+  await expect(page.locator('#campo-respuesta')).toBeDisabled();
+  const { partidaHoy: despues } = await (await page.request.get('/api/estado')).json();
+  expect(despues.rondas[1].intentos.map((i) => i.texto ?? i)).toContain('zzzz no existe');
+  expect(errores).toEqual([]);
+});
+
+test('modo desactivado: no aparece en el selector y un enlace viejo abre Normal', async ({ page }) => {
+  const errores = vigilarErrores(page);
+  // Simula MODOS_ACTIVOS=normal,geografia: el servidor no lista Farándula y responde con Normal.
+  await page.route(/\/api\/estado/, async (ruta) => {
+    const respuesta = await ruta.fetch({ url: ruta.request().url().replace('modo=farandula', 'modo=normal') });
+    const cuerpo = await respuesta.json();
+    cuerpo.modos = cuerpo.modos.filter((m) => m.clave !== 'farandula');
+    await ruta.fulfill({ response: respuesta, json: cuerpo });
+  });
+  await page.goto('/?modo=farandula');
+  await expect(page.locator('#btn-comenzar')).toBeVisible();
+  await expect(page).not.toHaveURL(/modo=/);
+  await expect(page.locator('body')).toHaveClass(/modo-normal/);
+  await page.click('#btn-modos');
+  const dialogo = page.locator('#dlg-modos');
+  await expect(dialogo.locator('.modo-opcion:visible')).toHaveCount(2);
+  await expect(dialogo.locator('.modo-opcion[data-modo="farandula"]')).toBeHidden();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('filon:prefs') ?? '{}').modo ?? 'normal')).toBe('normal');
+  expect(errores).toEqual([]);
+});
+
 test('modos: el menú ☰ abre el selector y cada modo tiene su ambientación y su partida diaria', async ({ page, request }) => {
   const errores = vigilarErrores(page);
   await page.goto('/');

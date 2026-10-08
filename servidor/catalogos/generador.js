@@ -4,7 +4,7 @@
 // fecha, versiones e historial, el resultado es el mismo.
 import { createHash } from 'node:crypto';
 import { generadorConSemilla } from '../azar.js';
-import { CATEGORIAS, PREGUNTAS_POR_DESAFIO, VARIEDAD_NORMAL } from '../dominio.js';
+import { CATEGORIAS, CATEGORIAS_NORMAL, PREGUNTAS_POR_DESAFIO, VARIEDAD_NORMAL } from '../dominio.js';
 import { formasRegistrables, normalizar } from '../normalizar.js';
 import { validarPregunta } from '../validacion.js';
 import { validarFiltro, evaluar, describir, explicarFalla, claveDeFiltro, VERSION_FILTROS } from './filtros.js';
@@ -13,7 +13,7 @@ import { VERSION_TEXTO } from './texto.js';
 import { dentroDeVentana } from '../tiempo.js';
 import { versionDeCatalogos } from './catalogos.js';
 
-export const VERSION_GENERADOR = '1';
+export const VERSION_GENERADOR = '2';
 const QUINTILES = ['grava', 'cobre', 'plata', 'oro', 'diamante'];
 const CENTRO = { facil: 0.2, media: 0.45, dificil: 0.7 };
 const MINHASH = 64;
@@ -30,9 +30,19 @@ export const POR_OMISION = Object.freeze({
   intentosTotales: 1500,
   maxRechazos: 150,
   maxPorFamilia: 1,
-  maxPorCatalogo: 2,
   // Topes por categoría más bajos que el general (Gramática: una por día, para que el lote sea variado).
   maxPorCategoria: { gramatica: 1 },
+});
+
+/**
+ * Reglas del lote de cada modo con generador. Normal: siete preguntas generales, variadas por categoría.
+ * Geografía: siete de geografía, variadas por familia y por catálogo. Los demás modos no tienen generador.
+ */
+export const REGLAS_LOTE = Object.freeze({
+  normal: { categorias: CATEGORIAS_NORMAL, minCategorias: VARIEDAD_NORMAL.minCategorias, maxPorCategoria: VARIEDAD_NORMAL.maxPorCategoria, maxPorCatalogo: 2 },
+  // Geografía: se prefieren como mucho 3 de las 7 con condiciones sobre las letras del nombre (empieza,
+  // termina, tiene…) y nunca más de 5, para que el día no sea un juego de palabras.
+  geografia: { categorias: ['geografia'], minCategorias: 1, maxPorCategoria: PREGUNTAS_POR_DESAFIO, maxPorCatalogo: 3, letrasPreferidas: 3, maxDeLetras: 5 },
 });
 
 // ───── Utilidades ─────
@@ -149,6 +159,25 @@ function solapamiento(candidato, registros) {
 }
 
 // ───── Candidatos ─────
+/**
+ * ¿Dos respuestas del conjunto se escriben igual? («Capital» de Mendoza y de San Juan.) Con nombres que se
+ * repiten en el catálogo pero no dentro del conjunto, la pregunta no es ambigua: cada forma aceptada lleva
+ * a una sola respuesta, y las homónimas de afuera no se usan como rechazo.
+ */
+/** ¿La consigna pone condiciones sobre las letras del nombre? */
+const deLetras = (c) => c.filtro.y.some((x) => x.campo === 'nombre');
+
+function nombresRepetidos(entidades) {
+  const vistas = new Map();
+  for (const e of entidades) {
+    for (const f of formasRegistrables(e.nombre)) {
+      if (vistas.has(f) && vistas.get(f) !== e.id) return true;
+      vistas.set(f, e.id);
+    }
+  }
+  return false;
+}
+
 
 // Candidatos preparados por plantilla y versión del catálogo: se calculan una vez por proceso (no en cada
 // día ni en cada intento). Las plantillas enormes (combinaciones × entidades) se muestrean por día.
@@ -202,7 +231,7 @@ export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxResp
       descartar('cobertura insuficiente');
       continue;
     }
-    if (entidades.some((e) => e.ambigua)) {
+    if (nombresRepetidos(entidades)) {
       descartar('nombres ambiguos');
       continue;
     }
@@ -299,7 +328,9 @@ function armarPregunta(c, ctx) {
  * Devuelve { ok, preguntas, elegidas, descartes, semilla, versiones, errores }.
  */
 export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', semillaBase = 'filon', historial = [], recientes = [], dominios = [], opciones = {}, limite = PREGUNTAS_POR_DESAFIO }) {
-  const op = { ...POR_OMISION, ...opciones };
+  const reglas = REGLAS_LOTE[modo];
+  if (!reglas) throw new Error(`El modo «${modo}» no tiene generador por catálogos.`);
+  const op = { ...POR_OMISION, maxPorCatalogo: reglas.maxPorCatalogo, ...opciones };
   const versiones = { plantillas: plantillas.version, filtros: VERSION_FILTROS, texto: VERSION_TEXTO, generador: VERSION_GENERADOR, catalogos: versionDeCatalogos(catalogos) };
   const semilla = sha(`${semillaBase}|${fecha}|${modo}|${JSON.stringify(versiones)}`).slice(0, 16);
   const ctx = { semilla, versiones, modo, dominios, opciones: op };
@@ -313,7 +344,7 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
   const historialVentana = historial.filter(enVentana);
   const recientesVentana = recientes.filter(enVentana);
   const pool = [];
-  for (const p of plantillas.lista) {
+  for (const p of plantillas.lista.filter((x) => reglas.categorias.includes(x.categoria) && (!x.modos || x.modos.includes(modo)))) {
     const catalogo = catalogos.get(p.catalogo);
     if (!catalogo) {
       descartar(p.id, null, `falta el catálogo «${p.catalogo}» (importalo con npm run importar-catalogos)`);
@@ -349,21 +380,23 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
   let intentos = 0;
   for (let slot = 0; slot < limite && intentos < op.intentosTotales; slot++) {
     const categorias = new Set(elegidas.map((e) => e.candidato.categoria));
-    const faltanCategorias = VARIEDAD_NORMAL.minCategorias - categorias.size;
+    const faltanCategorias = reglas.minCategorias - categorias.size;
     const exigirNueva = faltanCategorias > 0 && limite - slot <= faltanCategorias;
     const objetivo = CENTRO[objetivos[slot % objetivos.length]];
+    const sobranLetras = reglas.letrasPreferidas !== undefined && elegidas.filter((e) => deLetras(e.candidato)).length >= reglas.letrasPreferidas;
     // Preferencias (no bloqueos): dificultad cercana al objetivo, consignas conocidas, familias que no
     // salieron hace poco y conjuntos que no se parezcan mucho a uno reciente del mismo catálogo.
     const puntaje = (c) =>
-      Math.abs(c.dificultad.valor - objetivo) - 0.06 * c.plantilla.prioridad + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + 0.1 * c.sorteo;
+      Math.abs(c.dificultad.valor - objetivo) - 0.06 * c.plantilla.prioridad + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0) + 0.1 * c.sorteo;
     const ordenados = pool.filter((c) => !c.usado).sort((a, b) => puntaje(a) - puntaje(b));
     for (const c of ordenados) {
       if (++intentos > op.intentosTotales) break;
       const porCategoria = elegidas.filter((e) => e.candidato.categoria === c.categoria).length;
-      if (porCategoria >= (op.maxPorCategoria[c.categoria] ?? VARIEDAD_NORMAL.maxPorCategoria)) continue;
+      if (porCategoria >= (op.maxPorCategoria[c.categoria] ?? reglas.maxPorCategoria)) continue;
       if (exigirNueva && categorias.has(c.categoria)) continue;
       if (elegidas.filter((e) => e.candidato.familia === c.familia).length >= op.maxPorFamilia) continue;
       if (elegidas.filter((e) => e.candidato.catalogo.id === c.catalogo.id).length >= op.maxPorCatalogo) continue;
+      if (reglas.maxDeLetras !== undefined && deLetras(c) && elegidas.filter((e) => deLetras(e.candidato)).length >= reglas.maxDeLetras) continue;
       const enLote = repeticion(c, elegidas.map((e) => ({ firma: e.candidato.firma, conjunto: e.candidato.conjunto })));
       if (enLote) {
         c.usado = true;

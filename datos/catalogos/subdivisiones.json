@@ -1,0 +1,1365 @@
+{
+  "id": "subdivisiones",
+  "nombre": "Estados, provincias, regiones y departamentos de otros países",
+  "descripcion": "Las divisiones de primer nivel de 18 países (estados de Estados Unidos, México, Brasil…; departamentos de Uruguay, Colombia…; regiones de Chile, Italia y Francia; provincias de España, Canadá y Ecuador; prefecturas de Japón).",
+  "version": "2026-10-08.ca2cab215a",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "divisiones de primer nivel (P31 por país), nombres y popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todas las divisiones de primer nivel vigentes de cada uno de los 18 países (clase de Wikidata de ese tipo de división), con la cantidad oficial verificada país por país.",
+    "verificacion": [
+      "Estados Unidos: 50 estados (se esperan 50)",
+      "México: 31 estados (se esperan 31)",
+      "Brasil: 26 estados (se esperan 26)",
+      "Venezuela: se descartan 1 ítem(s) sin código ISO 3166-2 (Q125698255)",
+      "Venezuela: 23 estados (se esperan 23)",
+      "Alemania: 16 estados (se esperan 16)",
+      "Australia: 6 estados (se esperan 6)",
+      "India: 28 estados (se esperan 28)",
+      "Uruguay: 19 departamentos (se esperan 19)",
+      "Colombia: se descartan 3 ítem(s) sin código ISO 3166-2 (Q431036, Q28503264, Q42908064)",
+      "Colombia: 32 departamentos (se esperan 32)",
+      "Paraguay: 17 departamentos (se esperan 17)",
+      "Bolivia: 9 departamentos (se esperan 9)",
+      "Chile: 16 regiones (se esperan 16)",
+      "Italia: 20 regiones (se esperan 20)",
+      "Francia: 18 regiones (se esperan 18)",
+      "España: se descartan 2 ítem(s) sin código ISO 3166-2 (Q95006, Q95007)",
+      "España: 50 provincias (se esperan 50)",
+      "Canadá: 10 provincias (se esperan 10)",
+      "Ecuador: 24 provincias (se esperan 24)",
+      "Japón: 47 prefecturas (se esperan 47)",
+      "todas tienen nombre en español",
+      "Estados Unidos: los nombres no se repiten",
+      "México: los nombres no se repiten",
+      "Brasil: los nombres no se repiten",
+      "Venezuela: los nombres no se repiten",
+      "Alemania: los nombres no se repiten",
+      "Australia: los nombres no se repiten",
+      "India: los nombres no se repiten",
+      "Uruguay: los nombres no se repiten",
+      "Colombia: los nombres no se repiten",
+      "Paraguay: los nombres no se repiten",
+      "Bolivia: los nombres no se repiten",
+      "Chile: los nombres no se repiten",
+      "Italia: los nombres no se repiten",
+      "Francia: los nombres no se repiten",
+      "España: los nombres no se repiten",
+      "Canadá: los nombres no se repiten",
+      "Ecuador: los nombres no se repiten",
+      "Japón: los nombres no se repiten",
+      "Estados Unidos: incluye Texas, California, Alaska",
+      "México: incluye Jalisco, Estado de México, Yucatán",
+      "España: incluye Barcelona, Asturias, Navarra",
+      "Chile: incluye Biobío, Magallanes"
+    ]
+  },
+  "atributos": {
+    "pais": {
+      "tipo": "texto",
+      "etiqueta": "país"
+    },
+    "tipo": {
+      "tipo": "texto",
+      "etiqueta": "tipo de división"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Q119158",
+      "detalle": "se excluye",
+      "motivo": "El Distrito Federal no es un estado."
+    },
+    {
+      "entidad": "Q31844097",
+      "detalle": "se agrega",
+      "motivo": "La provincia de La Rioja (ES-LO) no tiene su código ISO 3166-2 en Wikidata."
+    },
+    {
+      "entidad": "Q107356469",
+      "detalle": "se agrega",
+      "motivo": "Wikidata clasifica la provincia de Baleares (ES-PM) como histórica, pero sigue siendo una de las 50 provincias (INE)."
+    },
+    {
+      "entidad": "Q34110",
+      "detalle": "«Oaxaca» en vez de «Estado de Oaxaca»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q60130",
+      "detalle": "«Veracruz» en vez de «Estado de Veracruz»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q205843",
+      "detalle": "«La Guaira» en vez de «Estado La Guaira»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q43271",
+      "detalle": "«Barinas» en vez de «Estado Barinas»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q331196",
+      "detalle": "«Maldonado» en vez de «Departamento de Maldonado»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q460435",
+      "detalle": "«Lavalleja» en vez de «Departamento de Lavalleja»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16575",
+      "detalle": "«Cerro Largo» en vez de «Departamento de Cerro Largo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16578",
+      "detalle": "«Flores» en vez de «Departamento de Flores»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16579",
+      "detalle": "«San José» en vez de «Departamento de San José»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16576",
+      "detalle": "«Paysandú» en vez de «Departamento de Paysandú»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16577",
+      "detalle": "«Canelones» en vez de «Departamento de Canelones»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16582",
+      "detalle": "«Rocha» en vez de «Departamento de Rocha»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16580",
+      "detalle": "«Colonia» en vez de «Departamento de Colonia»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16584",
+      "detalle": "«Soriano» en vez de «Departamento de Soriano»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16587",
+      "detalle": "«Tacuarembó» en vez de «Departamento de Tacuarembó»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16591",
+      "detalle": "«Durazno» en vez de «Departamento de Durazno»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16594",
+      "detalle": "«Montevideo» en vez de «Departamento de Montevideo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16595",
+      "detalle": "«Salto» en vez de «Departamento de Salto»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16593",
+      "detalle": "«Florida» en vez de «Departamento de Florida»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16596",
+      "detalle": "«Río Negro» en vez de «Departamento de Río Negro»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16603",
+      "detalle": "«Artigas» en vez de «Departamento de Artigas»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16610",
+      "detalle": "«Treinta y Tres» en vez de «Departamento de Treinta y Tres»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q16609",
+      "detalle": "«Rivera» en vez de «Departamento de Rivera»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q268729",
+      "detalle": "«Vichada» en vez de «Departamento del Vichada»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q222564",
+      "detalle": "«Itapúa» en vez de «Departamento de Itapúa»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q750551",
+      "detalle": "«Presidente Hayes» en vez de «Departamento de Presidente Hayes»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q240014",
+      "detalle": "«Paraguarí» en vez de «Departamento de Paraguarí»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q279085",
+      "detalle": "«Canindeyú» en vez de «Departamento de Canindeyú»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q372461",
+      "detalle": "«Central» en vez de «Departamento Central»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q526176",
+      "detalle": "«San Pedro» en vez de «Departamento de San Pedro»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q591194",
+      "detalle": "«Misiones» en vez de «Departamento de Misiones»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q682642",
+      "detalle": "«Alto Paraguay» en vez de «Departamento de Alto Paraguay»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q682654",
+      "detalle": "«Alto Paraná» en vez de «Departamento de Alto Paraná»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q686586",
+      "detalle": "«Amambay» en vez de «Departamento de Amambay»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q741009",
+      "detalle": "«Concepción» en vez de «Departamento de Concepción»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q741017",
+      "detalle": "«Boquerón» en vez de «Departamento de Boquerón»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q755115",
+      "detalle": "«Ñeembucú» en vez de «Departamento de Ñeembucú»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q755116",
+      "detalle": "«Guairá» en vez de «Departamento de Guairá»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q755121",
+      "detalle": "«Cordillera» en vez de «Departamento de Cordillera»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q880399",
+      "detalle": "«Caaguazú» en vez de «Departamento de Caaguazú»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q881839",
+      "detalle": "«Caazapá» en vez de «Departamento de Caazapá»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q1061368",
+      "detalle": "«Oruro» en vez de «Departamento de Oruro»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q233169",
+      "detalle": "«Beni» en vez de «Departamento del Beni»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q233917",
+      "detalle": "«Cochabamba» en vez de «Departamento de Cochabamba»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q233933",
+      "detalle": "«Tarija» en vez de «Departamento de Tarija»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q235106",
+      "detalle": "«Santa Cruz» en vez de «Departamento de Santa Cruz»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q235110",
+      "detalle": "«Chuquisaca» en vez de «Departamento de Chuquisaca»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q235362",
+      "detalle": "«Pando» en vez de «Departamento de Pando»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q238079",
+      "detalle": "«Potosí» en vez de «Departamento de Potosí»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q272784",
+      "detalle": "«La Paz» en vez de «Departamento de La Paz»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q24076693",
+      "detalle": "«Ñuble» en vez de «Región de Ñuble»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q219458",
+      "detalle": "«Valparaíso» en vez de «Región de Valparaíso»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2109",
+      "detalle": "«Arica y Parinacota» en vez de «Región de Arica y Parinacota»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2114",
+      "detalle": "«Tarapacá» en vez de «Región de Tarapacá»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2118",
+      "detalle": "«Antofagasta» en vez de «Región de Antofagasta»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2120",
+      "detalle": "«Atacama» en vez de «Región de Atacama»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2121",
+      "detalle": "«Coquimbo» en vez de «Región de Coquimbo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2133",
+      "detalle": "«O'Higgins» en vez de «Región de O'Higgins»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2166",
+      "detalle": "«Maule» en vez de «Región del Maule»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2170",
+      "detalle": "«Biobío» en vez de «Región del Biobío»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2176",
+      "detalle": "«La Araucanía» en vez de «Región de La Araucanía»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2177",
+      "detalle": "«Los Ríos» en vez de «Región de Los Ríos»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2178",
+      "detalle": "«Los Lagos» en vez de «Región de Los Lagos»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2181",
+      "detalle": "«Aysén del General Carlos Ibáñez del Campo» en vez de «Región de Aysén del General Carlos Ibáñez del Campo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q2189",
+      "detalle": "«Magallanes y de la Antártica Chilena» en vez de «Región de Magallanes y de la Antártica Chilena»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q71080",
+      "detalle": "«Salamanca» en vez de «provincia de Salamanca»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q71097",
+      "detalle": "«Valladolid» en vez de «provincia de Valladolid»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q71113",
+      "detalle": "«Zamora» en vez de «provincia de Zamora»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q71140",
+      "detalle": "«León» en vez de «provincia de León»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81802",
+      "detalle": "«Almería» en vez de «provincia de Almería»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81803",
+      "detalle": "«Badajoz» en vez de «provincia de Badajoz»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81949",
+      "detalle": "«Barcelona» en vez de «provincia de Barcelona»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81972",
+      "detalle": "«Córdoba» en vez de «provincia de Córdoba»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81978",
+      "detalle": "«Cádiz» en vez de «provincia de Cádiz»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81977",
+      "detalle": "«Cáceres» en vez de «provincia de Cáceres»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q82119",
+      "detalle": "«La Coruña» en vez de «provincia de La Coruña»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q82142",
+      "detalle": "«Granada» en vez de «provincia de Granada»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q24004403",
+      "detalle": "«Asturias» en vez de «provincia de Asturias»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q24004404",
+      "detalle": "«Navarra» en vez de «provincia de Navarra»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q24004405",
+      "detalle": "«Madrid» en vez de «Provincia de Madrid»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q24271891",
+      "detalle": "«Murcia» en vez de «provincia de Murcia»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95015",
+      "detalle": "«Huelva» en vez de «provincia de Huelva»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95027",
+      "detalle": "«Lugo» en vez de «provincia de Lugo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95025",
+      "detalle": "«Jaén» en vez de «provincia de Jaén»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95028",
+      "detalle": "«Málaga» en vez de «provincia de Málaga»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95038",
+      "detalle": "«Orense» en vez de «provincia de Orense»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95086",
+      "detalle": "«Pontevedra» en vez de «provincia de Pontevedra»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q95088",
+      "detalle": "«Sevilla» en vez de «provincia de Sevilla»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q98392",
+      "detalle": "«Tarragona» en vez de «provincia de Tarragona»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q99976",
+      "detalle": "«Santa Cruz de Tenerife» en vez de «provincia de Santa Cruz de Tenerife»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q31920747",
+      "detalle": "«Cantabria» en vez de «provincia de Cantabria»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q13904",
+      "detalle": "«Lérida» en vez de «provincia de Lérida»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54888",
+      "detalle": "«Cuenca» en vez de «provincia de Cuenca»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54889",
+      "detalle": "«Albacete» en vez de «provincia de Albacete»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54925",
+      "detalle": "«Guadalajara» en vez de «provincia de Guadalajara»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54929",
+      "detalle": "«Toledo» en vez de «provincia de Toledo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54932",
+      "detalle": "«Ciudad Real» en vez de «provincia de Ciudad Real»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54939",
+      "detalle": "«Valencia» en vez de «provincia de Valencia»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54936",
+      "detalle": "«Alicante» en vez de «provincia de Alicante»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54942",
+      "detalle": "«Castellón» en vez de «provincia de Castellón»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q54955",
+      "detalle": "«Teruel» en vez de «provincia de Teruel»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55182",
+      "detalle": "«Huesca» en vez de «provincia de Huesca»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55180",
+      "detalle": "«Zaragoza» en vez de «provincia de Zaragoza»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55269",
+      "detalle": "«Palencia» en vez de «provincia de Palencia»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55271",
+      "detalle": "«Burgos» en vez de «provincia de Burgos»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55276",
+      "detalle": "«Soria» en vez de «provincia de Soria»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55283",
+      "detalle": "«Segovia» en vez de «provincia de Segovia»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q55288",
+      "detalle": "«Ávila» en vez de «provincia de Ávila»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q7194",
+      "detalle": "«Gerona» en vez de «provincia de Gerona»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q107356469",
+      "detalle": "«Baleares» en vez de «provincia de Baleares»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q241140",
+      "detalle": "«Cotopaxi» en vez de «Provincia de Cotopaxi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q321729",
+      "detalle": "«Carchi» en vez de «Provincia de Carchi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q321863",
+      "detalle": "«Imbabura» en vez de «Provincia de Imbabura»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q335471",
+      "detalle": "«Cañar» en vez de «Provincia de Cañar»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q335526",
+      "detalle": "«Esmeraldas» en vez de «Provincia de Esmeraldas»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q466019",
+      "detalle": "«El Oro» en vez de «Provincia de El Oro»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q475038",
+      "detalle": "«Galápagos» en vez de «Provincia de Galápagos»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q504252",
+      "detalle": "«Tungurahua» en vez de «Provincia de Tungurahua»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q504666",
+      "detalle": "«Manabí» en vez de «Provincia de Manabí»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q1037393",
+      "detalle": "«Hokkaido» en vez de «Prefectura de Hokkaido»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q131281",
+      "detalle": "«Ishikawa» en vez de «Prefectura de Ishikawa»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q131287",
+      "detalle": "«Nara» en vez de «Prefectura de Nara»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q131314",
+      "detalle": "«Wakayama» en vez de «Prefectura de Wakayama»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q131320",
+      "detalle": "«Shizuoka» en vez de «Prefectura de Shizuoka»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q131358",
+      "detalle": "«Shiga» en vez de «Prefectura de Shiga»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q132705",
+      "detalle": "«Niigata» en vez de «Prefectura de Niigata»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q132720",
+      "detalle": "«Yamanashi» en vez de «Prefectura de Yamanashi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q132751",
+      "detalle": "«Shimane» en vez de «Prefectura de Shimane»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q132929",
+      "detalle": "«Toyama» en vez de «Prefectura de Toyama»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q132936",
+      "detalle": "«Okayama» en vez de «Prefectura de Okayama»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q133879",
+      "detalle": "«Fukui» en vez de «Prefectura de Fukui»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q133924",
+      "detalle": "«Oita» en vez de «prefectura de Oita»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q133935",
+      "detalle": "«Tottori» en vez de «Prefectura de Tottori»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q134093",
+      "detalle": "«Kōchi» en vez de «Prefectura de Kōchi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q160420",
+      "detalle": "«Saga» en vez de «prefectura de Saga»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q160734",
+      "detalle": "«Tokushima» en vez de «Prefectura de Tokushima»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q161454",
+      "detalle": "«Kagawa» en vez de «Prefectura de Kagawa»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q169376",
+      "detalle": "«Nagasaki» en vez de «prefectura de Nagasaki»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q617375",
+      "detalle": "«Hiroshima» en vez de «Prefectura de Hiroshima»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q766445",
+      "detalle": "«Okinawa» en vez de «prefectura de Okinawa»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q15701",
+      "detalle": "«Kagoshima» en vez de «prefectura de Kagoshima»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q44843",
+      "detalle": "«Tochigi» en vez de «Prefectura de Tochigi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q47896",
+      "detalle": "«Miyagi» en vez de «Prefectura de Miyagi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q48326",
+      "detalle": "«Iwate» en vez de «Prefectura de Iwate»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q120730",
+      "detalle": "«Kioto» en vez de «Prefectura de Kioto»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q122723",
+      "detalle": "«Osaka» en vez de «Prefectura de Osaka»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q123258",
+      "detalle": "«Fukuoka» en vez de «prefectura de Fukuoka»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q123376",
+      "detalle": "«Ehime» en vez de «Prefectura de Ehime»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q125863",
+      "detalle": "«Yamagata» en vez de «Prefectura de Yamagata»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q127264",
+      "detalle": "«Yamaguchi» en vez de «prefectura de Yamaguchi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q127513",
+      "detalle": "«Kanagawa» en vez de «Prefectura de Kanagawa»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q127877",
+      "detalle": "«Nagano» en vez de «Prefectura de Nagano»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q128186",
+      "detalle": "«Saitama» en vez de «prefectura de Saitama»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q128196",
+      "detalle": "«Mie» en vez de «Prefectura de Mie»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q129499",
+      "detalle": "«Gunma» en vez de «Prefectura de Gunma»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q130290",
+      "detalle": "«Hyōgo» en vez de «Prefectura de Hyōgo»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q130300",
+      "detalle": "«Miyazaki» en vez de «prefectura de Miyazaki»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q130308",
+      "detalle": "«Kumamoto» en vez de «prefectura de Kumamoto»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q131277",
+      "detalle": "«Gifu» en vez de «Prefectura de Gifu»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q71699",
+      "detalle": "«Aomori» en vez de «Prefectura de Aomori»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q71707",
+      "detalle": "«Fukushima» en vez de «Prefectura de Fukushima»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q80011",
+      "detalle": "«Chiba» en vez de «Prefectura de Chiba»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q80434",
+      "detalle": "«Aichi» en vez de «Prefectura de Aichi»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q81863",
+      "detalle": "«Akita» en vez de «Prefectura de Akita»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    },
+    {
+      "entidad": "Q83273",
+      "detalle": "«Ibaraki» en vez de «Prefectura de Ibaraki»",
+      "motivo": "Sin el tipo de división delante (igual se acepta escrito con él)."
+    }
+  ],
+  "entidades": [
+    {"id":"Q1037393","nombre":"Hokkaido","alias":["Prefectura de Hokkaido"],"popularidad":26,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q1037393"},
+    {"id":"Q1055","nombre":"Hamburgo","alias":["Hamburg"],"popularidad":230,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1055"},
+    {"id":"Q1061","nombre":"Guyarat","alias":["Gujarat"],"popularidad":155,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1061"},
+    {"id":"Q1061368","nombre":"Oruro","alias":["Departamento de Oruro","Oruro Department"],"popularidad":66,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q1061368"},
+    {"id":"Q107356469","nombre":"Baleares","alias":["provincia de Baleares","Islas Baleares","Mallorca","provincia de Mallorca","Balearic Islands"],"popularidad":4,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q107356469"},
+    {"id":"Q1123208","nombre":"Santo Domingo de los Tsáchilas","alias":["Provincia de Santo Domingo de los Tsachilas","Sto Domingo de los Tsachilas","Santo Domingo de los Tsáchilas Province"],"popularidad":43,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1123208"},
+    {"id":"Q1124125","nombre":"Santa Elena","alias":["Península de Santa Elena","Santa Elena Province"],"popularidad":44,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1124125"},
+    {"id":"Q1159","nombre":"Andhra Pradesh","popularidad":149,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1159"},
+    {"id":"Q1162","nombre":"Arunachal Pradesh","popularidad":145,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1162"},
+    {"id":"Q1164","nombre":"Assam","popularidad":152,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1164"},
+    {"id":"Q1165","nombre":"Bihar","alias":["Estado de Bihar"],"popularidad":146,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1165"},
+    {"id":"Q1166","nombre":"Míchigan","alias":["El Estado de El Mitón","El Estado de los Grandes Lagos","Estado de Míchigan","Estado de Wolverine","Mích.","Míchigan (Estados Unidos)"],"popularidad":225,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1166"},
+    {"id":"Q1168","nombre":"Chhattisgarh","popularidad":136,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1168"},
+    {"id":"Q1171","nombre":"Goa","popularidad":157,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1171"},
+    {"id":"Q1174","nombre":"Haryana","popularidad":139,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1174"},
+    {"id":"Q1177","nombre":"Himachal Pradesh","popularidad":139,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1177"},
+    {"id":"Q1184","nombre":"Jharkhand","popularidad":133,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1184"},
+    {"id":"Q1185","nombre":"Karnataka","popularidad":152,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1185"},
+    {"id":"Q1186","nombre":"Kerala","popularidad":158,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1186"},
+    {"id":"Q1188","nombre":"Madhya Pradesh","popularidad":145,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1188"},
+    {"id":"Q1191","nombre":"Maharashtra","alias":["Maharastra"],"popularidad":158,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1191"},
+    {"id":"Q1193","nombre":"Manipur","popularidad":137,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1193"},
+    {"id":"Q1194","nombre":"Schleswig-Holstein","alias":["DE-SH"],"popularidad":166,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1194"},
+    {"id":"Q1195","nombre":"Meghalaya","popularidad":124,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1195"},
+    {"id":"Q1196","nombre":"Mecklemburgo-Pomerania Occidental","alias":["Mecklenburg-Vorpommern"],"popularidad":166,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1196"},
+    {"id":"Q1197","nombre":"Baja Sajonia","alias":["Lower Saxony"],"popularidad":167,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1197"},
+    {"id":"Q1198","nombre":"Renania del Norte-Westfalia","alias":["North Rhine-Westphalia"],"popularidad":184,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1198"},
+    {"id":"Q1199","nombre":"Hesse","alias":["Hessen"],"popularidad":182,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1199"},
+    {"id":"Q1200","nombre":"Renania-Palatinado","alias":["DE-RP","Rheinland-Pfalz","Rhineland-Palatinate"],"popularidad":169,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1200"},
+    {"id":"Q1201","nombre":"Sarre","alias":["Saarland"],"popularidad":168,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1201"},
+    {"id":"Q1202","nombre":"Sajonia","alias":["Saxony"],"popularidad":179,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1202"},
+    {"id":"Q1204","nombre":"Illinois","alias":["Estado de Illinois","Estado de la pradera","Illinois (estado)","Illinois, Estados Unidos","La tierra de Lincoln","Tierra de Lincoln"],"popularidad":238,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1204"},
+    {"id":"Q1205","nombre":"Turingia","alias":["Thuringia"],"popularidad":169,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1205"},
+    {"id":"Q1206","nombre":"Sajonia-Anhalt","alias":["Saxony-Anhalt"],"popularidad":162,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1206"},
+    {"id":"Q1207","nombre":"Dakota del Norte","alias":["Dakota del Norte (Estados Unidos)","Estado Jardín de la Paz","Estado de Cola Parpadeante","Estado de Dakota del Norte","Estado roughrider","North Dakota"],"popularidad":211,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1207"},
+    {"id":"Q120730","nombre":"Kioto","alias":["Prefectura de Kioto","Prefectura de Kyoto","Kyoto Prefecture"],"popularidad":106,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q120730"},
+    {"id":"Q1208","nombre":"Brandeburgo","alias":["Brandenburg"],"popularidad":174,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1208"},
+    {"id":"Q1209","nombre":"Bremen","popularidad":132,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1209"},
+    {"id":"Q1210","nombre":"Lombardía","alias":["Lombardy"],"popularidad":161,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1210"},
+    {"id":"Q1211","nombre":"Dakota del Sur","alias":["Dakota del Sur (Estados Unidos)","El Estado Coyote","El Estado del Sol","El estado de Mount Rushmore","Estado de Dakota del Sur","South Dakota"],"popularidad":213,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1211"},
+    {"id":"Q1212","nombre":"Montana","alias":["Estado De Montana","Estado del Tesoro","Gran Cielo del País","Montana (Estados Unidos)"],"popularidad":216,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1212"},
+    {"id":"Q121233","nombre":"Boyacá","alias":["Departamento Boyaca","Departamento de Boyaca","Departamento del Boyaca","Boyacá Department"],"popularidad":73,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q121233"},
+    {"id":"Q12130","nombre":"Bretaña","alias":["Brittany"],"popularidad":111,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q12130"},
+    {"id":"Q1214","nombre":"Wyoming","alias":["El Estado Vaquero","El Estado de Igualdad","Estado De Wyoming","Gran Wyoming","Wyoming (Estados Unidos)"],"popularidad":217,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1214"},
+    {"id":"Q1216","nombre":"Piamonte","alias":["Piedmont"],"popularidad":156,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1216"},
+    {"id":"Q1221","nombre":"Idaho","alias":["Estado Gema","Estado de Idaho","Estado de la Papa","Idaho (Estados Unidos)"],"popularidad":222,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1221"},
+    {"id":"Q1222","nombre":"Valle de Aosta","alias":["Aosta Valley"],"popularidad":138,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1222"},
+    {"id":"Q1223","nombre":"Washington","alias":["Estado de Perennifolio","Estado de Washington","Washington (estado)"],"popularidad":223,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1223"},
+    {"id":"Q1227","nombre":"Nevada","alias":["Estado de Nevada","Estado de Plata","Nevada (Estados Unidos)"],"popularidad":231,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1227"},
+    {"id":"Q122723","nombre":"Osaka","alias":["Prefectura de Osaka","Osaka Japon","Osaka Prefecture"],"popularidad":107,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q122723"},
+    {"id":"Q123258","nombre":"Fukuoka","alias":["prefectura de Fukuoka","Fukuoka Prefecture"],"popularidad":100,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q123258"},
+    {"id":"Q123304","nombre":"Antioquia","alias":["Departamento de Antioquia","Departamento del Antioquia","Region paisa"],"popularidad":77,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q123304"},
+    {"id":"Q123376","nombre":"Ehime","alias":["Prefectura de Ehime","Ehime Japon","Ehime Prefecture"],"popularidad":97,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q123376"},
+    {"id":"Q1237","nombre":"Trentino-Alto Adigio","alias":["Trentino","Trentino-Alto Adige/Südtirol","región Trentino-Alto Adige","Trentino-South Tyrol"],"popularidad":134,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1237"},
+    {"id":"Q1243","nombre":"Véneto","alias":["Regione Veneto","región Veneto"],"popularidad":153,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1243"},
+    {"id":"Q1250","nombre":"Friul-Venecia Julia","alias":["Friuli Venezia Giulia"],"popularidad":133,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1250"},
+    {"id":"Q1256","nombre":"Liguria","popularidad":143,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1256"},
+    {"id":"Q125863","nombre":"Yamagata","alias":["Prefectura de Yamagata","Yamagata Japon","Yamagata Prefecture"],"popularidad":103,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q125863"},
+    {"id":"Q1261","nombre":"Colorado","alias":["Colo.","Colorado, Estados Unidos","El Estado Centenario","Estado de Colorado"],"popularidad":230,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1261"},
+    {"id":"Q1263","nombre":"Emilia-Romaña","alias":["Emilia-Romagna"],"popularidad":148,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1263"},
+    {"id":"Q127264","nombre":"Yamaguchi","alias":["prefectura de Yamaguchi","Yamaguchi Japon","Yamaguchi Prefecture"],"popularidad":94,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q127264"},
+    {"id":"Q1273","nombre":"Toscana","alias":["Tuscany"],"popularidad":165,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1273"},
+    {"id":"Q127513","nombre":"Kanagawa","alias":["Prefectura de Kanagawa","Kanagawa Japon","Kanagawa Prefecture"],"popularidad":108,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q127513"},
+    {"id":"Q127877","nombre":"Nagano","alias":["Prefectura de Nagano","Nagano Japon","Nagano prefecture","Prefectura Nagano"],"popularidad":103,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q127877"},
+    {"id":"Q1279","nombre":"Marcas","alias":["las Marcas","Marche"],"popularidad":134,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1279"},
+    {"id":"Q1280","nombre":"Umbría","popularidad":138,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1280"},
+    {"id":"Q128186","nombre":"Saitama","alias":["prefectura de Saitama","Prefectura Saitama","Saitama Japon","Saitama Prefecture"],"popularidad":105,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q128186"},
+    {"id":"Q128196","nombre":"Mie","alias":["Prefectura de Mie","Mie Japon","Mie Prefecture"],"popularidad":100,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q128196"},
+    {"id":"Q1282","nombre":"Lacio","alias":["Lazio"],"popularidad":156,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1282"},
+    {"id":"Q1284","nombre":"Abruzos","alias":["Abruzzo"],"popularidad":146,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1284"},
+    {"id":"Q129499","nombre":"Gunma","alias":["Prefectura de Gunma","Gunma Japon","Gunma Prefecture"],"popularidad":102,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q129499"},
+    {"id":"Q130290","nombre":"Hyōgo","alias":["Prefectura de Hyōgo","Hyōgo Prefecture"],"popularidad":102,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q130290"},
+    {"id":"Q130300","nombre":"Miyazaki","alias":["prefectura de Miyazaki","Hyūga","Miyazaki Japon","Miyazaki Prefecture"],"popularidad":96,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q130300"},
+    {"id":"Q130308","nombre":"Kumamoto","alias":["prefectura de Kumamoto","Prefectura Kumamoto","Kumamoto Prefecture"],"popularidad":94,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q130308"},
+    {"id":"Q131277","nombre":"Gifu","alias":["Prefectura de Gifu","Gifu Japon","Gifu Prefecture"],"popularidad":98,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q131277"},
+    {"id":"Q131281","nombre":"Ishikawa","alias":["Prefectura de Ishikawa","Ishikawa Japon","Ishikawa Prefecture"],"popularidad":100,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q131281"},
+    {"id":"Q131287","nombre":"Nara","alias":["Prefectura de Nara","Nara Japon","Nara Prefecture"],"popularidad":105,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q131287"},
+    {"id":"Q131314","nombre":"Wakayama","alias":["Prefectura de Wakayama","Wakayama Japon","Wakayama Prefecture"],"popularidad":97,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q131314"},
+    {"id":"Q131320","nombre":"Shizuoka","alias":["Prefectura de Shizuoka","Shizuoka Japon","Shizuoka Prefecture"],"popularidad":101,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q131320"},
+    {"id":"Q131358","nombre":"Shiga","alias":["Prefectura de Shiga","Shiga Japon","Shiga Prefecture"],"popularidad":98,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q131358"},
+    {"id":"Q13160","nombre":"Jalisco","alias":["Estado Libre y Soberano de Jalisco","Estado de Jalisco"],"popularidad":113,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q13160"},
+    {"id":"Q132705","nombre":"Niigata","alias":["Prefectura de Niigata","Niigata Japon","Niigata Prefecture"],"popularidad":100,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q132705"},
+    {"id":"Q132720","nombre":"Yamanashi","alias":["Prefectura de Yamanashi","Yamanashi Japon","Yamanashi Prefecture"],"popularidad":95,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q132720"},
+    {"id":"Q132751","nombre":"Shimane","alias":["Prefectura de Shimane","Prefectura Shimane","Shimane Prefecture"],"popularidad":92,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q132751"},
+    {"id":"Q132929","nombre":"Toyama","alias":["Prefectura de Toyama","Toyama Japon","Toyama Prefecture"],"popularidad":94,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q132929"},
+    {"id":"Q132936","nombre":"Okayama","alias":["Prefectura de Okayama","Okayama Japon","Okayama Prefecture"],"popularidad":93,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q132936"},
+    {"id":"Q133879","nombre":"Fukui","alias":["Prefectura de Fukui","Fukui Japon","Fukui Prefecture"],"popularidad":98,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q133879"},
+    {"id":"Q133924","nombre":"Oita","alias":["prefectura de Oita","Oita Japon","Ōita Prefecture"],"popularidad":95,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q133924"},
+    {"id":"Q133935","nombre":"Tottori","alias":["Prefectura de Tottori","Tottori Japon","Tottori Prefecture"],"popularidad":95,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q133935"},
+    {"id":"Q134093","nombre":"Kōchi","alias":["Prefectura de Kōchi","Kochi Japon","Kōchi Prefecture"],"popularidad":94,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q134093"},
+    {"id":"Q1356","nombre":"Bengala Occidental","alias":["West Bengal"],"popularidad":155,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1356"},
+    {"id":"Q1363","nombre":"Tripura","popularidad":134,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1363"},
+    {"id":"Q1370","nombre":"Virginia","alias":["Antiguo Dominio","Estado de Virginia","Madre de presidentes y madre de estadistas","Mancomunidad de Virginia","Virginia, Estados Unidos"],"popularidad":234,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1370"},
+    {"id":"Q1371","nombre":"Virginia Occidental","alias":["Casi el cielo","El Estado de la Montaña","Estado de Virginia Occidental","Virginia Occidental, Estados Unidos","West Virginia"],"popularidad":215,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1371"},
+    {"id":"Q1384","nombre":"Nueva York","alias":["Estado de Nueva York","Estado del Imperio","Nueva York (estado)","Nueva York, Estados Unidos","New York"],"popularidad":247,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1384"},
+    {"id":"Q1387","nombre":"Rhode Island","alias":["El Estado del Océano","Estado de Rhode Island","Rhode Island (Estados Unidos)"],"popularidad":214,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1387"},
+    {"id":"Q13904","nombre":"Lérida","alias":["provincia de Lérida","provincia de Lleida","Province of Lleida"],"popularidad":84,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q13904"},
+    {"id":"Q1391","nombre":"Maryland","alias":["Estado de Maryland","Estado de la línea Antigua","Maryland (Estados Unidos)"],"popularidad":229,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1391"},
+    {"id":"Q13917","nombre":"Isla de Francia","alias":["Ile de France","Región de París"],"popularidad":146,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q13917"},
+    {"id":"Q1393","nombre":"Delaware","alias":["Delaware (Estados Unidos)","El Estado Diamante","El Primer Estado","Estado de Delaware","Estado de la Gallina Azul","La Pequeña Maravilla"],"popularidad":220,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1393"},
+    {"id":"Q13947","nombre":"Centro-Valle de Loira","alias":["Región Centro","Valle de Loira","Centre-Val de Loire"],"popularidad":128,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q13947"},
+    {"id":"Q1397","nombre":"Ohio","alias":["Cuna de la aviación","El estado de Buckeye","Estado de Ohio","Ohio (Estados Unidos)"],"popularidad":235,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1397"},
+    {"id":"Q13984","nombre":"Casanare","alias":["Departamento de Casanare","Casanare Department"],"popularidad":64,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q13984"},
+    {"id":"Q13985","nombre":"Caquetá","alias":["Departamento del Caqueta","Caquetá Department"],"popularidad":65,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q13985"},
+    {"id":"Q13990","nombre":"Valle del Cauca","alias":["Departamento del Valle del Cauca","Valle del Cauca Department"],"popularidad":68,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q13990"},
+    {"id":"Q13993","nombre":"Risaralda","alias":["Departamento de Risaralda","Departamento del Risaralda","Risaralda Department"],"popularidad":67,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q13993"},
+    {"id":"Q13995","nombre":"Quindío","alias":["Departamento de Quindío","Departamento del Quindio","Quindío Department"],"popularidad":67,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q13995"},
+    {"id":"Q1400","nombre":"Pensilvania","alias":["Estado Cuáquero","Estado Keystone","Estado de Pensilvania","Mancomunidad de Pensilvania","Pensilvania (Estados Unidos)","Pennsylvania"],"popularidad":235,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1400"},
+    {"id":"Q1408","nombre":"Nueva Jersey","alias":["El Estado Jardín","Estado de Nueva Jersey","Nueva Jersey (Estados Unidos)","New Jersey"],"popularidad":231,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1408"},
+    {"id":"Q14112","nombre":"Córcega","alias":["Corsica"],"popularidad":186,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q14112"},
+    {"id":"Q1415","nombre":"Indiana","alias":["Estado de Hoosier","Estado de Indiana","Indiana (Estados Unidos)"],"popularidad":225,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1415"},
+    {"id":"Q1428","nombre":"Georgia","alias":["El Estado de El melocotón","El Estado de Goober","El Estado del Imperio Sur","Estado de Georgia","Georgia, Estados Unidos"],"popularidad":231,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1428"},
+    {"id":"Q1437","nombre":"Rajastán","alias":["Rayastan","Rajasthan"],"popularidad":147,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1437"},
+    {"id":"Q1438","nombre":"Campania","popularidad":144,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1438"},
+    {"id":"Q1439","nombre":"Texas","alias":["Estado De Texas","Estado de Tejas","Estado de la Estrella Solitaria","Tejas","Texas (Estados Unidos)"],"popularidad":259,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1439"},
+    {"id":"Q1443","nombre":"Molise","popularidad":132,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1443"},
+    {"id":"Q1445","nombre":"Tamil Nadu","alias":["tierra de los tamiles"],"popularidad":158,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1445"},
+    {"id":"Q1447","nombre":"Apulia","popularidad":154,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1447"},
+    {"id":"Q1452","nombre":"Basilicata","alias":["Lucania"],"popularidad":136,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1452"},
+    {"id":"Q1454","nombre":"Carolina del Norte","alias":["Carolina del Norte, Estados Unidos","El estado del Tacón de alquitrán","Estado De Carolina del Norte","North Carolina"],"popularidad":216,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1454"},
+    {"id":"Q1456","nombre":"Carolina del Sur","alias":["Carolina del Sur, Estados Unidos","Estado de Carolina del Sur","Estado de Palmetto","South Carolina"],"popularidad":217,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1456"},
+    {"id":"Q1458","nombre":"Calabria","popularidad":154,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1458"},
+    {"id":"Q1460","nombre":"Sicilia","alias":["Sicily"],"popularidad":195,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1460"},
+    {"id":"Q1462","nombre":"Cerdeña","alias":["Sardinia"],"popularidad":188,"atributos":{"pais":"Italia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q1462"},
+    {"id":"Q1490","nombre":"Tokio","alias":["prefectura de Tokio","Tokyo"],"popularidad":302,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q1490"},
+    {"id":"Q1494","nombre":"Misisipi","alias":["El Estado de Magnolia","El Estado de la Hospitalidad","Estado de Misisipi","Misisipi (Estados Unidos)","Mississippi"],"popularidad":220,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1494"},
+    {"id":"Q1498","nombre":"Uttar Pradesh","alias":["estado de Uttar Pradesh"],"popularidad":148,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1498"},
+    {"id":"Q1499","nombre":"Uttarakhand","alias":["Estado de Uttarakhand","Estado de Uttaranchal","Uttaranchal"],"popularidad":136,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1499"},
+    {"id":"Q1502","nombre":"Mizoram","popularidad":127,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1502"},
+    {"id":"Q1505","nombre":"Sikkim","popularidad":143,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1505"},
+    {"id":"Q1509","nombre":"Tennessee","alias":["El Estado Voluntario","Estado de Tennessee","Tennessee (Estados Unidos)"],"popularidad":226,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1509"},
+    {"id":"Q15104","nombre":"Provenza-Alpes-Costa Azul","alias":["Provence-Alpes-Côte d'Azur"],"popularidad":131,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q15104"},
+    {"id":"Q1522","nombre":"Nuevo México","alias":["Estado de Nuevo México","N. Mex.","Nuevo México, Estados Unidos","Tierra de Encanto","New Mexico"],"popularidad":223,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1522"},
+    {"id":"Q1527","nombre":"Minnesota","alias":["Estado De Minnesota","Estado de Gopher","Minnesota (Estados Unidos)","Tierra de 10.000 lagos"],"popularidad":223,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1527"},
+    {"id":"Q15282","nombre":"Nuevo León","alias":["Estado Libre y Soberano de Nuevo Leon","Estado Represor y Mocho de Nuevo León","Estado de Nuevo Leon"],"popularidad":104,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q15282"},
+    {"id":"Q1537","nombre":"Wisconsin","alias":["El Estado del Tejón","Estado De Wisconsin","Estado de Badger","La Lechería de Estados Unidos","Wisconsin, Estados Unidos"],"popularidad":225,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1537"},
+    {"id":"Q1546","nombre":"Iowa","alias":["El estado de Hawkeye","Estado de Iowa","Iowa (Estados Unidos)","La tierra entre dos ríos"],"popularidad":224,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1546"},
+    {"id":"Q15499","nombre":"Paraná","popularidad":119,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q15499"},
+    {"id":"Q1553","nombre":"Nebraska","alias":["Estado de Cornhusker","Estado de Nebraska","Nebraska (Estados Unidos)"],"popularidad":221,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1553"},
+    {"id":"Q1558","nombre":"Kansas","alias":["El Estado Libre","El Estado del Girasol","El Estado del Trigo","Estado de Kansas","Kansas (Estados Unidos)"],"popularidad":225,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1558"},
+    {"id":"Q15701","nombre":"Kagoshima","alias":["prefectura de Kagoshima","Kagoshima Prefecture"],"popularidad":101,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q15701"},
+    {"id":"Q1581","nombre":"Misuri","alias":["El estado de Show Me","Estado de Misuri","Misuri (Estados Unidos)","Mo.","Missouri"],"popularidad":223,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1581"},
+    {"id":"Q1588","nombre":"Luisiana","alias":["Estado 18","Estado de Luisiana","Luisiana (Estados Unidos)","Louisiana"],"popularidad":224,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1588"},
+    {"id":"Q1599","nombre":"Nagaland","popularidad":131,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1599"},
+    {"id":"Q1603","nombre":"Kentucky","alias":["Estado de Bluegrass","Kentucky, Estados Unidos","Mancomunidad de Kentucky"],"popularidad":221,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1603"},
+    {"id":"Q160420","nombre":"Saga","alias":["prefectura de Saga","Saga Japon","Saga Prefecture"],"popularidad":93,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q160420"},
+    {"id":"Q160734","nombre":"Tokushima","alias":["Prefectura de Tokushima","Tokushima Japon","Tokushima Prefecture"],"popularidad":93,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q160734"},
+    {"id":"Q1612","nombre":"Arkansas","alias":["Arkansas (Estados Unidos)","El Estado Natural","Estado de Arkansas"],"popularidad":223,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1612"},
+    {"id":"Q161454","nombre":"Kagawa","alias":["Prefectura de Kagawa","Kagawa Japon","Kagawa Prefecture"],"popularidad":95,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q161454"},
+    {"id":"Q1649","nombre":"Oklahoma","alias":["El Estado Más Pronto","Estado de Oklahoma","Oklahoma (Estados Unidos)"],"popularidad":222,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q1649"},
+    {"id":"Q16551","nombre":"Vermont","alias":["El Estado de la Montaña Verde","Estado De Vermont","Vermont (Estados Unidos)"],"popularidad":219,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q16551"},
+    {"id":"Q165582","nombre":"Mérida","alias":["Estado Merida","Estado de Mérida, Venezuela","Mérida, Venezuela"],"popularidad":64,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q165582"},
+    {"id":"Q16575","nombre":"Cerro Largo","alias":["Departamento de Cerro Largo","Cerro Largo Department"],"popularidad":53,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16575"},
+    {"id":"Q16576","nombre":"Paysandú","alias":["Departamento de Paysandú","Paysandú Department"],"popularidad":52,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16576"},
+    {"id":"Q16577","nombre":"Canelones","alias":["Departamento de Canelones","Canelones Department"],"popularidad":55,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16577"},
+    {"id":"Q16578","nombre":"Flores","alias":["Departamento de Flores","Flores Department"],"popularidad":53,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16578"},
+    {"id":"Q16579","nombre":"San José","alias":["Departamento de San José","San José Department"],"popularidad":52,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16579"},
+    {"id":"Q16580","nombre":"Colonia","alias":["Departamento de Colonia","Colonia Department"],"popularidad":54,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16580"},
+    {"id":"Q16582","nombre":"Rocha","alias":["Departamento de Rocha","Rocha Department"],"popularidad":55,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16582"},
+    {"id":"Q16584","nombre":"Soriano","alias":["Departamento de Soriano","Soriano Department"],"popularidad":50,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16584"},
+    {"id":"Q16587","nombre":"Tacuarembó","alias":["Departamento de Tacuarembó","Tacuarembó Department"],"popularidad":50,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16587"},
+    {"id":"Q16591","nombre":"Durazno","alias":["Departamento de Durazno","Durazno Department"],"popularidad":52,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16591"},
+    {"id":"Q16593","nombre":"Florida","alias":["Departamento de Florida","Florida Department"],"popularidad":53,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16593"},
+    {"id":"Q16594","nombre":"Montevideo","alias":["Departamento de Montevideo","Montevideo Department"],"popularidad":51,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16594"},
+    {"id":"Q16595","nombre":"Salto","alias":["Departamento de Salto","Salto Department"],"popularidad":52,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16595"},
+    {"id":"Q16596","nombre":"Río Negro","alias":["Departamento de Río Negro","Río Negro Department"],"popularidad":50,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16596"},
+    {"id":"Q16603","nombre":"Artigas","alias":["Departamento de Artigas","Artigas Department"],"popularidad":55,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16603"},
+    {"id":"Q16609","nombre":"Rivera","alias":["Departamento de Rivera","Rivera Department"],"popularidad":50,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16609"},
+    {"id":"Q16610","nombre":"Treinta y Tres","alias":["Departamento de Treinta y Tres","Treinta y Tres Department"],"popularidad":51,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q16610"},
+    {"id":"Q169376","nombre":"Nagasaki","alias":["prefectura de Nagasaki","Nagasaki Japon","Nagasaki Prefecture"],"popularidad":100,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q169376"},
+    {"id":"Q16994","nombre":"Países del Loira","alias":["Pays de la Loire"],"popularidad":132,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q16994"},
+    {"id":"Q17012","nombre":"Guadalupe","alias":["Guadeloupe"],"popularidad":179,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q17012"},
+    {"id":"Q170453","nombre":"Amazonas","alias":["estado Amazonas","estado federal Amazonas","estado indígena de Amazonas"],"popularidad":73,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q170453"},
+    {"id":"Q17054","nombre":"Martinica","alias":["Martinique"],"popularidad":187,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q17054"},
+    {"id":"Q17063","nombre":"Mayotte","popularidad":165,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q17063"},
+    {"id":"Q17070","nombre":"Reunión","popularidad":182,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q17070"},
+    {"id":"Q173","nombre":"Alabama","alias":["Alabama, Estados Unidos","Corazón de Dixie","El estado de Yellowhammer","Estado de Alabama"],"popularidad":241,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q173"},
+    {"id":"Q175","nombre":"São Paulo","popularidad":135,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q175"},
+    {"id":"Q176","nombre":"Quebec","alias":["Provincia de Quebec","Quebec (Canadá)"],"popularidad":202,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q176"},
+    {"id":"Q18338206","nombre":"Auvernia-Ródano-Alpes","alias":["Auvergne-Rhône-Alpes"],"popularidad":120,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18338206"},
+    {"id":"Q18578267","nombre":"Borgoña-Franco Condado","alias":["Bourgogne-Franche-Comte"],"popularidad":101,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18578267"},
+    {"id":"Q18677767","nombre":"Alta Francia","alias":["Norte-Paso de Calais-Picardia","Hauts-de-France"],"popularidad":105,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18677767"},
+    {"id":"Q18677875","nombre":"Normandía","alias":["Normandy"],"popularidad":95,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18677875"},
+    {"id":"Q18677983","nombre":"Gran Este","alias":["Alsacia-Lorena-Champaña-Ardenas","Grand Est"],"popularidad":108,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18677983"},
+    {"id":"Q18678082","nombre":"Nueva Aquitania","alias":["Aquitania-Lemosin-Poitou-Charentes","Nouvelle-Aquitaine"],"popularidad":109,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18678082"},
+    {"id":"Q18678265","nombre":"Occitania","alias":["Languedoc-Rosellon-Mediodia-Pirineos","Languedoc-Roussillon-Midi-Pyrenees"],"popularidad":104,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q18678265"},
+    {"id":"Q1904","nombre":"Ontario","alias":["Ont.","Ontario (Canadá)","Provincia de Ontario"],"popularidad":183,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1904"},
+    {"id":"Q190687","nombre":"Aragua","alias":["Estado Aragua","Estado de Aragua"],"popularidad":68,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q190687"},
+    {"id":"Q190922","nombre":"Anzoátegui","alias":["estado Anzoategui"],"popularidad":70,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q190922"},
+    {"id":"Q191164","nombre":"Bolívar","alias":["Estado Bolívar"],"popularidad":70,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q191164"},
+    {"id":"Q191174","nombre":"Miranda","alias":["estado Miranda","estado de Miranda"],"popularidad":68,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q191174"},
+    {"id":"Q191186","nombre":"Carabobo","alias":["Estado Carabobo"],"popularidad":65,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q191186"},
+    {"id":"Q1948","nombre":"Manitoba","alias":["Manitoba (Canadá)","Provincia de Manitoba"],"popularidad":156,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1948"},
+    {"id":"Q1951","nombre":"Alberta","alias":["Alberta (Canadá)","Provincia de Alberta"],"popularidad":169,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1951"},
+    {"id":"Q1952","nombre":"Nueva Escocia","alias":["Nueva Escocia (Canadá)","Provincia de Nueva Escocia","Nova Scotia"],"popularidad":156,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1952"},
+    {"id":"Q1965","nombre":"Nuevo Brunswick","alias":["New Brunswick","Nueva Brunswick","Provincia de Nuevo Brunswick"],"popularidad":145,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1965"},
+    {"id":"Q1973","nombre":"Columbia Británica","alias":["Columbia Británica (Canadá)","Provincia de Columbia Britanica","British Columbia"],"popularidad":176,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1973"},
+    {"id":"Q1978","nombre":"Isla del Príncipe Eduardo","alias":["Isla del Príncipe Eduardo (Canadá)","Provincia de Isla del Príncipe Eduardo","Prince Edward Island"],"popularidad":139,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1978"},
+    {"id":"Q1989","nombre":"Saskatchewan","alias":["Provincia de Saskatchewan","Saskatchewan (Canadá)"],"popularidad":154,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q1989"},
+    {"id":"Q199910","nombre":"Magdalena","alias":["Departamento del Magdalena","Magdalena Department"],"popularidad":71,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q199910"},
+    {"id":"Q2003","nombre":"Terranova y Labrador","alias":["Terranova","Terranova y Labrador (Canadá)","Newfoundland and Labrador"],"popularidad":148,"atributos":{"pais":"Canadá","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q2003"},
+    {"id":"Q201121","nombre":"Yaracuy","alias":["Estado Yaracuy"],"popularidad":66,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q201121"},
+    {"id":"Q201137","nombre":"Delta Amacuro","alias":["Estado Delta Amacuro"],"popularidad":64,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q201137"},
+    {"id":"Q202068","nombre":"Trujillo","alias":["Estado Trujillo","estado de Trujillo"],"popularidad":62,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q202068"},
+    {"id":"Q202071","nombre":"Falcón","alias":["estado Falcon"],"popularidad":63,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q202071"},
+    {"id":"Q202075","nombre":"Guárico","alias":["Estado Guárico"],"popularidad":61,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q202075"},
+    {"id":"Q204876","nombre":"Nueva Esparta","alias":["Estado Nueva Esparta","Isla de Margarita","Margarita"],"popularidad":67,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q204876"},
+    {"id":"Q205460","nombre":"Cojedes","alias":["estado Cojedes"],"popularidad":63,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q205460"},
+    {"id":"Q205776","nombre":"Monagas","alias":["Estado Monagas"],"popularidad":63,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q205776"},
+    {"id":"Q205784","nombre":"Portuguesa","alias":["Estado Portuguesa"],"popularidad":61,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q205784"},
+    {"id":"Q205796","nombre":"Lara","alias":["estado Lara"],"popularidad":63,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q205796"},
+    {"id":"Q205824","nombre":"Sucre","alias":["Estado Sucre","Estado de Sucre"],"popularidad":62,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q205824"},
+    {"id":"Q205843","nombre":"La Guaira","alias":["Estado La Guaira","El Litoral","Estado Vargas","La Guaira state"],"popularidad":62,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q205843"},
+    {"id":"Q2109","nombre":"Arica y Parinacota","alias":["Región de Arica y Parinacota","15.ª Región","Arica-Parinacota","CL-AP","Decimoquinta Región","Region de Arica","Región arica-parinacotense","Región ariqueña","Región ariqueña-parinacotense","Región ariqueñoparinacotense","Región de Parinacota","Región parinacotense","XV Region","XV Region de Arica y Parinacota","Arica y Parinacota Region"],"popularidad":70,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2109"},
+    {"id":"Q2114","nombre":"Tarapacá","alias":["Región de Tarapacá","1.ª Región","CL-TA","I Región","I Región de Tarapacá","Primera Región","Región tarapaqueña","Tarapacá Region"],"popularidad":69,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2114"},
+    {"id":"Q2118","nombre":"Antofagasta","alias":["Región de Antofagasta","2.ª Región","CL-AN","II Región","II Región de Antofagasta","Región antofagastina","Segunda Región","Antofagasta Region"],"popularidad":70,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2118"},
+    {"id":"Q211900","nombre":"Napo","alias":["Napo Province"],"popularidad":48,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q211900"},
+    {"id":"Q2120","nombre":"Atacama","alias":["Región de Atacama","3.ª Región","CL-AT","III Región","III Región de Atacama","Región atacameña","Tercera Región","Atacama Region"],"popularidad":72,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2120"},
+    {"id":"Q2121","nombre":"Coquimbo","alias":["Región de Coquimbo","4.ª Región","CL-CO","Cuarta Región","IV Región","IV Región de Coquimbo","Región coquimbana","Coquimbo Region"],"popularidad":66,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2121"},
+    {"id":"Q2131","nombre":"Región Metropolitana de Santiago","alias":["Región Metropolitana","Metropolitana","13.ª Región","CL-RM","Decimotercera Región","Metropolitana de Santiago","Metropolitana de Santiago de Chile","Region Metropolitana de Santiago de Chile","Región de Santiago","Región santiaguina","XIII Región","XIII Región Metropolitana","XIII Región Metropolitana de Santiago","Santiago Metropolitan Region"],"popularidad":69,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2131"},
+    {"id":"Q2133","nombre":"O'Higgins","alias":["Región de O'Higgins","6.ª Región","CL-LI","Libertador General Bernardo O'Higgins","R. O'Higgins","Region del Libertador General Bernardo O'Higgins","Región Ohigginiana","Región del Libertador","Sexta Región","Sexta Región de O'Higgins","Sexta Región del Libertador General Bernardo O'Higgins","VI Región","VI Región de O'Higgins","VI Región del Libertador General Bernardo O'Higgins","O'Higgins Region"],"popularidad":69,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2133"},
+    {"id":"Q214814","nombre":"Pastaza","alias":["Provincia del Pastaza","Pastaza Province"],"popularidad":47,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q214814"},
+    {"id":"Q2166","nombre":"Maule","alias":["Región del Maule","7.ª Región","CL-ML","R. Maule","R. del Maule","Región maulina","Séptima Región","VII Región","VII Región del Maule","Maule Región"],"popularidad":69,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2166"},
+    {"id":"Q2170","nombre":"Biobío","alias":["Región del Biobío","8.ª Región","Bío-Bío","CL-BI","Octava Región","R. Biobío","R. Bío-Bío","R. del Biobío","Región biobana","Región del Bio Bío","VIII Región","Biobío Region"],"popularidad":98,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2170"},
+    {"id":"Q2176","nombre":"La Araucanía","alias":["Región de La Araucanía","Araucanía Region"],"popularidad":73,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2176"},
+    {"id":"Q2177","nombre":"Los Ríos","alias":["Región de Los Ríos","Los Ríos Region"],"popularidad":70,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2177"},
+    {"id":"Q2178","nombre":"Los Lagos","alias":["Región de Los Lagos","X Region de Los Lagos","Los Lagos Region"],"popularidad":74,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2178"},
+    {"id":"Q2181","nombre":"Aysén del General Carlos Ibáñez del Campo","alias":["Región de Aysén del General Carlos Ibáñez del Campo","Aysén","Aisen","Region de Aisen","Region de Aysen","Región AIsén del General Carlos Ibáñez del Campo","Sitios Arqueologicos de la Region de Aysen","XI Region de Aisen","XI Region de Aysen","XI Región","XI Región AIsén del General Carlos Ibáñez del Campo","XI Región Aysén del General Carlos Ibáñez del Campo","Aysén Region"],"popularidad":67,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2181"},
+    {"id":"Q2189","nombre":"Magallanes y de la Antártica Chilena","alias":["Región de Magallanes y de la Antártica Chilena","Magallanes","Region de Magallanes","Magellan and the Chilean Antarctic Region"],"popularidad":75,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q2189"},
+    {"id":"Q219458","nombre":"Valparaíso","alias":["Región de Valparaíso","5.ª Región","CL-VS","Quinta Región","Región porteña","V Region","V Region de Valparaiso","Valparaíso Region"],"popularidad":71,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q219458"},
+    {"id":"Q220451","nombre":"Azuay","alias":["Provincia del Azuay","Azuay Province"],"popularidad":55,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q220451"},
+    {"id":"Q22048","nombre":"Orissa","alias":["Odisha"],"popularidad":149,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q22048"},
+    {"id":"Q222564","nombre":"Itapúa","alias":["Departamento de Itapúa","Departamento Itapúa","PY-7","Itapúa Department"],"popularidad":46,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q222564"},
+    {"id":"Q22424","nombre":"Punyab","alias":["Punyab, India","Punjab"],"popularidad":137,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q22424"},
+    {"id":"Q230217","nombre":"Nariño","alias":["Departamento de Narino","Departamento de Nariño","Departamento del Nariño","Narino","Nariño Department"],"popularidad":72,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230217"},
+    {"id":"Q230223","nombre":"Arauca","alias":["Departamento de Arauca","Departamento del Arauca","Arauca Department"],"popularidad":65,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230223"},
+    {"id":"Q230584","nombre":"Chocó","alias":["Chocoanos","Departamento de Choco","Departamento del Choco","Chocó Department"],"popularidad":67,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230584"},
+    {"id":"Q230597","nombre":"Bolívar","alias":["Bolivarenses","Departamento Bolivar","Departamento de Bolivar","Departamento del Bolivar","Bolívar Department"],"popularidad":71,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230597"},
+    {"id":"Q230602","nombre":"Cauca","alias":["Caucanos","Departamento de Cauca","Departamento del Cauca","Cauca Department"],"popularidad":71,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230602"},
+    {"id":"Q230607","nombre":"Caldas","alias":["Caldense","Caldenses","Departamento de Caldas","Departamento del Caldas","Caldas Department"],"popularidad":66,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230607"},
+    {"id":"Q230882","nombre":"Atlántico","alias":["Atlanticenses","Departamento del Atlantico","Atlántico Department"],"popularidad":70,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q230882"},
+    {"id":"Q232564","nombre":"Cundinamarca","alias":["Departamento de Cundinamarca","Cundinamarca Department"],"popularidad":72,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q232564"},
+    {"id":"Q232953","nombre":"Putumayo","alias":["Departamento de Putumayo","Putumayenses","Putumayo Department"],"popularidad":63,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q232953"},
+    {"id":"Q233058","nombre":"Norte de Santander","alias":["Departamento de Norte de Santander","Departamento del Norte de Santander","Norte de Santander Department"],"popularidad":67,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q233058"},
+    {"id":"Q233169","nombre":"Beni","alias":["Departamento del Beni","Beniana","Beniano","Departamento Autonomo del Beni","Departamento Beni","Departamento de Beni","Beni Department"],"popularidad":66,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q233169"},
+    {"id":"Q233917","nombre":"Cochabamba","alias":["Departamento de Cochabamba","Cochabamba Department"],"popularidad":67,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q233917"},
+    {"id":"Q233933","nombre":"Tarija","alias":["Departamento de Tarija","Tarija Department"],"popularidad":64,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q233933"},
+    {"id":"Q234501","nombre":"Tolima","alias":["Departamento de Tolima","Departamento del Tolima","Tolima Department"],"popularidad":69,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q234501"},
+    {"id":"Q234505","nombre":"Vaupés","alias":["Comisaria del Vaupes","Departamento Vaupes","Departamento de Vaupes","Departamento del Vaupes","Vaupenses","Vaupés Department"],"popularidad":57,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q234505"},
+    {"id":"Q234912","nombre":"Córdoba","alias":["Departamento de Cordoba","Departamento del Cordoba","Córdoba Department"],"popularidad":69,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q234912"},
+    {"id":"Q234916","nombre":"Cesar","alias":["Cesarenses","Departamento de Cesar","Departamento del Cesar","Cesar Department"],"popularidad":66,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q234916"},
+    {"id":"Q234920","nombre":"Huila","alias":["Departamento de Huila","Departamento del Huila","Huilenses","Huila Department"],"popularidad":66,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q234920"},
+    {"id":"Q235106","nombre":"Santa Cruz","alias":["Departamento de Santa Cruz","Departamento Santa Cruz","Santa Cruz, Bolivia","Santa Cruz Department"],"popularidad":66,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q235106"},
+    {"id":"Q235110","nombre":"Chuquisaca","alias":["Departamento de Chuquisaca","Departamento Autonomo de Chuquisaca","Chuquisaca Department"],"popularidad":66,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q235110"},
+    {"id":"Q235166","nombre":"Santander","alias":["Departamento de Santander","Departamento del Santander","Santandereano","Santandereanos","Santander Department"],"popularidad":66,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q235166"},
+    {"id":"Q235188","nombre":"Sucre","alias":["Departamento de Sucre","Departamento del Sucre","Sucre Department"],"popularidad":64,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q235188"},
+    {"id":"Q235362","nombre":"Pando","alias":["Departamento de Pando","Pando Department"],"popularidad":66,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q235362"},
+    {"id":"Q238079","nombre":"Potosí","alias":["Departamento de Potosí","Potosí Department"],"popularidad":67,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q238079"},
+    {"id":"Q238492","nombre":"Chimborazo","alias":["Provincia del Chimborazo","Chimborazo Province"],"popularidad":58,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q238492"},
+    {"id":"Q238629","nombre":"Meta","alias":["Departamento del Meta"],"popularidad":64,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q238629"},
+    {"id":"Q238645","nombre":"Guainía","alias":["Departamento de Guainia","Departamento del Guainia","Guainarenses","Guainía Department"],"popularidad":59,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q238645"},
+    {"id":"Q240014","nombre":"Paraguarí","alias":["Departamento de Paraguarí","Departamento Paraguarí","PY-9","Paraguarí Department"],"popularidad":44,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q240014"},
+    {"id":"Q24004403","nombre":"Asturias","alias":["provincia de Asturias","Province of Asturias"],"popularidad":3,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q24004403"},
+    {"id":"Q24004404","nombre":"Navarra","alias":["provincia de Navarra","Province of Navarre"],"popularidad":2,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q24004404"},
+    {"id":"Q24004405","nombre":"Madrid","alias":["Provincia de Madrid","Madrid Province"],"popularidad":8,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q24004405"},
+    {"id":"Q24076693","nombre":"Ñuble","alias":["Región de Ñuble","16.ª Región","CL-NB","Decimosexta Región","Nuble","Region de Nuble","Region del Nuble","Region del Ñuble","Región ñublense","XVI Región","Ñuble Region"],"popularidad":43,"atributos":{"pais":"Chile","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q24076693"},
+    {"id":"Q241140","nombre":"Cotopaxi","alias":["Provincia de Cotopaxi","Cotopaxi Province"],"popularidad":50,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q241140"},
+    {"id":"Q24271891","nombre":"Murcia","alias":["provincia de Murcia","Región de Murcia","Murcia Province"],"popularidad":4,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q24271891"},
+    {"id":"Q261165","nombre":"Bolívar","alias":["Provincia de Bolívar","Bolívar Province"],"popularidad":49,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q261165"},
+    {"id":"Q26855","nombre":"Archipiélago de San Andrés, Providencia y Santa Catalina","alias":["Archipielago de San Andres","Archipielago de San Andres y Providencia","Departamento de San Andres y Providencia","Departamento del San Andres y Providencia","Intendencia de San Andres y Providencia","Islas de San Andres","Saint Andrews Island ,Providence & Catalina","San Andres Islas","San Andres Providencia y Santa Catalina","San Andres y Providencia","Archipelago of San Andrés, Providencia and Santa Catalina"],"popularidad":76,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q26855"},
+    {"id":"Q268729","nombre":"Vichada","alias":["Departamento del Vichada","Vichada Department"],"popularidad":59,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q268729"},
+    {"id":"Q272586","nombre":"Pichincha","alias":["Pichincha Province"],"popularidad":52,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q272586"},
+    {"id":"Q272747","nombre":"La Guajira","alias":["Guajira","La Guajira Department"],"popularidad":64,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q272747"},
+    {"id":"Q272784","nombre":"La Paz","alias":["Departamento de La Paz","Departamento Autonomo de La Paz","La Paz Department"],"popularidad":64,"atributos":{"pais":"Bolivia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q272784"},
+    {"id":"Q272885","nombre":"Guaviare","alias":["Departamento de Guaviare","Departamento del Guaviare","Guaviare Department"],"popularidad":61,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q272885"},
+    {"id":"Q279085","nombre":"Canindeyú","alias":["Departamento de Canindeyú","Departamento Canindeyú","PY-14","Canindeyú Department"],"popularidad":47,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q279085"},
+    {"id":"Q31844097","nombre":"La Rioja","alias":["provincia de La Rioja","Province of La Rioja"],"popularidad":2,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q31844097"},
+    {"id":"Q31920747","nombre":"Cantabria","alias":["provincia de Cantabria","Provincia de Santander","Santaner","Cantabria Province"],"popularidad":2,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q31920747"},
+    {"id":"Q3206","nombre":"Australia Occidental","alias":["Australia Occidental (Australia)","Estado de Australia Occidental","Western Australia"],"popularidad":150,"atributos":{"pais":"Australia","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q3206"},
+    {"id":"Q321729","nombre":"Carchi","alias":["Provincia de Carchi","Carchi Province"],"popularidad":48,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q321729"},
+    {"id":"Q321863","nombre":"Imbabura","alias":["Provincia de Imbabura","Imbabura Province"],"popularidad":52,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q321863"},
+    {"id":"Q3224","nombre":"Nueva Gales del Sur","alias":["Estado de Nueva Gales del Sur","New South Wales"],"popularidad":171,"atributos":{"pais":"Australia","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q3224"},
+    {"id":"Q331196","nombre":"Maldonado","alias":["Departamento de Maldonado","Maldonado Department"],"popularidad":54,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q331196"},
+    {"id":"Q335464","nombre":"Guayas","alias":["Provincia de Guayas","Provincia del Guayas","Guayas Province"],"popularidad":53,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q335464"},
+    {"id":"Q335471","nombre":"Cañar","alias":["Provincia de Cañar","Cañar Province"],"popularidad":48,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q335471"},
+    {"id":"Q335526","nombre":"Esmeraldas","alias":["Provincia de Esmeraldas","Esmeraldas Provincia","Provincia verde","Esmeraldas Province"],"popularidad":48,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q335526"},
+    {"id":"Q34110","nombre":"Oaxaca","alias":["Estado de Oaxaca","Estado Libre y Soberano de Oaxaca","Provincia de Antequera"],"popularidad":125,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q34110"},
+    {"id":"Q34366","nombre":"Tasmania","alias":["Estado de Tasmania","Tasmana","Tasmanos","Van Diemen"],"popularidad":168,"atributos":{"pais":"Australia","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q34366"},
+    {"id":"Q35715","nombre":"Australia Meridional","alias":["Australia del Sur","Estado de Australia Meridional","South Australia"],"popularidad":152,"atributos":{"pais":"Australia","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q35715"},
+    {"id":"Q36074","nombre":"Queensland","alias":["Estado de Queensland"],"popularidad":168,"atributos":{"pais":"Australia","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q36074"},
+    {"id":"Q36687","nombre":"Victoria","alias":["Estado de Victoria","Victoria (Australia)"],"popularidad":153,"atributos":{"pais":"Australia","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q36687"},
+    {"id":"Q372461","nombre":"Central","alias":["Departamento Central","PY-11","Central Department"],"popularidad":45,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q372461"},
+    {"id":"Q3769","nombre":"Guayana Francesa","alias":["Departamento de Guayana","French Guiana"],"popularidad":222,"atributos":{"pais":"Francia","tipo":"región"},"fuente":"https://www.wikidata.org/wiki/Q3769"},
+    {"id":"Q38088","nombre":"Paraíba","alias":["Estado de Paraiba","Paraibano"],"popularidad":116,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q38088"},
+    {"id":"Q39109","nombre":"Minas Gerais","alias":["Minas Generales"],"popularidad":123,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q39109"},
+    {"id":"Q39517","nombre":"Pará","alias":["Estado de Para"],"popularidad":121,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q39517"},
+    {"id":"Q40030","nombre":"Río Grande del Sur","alias":["Estado de Rio Grande del Sur","Estado de Rio Grande do Sul","Rio Grande de San Pedro","Rio Grande do Sul"],"popularidad":122,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40030"},
+    {"id":"Q40040","nombre":"Amazonas","alias":["Amazonas (Brasil)","estado del Amazonas"],"popularidad":119,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40040"},
+    {"id":"Q40123","nombre":"Ceará","alias":["Estado de Ceará"],"popularidad":118,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40123"},
+    {"id":"Q40130","nombre":"Amapá","alias":["Estado de Amapa","Guayana Brasilena","Guayana Brasileña"],"popularidad":117,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40130"},
+    {"id":"Q40430","nombre":"Bahía","alias":["Estado de Bahia"],"popularidad":125,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40430"},
+    {"id":"Q40780","nombre":"Acre","alias":["Acre Brasil"],"popularidad":119,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40780"},
+    {"id":"Q40885","nombre":"Alagoas","alias":["Alagoaniense","Estado de Alagoas","río São Francisco"],"popularidad":114,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40885"},
+    {"id":"Q40942","nombre":"Pernambuco","alias":["Estado de Pernambuco","Pernambucano","Pernanbuco"],"popularidad":119,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q40942"},
+    {"id":"Q41115","nombre":"Santa Catarina","alias":["Catarinense","Estado de Santa Catarina"],"popularidad":116,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q41115"},
+    {"id":"Q41144","nombre":"Táchira","alias":["Estado Táchira"],"popularidad":66,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q41144"},
+    {"id":"Q41146","nombre":"Apure","alias":["Apurena","Apureno","Apureña","Apureño","Estado Apure"],"popularidad":66,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q41146"},
+    {"id":"Q41428","nombre":"Río de Janeiro","alias":["Estado Rio de Janeiro","Estado de Rio de Janeiro","Río de Enero","Río de Enero (Estado)"],"popularidad":127,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q41428"},
+    {"id":"Q41587","nombre":"Goiás","alias":["Estado de Goias","Goiano","Goyas"],"popularidad":116,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q41587"},
+    {"id":"Q42362","nombre":"Maranhão","alias":["Estado de Maranhao","Estado del Marañón"],"popularidad":114,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q42362"},
+    {"id":"Q42508","nombre":"Roraima","alias":["Estado de Roraima"],"popularidad":113,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q42508"},
+    {"id":"Q42722","nombre":"Piauí","alias":["Estado de Piaui"],"popularidad":113,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q42722"},
+    {"id":"Q42824","nombre":"Mato Grosso","alias":["Estado de Mato Grosso","Matorral Grueso","Matorral Gruesso","Matorral Guesso"],"popularidad":116,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q42824"},
+    {"id":"Q43233","nombre":"Espírito Santo","alias":["Estado de Espirito Santo"],"popularidad":110,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43233"},
+    {"id":"Q43235","nombre":"Rondônia","alias":["Estado de Rondonia"],"popularidad":114,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43235"},
+    {"id":"Q43255","nombre":"Río Grande del Norte","alias":["Estado de Rio Grande del Norte","Estado de Rio Grande do Norte","Potiguar","Rio grande do norte"],"popularidad":116,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43255"},
+    {"id":"Q43269","nombre":"Zulia","alias":["Estado Federal Zulia","Estado Zulia"],"popularidad":66,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43269"},
+    {"id":"Q43271","nombre":"Barinas","alias":["Estado Barinas"],"popularidad":64,"atributos":{"pais":"Venezuela","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43271"},
+    {"id":"Q43319","nombre":"Mato Grosso del Sur","alias":["Estado de Mato Grosso del Sur","Estado de Mato Grosso do Sul","Mato Grosso do Sul","Matorral Grueso del Sur"],"popularidad":119,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43319"},
+    {"id":"Q43695","nombre":"Tocantins","alias":["Estado de Tocantins","Estado del Tocantins"],"popularidad":115,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43695"},
+    {"id":"Q43783","nombre":"Sergipe","popularidad":112,"atributos":{"pais":"Brasil","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q43783"},
+    {"id":"Q44724","nombre":"Amazonas","alias":["amazonenses","comisaria del Amazonas","departamento del Amazonas","Amazonas Department"],"popularidad":69,"atributos":{"pais":"Colombia","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q44724"},
+    {"id":"Q44843","nombre":"Tochigi","alias":["Prefectura de Tochigi","Tochigi Japon","Tochigi Ken","Tochigi Prefecture"],"popularidad":95,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q44843"},
+    {"id":"Q460435","nombre":"Lavalleja","alias":["Departamento de Lavalleja","Lavalleja Department"],"popularidad":52,"atributos":{"pais":"Uruguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q460435"},
+    {"id":"Q46422","nombre":"Sonora","alias":["Estado de Sonora","Sonorense"],"popularidad":111,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q46422"},
+    {"id":"Q46475","nombre":"Guanajuato","alias":["Estado de Guanajuato","Guanajuato, México"],"popularidad":107,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q46475"},
+    {"id":"Q46508","nombre":"Baja California Sur","alias":["B.C.S.","Estado de Baja California Sur"],"popularidad":106,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q46508"},
+    {"id":"Q466019","nombre":"El Oro","alias":["Provincia de El Oro","El Oro Province"],"popularidad":52,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q466019"},
+    {"id":"Q475038","nombre":"Galápagos","alias":["Provincia de Galápagos","Galápagos Province"],"popularidad":46,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q475038"},
+    {"id":"Q47896","nombre":"Miyagi","alias":["Prefectura de Miyagi","Miyagi Japon","Miyagi Prefecture"],"popularidad":108,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q47896"},
+    {"id":"Q48326","nombre":"Iwate","alias":["Prefectura de Iwate","Iwate Japon","Iwate Prefecture"],"popularidad":107,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q48326"},
+    {"id":"Q499456","nombre":"Sucumbíos","alias":["Provincia de Sucumbios","Sucumbíos Province"],"popularidad":44,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q499456"},
+    {"id":"Q499475","nombre":"Orellana","alias":["Orellana Province"],"popularidad":47,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q499475"},
+    {"id":"Q504238","nombre":"Loja","alias":["Loja Province"],"popularidad":48,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q504238"},
+    {"id":"Q504252","nombre":"Tungurahua","alias":["Provincia de Tungurahua","Provincia del Tungurahua","Tungurahua Province"],"popularidad":52,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q504252"},
+    {"id":"Q504260","nombre":"Los Ríos","alias":["Provincia de Los Rios","Los Ríos Province"],"popularidad":49,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q504260"},
+    {"id":"Q504666","nombre":"Manabí","alias":["Provincia de Manabí","Manabí Province"],"popularidad":52,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q504666"},
+    {"id":"Q526176","nombre":"San Pedro","alias":["Departamento de San Pedro","Departamento San Pedro","PY-2","San Pedro Department"],"popularidad":44,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q526176"},
+    {"id":"Q53079","nombre":"Coahuila de Zaragoza","alias":["Coahuila"],"popularidad":102,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q53079"},
+    {"id":"Q54888","nombre":"Cuenca","alias":["provincia de Cuenca","Cuenca Province"],"popularidad":76,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54888"},
+    {"id":"Q54889","nombre":"Albacete","alias":["provincia de Albacete","Albacete Province"],"popularidad":82,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54889"},
+    {"id":"Q54925","nombre":"Guadalajara","alias":["provincia de Guadalajara","Guadalajara Province"],"popularidad":77,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54925"},
+    {"id":"Q54929","nombre":"Toledo","alias":["provincia de Toledo","Toledo Province"],"popularidad":82,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54929"},
+    {"id":"Q54932","nombre":"Ciudad Real","alias":["provincia de Ciudad Real","Province of Ciudad Real"],"popularidad":73,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54932"},
+    {"id":"Q54936","nombre":"Alicante","alias":["provincia de Alicante","Province of Alicante"],"popularidad":85,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54936"},
+    {"id":"Q54939","nombre":"Valencia","alias":["provincia de Valencia","Valencia provincia","València/Valencia","Province of Valencia"],"popularidad":86,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54939"},
+    {"id":"Q54942","nombre":"Castellón","alias":["provincia de Castellón","Castellón (provincia)"],"popularidad":77,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54942"},
+    {"id":"Q549522","nombre":"Morona Santiago","alias":["Morona-Santiago Province"],"popularidad":46,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q549522"},
+    {"id":"Q54955","nombre":"Teruel","alias":["provincia de Teruel","Teruel Province"],"popularidad":78,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q54955"},
+    {"id":"Q55180","nombre":"Zaragoza","alias":["provincia de Zaragoza","Zaragoza Province"],"popularidad":82,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55180"},
+    {"id":"Q55182","nombre":"Huesca","alias":["provincia de Huesca","Huesca Province"],"popularidad":83,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55182"},
+    {"id":"Q55269","nombre":"Palencia","alias":["provincia de Palencia","Palencia Province"],"popularidad":79,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55269"},
+    {"id":"Q55271","nombre":"Burgos","alias":["provincia de Burgos","Province of Burgos"],"popularidad":82,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55271"},
+    {"id":"Q55276","nombre":"Soria","alias":["provincia de Soria","Soria Province"],"popularidad":94,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55276"},
+    {"id":"Q55283","nombre":"Segovia","alias":["provincia de Segovia","Segovia Province"],"popularidad":85,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55283"},
+    {"id":"Q55288","nombre":"Ávila","alias":["provincia de Ávila","Province of Ávila"],"popularidad":84,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q55288"},
+    {"id":"Q58731","nombre":"Baja California","alias":["Estado de Baja California"],"popularidad":115,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q58731"},
+    {"id":"Q591194","nombre":"Misiones","alias":["Departamento de Misiones","Departamento Misiones","PY-8","Misiones Department"],"popularidad":46,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q591194"},
+    {"id":"Q60123","nombre":"Chiapas","alias":["Estado de Chiapas"],"popularidad":110,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q60123"},
+    {"id":"Q60130","nombre":"Veracruz","alias":["Estado de Veracruz","Estado de Veracruz de Ignacio de la Llave","Veracruz Llave","Veracruz de Ignacio de la Llave"],"popularidad":106,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q60130"},
+    {"id":"Q60158","nombre":"Guerrero","alias":["Edogro","Estado libre y soberano de Guerrero","Guerrerense","La Poderosa","estado de Guerrero"],"popularidad":106,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q60158"},
+    {"id":"Q60176","nombre":"Yucatán","alias":["Estado de Yucatan","Provincia de Yucatan"],"popularidad":111,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q60176"},
+    {"id":"Q61309","nombre":"Colima","alias":["Colimense","Estado de Colima","La Poderosa","Rapadura"],"popularidad":98,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q61309"},
+    {"id":"Q617375","nombre":"Hiroshima","alias":["Prefectura de Hiroshima","Hiroshima Prefecture"],"popularidad":101,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q617375"},
+    {"id":"Q64","nombre":"Berlín","alias":["Berlin, Deutschland","Berlín, Alemania","Ciudad de Berlín","DE-BE","Stadt Berlin"],"popularidad":334,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q64"},
+    {"id":"Q655","nombre":"Chihuahua","alias":["Estado Libre y Soberano de Chihuahua"],"popularidad":110,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q655"},
+    {"id":"Q66117","nombre":"Morelos","alias":["Estado de Morelos","La Poderosa"],"popularidad":106,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q66117"},
+    {"id":"Q677037","nombre":"Telangana","popularidad":127,"atributos":{"pais":"India","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q677037"},
+    {"id":"Q682642","nombre":"Alto Paraguay","alias":["Departamento de Alto Paraguay","Departamento Alto Paraguay","Departamento del Alto Paraguay","PY-16","Alto Paraguay Department"],"popularidad":50,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q682642"},
+    {"id":"Q682654","nombre":"Alto Paraná","alias":["Departamento de Alto Paraná","Departamento Alto Paraná","Departamento del Alto Paraná","PY-10","Alto Paraná Department"],"popularidad":49,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q682654"},
+    {"id":"Q686586","nombre":"Amambay","alias":["Departamento de Amambay","Departamento Amambay","PY-13","Amambay Department"],"popularidad":48,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q686586"},
+    {"id":"Q71080","nombre":"Salamanca","alias":["provincia de Salamanca","Province of Salamanca"],"popularidad":81,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q71080"},
+    {"id":"Q71097","nombre":"Valladolid","alias":["provincia de Valladolid","Valladolid Province"],"popularidad":82,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q71097"},
+    {"id":"Q71113","nombre":"Zamora","alias":["provincia de Zamora","Zamora Province"],"popularidad":82,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q71113"},
+    {"id":"Q71140","nombre":"León","alias":["provincia de León","León Province"],"popularidad":83,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q71140"},
+    {"id":"Q71699","nombre":"Aomori","alias":["Prefectura de Aomori","Aomori Japon","Aomori Prefecture"],"popularidad":108,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q71699"},
+    {"id":"Q71707","nombre":"Fukushima","alias":["Prefectura de Fukushima","Fukushima Japon","Fukushima Prefecture"],"popularidad":112,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q71707"},
+    {"id":"Q7194","nombre":"Gerona","alias":["provincia de Gerona","Gerona (provincia)","Girona","Girona (provincia)","Provincia de Girona"],"popularidad":85,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q7194"},
+    {"id":"Q724","nombre":"Maine","alias":["El Estado de Pine Tree","Estado de Maine","Maine, Estados Unidos"],"popularidad":216,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q724"},
+    {"id":"Q741009","nombre":"Concepción","alias":["Departamento de Concepción","Departamento Concepción","PY-1","Concepción Department"],"popularidad":42,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q741009"},
+    {"id":"Q741017","nombre":"Boquerón","alias":["Departamento de Boquerón","Departamento Boquerón","PY-19","Boquerón Department"],"popularidad":49,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q741017"},
+    {"id":"Q744670","nombre":"Zamora Chinchipe","alias":["Provincia de Zamora Chinchipe","Zamora"],"popularidad":43,"atributos":{"pais":"Ecuador","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q744670"},
+    {"id":"Q750551","nombre":"Presidente Hayes","alias":["Departamento de Presidente Hayes","Departamento Presidente Hayes","PY-15","Villa Hayes","Presidente Hayes Department"],"popularidad":46,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q750551"},
+    {"id":"Q755115","nombre":"Ñeembucú","alias":["Departamento de Ñeembucú","Departamento Ñeembucú","PY-12","Ñeembucú Department"],"popularidad":47,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q755115"},
+    {"id":"Q755116","nombre":"Guairá","alias":["Departamento de Guairá","Departamento Guairá","Guayrá","PY-4","Guairá Department"],"popularidad":49,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q755116"},
+    {"id":"Q755121","nombre":"Cordillera","alias":["Departamento de Cordillera","Departamento Cordillera","Departamento de Cordilleras","Departamento de la Cordillera","PY-3","Cordillera Department"],"popularidad":45,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q755121"},
+    {"id":"Q759","nombre":"Nuevo Hampshire","alias":["El Estado del Granito","Estado de Nuevo Hampshire","Nuevo Hampshire (Estados Unidos)","New Hampshire"],"popularidad":216,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q759"},
+    {"id":"Q766445","nombre":"Okinawa","alias":["prefectura de Okinawa","Okinawa Prefecture"],"popularidad":111,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q766445"},
+    {"id":"Q771","nombre":"Massachusetts","alias":["Estado de Massachusetts","Estado de la Bahía","Mancomunidad de Massachusetts","Massachusetts, Estados Unidos"],"popularidad":229,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q771"},
+    {"id":"Q779","nombre":"Connecticut","alias":["Connecticut (Estados Unidos)","El Estado Constitucional","Estado de Connecticut"],"popularidad":222,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q779"},
+    {"id":"Q782","nombre":"Hawái","alias":["El Estado de Aloha","Estado de Hawái","Hawái (Estados Unidos)","Hawaii"],"popularidad":269,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q782"},
+    {"id":"Q78980","nombre":"San Luis Potosí","alias":["Estado de San Luis Potosi","La Poderosa","Rapadura","Slp"],"popularidad":98,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q78980"},
+    {"id":"Q797","nombre":"Alaska","alias":["Alaska, Estados Unidos","Estado de Alaska","La última frontera"],"popularidad":263,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q797"},
+    {"id":"Q79754","nombre":"Querétaro","alias":["Estado de Queretaro","Estado de Queretaro Arteaga","Queretaro Arteaga","Queretaro de Arteaga"],"popularidad":100,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q79754"},
+    {"id":"Q79861","nombre":"Michoacán","alias":["Estado de Michoacan","Estado de Michoacan de Ocampo","Michoacan de Ocampo"],"popularidad":101,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q79861"},
+    {"id":"Q79918","nombre":"Durango","alias":["Durango Mexico","Estado de Durango"],"popularidad":104,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q79918"},
+    {"id":"Q79920","nombre":"Nayarit","alias":["Estado Libre y Soberano de Nayarit","Estado de Nayarit","La Poderosa","Rapadura"],"popularidad":99,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q79920"},
+    {"id":"Q79923","nombre":"Puebla","alias":["Estado Libre y Soberano de Puebla","Estado de Puebla","La Poderosa","Poblano","Pue"],"popularidad":109,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q79923"},
+    {"id":"Q79952","nombre":"Aguascalientes","alias":["Aguascalentense","Aquicalidense","Estado de Aguascalientes","Hidrocalido","Hidrotermopolitano"],"popularidad":108,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q79952"},
+    {"id":"Q80007","nombre":"Tamaulipas","alias":["La Poderosa","Tamaulipeca","Tamaulipeco","Tamps"],"popularidad":101,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80007"},
+    {"id":"Q80011","nombre":"Chiba","alias":["Prefectura de Chiba","Chiba Japon","Chiba Prefecture"],"popularidad":109,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q80011"},
+    {"id":"Q80245","nombre":"Quintana Roo","alias":["Estado de Quintana Roo"],"popularidad":103,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80245"},
+    {"id":"Q80252","nombre":"Sinaloa","alias":["Estado de Sinaloa","Sinaloense"],"popularidad":104,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80252"},
+    {"id":"Q80269","nombre":"Zacatecas","alias":["Estado de Zacatecas","Zacatecano"],"popularidad":105,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80269"},
+    {"id":"Q80434","nombre":"Aichi","alias":["Prefectura de Aichi","Aichi Prefecture"],"popularidad":113,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q80434"},
+    {"id":"Q80903","nombre":"Hidalgo","alias":["Estado de Hidalgo"],"popularidad":105,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80903"},
+    {"id":"Q80908","nombre":"Campeche","alias":["Estado de Campeche"],"popularidad":102,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80908"},
+    {"id":"Q80914","nombre":"Tabasco","alias":["Estado Libre y Soberano de Tabasco"],"popularidad":106,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q80914"},
+    {"id":"Q812","nombre":"Florida","alias":["El Estado del Sol","Estado de Florida","Estado de la Península","Fla.","Florida (Estados Unidos)"],"popularidad":260,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q812"},
+    {"id":"Q816","nombre":"Arizona","alias":["Arizona (Estados Unidos)","El Estado del Gran Cañón","Estado de Arizona","Talaith y Gran Cañón"],"popularidad":245,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q816"},
+    {"id":"Q81801","nombre":"Álava","alias":["provincia de Vitoria","provincia de Álava"],"popularidad":89,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81801"},
+    {"id":"Q81802","nombre":"Almería","alias":["provincia de Almería","Almería Province"],"popularidad":89,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81802"},
+    {"id":"Q81803","nombre":"Badajoz","alias":["provincia de Badajoz","Badajoz (provincia)","Province of Badajoz"],"popularidad":83,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81803"},
+    {"id":"Q81863","nombre":"Akita","alias":["Prefectura de Akita","Akita Japon","Akita Prefecture"],"popularidad":106,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q81863"},
+    {"id":"Q81949","nombre":"Barcelona","alias":["provincia de Barcelona","Barcelona provincia","Barcelona Province"],"popularidad":93,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81949"},
+    {"id":"Q81972","nombre":"Córdoba","alias":["provincia de Córdoba","Córdoba Province"],"popularidad":88,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81972"},
+    {"id":"Q81977","nombre":"Cáceres","alias":["provincia de Cáceres","Cáceres Province"],"popularidad":81,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81977"},
+    {"id":"Q81978","nombre":"Cádiz","alias":["provincia de Cádiz","Cádiz Province"],"popularidad":88,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q81978"},
+    {"id":"Q82112","nombre":"Estado de México","alias":["Edomex","Estado Libre y Soberano de México","Estado de Estado de México","Estado de Méjico","Mexiquense","México","State of Mexico"],"popularidad":105,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q82112"},
+    {"id":"Q82119","nombre":"La Coruña","alias":["provincia de La Coruña","A Coruña","A Coruña provincia","La Coruña provincia","Provincia da Coruña","Provincia de A Coruña","A Coruña Province"],"popularidad":85,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q82119"},
+    {"id":"Q82142","nombre":"Granada","alias":["provincia de Granada","Province of Granada"],"popularidad":93,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q82142"},
+    {"id":"Q824","nombre":"Oregón","alias":["Estado de El Castor","Estado de Oregón","Oregón (Estados Unidos)"],"popularidad":226,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q824"},
+    {"id":"Q82681","nombre":"Tlaxcala","alias":["Estado de Tlaxcala","República de Tlaxcala","Tlaxcallan"],"popularidad":102,"atributos":{"pais":"México","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q82681"},
+    {"id":"Q829","nombre":"Utah","alias":["Deseret","Estado de Utah","Estado de Yuta","Estado de la colmena","Estado mormón","US-UT","Utah, Estados Unidos","Yuta"],"popularidad":227,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q829"},
+    {"id":"Q83273","nombre":"Ibaraki","alias":["Prefectura de Ibaraki","Ibaraki Japon","Prefectura Ibaraki","Prefectura de Ibaragi","Ibaraki Prefecture"],"popularidad":105,"atributos":{"pais":"Japón","tipo":"prefectura"},"fuente":"https://www.wikidata.org/wiki/Q83273"},
+    {"id":"Q880399","nombre":"Caaguazú","alias":["Departamento de Caaguazú","Departamento Caaguazú","PY-5","Caaguazú Department"],"popularidad":46,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q880399"},
+    {"id":"Q881839","nombre":"Caazapá","alias":["Departamento de Caazapá","Departamento Caazapá","PY-6","Caazapá Department"],"popularidad":44,"atributos":{"pais":"Paraguay","tipo":"departamento"},"fuente":"https://www.wikidata.org/wiki/Q881839"},
+    {"id":"Q93366","nombre":"Vizcaya","alias":["Bizkaia","Biscay"],"popularidad":88,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q93366"},
+    {"id":"Q95010","nombre":"Guipúzcoa","alias":["Gipuzkoa","provincia de Guipúzcoa"],"popularidad":80,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95010"},
+    {"id":"Q95015","nombre":"Huelva","alias":["provincia de Huelva","Province of Huelva"],"popularidad":86,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95015"},
+    {"id":"Q95025","nombre":"Jaén","alias":["provincia de Jaén","Jaén Province"],"popularidad":85,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95025"},
+    {"id":"Q95027","nombre":"Lugo","alias":["provincia de Lugo","Lugo provincia","Lugo Province"],"popularidad":83,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95027"},
+    {"id":"Q95028","nombre":"Málaga","alias":["provincia de Málaga","Málaga Province"],"popularidad":85,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95028"},
+    {"id":"Q95038","nombre":"Orense","alias":["provincia de Orense","Ourense","Ourense provincia","provincia de Ourense"],"popularidad":78,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95038"},
+    {"id":"Q95080","nombre":"Las Palmas","alias":["Provincia de Las Palmas"],"popularidad":67,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95080"},
+    {"id":"Q95086","nombre":"Pontevedra","alias":["provincia de Pontevedra","Pontevedra provincia","Pontevedra Province"],"popularidad":77,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95086"},
+    {"id":"Q95088","nombre":"Sevilla","alias":["provincia de Sevilla","Seville Province"],"popularidad":86,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q95088"},
+    {"id":"Q980","nombre":"Baviera","alias":["Estado Libre de Baviera","Bavaria"],"popularidad":206,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q980"},
+    {"id":"Q98392","nombre":"Tarragona","alias":["provincia de Tarragona","Tarragona (provincia)","Province of Tarragona"],"popularidad":83,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q98392"},
+    {"id":"Q985","nombre":"Baden-Wurtemberg","alias":["Baden-WB","Baden-Württemberg"],"popularidad":183,"atributos":{"pais":"Alemania","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q985"},
+    {"id":"Q99","nombre":"California","alias":["California (Estados Unidos)","El Estado Dorado","Estado de California"],"popularidad":287,"atributos":{"pais":"Estados Unidos","tipo":"estado"},"fuente":"https://www.wikidata.org/wiki/Q99"},
+    {"id":"Q99976","nombre":"Santa Cruz de Tenerife","alias":["provincia de Santa Cruz de Tenerife","provincia de Tenerife","Santa Cruz de Tenerife Province"],"popularidad":73,"atributos":{"pais":"España","tipo":"provincia"},"fuente":"https://www.wikidata.org/wiki/Q99976"}
+  ]
+}

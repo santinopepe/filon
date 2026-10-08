@@ -1,5 +1,5 @@
 {
-  "version": "2",
+  "version": "3",
   "descripcion": "Plantillas del generador por catálogos. Son datos: operadores de una lista cerrada (servidor/catalogos/filtros.js) y parámetros que se calculan desde los catálogos. Ver docs/GENERADOR.md.",
   "plantillas": [
     {
@@ -979,7 +979,7 @@
         "min": 30,
         "max": 15000
       },
-      "dificultad": 0.0,
+      "dificultad": 0,
       "prioridad": 3,
       "rechazos": true,
       "alcance": "Palabras del diccionario es_AR de LibreOffice en su forma de diccionario (singular, infinitivo), sin nombres propios. No importan las tildes; la ñ es distinta de la n.",
@@ -1943,6 +1943,2351 @@
       "rechazos": false,
       "alcance": "Selecciones campeonas de la Copa Mundial Femenina de la FIFA (1991–2023).",
       "explicacion": "{nombre}: campeona en {titulos}."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "id": "capitales-limitrofes",
+      "familia": "capitales-fronteras",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "vecinos": "que limite con {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "vecinos"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "vecinos",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 20
+      },
+      "dificultad": 0.4,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); fronteras terrestres según GeoNames.",
+      "explicacion": "{nombre} es capital de {pais}, que limita con {vecinos}."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "id": "capitales-idioma",
+      "familia": "capitales-idiomas",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "idiomas": "donde el {valor} sea idioma oficial"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "idioma": {
+          "tipo": "valor",
+          "campo": "idiomas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "idiomas",
+        "valores": [
+          "{idioma}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.4,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); idiomas oficiales u oficiales de hecho según Unicode CLDR.",
+      "explicacion": "{nombre} es capital de {pais} (idiomas oficiales: {idiomas})."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "id": "capitales-moneda",
+      "familia": "capitales-idiomas",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "moneda": "que use como moneda el {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "moneda": {
+          "tipo": "valor",
+          "campo": "moneda"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "moneda",
+        "valores": [
+          "{moneda}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.45,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); moneda principal de cada país según GeoNames.",
+      "explicacion": "{nombre} es capital de {pais}, que usa el {moneda}."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "id": "paises-continente-inicial",
+      "familia": "paises-letras",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "continente",
+            "valores": [
+              "{continente}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.25,
+      "alcance": "Estados miembros de la ONU y observadores; continentes según M49 (Unicode CLDR). Se mira el nombre común en español, sin tildes.",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "id": "capitales-continente-inicial",
+      "familia": "capitales-letras",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "continente",
+            "valores": [
+              "{continente}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); continentes según M49 (Unicode CLDR). Se mira el nombre en español, sin tildes.",
+      "explicacion": "{nombre} es capital de {pais} ({continente})."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "estados",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un estado",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un estado de {pais}.",
+      "id": "estados-pais",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Estados Unidos",
+            "México",
+            "Brasil",
+            "Venezuela",
+            "Alemania",
+            "Australia",
+            "India"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "estados",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un estado",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un estado de {pais}.",
+      "id": "estados-inicial",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Estados Unidos",
+            "México",
+            "Brasil",
+            "Venezuela",
+            "Alemania",
+            "Australia",
+            "India"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "estados",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un estado",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un estado de {pais}.",
+      "id": "estados-final",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Estados Unidos",
+            "México",
+            "Brasil",
+            "Venezuela",
+            "Alemania",
+            "Australia",
+            "India"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de un estado",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-estados",
+      "familia": "capitales-divisiones",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Estados Unidos",
+            "México",
+            "Brasil",
+            "Venezuela",
+            "Australia"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de un estado",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-estados-inicial",
+      "familia": "capitales-divisiones-letras",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Estados Unidos",
+            "México",
+            "Brasil",
+            "Venezuela",
+            "Australia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un departamento de {pais}.",
+      "id": "departamentos-pais",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Uruguay",
+            "Colombia",
+            "Paraguay",
+            "Bolivia"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un departamento de {pais}.",
+      "id": "departamentos-inicial",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Uruguay",
+            "Colombia",
+            "Paraguay",
+            "Bolivia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un departamento de {pais}.",
+      "id": "departamentos-final",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Uruguay",
+            "Colombia",
+            "Paraguay",
+            "Bolivia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de un departamento",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-departamentos",
+      "familia": "capitales-divisiones",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Uruguay",
+            "Paraguay",
+            "Bolivia"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de un departamento",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-departamentos-inicial",
+      "familia": "capitales-divisiones-letras",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Uruguay",
+            "Paraguay",
+            "Bolivia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "regiones",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una región",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una región de {pais}.",
+      "id": "regiones-pais",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Chile",
+            "Italia",
+            "Francia"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "regiones",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una región",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una región de {pais}.",
+      "id": "regiones-inicial",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Chile",
+            "Italia",
+            "Francia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "regiones",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una región",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una región de {pais}.",
+      "id": "regiones-final",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Chile",
+            "Italia",
+            "Francia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de una región",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-regiones",
+      "familia": "capitales-divisiones",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Chile",
+            "Italia"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de una región",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-regiones-inicial",
+      "familia": "capitales-divisiones-letras",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Chile",
+            "Italia"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "provincias-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una provincia",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una provincia de {pais}.",
+      "id": "provincias-mundo-pais",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "España",
+            "Canadá",
+            "Ecuador"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "provincias-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una provincia",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una provincia de {pais}.",
+      "id": "provincias-mundo-inicial",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "España",
+            "Canadá",
+            "Ecuador"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "provincias-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una provincia",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una provincia de {pais}.",
+      "id": "provincias-mundo-final",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "España",
+            "Canadá",
+            "Ecuador"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de una provincia",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-provincias-mundo",
+      "familia": "capitales-divisiones",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Canadá",
+            "Ecuador"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "catalogo": "capitales_subdivisiones",
+      "enunciado": "Nombrá la capital de una provincia",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Capitales vigentes (Wikidata) de las divisiones de primer nivel; solo países donde todas tienen una única capital.",
+      "explicacion": "{nombre} es la capital de {division} ({pais}).",
+      "id": "capitales-provincias-mundo-inicial",
+      "familia": "capitales-divisiones-letras",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Canadá",
+            "Ecuador"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "prefecturas",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una prefectura",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una prefectura de {pais}.",
+      "id": "prefecturas-pais",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Japón"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais",
+        "valores": [
+          "{pais}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "prefecturas",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una prefectura",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una prefectura de {pais}.",
+      "id": "prefecturas-inicial",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Japón"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "prefecturas",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una prefectura",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una prefectura de {pais}.",
+      "id": "prefecturas-final",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Japón"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 3,
+      "rechazos": true,
+      "familia": "partidos",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un partido",
+      "frases": {
+        "provincia": "de la provincia de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los 135 partidos de la provincia de Buenos Aires. Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un partido de la provincia de Buenos Aires.",
+      "id": "partidos-bonaerenses",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Buenos Aires"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "provincia",
+        "valores": [
+          "{provincia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 150
+      },
+      "dificultad": 0.3
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "partidos",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un partido",
+      "frases": {
+        "provincia": "de la provincia de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los 135 partidos de la provincia de Buenos Aires. Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un partido de la provincia de Buenos Aires.",
+      "id": "partidos-inicial",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Buenos Aires"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "provincia",
+            "valores": [
+              "{provincia}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "partidos",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un partido",
+      "frases": {
+        "provincia": "de la provincia de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los 135 partidos de la provincia de Buenos Aires. Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un partido de la provincia de Buenos Aires.",
+      "id": "partidos-final",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Buenos Aires"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "provincia",
+            "valores": [
+              "{provincia}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-ar",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "provincia": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los departamentos de las provincias argentinas (en Buenos Aires son partidos). Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un departamento de {provincia}.",
+      "id": "departamentos-provincia",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Catamarca",
+            "Chaco",
+            "Chubut",
+            "Córdoba",
+            "Corrientes",
+            "Entre Ríos",
+            "Formosa",
+            "Jujuy",
+            "La Pampa",
+            "La Rioja",
+            "Mendoza",
+            "Misiones",
+            "Neuquén",
+            "Río Negro",
+            "Salta",
+            "San Juan",
+            "San Luis",
+            "Santa Cruz",
+            "Santa Fe",
+            "Santiago del Estero",
+            "Tierra del Fuego",
+            "Tucumán"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "provincia",
+        "valores": [
+          "{provincia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-ar",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "provincia": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los departamentos de las provincias argentinas (en Buenos Aires son partidos). Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un departamento de {provincia}.",
+      "id": "departamentos-provincia-inicial",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Catamarca",
+            "Chaco",
+            "Chubut",
+            "Córdoba",
+            "Corrientes",
+            "Entre Ríos",
+            "Formosa",
+            "Jujuy",
+            "La Pampa",
+            "La Rioja",
+            "Mendoza",
+            "Misiones",
+            "Neuquén",
+            "Río Negro",
+            "Salta",
+            "San Juan",
+            "San Luis",
+            "Santa Cruz",
+            "Santa Fe",
+            "Santiago del Estero",
+            "Tierra del Fuego",
+            "Tucumán"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "provincia",
+            "valores": [
+              "{provincia}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.55
+    },
+    {
+      "id": "paises-inicial-una-letra",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{letras}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores, con su nombre común en español (Unicode CLDR). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "paises-inicial-dos-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 2
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{letras}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.39999999999999997,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores, con su nombre común en español (Unicode CLDR). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre}: {subregion} ({continente}). Capital: {capitales}."
+    },
+    {
+      "id": "capitales-inicial-una-letra",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{letras}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores, con su nombre en español (Wikidata). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre} es capital de {pais} ({subregion})."
+    },
+    {
+      "id": "capitales-inicial-dos-letras",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 2
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{letras}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores, con su nombre en español (Wikidata). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre} es capital de {pais} ({subregion})."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "partidos",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un partido",
+      "frases": {
+        "provincia": "de la provincia de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los 135 partidos de la provincia de Buenos Aires. Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un partido de la provincia de Buenos Aires.",
+      "id": "partidos-bonaerenses-una-letra",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Buenos Aires"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "provincia",
+            "valores": [
+              "{provincia}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.45
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "partidos",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un partido",
+      "frases": {
+        "provincia": "de la provincia de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los 135 partidos de la provincia de Buenos Aires. Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un partido de la provincia de Buenos Aires.",
+      "id": "partidos-bonaerenses-dos-letras",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Buenos Aires"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 2
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "provincia",
+            "valores": [
+              "{provincia}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.5
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "estados",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un estado",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un estado de {pais}.",
+      "id": "estados-pais-una-letra",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Estados Unidos",
+            "México",
+            "Brasil",
+            "Venezuela",
+            "Alemania",
+            "Australia",
+            "India"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es un departamento de {pais}.",
+      "id": "departamentos-pais-una-letra",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Uruguay",
+            "Colombia",
+            "Paraguay",
+            "Bolivia"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "regiones",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una región",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una región de {pais}.",
+      "id": "regiones-pais-una-letra",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Chile",
+            "Italia",
+            "Francia"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "provincias-mundo",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una provincia",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una provincia de {pais}.",
+      "id": "provincias-mundo-pais-una-letra",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "España",
+            "Canadá",
+            "Ecuador"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "prefecturas",
+      "catalogo": "subdivisiones",
+      "enunciado": "Nombrá una prefectura",
+      "frases": {
+        "pais": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Divisiones de primer nivel vigentes con su código ISO 3166-2, según Wikidata, con la cantidad oficial verificada país por país (el Distrito Federal de Brasil, la Ciudad de México o los territorios de Canadá no cuentan).",
+      "explicacion": "{nombre} es una prefectura de {pais}.",
+      "id": "prefecturas-pais-una-letra",
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais",
+          "solo": [
+            "Japón"
+          ]
+        },
+        "letras": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "pais",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "tiene",
+            "campo": "nombre",
+            "letras": "{letras}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "familia": "departamentos-ar",
+      "catalogo": "departamentos_argentinos",
+      "enunciado": "Nombrá un departamento",
+      "frases": {
+        "provincia": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "alcance": "Los departamentos de las provincias argentinas (en Buenos Aires son partidos). Unidades de segundo nivel de las provincias según el Servicio de Normalización de Datos Geográficos de Argentina (fuente: IGN).",
+      "explicacion": "{nombre} es un departamento de {provincia}.",
+      "id": "departamentos-provincia-final",
+      "parametros": {
+        "provincia": {
+          "tipo": "valor",
+          "campo": "provincia",
+          "solo": [
+            "Catamarca",
+            "Chaco",
+            "Chubut",
+            "Córdoba",
+            "Corrientes",
+            "Entre Ríos",
+            "Formosa",
+            "Jujuy",
+            "La Pampa",
+            "La Rioja",
+            "Mendoza",
+            "Misiones",
+            "Neuquén",
+            "Río Negro",
+            "Salta",
+            "San Juan",
+            "San Luis",
+            "Santa Cruz",
+            "Santa Fe",
+            "Santiago del Estero",
+            "Tierra del Fuego",
+            "Tucumán"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "provincia",
+            "valores": [
+              "{provincia}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.6
+    },
+    {
+      "id": "paises-idioma-geografia",
+      "familia": "paises-idiomas-geo",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "idiomas": "donde el {valor} sea idioma oficial"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "idioma": {
+          "tipo": "valor",
+          "campo": "idiomas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "idiomas",
+        "valores": [
+          "{idioma}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores; idiomas oficiales u oficiales de hecho según Unicode CLDR (no los regionales).",
+      "explicacion": "{nombre}: idiomas oficiales {idiomas}.",
+      "modos": [
+        "geografia"
+      ]
+    },
+    {
+      "id": "paises-continente-idioma",
+      "familia": "paises-idiomas-geo",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "frases": {
+        "idiomas": "donde el {valor} sea idioma oficial",
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        },
+        "idioma": {
+          "tipo": "valor",
+          "campo": "idiomas"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "continente",
+            "valores": [
+              "{continente}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "idiomas",
+            "valores": [
+              "{idioma}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Estados miembros de la ONU y observadores; continentes según M49; idiomas oficiales u oficiales de hecho según Unicode CLDR (no los regionales).",
+      "explicacion": "{nombre}: idiomas oficiales {idiomas}."
+    },
+    {
+      "categoria": "geografia",
+      "prioridad": 2,
+      "rechazos": true,
+      "id": "capitales-continente-idioma",
+      "familia": "capitales-idiomas",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá la capital de un país",
+      "frases": {
+        "idiomas": "donde el {valor} sea idioma oficial",
+        "continente": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "continente": {
+          "tipo": "valor",
+          "campo": "continente"
+        },
+        "idioma": {
+          "tipo": "valor",
+          "campo": "idiomas"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "continente",
+            "valores": [
+              "{continente}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "idiomas",
+            "valores": [
+              "{idioma}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.45,
+      "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); idiomas oficiales u oficiales de hecho según Unicode CLDR.",
+      "explicacion": "{nombre} es capital de {pais} (idiomas oficiales: {idiomas})."
     }
   ]
 }

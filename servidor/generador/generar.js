@@ -23,7 +23,8 @@ async function finalizarCorrida(db, corridaId, resultado, detalle, ahora) {
  * reemplazar=true (administración) arma uno nuevo aunque ya exista y, solo si se pudo publicar, borra
  * el anterior; las preguntas reemplazadas cuentan como recientes, así el día cambia de verdad.
  * `reservas` trae el banco de archivo de cada modo; `reserva` (el de Normal) se acepta por compatibilidad.
- * `generador` («catalogos» o «reserva») elige cómo se arma Normal; por omisión, config.generadorNormal.
+ * `generador` («catalogos» o «reserva») elige cómo se arma Normal o Geografía; por omisión, el de
+ * config.generadores. Los demás modos usan siempre su reserva.
  */
 export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFECTO, reserva: reservaNormal, reservas = null, reemplazar = false, ahora = () => Date.now(), titular = randomUUID(), generador = null }) {
   const anterior = await desafioPorFecha(db, fecha, modo);
@@ -55,7 +56,7 @@ export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFEC
     }
 
     let preguntas = [];
-    const tipo = modo === MODO_POR_DEFECTO ? (generador ?? config.generadorNormal) : 'reserva';
+    const tipo = Object.hasOwn(config.generadores, modo) ? (generador ?? config.generadores[modo]) : 'reserva';
     detalle.generador = tipo;
     if (tipo === 'catalogos') {
       const g = await generarConCatalogos({ db, config, fecha, modo, anteriores });

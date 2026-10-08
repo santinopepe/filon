@@ -2,12 +2,12 @@
 // partir de los datos y armado del filtro concreto. Los parámetros solo reemplazan marcadores «{x}» por
 // valores tipados: no hay plantillas con código, expresiones ni SQL.
 import { readFileSync } from 'node:fs';
-import { CATEGORIAS_NORMAL } from '../dominio.js';
+import { CATEGORIAS_NORMAL, CLAVES_MODOS } from '../dominio.js';
 import { normalizar } from '../normalizar.js';
 import { ALFABETO, rasgos, textoNormal } from './texto.js';
 
 const TIPOS_PARAMETRO = new Set(['valor', 'letra', 'letras', 'secuencia', 'numero', 'periodo']);
-const CLAVES = new Set(['id', 'familia', 'categoria', 'catalogo', 'enunciado', 'frases', 'sujetos', 'parametros', 'filtro', 'todos', 'respuestas', 'dificultad', 'prioridad', 'rechazos', 'alcance', 'explicacion', 'coincidencia']);
+const CLAVES = new Set(['id', 'familia', 'categoria', 'catalogo', 'enunciado', 'frases', 'sujetos', 'parametros', 'filtro', 'todos', 'respuestas', 'dificultad', 'prioridad', 'rechazos', 'alcance', 'explicacion', 'coincidencia', 'modos']);
 
 /** Valida una plantilla (sin mirar los datos). Devuelve la lista de errores. */
 export function validarPlantilla(p) {
@@ -24,6 +24,8 @@ export function validarPlantilla(p) {
   if (typeof p.dificultad !== 'number' || p.dificultad < 0 || p.dificultad > 1) e.push('dificultad entre 0 y 1');
   if (![1, 2, 3].includes(p.prioridad)) e.push('prioridad 1, 2 o 3');
   if (p.coincidencia !== undefined && !['flexible', 'exacta'].includes(p.coincidencia)) e.push('coincidencia «flexible» o «exacta»');
+  // `modos`: la plantilla solo se usa en esos modos (por omisión, en todos los que admiten su categoría).
+  if (p.modos !== undefined && !(Array.isArray(p.modos) && p.modos.length && p.modos.every((m) => CLAVES_MODOS.includes(m)))) e.push('modos: lista de modos de juego');
   for (const [k, f] of Object.entries(p.frases ?? {})) {
     if (typeof f !== 'string' || !/\{(valor|desde)\}/.test(f)) e.push(`frase de «${k}» sin {valor} ni {desde}`);
   }
@@ -31,6 +33,8 @@ export function validarPlantilla(p) {
   for (const [nombre, def] of Object.entries(p.parametros ?? {})) {
     if (!/^\w+$/.test(nombre)) e.push(`parámetro con nombre inválido «${nombre}»`);
     if (!TIPOS_PARAMETRO.has(def?.tipo)) e.push(`parámetro «${nombre}» con tipo inválido`);
+    // `solo` (en «valor»): los únicos valores que puede tomar («estado de» solo para países con estados).
+    if (def?.solo !== undefined && (def.tipo !== 'valor' || !Array.isArray(def.solo) || !def.solo.length || !def.solo.every((v) => typeof v === 'string'))) e.push(`parámetro «${nombre}»: «solo» es una lista de valores de un parámetro «valor»`);
     if (def?.tipo === 'numero' && (!Array.isArray(def.valores) || !def.valores.every(Number.isInteger) || def.valores.length > 20)) e.push(`parámetro «${nombre}»: hasta 20 enteros`);
     if (def?.tipo === 'letras' && ![1, 2, 3].includes(def.cantidad)) e.push(`parámetro «${nombre}»: cantidad 1 a 3`);
     if (def?.tipo === 'secuencia' && (![2, 3, 4].includes(def.largo) || !['inicial', 'final', 'cualquiera'].includes(def.posicion))) e.push(`parámetro «${nombre}»: largo 2–4 y posición inicial, final o cualquiera`);
@@ -80,7 +84,7 @@ export function valoresDeParametro(def, catalogo) {
   const textoDe = (e) => (def.campo === 'nombre' ? e.nombre : String(e.atributos[def.campo] ?? ''));
   switch (def.tipo) {
     case 'valor':
-      return [...(catalogo.valores.get(def.campo) ?? [])].sort(coleccion.compare).map((v) => ({ valor: v }));
+      return [...(catalogo.valores.get(def.campo) ?? [])].filter((v) => !def.solo || def.solo.includes(v)).sort(coleccion.compare).map((v) => ({ valor: v }));
     case 'numero':
       return def.valores.map((v) => ({ valor: v }));
     case 'letras': {
