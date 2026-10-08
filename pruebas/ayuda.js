@@ -28,7 +28,8 @@ export function rutaTemporal() {
 }
 
 export async function prepararEntorno({ inicio = '2026-10-05T15:00:00-03:00', env = {} } = {}) {
-  const config = cargarConfig({ sinArchivoEnv: true, env: { TURSO_DATABASE_URL: '', BD_URL: '', ...env } });
+  // Las pruebas ejercitan los tres modos; las de MODOS_ACTIVOS lo cambian explícitamente.
+  const config = cargarConfig({ sinArchivoEnv: true, env: { TURSO_DATABASE_URL: '', BD_URL: '', MODOS_ACTIVOS: 'normal,farandula,geografia', ...env } });
   config.rutaBD = rutaTemporal();
   const db = await abrirBD(config.rutaBD);
   const reloj = crearReloj(inicio);

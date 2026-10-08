@@ -224,6 +224,10 @@ const capitales = {
     pais: { tipo: 'texto', etiqueta: 'país' },
     continente: { tipo: 'texto', etiqueta: 'continente (M49)' },
     subregion: { tipo: 'texto', etiqueta: 'región (M49)' },
+    // Del país de la capital (los mismos datos verificados del catálogo «paises»).
+    vecinos: { tipo: 'lista', etiqueta: 'país vecino' },
+    idiomas: { tipo: 'lista', etiqueta: 'idioma oficial' },
+    moneda: { tipo: 'texto', etiqueta: 'moneda' },
   },
   async importar({ hoy, catalogos }) {
     const verificacion = [];
@@ -239,12 +243,14 @@ const capitales = {
     const entidades = ids.map((id) => {
       const p = porCapital.get(id);
       const n = nombreYAlias(et.get(id));
-      return { id, ...n, popularidad: et.get(id).enlaces, atributos: { pais: p.nombre, continente: p.atributos.continente, subregion: p.atributos.subregion }, fuente: urlEntidad(id) };
+      const { continente, subregion, vecinos, idiomas, moneda } = p.atributos;
+      return { id, ...n, popularidad: et.get(id).enlaces, atributos: { pais: p.nombre, continente, subregion, vecinos, idiomas, moneda }, fuente: urlEntidad(id) };
     });
     exigir(entidades.every((e) => e.nombre), 'todas las capitales tienen nombre en español', verificacion);
     exigir(new Set(entidades.map((e) => e.atributos.pais)).size === 195, 'hay capital para los 195 países', verificacion);
     exigir(new Set(entidades.map((e) => normalizar(e.nombre))).size === entidades.length, 'los nombres de capitales son únicos', verificacion);
-    return { entidades, verificacion, fuentes: [{ ...WIKIDATA, detalle: 'capitales (P36), alias y popularidad' }], hoy };
+    exigir(entidades.find((e) => e.nombre === 'Buenos Aires')?.atributos.vecinos.includes('Chile'), 'el país de Buenos Aires limita con Chile (vecinos tomados del catálogo «paises»)', verificacion);
+    return { entidades, verificacion, fuentes: [{ ...WIKIDATA, detalle: 'capitales (P36), alias y popularidad' }, { nombre: 'Catálogo «paises»', url: 'https://www.geonames.org', licencia: 'CC BY 4.0 (GeoNames) y Unicode License v3 (CLDR)', detalle: 'fronteras, idiomas y moneda del país de cada capital' }], hoy };
   },
 };
 
@@ -1146,6 +1152,199 @@ const capitalesArgentinas = {
   },
 };
 
+// ───── Divisiones de primer nivel de otros países ─────
+
+// País (ISO) → tipo de división, clases de Wikidata (P31) y cantidad oficial. Solo las divisiones con ese
+// nombre: el Distrito Federal de Brasil o la Ciudad de México no son estados, los territorios de Canadá
+// no son provincias. Además, cada una tiene que tener su código ISO 3166-2: así quedan afuera ítems
+// históricos sin fecha de fin (departamento de Panamá en Colombia) y reclamos (Guayana Esequiba).
+// `agregar` suma, con su motivo, divisiones vigentes que Wikidata tiene incompletas.
+const DIVISIONES = {
+  US: { tipo: 'estado', clases: ['Q35657'], cantidad: 50 },
+  MX: { tipo: 'estado', clases: ['Q15149663'], cantidad: 31 },
+  BR: { tipo: 'estado', clases: ['Q485258'], cantidad: 26, excluir: { 'BR-DF': 'El Distrito Federal no es un estado.' } },
+  VE: { tipo: 'estado', clases: ['Q501094'], cantidad: 23 },
+  DE: { tipo: 'estado', clases: ['Q1221156'], cantidad: 16 },
+  AU: { tipo: 'estado', clases: ['Q5852411'], cantidad: 6 },
+  IN: { tipo: 'estado', clases: ['Q12443800'], cantidad: 28 },
+  UY: { tipo: 'departamento', clases: ['Q56059'], cantidad: 19 },
+  CO: { tipo: 'departamento', clases: ['Q215655'], cantidad: 32 },
+  PY: { tipo: 'departamento', clases: ['Q815068'], cantidad: 17 },
+  BO: { tipo: 'departamento', clases: ['Q250050'], cantidad: 9 },
+  CL: { tipo: 'región', clases: ['Q590080'], cantidad: 16 },
+  IT: { tipo: 'región', clases: ['Q16110', 'Q1710033'], cantidad: 20 },
+  FR: { tipo: 'región', clases: ['Q36784'], cantidad: 18 },
+  ES: {
+    tipo: 'provincia', clases: ['Q162620'], cantidad: 50,
+    agregar: {
+      Q31844097: 'La provincia de La Rioja (ES-LO) no tiene su código ISO 3166-2 en Wikidata.',
+      Q107356469: 'Wikidata clasifica la provincia de Baleares (ES-PM) como histórica, pero sigue siendo una de las 50 provincias (INE).',
+    },
+  },
+  CA: { tipo: 'provincia', clases: ['Q11828004'], cantidad: 10 },
+  EC: { tipo: 'provincia', clases: ['Q719987'], cantidad: 24 },
+  JP: { tipo: 'prefectura', clases: ['Q50337'], cantidad: 47 },
+};
+// Formas cortas habituales que no están como alias en Wikidata (además, se acepta el nombre en inglés).
+const ALIAS_DIVISION = { 'Magallanes y de la Antártica Chilena': ['Magallanes'], 'Aysén del General Carlos Ibáñez del Campo': ['Aysén'], 'Región Metropolitana de Santiago': ['Región Metropolitana', 'Metropolitana'], 'Libertador General Bernardo O\'Higgins': ['O\'Higgins'] };
+// Capitales que no se usan: la de Tokio es la propia metrópolis (Wikidata da Shinjuku, que es un barrio).
+const SIN_CAPITALES = { JP: 'La capital de la prefectura de Tokio es la propia metrópolis; Wikidata da un barrio (Shinjuku).' };
+// Se quita el tipo de división delante del nombre («Provincia de La Coruña» → «La Coruña», «Estado
+// Barinas» → «Barinas», «Departamento Central» → «Central»). «Estado de México» es el nombre del estado.
+const PREFIJO_DIVISION = /^(?:(?:estado|departamento|región|provincia|prefectura)\s+(?:del?\s+)(?!México$)|(?:estado|departamento)\s+(?!de\s))/i;
+
+async function divisionesDePaises(verificacion, correcciones, paises) {
+  const porIso = new Map(paises.entidades.map((p) => [p.id, p]));
+  const divisiones = [];
+  for (const [iso, d] of Object.entries(DIVISIONES)) {
+    const item = porIso.get(iso).atributos.wikidata;
+    const filas = await sparql(`SELECT DISTINCT ?i ?cod WHERE { VALUES ?clase { ${d.clases.map((c) => `wd:${c}`).join(' ')} } ?i wdt:P31 ?clase ; wdt:P17 wd:${item} . OPTIONAL { ?i wdt:P300 ?cod } FILTER NOT EXISTS { ?i wdt:P576 [] } }`);
+    const excluida = (f) => d.excluir?.[f.cod];
+    for (const f of filas.filter(excluida)) correcciones.push({ entidad: qid(f.i), detalle: 'se excluye', motivo: excluida(f) });
+    const conCodigo = new Set(filas.filter((f) => f.cod?.startsWith(`${iso}-`)).map((f) => qid(f.i)));
+    const sinCodigo = [...new Set(filas.filter((f) => !conCodigo.has(qid(f.i))).map((f) => qid(f.i)))].filter((id) => !d.agregar?.[id]);
+    if (sinCodigo.length) verificacion.push(`${porIso.get(iso).nombre}: se descartan ${sinCodigo.length} ítem(s) sin código ISO 3166-2 (${sinCodigo.join(', ')})`);
+    for (const [id, motivo] of Object.entries(d.agregar ?? {})) correcciones.push({ entidad: id, detalle: 'se agrega', motivo });
+    const ids = [...new Set([...filas.filter((f) => conCodigo.has(qid(f.i)) && !excluida(f)).map((f) => qid(f.i)), ...Object.keys(d.agregar ?? {})])];
+    const pais = porIso.get(iso).nombre;
+    exigir(ids.length === d.cantidad, `${pais}: ${ids.length} ${d.tipo === 'región' ? 'regiones' : `${d.tipo}s`} (se esperan ${d.cantidad})`, verificacion);
+    for (const id of ids) divisiones.push({ id, iso, pais, tipo: d.tipo });
+  }
+  const ids = divisiones.map((x) => x.id);
+  const [et, caps] = await Promise.all([etiquetas(ids), propiedad(ids, 'P36', { vigentes: true })]);
+  const sinNombre = divisiones.filter((x) => !et.get(x.id).es).map((x) => `${x.id} (${x.pais})`);
+  exigir(!sinNombre.length, `todas tienen nombre en español${sinNombre.length ? ` (faltan: ${sinNombre.join(', ')})` : ''}`, verificacion);
+  for (const x of divisiones) {
+    const e = et.get(x.id);
+    x.nombre = e.es.replace(PREFIJO_DIVISION, '');
+    if (x.nombre !== e.es) correcciones.push({ entidad: x.id, detalle: `«${x.nombre}» en vez de «${e.es}»`, motivo: 'Sin el tipo de división delante (igual se acepta escrito con él).' });
+    x.alias = limpiarAlias(x.nombre, [e.es, ...(ALIAS_DIVISION[x.nombre] ?? []), ...e.alias, ...(e.en ? [e.en] : [])]);
+    x.popularidad = e.enlaces;
+    x.capitales = [...new Map(caps.get(x.id).map((c) => [c.valor.id, c.valor])).values()].filter((c) => c.id);
+  }
+  return divisiones;
+}
+
+const subdivisiones = {
+  id: 'subdivisiones',
+  nombre: 'Estados, provincias, regiones y departamentos de otros países',
+  descripcion: 'Las divisiones de primer nivel de 18 países (estados de Estados Unidos, México, Brasil…; departamentos de Uruguay, Colombia…; regiones de Chile, Italia y Francia; provincias de España, Canadá y Ecuador; prefecturas de Japón).',
+  depende: ['paises'],
+  popularidad: POPULARIDAD_WIKIPEDIA,
+  cobertura: { tipo: 'completa', criterio: 'Todas las divisiones de primer nivel vigentes de cada uno de los 18 países (clase de Wikidata de ese tipo de división), con la cantidad oficial verificada país por país.' },
+  atributos: { pais: { tipo: 'texto', etiqueta: 'país' }, tipo: { tipo: 'texto', etiqueta: 'tipo de división' } },
+  async importar({ hoy, catalogos }) {
+    const verificacion = [];
+    const correcciones = [];
+    const divisiones = await divisionesDePaises(verificacion, correcciones, catalogos.paises);
+    for (const iso of Object.keys(DIVISIONES)) {
+      const nombres = divisiones.filter((x) => x.iso === iso).map((x) => normalizar(x.nombre));
+      exigir(new Set(nombres).size === nombres.length, `${catalogos.paises.entidades.find((p) => p.id === iso).nombre}: los nombres no se repiten`, verificacion);
+    }
+    const esperados = { US: ['Texas', 'California', 'Alaska'], MX: ['Jalisco', 'Estado de México', 'Yucatán'], ES: ['Barcelona', 'Asturias', 'Navarra'], CL: ['Biobío', 'Magallanes'] };
+    for (const [iso, lista] of Object.entries(esperados)) {
+      const de = divisiones.filter((x) => x.iso === iso);
+      const faltan = lista.filter((n) => !de.some((x) => x.nombre.includes(n)));
+      exigir(!faltan.length, `${de[0]?.pais}: incluye ${lista.join(', ')}${faltan.length ? ` (faltan ${faltan.join(', ')})` : ''}`, verificacion);
+    }
+    const entidades = divisiones.map((x) => ({ id: x.id, nombre: x.nombre, alias: x.alias, popularidad: x.popularidad, atributos: { pais: x.pais, tipo: x.tipo }, fuente: urlEntidad(x.id) }));
+    return { entidades, correcciones, verificacion, fuentes: [{ ...WIKIDATA, detalle: 'divisiones de primer nivel (P31 por país), nombres y popularidad' }], hoy };
+  },
+};
+
+const capitalesSubdivisiones = {
+  id: 'capitales_subdivisiones',
+  nombre: 'Capitales de estados, provincias, regiones y departamentos',
+  descripcion: 'Las capitales de las divisiones de primer nivel del catálogo «subdivisiones» (salvo las prefecturas de Japón).',
+  depende: ['paises'],
+  popularidad: POPULARIDAD_WIKIPEDIA,
+  cobertura: { tipo: 'completa', criterio: 'La capital vigente (P36) de cada división de primer nivel de 17 países: si a una división le falta, o tiene más de una, ese país queda afuera entero.' },
+  atributos: { pais: { tipo: 'texto', etiqueta: 'país' }, tipo: { tipo: 'texto', etiqueta: 'tipo de división' }, division: { tipo: 'texto', etiqueta: 'división' } },
+  async importar({ hoy, catalogos }) {
+    const verificacion = [];
+    const divisiones = await divisionesDePaises(verificacion, [], catalogos.paises);
+    const correcciones = Object.entries(SIN_CAPITALES).map(([iso, motivo]) => ({ entidad: iso, detalle: 'sin capitales', motivo }));
+    const paises = [...new Set(divisiones.map((x) => x.iso))].filter((iso) => !SIN_CAPITALES[iso]);
+    const usados = [];
+    for (const iso of paises) {
+      const de = divisiones.filter((x) => x.iso === iso);
+      const malas = de.filter((x) => x.capitales.length !== 1).map((x) => `${x.nombre} (${x.capitales.length})`);
+      if (malas.length) {
+        verificacion.push(`${de[0].pais} queda afuera: capital faltante o múltiple en ${malas.join(', ')}`);
+        continue;
+      }
+      usados.push(iso);
+    }
+    const elegidas = divisiones.filter((x) => usados.includes(x.iso));
+    const ids = [...new Set(elegidas.map((x) => x.capitales[0].id))];
+    exigir(ids.length === elegidas.length, 'ninguna ciudad es capital de dos divisiones', verificacion);
+    const et = await etiquetas(ids);
+    const entidades = elegidas.map((x) => {
+      const c = x.capitales[0];
+      const n = nombreYAlias(et.get(c.id));
+      return { id: c.id, ...n, popularidad: et.get(c.id).enlaces, atributos: { pais: x.pais, tipo: x.tipo, division: x.nombre }, fuente: urlEntidad(c.id) };
+    });
+    exigir(entidades.every((e) => e.nombre), 'todas las capitales tienen nombre en español', verificacion);
+    exigir(usados.length >= 12, `${usados.length} países con todas sus capitales (se esperan al menos 12)`, verificacion);
+    for (const [division, capital] of [['Texas', 'Austin'], ['Jalisco', 'Guadalajara'], ['Córdoba', 'Montería']]) {
+      const e = entidades.find((x) => x.atributos.division === division);
+      if (e) exigir(e.nombre === capital, `la capital de ${division} es ${capital}`, verificacion);
+    }
+    return { entidades, correcciones, verificacion, fuentes: [{ ...WIKIDATA, detalle: 'capitales (P36) de las divisiones de primer nivel' }], hoy };
+  },
+};
+
+// ───── Departamentos y partidos de la Argentina ─────
+
+const GEOREF = 'https://apis.datos.gob.ar/georef/api/departamentos?max=1000&campos=id,nombre,provincia.nombre,categoria&formato=json';
+// Cantidad por provincia según el Servicio de Normalización de Datos Geográficos (IGN), sin las 15 comunas porteñas.
+const DEPARTAMENTOS_POR_PROVINCIA = { 'Buenos Aires': 135, Catamarca: 16, Chaco: 25, Chubut: 15, Córdoba: 26, Corrientes: 25, 'Entre Ríos': 17, Formosa: 9, Jujuy: 16, 'La Pampa': 22, 'La Rioja': 18, Mendoza: 18, Misiones: 17, Neuquén: 16, 'Río Negro': 13, Salta: 23, 'San Juan': 19, 'San Luis': 9, 'Santa Cruz': 7, 'Santa Fe': 19, 'Santiago del Estero': 27, 'Tierra del Fuego': 5, Tucumán: 17 };
+
+const departamentosArgentinos = {
+  id: 'departamentos_argentinos',
+  nombre: 'Departamentos y partidos de la Argentina',
+  descripcion: 'Los 135 partidos de la provincia de Buenos Aires y los 379 departamentos de las otras 22 provincias.',
+  popularidad: POPULARIDAD_WIKIPEDIA,
+  cobertura: { tipo: 'completa', criterio: 'Todas las unidades de segundo nivel de las 23 provincias según el Servicio de Normalización de Datos Geográficos (fuente: IGN), con la cantidad verificada provincia por provincia. La Ciudad de Buenos Aires (comunas) no es provincia.' },
+  atributos: { provincia: { tipo: 'texto', etiqueta: 'provincia' }, tipo: { tipo: 'texto', etiqueta: 'tipo' } },
+  async importar({ hoy }) {
+    const verificacion = [];
+    const correcciones = [];
+    const datos = await descargar(GEOREF, { json: true });
+    const filas = datos.departamentos.filter((d) => d.categoria !== 'Comuna');
+    const provinciaDe = (n) => nombreProvincia(n);
+    const porProvincia = {};
+    for (const d of filas) porProvincia[provinciaDe(d.provincia.nombre)] = (porProvincia[provinciaDe(d.provincia.nombre)] ?? 0) + 1;
+    for (const [p, n] of Object.entries(DEPARTAMENTOS_POR_PROVINCIA)) exigir(porProvincia[p] === n, `${p}: ${porProvincia[p] ?? 0} ${p === 'Buenos Aires' ? 'partidos' : 'departamentos'} (se esperan ${n})`, verificacion);
+    exigir(filas.length === 514, `${filas.length} departamentos y partidos (135 + 379)`, verificacion);
+    exigir(filas.filter((d) => d.categoria === 'Partido').every((d) => provinciaDe(d.provincia.nombre) === 'Buenos Aires'), 'los partidos son todos de Buenos Aires', verificacion);
+    // Popularidad: artículos en Wikipedia del ítem de Wikidata con el mismo nombre en la misma provincia.
+    const wd = await sparql(`SELECT ?i ?l ?pl ?n WHERE { VALUES ?clase { wd:Q952274 wd:Q13997861 } ?i wdt:P31 ?clase ; wdt:P131 ?p ; rdfs:label ?l ; wikibase:sitelinks ?n . FILTER(LANG(?l) = "es") ?p rdfs:label ?pl . FILTER(LANG(?pl) = "es") }`);
+    const clave = (prov, nombre) => `${normalizar(provinciaDe(prov))}|${normalizar(nombre.replace(/^(partido|departamento)\s+(de\s+)?/i, '').replace(/\s*\(.*\)$/, ''))}`;
+    const enlaces = new Map();
+    for (const f of wd) enlaces.set(clave(f.pl, f.l), { n: Math.max(Number(f.n), enlaces.get(clave(f.pl, f.l))?.n ?? 0), id: qid(f.i) });
+    const entidades = filas.map((d) => {
+      const provincia = provinciaDe(d.provincia.nombre);
+      const w = enlaces.get(clave(d.provincia.nombre, d.nombre));
+      return { id: d.id, nombre: d.nombre, alias: [], popularidad: w?.n ?? 0, atributos: { provincia, tipo: d.categoria.toLowerCase() }, fuente: w ? urlEntidad(w.id) : `https://apis.datos.gob.ar/georef/api/departamentos?id=${d.id}` };
+    });
+    const conPopularidad = entidades.filter((e) => e.popularidad > 0).length;
+    verificacion.push(`${conPopularidad} de ${entidades.length} con artículo en Wikipedia (el resto, popularidad 0)`);
+    exigir(conPopularidad >= entidades.length * 0.8, 'al menos el 80 % se encontró en Wikidata', verificacion);
+    exigir(entidades.some((e) => e.nombre === 'La Matanza' && e.atributos.provincia === 'Buenos Aires') && entidades.some((e) => e.nombre === 'Capital' && e.atributos.provincia === 'Córdoba'), 'incluye La Matanza (Buenos Aires) y Capital (Córdoba)', verificacion);
+    return {
+      entidades,
+      correcciones,
+      verificacion,
+      fuentes: [
+        { nombre: 'Servicio de Normalización de Datos Geográficos de Argentina (Georef)', url: 'https://apis.datos.gob.ar/georef/api/departamentos', licencia: 'CC BY 4.0', detalle: 'departamentos y partidos (fuente: Instituto Geográfico Nacional)' },
+        { ...WIKIDATA, detalle: 'popularidad (artículos en Wikipedia)' },
+      ],
+      hoy,
+    };
+  },
+};
+
 // ───────────────────────── Informática ─────────────────────────
 
 const elementosHtml = {
@@ -1332,4 +1531,4 @@ const pokemon = {
   },
 };
 
-export const DEFINICIONES = [paises, capitales, elementos, papas, presidentesEeuu, secretariosOnu, campeonesMundial, sedesMundial, campeonesF1, oscarPelicula, canciones, nobelLiteratura, cervantes, palabras, idiomas, pokemon, constelaciones, sistemaSolar, campeonesChampions, mundialFemenino, provinciasArgentinas, capitalesArgentinas, elementosHtml, codigosHttp, monedas];
+export const DEFINICIONES = [paises, capitales, elementos, papas, presidentesEeuu, secretariosOnu, campeonesMundial, sedesMundial, campeonesF1, oscarPelicula, canciones, nobelLiteratura, cervantes, palabras, idiomas, pokemon, constelaciones, sistemaSolar, campeonesChampions, mundialFemenino, provinciasArgentinas, capitalesArgentinas, subdivisiones, capitalesSubdivisiones, departamentosArgentinos, elementosHtml, codigosHttp, monedas];

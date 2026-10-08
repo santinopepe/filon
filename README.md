@@ -14,7 +14,7 @@ La rareza es una estimación editorial (de quien arma la pregunta), no un porcen
 
 ## Modos de juego
 
-Hay tres modos, con la misma mecánica (siete preguntas, 25 s, rarezas y puntos) y el mismo estilo visual. Se eligen con el botón de menú (☰) de la barra superior, que abre un selector con una miniatura, el nombre y el estado de hoy de cada uno (disponible, en curso, jugado o preparándose).
+Hay tres modos, con la misma mecánica (siete preguntas, 25 s, rarezas y puntos) y el mismo estilo visual. **Farándula está desactivada por omisión** (`MODOS_ACTIVOS`, por omisión `normal,geografia`): no se publica ni aparece en el selector, pero conserva su historial, sus estadísticas y su código, y se reactiva con `MODOS_ACTIVOS=normal,farandula,geografia`. Se eligen con el botón de menú (☰) de la barra superior, que abre un selector con una miniatura, el nombre y el estado de hoy de cada uno (disponible, en curso, jugado o preparándose).
 
 | Modo | Preguntas | Ambientación | Avance |
 | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ Para ver el banco del día: `npm run admin -- desafio AAAA-MM-DD [normal|farandu
 
 Hay tres caminos, ninguno llama a una IA desde el juego:
 
-- **Generador por catálogos** (Normal, sin IA): arma el día a partir de catálogos de datos reales y verificados (`datos/catalogos/`, 25 catálogos: países con fronteras, monedas e idiomas, capitales, provincias argentinas, elementos, constelaciones, sistema solar, Pokémon, elementos HTML, códigos HTTP, papas, presidentes de EE. UU., Mundiales, Champions, F1, Óscar, discos, Nobel, Cervantes y un diccionario rioplatense) y de plantillas declarativas (`datos/plantillas.json`). Se activa con `GENERADOR_NORMAL=catalogos`; `npm run generar -- --vista-previa` muestra qué armaría. Una consigna no se repite hasta pasados 60 días calendario (`CATALOGOS_DIAS_SIN_REPETIR`); `npm run capacidad-catalogos` y `npm run simular-calendario` miden cuántas hay y simulan meses de calendario en una base temporal. Todo el detalle (fuentes, licencias, cobertura, reglas, repeticiones y cómo sumar catálogos o plantillas) está en **[docs/GENERADOR.md](docs/GENERADOR.md)**.
+- **Generador por catálogos** (Normal y Geografía, sin IA): arma el día a partir de catálogos de datos reales y verificados (`datos/catalogos/`, 28 catálogos: países con fronteras, monedas e idiomas, capitales, provincias, departamentos y partidos argentinos, estados, provincias, regiones y departamentos de otros 18 países, elementos, constelaciones, sistema solar, Pokémon, elementos HTML, códigos HTTP, papas, presidentes de EE. UU., Mundiales, Champions, F1, Óscar, discos, Nobel, Cervantes y un diccionario rioplatense) y de plantillas declarativas (`datos/plantillas.json`). Se activa con `GENERADOR_NORMAL=catalogos` y `GENERADOR_GEOGRAFIA=catalogos`; `npm run generar -- --vista-previa` muestra qué armaría. Una consigna no se repite hasta pasados 60 días calendario (`CATALOGOS_DIAS_SIN_REPETIR`); `npm run capacidad-catalogos` y `npm run simular-calendario` miden cuántas hay y simulan meses de calendario en una base temporal. Todo el detalle (fuentes, licencias, cobertura, reglas, repeticiones y cómo sumar catálogos o plantillas) está en **[docs/GENERADOR.md](docs/GENERADOR.md)**.
 - **Reserva**: el banco curado de cada modo (y lo que se guardó desde el panel).
 - **Carga manual**: preguntas armadas con otra IA (ChatGPT, Claude…) usando el prompt de cada modo del panel (**Crear → Generar con otra IA**). Todo lo que se carga queda en la reserva para reutilizarse.
 
@@ -115,7 +115,7 @@ npm run generar -- --modo farandula      # un solo modo (por defecto, los tres)
 ## Partida
 
 - **Identidad anónima**: cookie `HttpOnly`, `SameSite=Lax`, firmada con HMAC y válida 400 días. Sin registro. Una partida por identificador y desafío (restricción `UNIQUE` en la base); como cada modo tiene su desafío, son una por identificador, modo y día.
-- **Tiempo validado en el servidor**: al empezar una ronda se guarda el inicio y el límite (25 s). Una respuesta que llega después del límite más 1,5 s de margen de red no cuenta y la ronda se cierra con 0 puntos. El navegador solo muestra la mecha.
+- **Tiempo validado en el servidor**: al empezar una ronda se guarda el inicio y el límite (25 s). Una respuesta que llega después del límite más 1,5 s de margen de red no cuenta y la ronda se cierra con 0 puntos. El navegador solo muestra la mecha. **Último intento**: si la mecha se apaga con algo escrito en el campo, el navegador lo manda solo (dentro de ese margen) y vale como cualquier intento; una respuesta a medio escribir no se completa sola.
 - **Recarga**: el estado vive en el servidor. Recargar vuelve a la misma ronda con el tiempo restante real; pedir de nuevo una ronda ya empezada no reinicia el reloj; no se puede saltar ni volver a una ronda.
 - **Medianoche**: la partida queda atada a su desafío. Si empezaste a las 23:58, terminás con esas preguntas aunque ya sea el día siguiente (tenés hasta 12 h después del fin del día; luego las rondas sin jugar caducan). El desafío nuevo es otra partida.
 - **Validación de respuestas** contra el banco almacenado. La respuesta y el banco de una ronda nunca se envían al navegador hasta que la ronda termina.
@@ -218,7 +218,7 @@ Todo corre en Vercel: `publico/` lo sirve la CDN, `/api/*` es una función (`api
 4. `vercel --prod`. El esquema de la base se crea solo en la primera solicitud.
 5. Publicá el primer desafío sin esperar al cron: `curl -H "Authorization: Bearer $CRON_SECRET" https://<tu-dominio>/api/cron/hoy`.
 
-Crons (hora UTC; Buenos Aires es UTC−3 todo el año). Los dos recorren los tres modos. Funcionan también en el plan Hobby, que dispara cada cron una vez por día con precisión de una hora:
+Crons (hora UTC; Buenos Aires es UTC−3 todo el año). Los dos recorren los modos activos. Funcionan también en el plan Hobby, que dispara cada cron una vez por día con precisión de una hora:
 
 | Ruta | UTC | Buenos Aires | Qué hace |
 | --- | --- | --- | --- |

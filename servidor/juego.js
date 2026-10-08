@@ -21,6 +21,9 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
   const msPorRonda = config.segundosPorPregunta * 1000;
   const gracia = config.graciaRedMs;
   const zona = config.zona;
+  // Modos que se juegan hoy. Uno desactivado no aparece en el selector ni admite partidas nuevas; las ya
+  // empezadas se pueden terminar (responder, pasar y revelar van por id de partida).
+  const activos = config.modosActivos ?? CLAVES_MODOS;
 
   const finDelDia = (fecha) => inicioDeFecha(sumarDias(fecha, 1), zona);
   const limiteParaRetomar = (fecha) => finDelDia(fecha) + config.horasParaRetomar * 3_600_000;
@@ -239,14 +242,16 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
      * cómo está cada uno de los tres: el límite es una partida por persona, modo y día.
      * registrar=false no guarda la visita (el jugador se crea igual al empezar una partida).
      */
-    async estado(jugadorId, modo = MODO_POR_DEFECTO, { registrar = true } = {}) {
+    async estado(jugadorId, modoPedido = MODO_POR_DEFECTO, { registrar = true } = {}) {
       const t = ahora();
+      // Un enlace o una preferencia guardada con un modo desactivado abre Normal (la respuesta trae el modo).
+      const modo = activos.includes(modoPedido) ? modoPedido : MODO_POR_DEFECTO;
       if (registrar) await asegurarJugador(jugadorId, t);
       const hoy = fechaLocal(t, zona);
       const modos = [];
       let desafio = null;
       let partidaHoy = null;
-      for (const clave of CLAVES_MODOS) {
+      for (const clave of activos) {
         const delModo = await desafioPorFecha(db, hoy, clave);
         let fila = delModo ? await db.get('SELECT * FROM partidas WHERE jugador_id = ? AND desafio_id = ?', jugadorId, delModo.id) : null;
         if (fila) fila = await mantener(fila, t);
@@ -270,6 +275,7 @@ export function crearJuego({ db, config, ahora = () => Date.now() }) {
 
     async iniciarPartida(jugadorId, modo = MODO_POR_DEFECTO) {
       const t = ahora();
+      if (!activos.includes(modo)) throw new ErrorJuego(409, 'modo_inactivo', `${MODOS[modo].nombre} no está disponible por ahora.`);
       await asegurarJugador(jugadorId, t);
       const desafio = await desafioDeHoy(t, modo);
       if (!desafio) throw new ErrorJuego(503, 'sin_desafio', 'El desafío de hoy todavía se está preparando. Probá de nuevo en unos minutos.');

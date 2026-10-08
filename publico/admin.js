@@ -181,6 +181,7 @@ async function cargarDesafios() {
     h('strong', { title: datos.bd || '' }, (datos.bd || '—').split('.')[0]),
   );
   for (const herramientas of Object.values(crear)) herramientas.fechasPorDefecto(sumarDia(hoy));
+  aplicarModosActivos(datos.modos || []);
 
   const tabla = $('tabla-desafios');
   tabla.replaceChildren(
@@ -307,6 +308,7 @@ async function verDesafio(fecha) {
 
 const NOMBRES_MODO = { normal: 'Normal', farandula: 'Farándula Argentina', geografia: 'Geografía' };
 const CATEGORIA_TEMATICA = { farandula: 'farandula', geografia: 'geografia' };
+const MODOS_CON_GENERADOR = { normal: true, geografia: true };
 const conModo = (ruta, modo) => `${ruta}${ruta.includes('?') ? '&' : '?'}modo=${modo}`;
 const etiquetaModo = (modo) => (modo && modo !== 'normal' ? h('span', { class: `etiqueta modo-${modo}` }, NOMBRES_MODO[modo] || modo) : null);
 
@@ -380,15 +382,16 @@ function montarCrear(modo) {
     if (pendiente) generar(pendiente);
   });
 
-  // Normal elige cómo se arma (catálogos o reserva) y tiene vista previa del generador.
-  q('gen-generador-caja').hidden = tematico;
-  q('gen-vista-previa').hidden = tematico;
+  // Normal y Geografía eligen cómo se arman (catálogos o reserva) y tienen vista previa del generador.
+  const conGenerador = Object.hasOwn(MODOS_CON_GENERADOR, modo);
+  q('gen-generador-caja').hidden = !conGenerador;
+  q('gen-vista-previa').hidden = !conGenerador;
   q('gen-vista-previa').addEventListener('click', async () => {
     const fecha = q('gen-fecha').value;
     q('gen-resultado').hidden = true;
     q('gen-progreso').hidden = false;
     try {
-      const r = await api('GET', `/api/admin/generador/vista-previa${fecha ? `?fecha=${fecha}` : ''}`);
+      const r = await api('GET', conModo(`/api/admin/generador/vista-previa${fecha ? `?fecha=${fecha}` : ''}`, modo));
       const caja = q('gen-resultado');
       caja.className = `resultado ${r.ok ? 'ok' : 'mal'}`;
       caja.textContent = [
@@ -409,7 +412,7 @@ function montarCrear(modo) {
   async function generar(opciones) {
     const fecha = q('gen-fecha').value;
     if (!fecha) return;
-    const cuerpo = { reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar), ...(tematico ? {} : { generador: q('gen-generador').value }) };
+    const cuerpo = { reemplazar: Boolean(opciones.reemplazar), forzar: Boolean(opciones.forzar), ...(conGenerador ? { generador: q('gen-generador').value } : {}) };
     q('gen-confirmar').hidden = true;
     q('gen-resultado').hidden = true;
     q('gen-progreso').hidden = false;
@@ -687,7 +690,24 @@ function montarCrear(modo) {
 
 for (const modo of Object.keys(NOMBRES_MODO)) crear[modo] = montarCrear(modo);
 
-const pestanasCrear = [...document.querySelectorAll('#nav-crear [role="tab"]')];
+const todasLasPestanasCrear = [...document.querySelectorAll('#nav-crear [role="tab"]')];
+let pestanasCrear = todasLasPestanasCrear;
+
+/**
+ * Un modo desactivado (MODOS_ACTIVOS) no se publica: se esconde su pestaña en «Crear» y se marca en los
+ * selectores de modo (su historial y sus estadísticas se siguen viendo). Normal y Geografía pueden armarse
+ * con el generador por catálogos.
+ */
+function aplicarModosActivos(modos) {
+  const inactivos = new Set(modos.filter((m) => !m.activo).map((m) => m.clave));
+  for (const b of todasLasPestanasCrear) b.hidden = inactivos.has(b.dataset.modo);
+  pestanasCrear = todasLasPestanasCrear.filter((b) => !b.hidden);
+  for (const opcion of document.querySelectorAll('select option')) {
+    if (!Object.hasOwn(NOMBRES_MODO, opcion.value) || !opcion.closest('#des-modo, #reserva-modo, #est-modo')) continue;
+    opcion.textContent = `${NOMBRES_MODO[opcion.value]}${inactivos.has(opcion.value) ? ' (desactivado)' : ''}`;
+  }
+  if (inactivos.has(modoCrear)) elegirModoCrear('normal');
+}
 function elegirModoCrear(modo, { enfocar = false } = {}) {
   modoCrear = modo;
   for (const b of pestanasCrear) {
@@ -699,7 +719,7 @@ function elegirModoCrear(modo, { enfocar = false } = {}) {
   for (const m of Object.keys(NOMBRES_MODO)) $(`crear-${m}`).hidden = m !== modo;
   return crear[modo].cargar().catch(mostrarErrorGeneral);
 }
-for (const b of pestanasCrear) b.addEventListener('click', () => elegirModoCrear(b.dataset.modo));
+for (const b of todasLasPestanasCrear) b.addEventListener('click', () => elegirModoCrear(b.dataset.modo));
 $('nav-crear').addEventListener('keydown', (ev) => {
   const i = pestanasCrear.indexOf(document.activeElement);
   if (i < 0) return;

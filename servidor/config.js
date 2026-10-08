@@ -2,6 +2,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CLAVES_MODOS, MODO_POR_DEFECTO } from './dominio.js';
 
 export const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -28,7 +29,7 @@ const DOMINIOS_POR_DEFECTO = [
   'geonames.org',
   'pokeapi.co',
   'musicbrainz.org',
-  'github.com',
+  'github.com', 'datos.gob.ar',
   'britannica.com',
   'nobelprize.org',
   'fifa.com',
@@ -51,6 +52,12 @@ const DOMINIOS_POR_DEFECTO = [
 
 const num = (v, def) => (v === undefined || v === '' || Number.isNaN(Number(v)) ? def : Number(v));
 const bool = (v, def) => (v === undefined || v === '' ? def : ['1', 'true', 'si', 'sí', 'yes'].includes(String(v).toLowerCase()));
+// Farándula está desactivada por omisión. MODOS_ACTIVOS=normal,farandula,geografia la vuelve a activar.
+const MODOS_ACTIVOS_POR_DEFECTO = ['normal', 'geografia'];
+function modosActivos(v) {
+  const pedidos = v ? v.split(',').map((m) => m.trim()).filter((m) => CLAVES_MODOS.includes(m)) : MODOS_ACTIVOS_POR_DEFECTO;
+  return CLAVES_MODOS.filter((m) => m === MODO_POR_DEFECTO || pedidos.includes(m));
+}
 
 export function cargarConfig(sobrescrituras = {}) {
   if (!sobrescrituras.sinArchivoEnv) cargarArchivoEnv(resolve(RAIZ, '.env'));
@@ -115,9 +122,15 @@ export function cargarConfig(sobrescrituras = {}) {
     },
 
     diasSinRepetir: num(e.DIAS_SIN_REPETIR, 60),
-    // Cómo se arma el desafío de Normal: «reserva» (banco curado) o «catalogos» (generador sin IA a partir
-    // de catálogos verificados y plantillas; ver docs/GENERADOR.md). Los modos temáticos siguen con su reserva.
-    generadorNormal: e.GENERADOR_NORMAL === 'catalogos' ? 'catalogos' : 'reserva',
+    // Modos que se publican y se pueden jugar. Uno desactivado conserva su historial (panel, estadísticas)
+    // pero no se publica ni aparece en el selector. Normal siempre está activo.
+    modosActivos: modosActivos(e.MODOS_ACTIVOS),
+    // Cómo se arma cada día: «reserva» (banco curado) o «catalogos» (generador sin IA a partir de catálogos
+    // verificados y plantillas; ver docs/GENERADOR.md). Solo Normal y Geografía tienen generador.
+    generadores: {
+      normal: e.GENERADOR_NORMAL === 'catalogos' ? 'catalogos' : 'reserva',
+      geografia: e.GENERADOR_GEOGRAFIA === 'catalogos' ? 'catalogos' : 'reserva',
+    },
     catalogos: {
       dir: resolve(RAIZ, e.CATALOGOS_DIR || 'datos/catalogos'),
       rutaPlantillas: resolve(RAIZ, e.CATALOGOS_PLANTILLAS || 'datos/plantillas.json'),

@@ -4,17 +4,16 @@
 // - Mañana se completa con la reserva recién en los últimos minutos antes de la medianoche, para dejar
 //   tiempo a la carga manual desde el panel sin tener que reemplazar nada.
 import { asegurarDesafio } from './generador/generar.js';
-import { CLAVES_MODOS } from './dominio.js';
 import { fechaLocal, sumarDias, inicioDeFecha, proximaMedianoche } from './tiempo.js';
 
-/** Asegura hoy y, cerca de la medianoche, prepara mañana; ambos con la reserva de cada modo. */
+/** Asegura hoy y, cerca de la medianoche, prepara mañana, en cada modo activo. */
 export async function revisarDesafios({ db, config, contexto, ahora = () => Date.now() }) {
   const t = ahora();
   const hoy = fechaLocal(t, config.zona);
   const manana = sumarDias(hoy, 1);
   const ventanaReserva = inicioDeFecha(manana, config.zona) - config.programador.minutosReservaAntesDeMedianoche * 60_000;
   const resultados = [];
-  for (const modo of CLAVES_MODOS) {
+  for (const modo of config.modosActivos) {
     resultados.push(await asegurarDesafio({ db, config, fecha: hoy, modo, ...contexto, ahora }));
     if (t >= ventanaReserva) resultados.push(await asegurarDesafio({ db, config, fecha: manana, modo, ...contexto, ahora }));
   }

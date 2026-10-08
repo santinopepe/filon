@@ -58,6 +58,9 @@ Actions**. Para que eso no ocurra hay que hacer **las dos cosas**:
 | `TOKEN_ADMIN` | para el panel | solo se usa para iniciar sesión; rotarlo invalida todas las sesiones del panel abiertas con el anterior |
 | `CRON_SECRET` | sí | Vercel Cron lo envía a `/api/cron/*`; esas rutas solo aceptan `Authorization: Bearer` (la cookie del panel no sirve) |
 | `ADMIN_PERMITIR_BEARER` | no (1) | poner `0` cuando ya nadie use `Authorization: Bearer TOKEN_ADMIN` |
+| `MODOS_ACTIVOS` | no (`normal,geografia`) | modos que se publican y se juegan; Farándula está apagada por omisión (su historial se conserva) |
+| `GENERADOR_NORMAL`, `GENERADOR_GEOGRAFIA` | no (`reserva`) | `catalogos` para armar ese modo con el generador por catálogos (ver docs/GENERADOR.md) |
+| `CATALOGOS_SEMILLA` | sí, si se usa el generador | base secreta de la semilla (sin ella, cualquiera con el repositorio puede calcular las preguntas) |
 
 ---
 

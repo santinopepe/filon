@@ -138,6 +138,32 @@ test('el programador asegura hoy en los tres modos; mañana, recién cerca de me
   prog.detener();
 });
 
+test('modos desactivados: Farándula está apagada por omisión; no se publica, no se lista ni admite partidas', async () => {
+  const { cargarConfig } = await import('../servidor/config.js');
+  assert.deepEqual(cargarConfig({ sinArchivoEnv: true, env: {} }).modosActivos, ['normal', 'geografia']);
+  assert.deepEqual(cargarConfig({ sinArchivoEnv: true, env: { MODOS_ACTIVOS: 'farandula' } }).modosActivos, ['normal', 'farandula'], 'Normal no se puede apagar');
+  assert.deepEqual(cargarConfig({ sinArchivoEnv: true, env: { MODOS_ACTIVOS: 'normal,farandula,geografia' } }).modosActivos, CLAVES_MODOS);
+  const e = await prepararEntorno({ inicio: '2026-10-05T10:00:00-03:00', env: { MODOS_ACTIVOS: 'normal,geografia' } });
+  // Un día de Farándula publicado antes de apagarla se conserva y su partida se puede terminar.
+  await publicar(e, 'farandula', '2026-10-05');
+  const juego = crearJuego({ db: e.db, config: { ...e.config, modosActivos: CLAVES_MODOS }, ahora: e.reloj.ahora });
+  const empezada = await juego.iniciarPartida(YO, 'farandula');
+  const prog = crearProgramador({ db: e.db, config: e.config, contexto: { reserva: e.reserva, reservas: e.reservas }, ahora: e.reloj.ahora, log: silencioso });
+  e.reloj.fijar('2026-10-05T23:45:00-03:00');
+  await prog.revisar();
+  prog.detener();
+  assert.ok(await desafioPorFecha(e.db, '2026-10-06', 'normal') && (await desafioPorFecha(e.db, '2026-10-06', 'geografia')));
+  assert.equal(await desafioPorFecha(e.db, '2026-10-06', 'farandula'), null, 'Farándula no se publica');
+  e.reloj.fijar('2026-10-05T15:00:00-03:00');
+  const apagado = crearJuego({ db: e.db, config: e.config, ahora: e.reloj.ahora });
+  const estado = await apagado.estado(YO, 'farandula');
+  assert.equal(estado.modo, 'normal', 'un enlace viejo a Farándula abre Normal');
+  assert.deepEqual(estado.modos.map((m) => m.clave), ['normal', 'geografia']);
+  await assert.rejects(apagado.iniciarPartida('33333333-3333-4333-8333-333333333333', 'farandula'), (err) => err.codigo === 'modo_inactivo');
+  await apagado.iniciarRonda(YO, empezada.id, 1);
+  assert.equal((await apagado.pasar(YO, empezada.id, 1)).rondas[0].estado, 'pasada', 'la partida ya empezada sigue');
+});
+
 // ───────── API ─────────
 let dir;
 before(() => (dir = mkdtempSync(join(tmpdir(), 'filon-modos-'))));
@@ -147,7 +173,7 @@ async function levantar(env = {}) {
   return iniciarServidor({
     sinArchivoEnv: true,
     log: silencioso,
-    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', ...env },
+    env: { PUERTO: '0', HOST: '127.0.0.1', RUTA_BD: join(dir, `${Math.random().toString(36).slice(2)}.db`), TURSO_DATABASE_URL: '', BD_URL: '', TOKEN_ADMIN: 'secreto-admin', MODOS_ACTIVOS: 'normal,farandula,geografia', ...env },
   });
 }
 

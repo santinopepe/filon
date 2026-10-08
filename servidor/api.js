@@ -122,7 +122,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     ['GET', /^\/api\/salud$/, async () => {
       const hoy = fechaLocal(ahora(), config.zona);
       const modos = {};
-      for (const modo of CLAVES_MODOS) modos[modo] = Boolean(await desafioPorFecha(db, hoy, modo));
+      for (const modo of config.modosActivos) modos[modo] = Boolean(await desafioPorFecha(db, hoy, modo));
       return { ok: true, fecha: hoy, desafioPublicado: modos[MODO_POR_DEFECTO], modos };
     }, { publica: true }],
     // ?modo=normal|farandula|geografia (por defecto, normal).
@@ -184,7 +184,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       const hoy = fechaLocal(ahora(), config.zona);
       const fecha = m[1] === 'hoy' ? hoy : sumarDias(hoy, 1);
       const modos = {};
-      for (const modo of CLAVES_MODOS) {
+      for (const modo of config.modosActivos) {
         const inicio = Date.now();
         const r = await asegurarDesafio({ db, config, fecha, modo, ...contexto, ahora });
         registro[r.resultado === 'fallo' ? 'error' : 'info']('cron', { tarea: m[1], fecha, modo, resultado: r.resultado, origen: r.origen, duracionMs: Date.now() - inicio, error: r.error });
@@ -222,7 +222,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       return {
         hoy: fechaLocal(ahora(), config.zona),
         modo,
-        modos: CLAVES_MODOS.map((clave) => ({ clave, nombre: MODOS[clave].nombre })),
+        modos: CLAVES_MODOS.map((clave) => ({ clave, nombre: MODOS[clave].nombre, activo: config.modosActivos.includes(clave), generador: config.generadores[clave] ?? null })),
         bd: /^(libsql|https?|wss?):/.test(config.rutaBD) ? new URL(config.rutaBD).host : 'archivo local',
         desafios: await listarDesafios(db, { modo }),
       };
@@ -331,7 +331,7 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
     // Publicar o rearmar un día a mano (?modo=). En el cuerpo:
     //   reemplazar: true para rearmar un día que ya existe
     //   forzar: true si ese día ya tiene partidas (se borran junto con el desafío anterior)
-    //   generador: «catalogos» o «reserva» (solo Normal; por omisión, GENERADOR_NORMAL)
+    //   generador: «catalogos» o «reserva» (Normal y Geografía; por omisión, GENERADOR_NORMAL / GENERADOR_GEOGRAFIA)
     ['POST', /^\/api\/admin\/desafios\/(\d{4}-\d{2}-\d{2})\/generar$/, async ({ m, cuerpo, req }) => {
       const fecha = m[1];
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
@@ -350,11 +350,13 @@ export function crearApi({ db, config, juego, secreto, contexto = null, ahora = 
       registro.info('admin_generar', { fecha, modo: modoJuego, resultado: r.resultado, origen: r.origen, corridaId: r.corridaId });
       return r;
     }, { admin: true, limite: 'generar' }],
-    // Vista previa del generador por catálogos (Normal): qué armaría para la fecha, sin publicar nada.
+    // Vista previa del generador por catálogos (Normal o Geografía): qué armaría para la fecha, sin publicar.
     ['GET', /^\/api\/admin\/generador\/vista-previa$/, async ({ req }) => {
       const fecha = new URL(req.url, 'http://local').searchParams.get('fecha') || sumarDias(fechaLocal(ahora(), config.zona), 1);
       if (!esFechaValida(fecha)) throw new ErrorJuego(400, 'fecha_invalida', 'Fecha inválida.');
-      const g = await generarConCatalogos({ db, config, fecha, modo: MODO_POR_DEFECTO });
+      const modo = modoDe(req);
+      if (!Object.hasOwn(config.generadores, modo)) throw new ErrorJuego(400, 'sin_generador', `${MODOS[modo].nombre} no tiene generador por catálogos.`);
+      const g = await generarConCatalogos({ db, config, fecha, modo });
       return { fecha, ok: g.ok, semilla: g.semilla, versiones: g.versiones, elegidas: g.elegidas, errores: g.errores, problemas: g.problemas, descartes: resumirDescartes(g.descartes) };
     }, { admin: true, limite: 'generar' }],
     // Estadísticas: ?fecha=AAAA-MM-DD (día en detalle) &desde=…&hasta=… (serie diaria, hasta 366 días).

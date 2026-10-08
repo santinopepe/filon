@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// Tarea diaria para cron/systemd/programadores externos: publica el día de cada modo (Normal con el
-// generador elegido en GENERADOR_NORMAL; los temáticos con su reserva). Es idempotente: si el desafío
-// ya existe, no hace nada.
+// Tarea diaria para cron/systemd/programadores externos: publica el día de cada modo activo (MODOS_ACTIVOS;
+// Normal y Geografía con el generador de GENERADOR_NORMAL / GENERADOR_GEOGRAFIA, Farándula con su reserva).
+// Es idempotente: si el desafío ya existe, no hace nada.
 //
 // Uso:
 //   node scripts/generar-desafio.js                 # asegura el desafío de hoy (00:00 en Buenos Aires)
 //   node scripts/generar-desafio.js --manana        # prepara el de mañana
 //   node scripts/generar-desafio.js --fecha 2026-10-10
-//   node scripts/generar-desafio.js --modo farandula  # un solo modo (por defecto: todos)
-//   node scripts/generar-desafio.js --generador catalogos   # Normal con el generador por catálogos (o «reserva»)
-//   node scripts/generar-desafio.js --vista-previa --fecha 2026-10-10   # qué armaría el generador, sin publicar
+//   node scripts/generar-desafio.js --modo geografia  # un solo modo (por defecto: los activos)
+//   node scripts/generar-desafio.js --generador catalogos   # Normal y Geografía con el generador por catálogos (o «reserva»)
+//   node scripts/generar-desafio.js --vista-previa --fecha 2026-10-10   # qué armaría el generador, sin publicar (--modo geografia)
 //   node scripts/generar-desafio.js --vista-previa --json               # lo mismo, en JSON (enunciados, descartes…)
 //
 // Códigos de salida (el peor de los modos): 0 publicado o ya existía · 2 ocupado · 1 fallo.
@@ -41,7 +41,7 @@ if (modoPedido !== undefined && !esModo(modoPedido)) {
   console.error(`Modo desconocido: ${modoPedido}. Los válidos son ${CLAVES_MODOS.join(', ')}.`);
   process.exit(1);
 }
-const modos = modoPedido ? [modoPedido] : CLAVES_MODOS;
+const modos = modoPedido ? [modoPedido] : config.modosActivos;
 const generador = valor('--generador');
 if (generador !== undefined && !['catalogos', 'reserva'].includes(generador)) {
   console.error('--generador es «catalogos» o «reserva».');
@@ -53,7 +53,7 @@ const contexto = crearContextoGeneracion(config);
 
 if (tiene('--vista-previa')) {
   // Revisión del generador por catálogos: enunciados, cantidades, fuentes, versiones y descartes.
-  const g = await generarConCatalogos({ db, config, fecha, modo: 'normal' });
+  const g = await generarConCatalogos({ db, config, fecha, modo: modoPedido ?? 'normal' });
   db.close();
   if (tiene('--json')) {
     console.log(JSON.stringify({ fecha, ok: g.ok, semilla: g.semilla, versiones: g.versiones, elegidas: g.elegidas, errores: g.errores, problemas: g.problemas, descartes: g.descartes }, null, 2));

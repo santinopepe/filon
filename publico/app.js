@@ -391,6 +391,8 @@ function pintarSelector() {
   for (const boton of document.querySelectorAll('.modo-opcion')) {
     const clave = boton.dataset.modo;
     const m = resumen.get(clave);
+    // Solo los modos activos (los que lista el servidor).
+    boton.closest('li').hidden = Boolean(estado.general) && !m;
     const etiqueta = boton.querySelector('.modo-estado');
     etiqueta.dataset.estado = m?.estado || 'preparando';
     etiqueta.textContent = m ? etiquetaEstadoModo(m) : '';
@@ -566,17 +568,59 @@ function iniciarMecha(n, limite) {
 
 function mechaApagada(n, limite) {
   detenerMecha();
-  $('campo-respuesta').disabled = true;
+  const campo = $('campo-respuesta');
+  const texto = campo.value.trim();
+  campo.disabled = true;
   $('btn-responder').disabled = true;
   $('btn-pasar').disabled = true;
   $('mecha').classList.add('apagada');
   const m = $('ronda-mensaje');
   m.textContent = 'Se apagó la mecha…';
   m.classList.remove('error');
-  sonido.apagado();
-  pose('triste');
   const gracia = estado.partida.graciaMs ?? 1500;
-  estado.esperaVencimiento = setTimeout(() => cerrarVencida(n, 0), Math.max(0, limite + gracia + 250 - ahoraServidor()));
+  const cerrar = () => {
+    sonido.apagado();
+    pose('triste');
+    estado.esperaVencimiento = setTimeout(() => cerrarVencida(n, 0), Math.max(0, limite + gracia + 250 - ahoraServidor()));
+  };
+  // Lo que quedó escrito va como último intento: el servidor lo acepta si llega dentro del margen de red
+  // (GRACIA_RED_MS). Si ya hay un envío en curso, ese es el último intento.
+  if (texto && !estado.ocupado) ultimoIntento(n, texto, cerrar);
+  else cerrar();
+}
+
+async function ultimoIntento(n, texto, cerrar) {
+  const m = $('ronda-mensaje');
+  m.textContent = `Se apagó la mecha… último intento: «${texto}».`;
+  anunciar(`Se apagó la mecha. Último intento: ${texto}.`);
+  estado.ocupado = true;
+  let r = null;
+  try {
+    r = await api('POST', `/api/partidas/${estado.partida.id}/rondas/${n}/respuesta`, { texto });
+    estado.partida = r.partida;
+  } catch {
+    // Sin respuesta del servidor: se cierra como vencida (la ronda se relee desde el servidor).
+  }
+  estado.ocupado = false;
+  if (r?.resultado === 'aceptada') {
+    await celebrar(n);
+    return;
+  }
+  if (r?.resultado === 'rechazada' || r?.resultado === 'sugerida') {
+    // Una respuesta a medio escribir no se completa sola: vale solo lo que estaba escrito.
+    m.textContent = r.resultado === 'sugerida'
+      ? `«${texto}» quedó a medio escribir.`
+      : r.motivo
+        ? `«${texto}» no vale: ${r.motivo}`
+        : `«${texto}» no está en la veta.`;
+    m.classList.add('error');
+  }
+  if (r && ronda(n)?.estado !== 'activa') {
+    sonido.apagado();
+    mostrarResultado(n, { animar: true });
+    return;
+  }
+  cerrar();
 }
 
 async function cerrarVencida(n, intento) {
@@ -1320,6 +1364,15 @@ async function abrirModo() {
     return;
   }
   const g = estado.general;
+  // El servidor abre Normal si el modo pedido está desactivado (enlace viejo o preferencia guardada).
+  if (g.modo && g.modo !== estado.modo) {
+    prefs.modo = g.modo;
+    guardarPrefs();
+    const url = new URL(location.href);
+    url.searchParams.delete('modo');
+    history.replaceState(null, '', url);
+    aplicarModo(g.modo);
+  }
   const conRondaActiva = [g.partidaHoy, g.partidaPendiente].find((p) => p && p.rondaActiva && !p.terminada);
   if (conRondaActiva) {
     estado.partida = conRondaActiva;

@@ -1,19 +1,19 @@
 # Generador de desafíos por catálogos (sin IA)
 
-Arma el desafío diario de **Normal** a partir de **catálogos de datos reales** (`datos/catalogos/`) y
+Arma el desafío diario de **Normal** y de **Geografía** a partir de **catálogos de datos reales** (`datos/catalogos/`) y
 **plantillas declarativas** (`datos/plantillas.json`). No llama a ninguna API de IA ni a ningún servicio
 externo al generar, validar ni jugar: la red solo se usa al **importar** catálogos, con un comando aparte.
 
-Los modos temáticos (Farándula, Geografía) no cambian: siguen con su reserva.
+Farándula no tiene generador (sigue con su reserva) y está desactivada por omisión (`MODOS_ACTIVOS`).
 
 ## Cómo se usa
 
 | Para… | Comando |
 | --- | --- |
-| Activarlo para la tarea diaria | `GENERADOR_NORMAL=catalogos` en el entorno (Vercel → Environment Variables). Sin la variable, Normal sigue con la reserva. |
-| Ver qué armaría para una fecha (sin publicar) | `npm run generar -- --vista-previa --fecha 2026-10-10` (con `--json`, todo el detalle) |
+| Activarlo para la tarea diaria | `GENERADOR_NORMAL=catalogos` y/o `GENERADOR_GEOGRAFIA=catalogos` en el entorno (Vercel → Environment Variables). Sin la variable, ese modo sigue con la reserva. |
+| Ver qué armaría para una fecha (sin publicar) | `npm run generar -- --vista-previa --fecha 2026-10-10` (`--modo geografia`; con `--json`, todo el detalle) |
 | Publicar una fecha con el generador | `npm run generar -- --fecha 2026-10-10 --modo normal --generador catalogos` |
-| Desde el panel | **Crear → Normal → Publicar un día**: «Armar con: Catálogos (sin IA)», y el botón **Vista previa** |
+| Desde el panel | **Crear → Normal** o **Crear → Geografía → Publicar un día**: «Armar con: Catálogos (sin IA)», y el botón **Vista previa** |
 | Actualizar los datos | `npm run importar-catalogos` (o algunos: `npm run importar-catalogos -- paises papas`), revisar `git diff datos/catalogos` y commitear |
 
 La publicación es la de siempre (`asegurarDesafio`): bloqueo con vencimiento por fecha y modo, una sola
@@ -39,9 +39,12 @@ de los descartes por motivo («fuera de rango», «cobertura insuficiente», «m
 | Catálogo | Categoría | Entidades | Cobertura | Fuentes (licencia) |
 | --- | --- | ---: | --- | --- |
 | `paises` | Geografía | 195 | completa: 193 miembros de la ONU + Vaticano y Palestina; fronteras terrestres, moneda e idiomas oficiales | Unicode CLDR 48.2.3 (Unicode v3) + Wikidata (CC0) + GeoNames (CC BY 4.0) |
-| `capitales` | Geografía | 202 | completa: capitales vigentes de los 195 (algunos países tienen varias) | Wikidata (CC0) |
+| `capitales` | Geografía | 202 | completa: capitales vigentes de los 195 (algunos países tienen varias), con las fronteras, idiomas y moneda de su país (del catálogo `paises`) | Wikidata (CC0) + `paises` |
 | `provincias_argentinas` | Geografía | 23 | completa: las 23 provincias (sin CABA), con provincias vecinas y países limítrofes | Wikidata (CC0) |
 | `capitales_argentinas` | Geografía | 23 | completa | Wikidata (CC0) |
+| `departamentos_argentinos` | Geografía | 514 | completa: los 135 partidos bonaerenses y los 379 departamentos de las otras 22 provincias, con la cantidad verificada provincia por provincia (sin las comunas porteñas) | Georef, Servicio de Normalización de Datos Geográficos (CC BY 4.0; fuente IGN) + Wikidata (popularidad) |
+| `subdivisiones` | Geografía | 442 | completa por país: divisiones de primer nivel con código ISO 3166-2 de 18 países (estados de Estados Unidos, México, Brasil, Venezuela, Alemania, Australia e India; departamentos de Uruguay, Colombia, Paraguay y Bolivia; regiones de Chile, Italia y Francia; provincias de España, Canadá y Ecuador; prefecturas de Japón), con la cantidad oficial verificada | Wikidata (CC0) |
+| `capitales_subdivisiones` | Geografía | 251 | completa por país: las capitales de esas divisiones en 12 países (quedan afuera los países donde a alguna división le falta la capital o tiene varias: Alemania, India, Colombia, Francia, España; y Japón) | Wikidata (CC0) |
 | `monedas` | Geografía | 143 | completa: monedas en curso de los 195 países (ISO 4217 de GeoNames/CLDR) | GeoNames (CC BY 4.0) + CLDR + Wikidata (CC0) |
 | `idiomas` | Idiomas | 105 | completa: idiomas oficiales (u oficiales de hecho) de algún país, según CLDR | CLDR + Wikidata (CC0) |
 | `elementos` | Ciencia | 118 | completa: números atómicos 1–118 sin huecos | Wikidata (CC0) |
@@ -160,11 +163,12 @@ Cada plantilla de `datos/plantillas.json` declara:
 | --- | --- |
 | `id`, `familia`, `categoria`, `catalogo` | identidad; la familia agrupa consignas del mismo tipo (no se repite en un día) |
 | `enunciado`, `sujetos`, `frases` | redacción rioplatense: base («Nombrá un país»), sujetos de las condiciones sobre texto («cuyo nombre») y frases de atributos («de {valor}», «que haya asumido entre {desde} y {hasta}») |
-| `parametros` | de dónde salen: `valor` (valores de un atributo), `letra` (iniciales o finales que existen), `letras` (combinaciones), `secuencia` (inicios, finales o sílabas que existen), `numero` (lista fija), `periodo` (tramos alineados) |
+| `parametros` | de dónde salen: `valor` (valores de un atributo; `solo` los limita a una lista: «estado de» solo para países con estados), `letra` (iniciales o finales que existen), `letras` (combinaciones), `secuencia` (inicios, finales o sílabas que existen), `numero` (lista fija), `periodo` (tramos alineados) |
 | `filtro` | el filtro con marcadores `{parametro}` (solo se reemplazan por valores tipados) |
 | `respuestas.min` / `max` | conjunto aceptable (el máximo global es `CATALOGOS_MAX_RESPUESTAS`, por omisión 15.000) |
 | `dificultad`, `prioridad` | dificultad base (0–1) y qué tan conocida es la consigna para el público general (1–3) |
 | `rechazos`, `alcance`, `explicacion`, `coincidencia` | errores frecuentes con motivo, alcance y explicación de cada respuesta, y `exacta` para preguntas de palabras |
+| `modos` (opcional) | modos donde se usa la plantilla (por omisión, todos los que admiten su categoría): `paises-idioma-geografia` es la copia de «países por idioma» para Geografía |
 
 Antes de elegir, el generador **calcula** qué parámetros dan conjuntos válidos (tamaño, cobertura, nombres
 sin ambigüedad) y descarta el resto con su motivo. No se agregan respuestas para llegar a una cantidad.
@@ -184,8 +188,14 @@ sin ambigüedad) y descarta el resto con su motivo. No se agregan respuestas par
 
 ## El lote del día
 
-- Siete preguntas generales: hasta dos de una misma categoría (Gramática, una), al menos cuatro
-  categorías distintas, ninguna familia repetida y hasta dos del mismo catálogo.
+- **Normal**: siete preguntas generales: hasta dos de una misma categoría (Gramática, una), al menos
+  cuatro categorías distintas, ninguna familia repetida y hasta dos del mismo catálogo.
+- **Geografía**: siete preguntas de geografía (las plantillas de categoría Geografía y las marcadas con
+  `modos: ["geografia"]`), ninguna familia repetida, hasta tres del mismo catálogo y, como mucho, cinco con
+  condiciones sobre las letras del nombre (se prefieren tres o menos). El historial es propio del modo: la
+  ventana de 60 días se cuenta dentro de cada modo, como en la reserva.
+- Un nombre repetido en el catálogo («Capital» es departamento de varias provincias) solo vuelve ambigua
+  la pregunta que incluye a los dos; las homónimas de afuera no se usan como rechazo.
 - **Reproducible**: la semilla sale de `CATALOGOS_SEMILLA`, la fecha, el modo y las versiones de los
   catálogos, las plantillas, los filtros y las reglas de texto. Con los mismos datos e historial se
   arma el mismo lote; otra versión de un catálogo cambia el sorteo.
@@ -280,6 +290,34 @@ informe `--json`):
 - Las consignas vuelven a salir a partir de los 60 días (640 reutilizaciones en 180 días), nunca antes.
 - Tiempo: unos 1,4 s por día en una laptop (catálogos ya cargados en memoria).
 
+### Modo Geografía (2026-10-08)
+
+Siete preguntas de geografía por día: una ventana de 60 días necesita al menos **420** consignas distintas.
+Con los catálogos de geografía que había (países, capitales, provincias argentinas, monedas) eran 170: el
+modo se agotaba en unos 24 días. Para llegar se sumaron catálogos reales y plantillas:
+
+| | Antes | Ahora |
+| --- | ---: | ---: |
+| Catálogos con preguntas de geografía | 5 | 8 (`subdivisiones`, `capitales_subdivisiones`, `departamentos_argentinos`) |
+| Plantillas del modo | 17 | 65 |
+| Consignas distintas | 170 | **1.090** |
+| Aporte en la ventana (cada familia, como mucho una por día) | 170 | 703 |
+
+Simulaciones (`npm run simular-calendario -- --modo geografia`, mismas condiciones que arriba):
+
+| Semilla | Días | Historial inicial | Solo catálogos | Mixtos | Fallos | Repeticiones < 60 días | Menor distancia | Consignas distintas |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `simulacion`, desde 2026-10-11 | 180 | vacío | 180 | 0 | 0 | 0 | 60 días | 554 |
+| `otra`, desde 2026-12-01 | 365 | 7 días previos y 4 futuros ya programados (reserva) | 361 (+4 programados) | 0 | 0 | 0 | 60 días | 615 |
+
+- Preguntas con condiciones sobre las letras del nombre, por día (180 días): 3 en 108 días, 2 en 31, 5 en
+  24, 4 en 7, 1 en 8 y 0 en 2. Con un tope duro de 4, el modo se quedaba sin consignas «sin letras» hacia
+  el día 50 de cada ventana (17 días mixtos y 2 fallos en 180): por eso el tope es 5 y la preferencia, 3.
+- Dificultad: 10 % fácil, 52 % media, 38 % difícil. Hay pocas consignas fáciles de geografía.
+- Normal con los catálogos nuevos (180 días, semilla `otra-semilla`, 14 días previos y 4 programados):
+  176 solo con catálogos (+4 programados), 0 mixtos, 0 fallos, 0 repeticiones a menos de 60 días; 1.583
+  consignas distintas fuera de Gramática.
+
 ## Cómo agregar…
 
 **Un catálogo**:
@@ -313,6 +351,8 @@ Si cambia cómo se describe o se evalúa, subí `VERSION_FILTROS`.
 | Variable | Por omisión | Para qué |
 | --- | --- | --- |
 | `GENERADOR_NORMAL` | `reserva` | `catalogos` para armar Normal con este generador |
+| `GENERADOR_GEOGRAFIA` | `reserva` | `catalogos` para armar Geografía con este generador |
+| `MODOS_ACTIVOS` | `normal,geografia` | modos que se publican y se juegan (Normal siempre); Farándula está apagada por omisión |
 | `CATALOGOS_SEMILLA` | `filon` | base de la semilla (cambiarla cambia los sorteos) |
 | `CATALOGOS_DIAS_SIN_REPETIR` | `60` | ventana de repeticiones en días calendario (a 59 se rechaza, a 60 se permite) |
 | `CATALOGOS_MAX_RESPUESTAS` | `15000` | tope de respuestas de una pregunta generada |
@@ -335,6 +375,12 @@ Si cambia cómo se describe o se evalúa, subí `VERSION_FILTROS`.
   del segundo bimestre la mayoría de las preguntas son consignas ya vistas hace 60 días o más. Es lo que
   pide la regla. Para estirarlo hay que sumar catálogos o plantillas.
 - **Arte, mitología y gastronomía:** sin catálogo (ver fuentes descartadas).
+- **Geografía:** muchas consignas son de letras («un país cuyo nombre tenga la «B» y la «R»»): en uno de
+  cada siete días, cinco de las siete. Las de fronteras, regiones e idiomas son menos y se agotan antes.
+  Normal y Geografía tienen historiales separados: la misma consigna puede salir en los dos modos con pocos
+  días de diferencia.
+- **Departamentos argentinos:** 20 de 514 no se encontraron en Wikidata (popularidad 0: su rareza entre
+  ellos es arbitraria pero estable).
 - **Entorno:** la ventana de 60 días es el valor por omisión. Ningún entorno desplegado tenía
   `CATALOGOS_DIAS_SIN_REPETIR=30` configurado (no estaba en Vercel ni en el `.env` local). Si alguno lo
   tuviera, ese valor explícito se respeta y hay que borrarlo o ponerlo en 60.
