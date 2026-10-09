@@ -13,7 +13,9 @@ test('catálogos nuevos: publicar, jugar, mostrar alcance, revelar y ver estadí
  const nuevas=['arte','television','naturaleza','gastronomia'];
  const dir=mkdtempSync(join(tmpdir(),'filon-e2e-catalogos-'));
  const pl=JSON.parse(readFileSync(new URL('../../datos/plantillas.json',import.meta.url),'utf8'));
- pl.plantillas=pl.plantillas.filter(p=>nuevas.includes(p.categoria));
+ // Las cuatro categorías nuevas tienen cinco catálogos y el día lleva uno por catálogo: Cine completa las
+ // otras dos. Como hay siete preguntas, las cuatro nuevas salen igual.
+ pl.plantillas=pl.plantillas.filter(p=>[...nuevas,'cine'].includes(p.categoria));
  const ruta=join(dir,'plantillas.json');writeFileSync(ruta,JSON.stringify(pl));
  const app=await iniciarServidor({sinArchivoEnv:true,env:{PUERTO:'0',HOST:'127.0.0.1',RUTA_BD:join(dir,'juego.db'),BD_URL:'',TURSO_DATABASE_URL:'',TOKEN_ADMIN:TOKEN_ADMIN_E2E,PROGRAMADOR_INTERNO:'0',GENERADOR_NORMAL:'catalogos',CATALOGOS_COMPLETAR_CON_RESERVA:'0',CATALOGOS_PLANTILLAS:ruta,CATALOGOS_SEMILLA:'e2e-expansion',LIMITES_ESCALA:'50'}});
  try {
@@ -22,7 +24,8 @@ test('catálogos nuevos: publicar, jugar, mostrar alcance, revelar y ver estadí
   expect(pub.origen).toBe('catalogo');
   const base=`http://127.0.0.1:${app.puerto}`;
   const banco=await (await page.request.get(`${base}/api/admin/desafios/${fecha}`,{headers:BEARER})).json();
-  expect(new Set(banco.preguntas.map(p=>p.categoria))).toEqual(new Set(nuevas));
+  const categorias=new Set(banco.preguntas.map(p=>p.categoria));
+  for(const c of nuevas)expect(categorias.has(c)).toBe(true);
   const errores=vigilarErrores(page),externas=[];
   page.on('request',r=>{if(new URL(r.url()).hostname!=='127.0.0.1')externas.push(r.url());});
   await page.goto(base);await page.click('#btn-comenzar');
