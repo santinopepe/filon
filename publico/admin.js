@@ -420,7 +420,7 @@ function montarCrear(modo) {
     try {
       const r = await api('POST', conModo(`/api/admin/desafios/${fecha}/generar`, modo), cuerpo);
       mostrarResultado(r);
-      await mostrarDesafioCreado(modo, fecha);
+      if (['publicado', 'reemplazado', 'ya_existia'].includes(r.resultado)) await mostrarDesafioCreado(modo, fecha);
     } catch (e) {
       if (e.datos?.error === 'ya_existe') {
         pedirConfirmacion(`Ya hay un desafío de ${NOMBRES_MODO[modo]} para ${fecha}. ¿Lo rearmo con otras preguntas? El anterior se reemplaza solo si el nuevo se publica bien.`, { ...cuerpo, reemplazar: true });

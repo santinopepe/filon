@@ -16,6 +16,27 @@ test('administración sin autenticación: la API rechaza y el panel pide ingresa
   await expect(page.locator('#panel')).toBeHidden();
 });
 
+test('generación fallida u ocupada: conserva el detalle y no abre un desafío inexistente', async ({ page }) => {
+  await ingresar(page);
+  await page.click('#tab-crear');
+  const detalles = [];
+  page.on('request', r => { if (r.method() === 'GET' && new URL(r.url()).pathname === '/api/admin/desafios/2030-07-15') detalles.push(r.url()); });
+  await page.fill('#normal-gen-fecha', '2030-07-15');
+  const ruta = '**/api/admin/desafios/2030-07-15/generar?*';
+  await page.route(ruta, r => r.fulfill({ json: { resultado: 'fallo', error: 'fetch failed', corridaId: 14 } }));
+  await page.click('#normal-gen-boton');
+  await expect(page.locator('#normal-gen-resultado')).toContainText('fetch failed');
+  await expect(page.locator('#normal-gen-resultado')).toContainText('Corrida #14');
+  await expect(page.locator('#normal-gen-boton')).toBeEnabled();
+  expect(detalles).toEqual([]);
+  await page.unroute(ruta);
+  await page.route(ruta, r => r.fulfill({ json: { resultado: 'ocupado' } }));
+  await page.click('#normal-gen-boton');
+  await expect(page.locator('#normal-gen-resultado')).toContainText('otra publicación en curso');
+  await expect(page.locator('#normal-gen-boton')).toBeEnabled();
+  expect(detalles).toEqual([]);
+});
+
 test('login y logout: sesión en cookie HttpOnly, nada en el almacenamiento, revocada al salir', async ({ page, context }) => {
   const errores = vigilarErrores(page);
   await ingresar(page, 'token-equivocado');

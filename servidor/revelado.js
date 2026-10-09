@@ -13,8 +13,8 @@ const FILAS_POR_SENTENCIA = 200;
 export const conteosVacios = () => Object.fromEntries(ORDEN_RAREZAS.map((r) => [r, 0]));
 
 /** Recalcula orden, forma de búsqueda y conteos de una pregunta. `cx` es la base o una transacción. */
-export async function prepararRevelado(cx, preguntaId) {
-  const filas = await cx.all('SELECT id, canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ?', preguntaId);
+export async function prepararRevelado(cx, preguntaId, respuestas = null) {
+  const filas = respuestas ? [...respuestas] : await cx.all('SELECT id, canonica, rareza, puntos FROM respuestas WHERE pregunta_id = ?', preguntaId);
   filas.sort((a, b) => b.puntos - a.puntos || ordenEspanol.compare(a.canonica, b.canonica) || a.id - b.id);
   const conteos = conteosVacios();
   for (const f of filas) conteos[f.rareza]++;
