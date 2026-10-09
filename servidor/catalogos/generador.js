@@ -47,7 +47,9 @@ export const POR_OMISION = Object.freeze({
  * Geografía: siete de geografía, variadas por familia y por catálogo. Los demás modos no tienen generador.
  */
 export const REGLAS_LOTE = Object.freeze({
-  normal: { categorias: CATEGORIAS_NORMAL, minCategorias: VARIEDAD_NORMAL.minCategorias, maxPorCategoria: VARIEDAD_NORMAL.maxPorCategoria, maxPorCatalogo: 2, rotacion: true },
+  // Normal: una sola pregunta por catálogo (o universo: base y vistas juntos) por día; dos del mismo
+  // catálogo (dos de CSS) hacen el día demasiado de nicho.
+  normal: { categorias: CATEGORIAS_NORMAL, minCategorias: VARIEDAD_NORMAL.minCategorias, maxPorCategoria: VARIEDAD_NORMAL.maxPorCategoria, maxPorCatalogo: 1, rotacion: true },
   // Geografía: se prefieren como mucho 3 de las 7 con condiciones sobre las letras del nombre (empieza,
   // termina, tiene…) y nunca más de 5, para que el día no sea un juego de palabras.
   geografia: { categorias: ['geografia'], minCategorias: 1, maxPorCategoria: PREGUNTAS_POR_DESAFIO, maxPorCatalogo: 3, letrasPreferidas: 3, maxDeLetras: 5 },

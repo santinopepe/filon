@@ -250,7 +250,8 @@ sin ambigüedad) y descarta el resto con su motivo. No se agregan respuestas par
 ## El lote del día
 
 - **Normal**: siete preguntas generales: hasta dos de una misma categoría (Gramática, una), al menos
-  cuatro categorías distintas, ninguna familia repetida y hasta dos del mismo universo (base y vistas juntos).
+  cuatro categorías distintas, ninguna familia repetida y **una sola pregunta por catálogo** (contando juntos
+  un catálogo y sus vistas: «películas» y «películas argentinas» no salen el mismo día).
 - **Geografía**: siete preguntas de geografía (las plantillas de categoría Geografía y las marcadas con
   `modos: ["geografia"]`), ninguna familia repetida, hasta tres del mismo universo y, como mucho, cinco con
   condiciones sobre las letras del nombre (se prefieren tres o menos). El historial es propio del modo: la
