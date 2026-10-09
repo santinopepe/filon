@@ -243,7 +243,17 @@ sin ambigüedad) y descarta el resto con su motivo. No se agregan respuestas par
   (popularidad 0) el orden entre ellas es el del id, es decir, arbitrario pero estable.
 - **Dificultad** (estimación editorial): la de la plantilla, más cuánto cuesta conocer las mejores respuestas
   del conjunto dentro de su catálogo, más condiciones combinadas y conjuntos chicos. Un conjunto grande no
-  baja la dificultad por sí solo. El lote mezcla fácil, media y difícil.
+  baja la dificultad por sí solo. El lote apunta a tres preguntas fáciles, tres medias y una media (uno de
+  cada cuatro días, difícil), y prefiere las plantillas de prioridad alta: cada nivel de prioridad pesa
+  0,12, así una consigna conocida le gana a una de nicho con dificultad parecida.
+- **Accesibilidad (prioridad y temas)**: las consignas de nicho (CSS, HTML, constelaciones por letra,
+  subdivisiones de otros países, Pokémon por generación, discos en vivo, pinturas por museo…) tienen
+  prioridad 1: siguen disponibles, pero salen poco. Las plantillas sobre un tema (pintor, director,
+  artista, banda, autor, grupo de animales, categoría del CAA) limitan sus valores con `solo` a una lista
+  editorial de temas conocidos para el público argentino. No se usa la familiaridad automática por
+  artículos de Wikipedia para filtrar: subestima los temas argentinos (Soda Stereo, Campanella).
+- **Tamaño**: ninguna plantilla descarta un conjunto por tener menos de 300 respuestas. Un conjunto grande
+  no es un problema técnico (el revelado pagina) y suele ser la consigna más fácil de responder.
 - **Coincidencia exacta** (preguntas de palabras): solo vale la palabra escrita, sin importar mayúsculas ni
   tildes. No se completan fragmentos ni se sugieren parecidas («cas» no se convierte en «casa»).
 
@@ -310,7 +320,8 @@ plantillas a 5; esos números afectan el sorteo, no alteran las firmas históric
 
 ### Rotación de categorías
 
-Se usan `diasRotacion=5` y `pesoRotacion=0.6`, configurables. La deuda de categoría mira exclusivamente
+Se usan `diasRotacion=5` y `pesoRotacion=0.45`, configurables (con 0,6 la rotación imponía categorías
+de nicho solo porque les tocaba). La deuda de categoría mira exclusivamente
 fechas anteriores; los días futuros sí bloquean repeticiones, pero no cuentan como aparición pasada.
 El horizonte se adapta a `ceil(60 / capacidad de la categoría)` para las categorías pequeñas.
 Hay una penalización suave por gastar demasiado pronto otra consigna de una categoría pequeña y

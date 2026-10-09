@@ -36,7 +36,7 @@ export const POR_OMISION = Object.freeze({
   // salió una categoría (hasta `diasRotacion`), más se la prefiere. Así todas aparecen a lo largo de los días
   // aunque haya más categorías que preguntas por día. Es una preferencia, no un turno fijo.
   diasRotacion: 5,
-  pesoRotacion: 0.6,
+  pesoRotacion: 0.45,
   // Conjuntos casi iguales (≥ 90 % de los nombres) en catálogos distintos («Nobel de Literatura» y «autores
   // con Nobel») son la misma consigna: se bloquean dentro de la ventana.
   solapamientoOtroUniverso: 0.9,
@@ -481,7 +481,8 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
 
   // 2) Siete preguntas variadas: dificultades mezcladas, sin repetir familia, con tope por categoría y
   // por catálogo y al menos `minCategorias` categorías distintas.
-  const objetivos = ['facil', 'facil', 'media', 'media', 'media', 'dificil', azar() < 0.5 ? 'media' : 'dificil'];
+  // Metas de dificultad del día: tres fáciles, tres medias y una media o, uno de cada cuatro días, difícil.
+  const objetivos = ['facil', 'facil', 'facil', 'media', 'media', 'media', azar() < 0.25 ? 'dificil' : 'media'];
   for (let i = objetivos.length - 1; i > 0; i--) {
     const j = Math.floor(azar() * (i + 1));
     [objetivos[i], objetivos[j]] = [objetivos[j], objetivos[i]];
@@ -498,7 +499,7 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
     // Preferencias (no bloqueos): dificultad cercana al objetivo, consignas conocidas, familias que no
     // salieron hace poco y conjuntos que no se parezcan mucho a uno reciente del mismo catálogo.
     const puntaje = (c) =>
-      Math.abs(c.dificultad.valor - objetivo) - 0.06 * c.plantilla.prioridad - 0.03 * (c.familiaridad ?? 2) - op.pesoRotacion * (deudaDeCategoria.get(c.categoria) ?? 0) + op.pesoRotacion * (esperaDeCategoria.get(c.categoria) ?? 0) + (categorias.has(c.categoria) && (capacidadPorCategoria.get(c.categoria)?.size ?? 0) < op.diasSinRepetir ? op.pesoRotacion : 0) + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0) + 0.1 * c.sorteo;
+      Math.abs(c.dificultad.valor - objetivo) - 0.12 * c.plantilla.prioridad - 0.03 * (c.familiaridad ?? 2) - op.pesoRotacion * (deudaDeCategoria.get(c.categoria) ?? 0) + op.pesoRotacion * (esperaDeCategoria.get(c.categoria) ?? 0) + (categorias.has(c.categoria) && (capacidadPorCategoria.get(c.categoria)?.size ?? 0) < op.diasSinRepetir ? op.pesoRotacion : 0) + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0) + 0.1 * c.sorteo;
     const ordenados = pool.filter((c) => !c.usado).sort((a, b) => puntaje(a) - puntaje(b));
     for (const c of ordenados) {
       if (++intentos > op.intentosTotales) break;
