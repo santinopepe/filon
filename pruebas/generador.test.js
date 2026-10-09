@@ -159,6 +159,7 @@ test('lote: siete preguntas variadas, reproducible con la misma semilla, fecha y
   assert.ok(Object.keys(porCategoria).length >= 4 && Object.values(porCategoria).every((n) => n <= 2), JSON.stringify(porCategoria));
   assert.ok((porCategoria.gramatica ?? 0) <= 1);
   assert.equal(new Set(a.elegidas.map((e) => e.familia)).size, 7, 'ninguna familia se repite en el día');
+  assert.equal(new Set(a.preguntas.map((p) => p.generacion.universo ?? p.generacion.catalogo.id)).size, 7, 'ningún catálogo se repite en el día');
   assert.ok(new Set(a.elegidas.map((e) => e.dificultad.nivel)).size >= 2, 'dificultades mezcladas');
   const otroDia = generarLote({ ...opciones, fecha: '2026-11-04' });
   assert.notDeepEqual(otroDia.elegidas.map((e) => e.enunciado), a.elegidas.map((e) => e.enunciado));
@@ -281,6 +282,7 @@ test('categorías nuevas: el generador las usa y la validación del lote las ace
     const fecha = sumarDias('2026-11-01', i);
     const lote = generarLote({ catalogos, plantillas, fecha, dominios: DOMINIOS, historial });
     assert.ok(lote.ok && validarLote(lote.preguntas).ok, fecha);
+    assert.equal(new Set(lote.preguntas.map((p) => p.generacion.universo ?? p.generacion.catalogo.id)).size, 7, `${fecha}: un catálogo por pregunta`);
     for (const p of lote.preguntas) vistas.add(p.categoria);
     historial.push(...comoHistorial(lote, fecha));
   }
@@ -377,8 +379,9 @@ test('juego: en las preguntas de palabras vale solo la palabra escrita (sin auto
   const e = await prepararEntorno();
   // Esta prueba verifica coincidencia exacta, sin depender del sorteo de un calendario sin historial.
   const dir = mkdtempSync(join(tmpdir(), 'filon-palabras-'));
-  // Los otros tres tipos de categoría pueden aportar como máximo seis preguntas: la séptima es Gramática.
-  const lista = { version: plantillas.version, plantillas: PL.plantillas.filter(p=>(p.id==='palabras-cinco-vocales' || ['geografia','ciencia','videojuegos'].includes(p.categoria)) && !p.id.startsWith('expansion-')) };
+  // Las otras tres categorías aportan como máximo seis preguntas (dos por categoría, cada una de un
+  // catálogo distinto: geografía, elementos y científicos, Pokémon y videojuegos): la séptima es Gramática.
+  const lista = { version: plantillas.version, plantillas: PL.plantillas.filter(p=>p.id==='palabras-cinco-vocales' || (['geografia','ciencia','videojuegos'].includes(p.categoria) && (!p.id.startsWith('expansion-') || ['cientificos','videojuegos'].includes(p.catalogo)))) };
   const ruta = join(dir,'plantillas.json');writeFileSync(ruta,JSON.stringify(lista));e.config.catalogos.rutaPlantillas=ruta;
   const fecha='2026-10-05';
   e.reloj.fijar(`${fecha}T15:00:00-03:00`);
