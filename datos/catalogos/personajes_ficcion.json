@@ -1,0 +1,48 @@
+{
+  "id": "personajes_ficcion",
+  "nombre": "Comunidad del Anillo",
+  "descripcion": "Los nueve integrantes de la Comunidad del Anillo; no todos los personajes de Tolkien.",
+  "version": "2026-10-08.892fbad6b5",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia: The Fellowship of the Ring",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1359777139",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Los nueve miembros originales de la Comunidad del Anillo, según la lista de The Fellowship of the Ring. Solo este plantel cerrado; no todos los personajes de la obra.",
+    "verificacion": [
+      "los nueve miembros distintos de la Comunidad del Anillo"
+    ]
+  },
+  "atributos": {
+    "grupo": {
+      "tipo": "texto",
+      "etiqueta": "plantel cerrado"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q177329","nombre":"Frodo Bolsón","alias":["Frodo Baggins"],"popularidad":58,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q177329"},
+    {"id":"Q177499","nombre":"Gandalf","alias":["Caballero Blanco","Gandalf el Blanco","Gandalf el Gris","Incanus","Jinete Blanco","Mithrandir","Olorin","Peregrino Gris","Tharkun"],"popularidad":69,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q177499"},
+    {"id":"Q180322","nombre":"Aragorn","alias":["El hijo de la Pocha, el más chico","Trancos"],"popularidad":54,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q180322"},
+    {"id":"Q213480","nombre":"Legolas","alias":["Hojaverde","Legolas Hojaverde"],"popularidad":51,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q213480"},
+    {"id":"Q219473","nombre":"Samsagaz Gamyi","alias":["Banazir Galpsi","Sam","Sam Gamyi","Samwise Gamgee"],"popularidad":44,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q219473"},
+    {"id":"Q219493","nombre":"Peregrin Tuk","alias":["Ernil i pheriannath","Peregrin","Pip","Pippin","Pippin Took"],"popularidad":37,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q219493"},
+    {"id":"Q219498","nombre":"Meriadoc Brandigamo","alias":["Meriadoc","Merry","Merry Brandybuck"],"popularidad":35,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q219498"},
+    {"id":"Q219504","nombre":"Boromir","alias":["Enano molón"],"popularidad":41,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q219504"},
+    {"id":"Q446231","nombre":"Gimli","popularidad":8,"atributos":{"grupo":"Comunidad del Anillo"},"fuente":"https://www.wikidata.org/wiki/Q446231"}
+  ]
+}

@@ -3,10 +3,15 @@
 // - Calcula qué atributos están completos: un filtro solo puede usar un atributo que no le falte a nadie.
 // - Detecta colisiones de alias: un alias que también nombra a otra entidad del catálogo («Congo» para
 //   dos países) se descarta, para que ninguna respuesta acepte a otra entidad ni infle el conjunto.
+// - Vistas: un catálogo puede ser un subconjunto filtrado de otro («peliculas_argentinas» = las películas de
+//   «peliculas» con Argentina entre sus países). La vista no copia entidades: las toma del catálogo base al
+//   cargar, así los dos nunca divergen. Su `universo` es el del base (entra en la firma de las consignas).
 // No usa la red: si falta un archivo, el catálogo simplemente no está disponible.
+import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { formasRegistrables, normalizar } from '../normalizar.js';
+import { validarFiltro, evaluar } from './filtros.js';
 
 const TIPOS = new Set(['texto', 'lista', 'numero', 'lista_numeros']);
 const cache = new Map();
@@ -14,11 +19,21 @@ const cache = new Map();
 function validarCatalogo(c, archivo) {
   const errores = [];
   if (!c || typeof c !== 'object') return ['no es un objeto JSON'];
-  for (const k of ['id', 'nombre', 'version', 'importado']) if (typeof c[k] !== 'string' || !c[k]) errores.push(`falta «${k}»`);
   if (`${c.id}.json` !== archivo) errores.push(`el id «${c.id}» no coincide con el archivo`);
-  if (!Array.isArray(c.fuentes) || !c.fuentes.length || !c.fuentes.every((f) => f?.url && f?.licencia)) errores.push('faltan fuentes con url y licencia');
   if (!['completa', 'parcial'].includes(c.cobertura?.tipo)) errores.push('cobertura inválida');
+  if (c.vista) {
+    // Una vista declara su base y su filtro; lo demás lo hereda del catálogo base.
+    if (typeof c.vista.catalogo !== 'string' || !c.vista.filtro) errores.push('vista sin «catalogo» o «filtro»');
+    if (c.entidades) errores.push('una vista no tiene entidades propias');
+    return errores;
+  }
+  for (const k of ['id', 'nombre', 'version', 'importado']) if (typeof c[k] !== 'string' || !c[k]) errores.push(`falta «${k}»`);
+  if (!Array.isArray(c.fuentes) || !c.fuentes.length || !c.fuentes.every((f) => f?.url && f?.licencia)) errores.push('faltan fuentes con url y licencia');
   for (const [k, a] of Object.entries(c.atributos ?? {})) if (!TIPOS.has(a?.tipo)) errores.push(`atributo «${k}» con tipo inválido`);
+  const completoPor = c.cobertura?.completoPor ?? [];
+  const grupos = typeof completoPor === 'object' && !Array.isArray(completoPor) ? Object.keys(completoPor) : [completoPor].flat();
+  if (grupos.some((g) => !c.atributos?.[g])) errores.push('«completoPor» nombra un atributo que no existe');
+  if (typeof completoPor === 'object' && !Array.isArray(completoPor) && Object.values(completoPor).some((v) => v !== true && (!Array.isArray(v) || !v.length || v.some((x) => typeof x !== 'string')))) errores.push('«completoPor»: cada grupo es true o una lista no vacía de valores');
   if (!Array.isArray(c.entidades) || !c.entidades.length) errores.push('sin entidades');
   return errores;
 }
@@ -75,11 +90,55 @@ function valoresDe(c) {
   return valores;
 }
 
+// Una lista vacía es un dato (una isla no tiene países limítrofes); null o ausente es un dato que falta.
+export const tieneDato = (v) => v !== null && v !== undefined && v !== '';
+
 /** Atributos que tienen valor en todas las entidades (los únicos filtrables sin perder respuestas). */
 function completos(c) {
-  // Una lista vacía es un dato (una isla no tiene países limítrofes); null o ausente es un dato que falta.
-  const lleno = (v) => v !== null && v !== undefined && v !== '';
-  return new Set(Object.keys(c.atributos ?? {}).filter((campo) => c.entidades.every((e) => lleno(e.atributos[campo]))));
+  return new Set(Object.keys(c.atributos ?? {}).filter((campo) => c.entidades.every((e) => tieneDato(e.atributos[campo]))));
+}
+
+/** Completa lo que cualquier catálogo (propio o vista) necesita para el generador. */
+function prepararCatalogo(catalogo) {
+  catalogo.universo ??= catalogo.id;
+  catalogo.valores = valoresDe(catalogo);
+  catalogo.completos = completos(catalogo);
+  // Percentil de popularidad de cada entidad dentro de su catálogo (0 = la menos conocida, 1 = la más).
+  const orden = [...catalogo.entidades].sort((a, b) => a.popularidad - b.popularidad);
+  const percentiles = new Map(orden.map((e, i) => [e.id, catalogo.entidades.length > 1 ? i / (catalogo.entidades.length - 1) : 1]));
+  catalogo.percentil = (e) => percentiles.get(e.id) ?? 0;
+  return catalogo;
+}
+
+/**
+ * Arma una vista: las entidades del catálogo base que cumplen su filtro (las mismas, no copias). Hereda
+ * atributos, fuentes y popularidad; la versión combina la del base con la del filtro.
+ */
+function armarVista(c, base) {
+  const { ok, errores, filtro } = validarFiltro(c.vista.filtro, base);
+  if (!ok) return { errores: [`filtro de la vista inválido: ${errores.join(' ')}`] };
+  const entidades = base.entidades.filter((e) => evaluar(filtro, e));
+  if (!entidades.length) return { errores: ['la vista no tiene entidades'] };
+  const huella = createHash('sha256').update(JSON.stringify(filtro)).digest('hex').slice(0, 8);
+  const vista = {
+    ...base,
+    ...c,
+    nombre: c.nombre ?? base.nombre,
+    version: `${base.version}+${huella}`,
+    importado: base.importado,
+    fuentes: base.fuentes,
+    atributos: base.atributos,
+    cobertura: { ...base.cobertura, ...c.cobertura, tipo: base.cobertura.tipo, completoPor: base.cobertura.completoPor, completoEn: base.cobertura.completoEn },
+    temas: c.temas ?? base.temas,
+    fuenteEntidades: base.fuenteEntidades,
+    entidades,
+    base,
+    filtroVista: filtro,
+    universo: base.universo ?? base.id,
+    colisiones: base.colisiones,
+    ambiguas: base.ambiguas.filter((id) => entidades.some((e) => e.id === id)),
+  };
+  return { vista: prepararCatalogo(vista) };
 }
 
 /**
@@ -99,6 +158,7 @@ export function cargarCatalogos(dir) {
 
   const catalogos = new Map();
   const problemas = [];
+  const vistas = [];
   for (const archivo of archivos) {
     let c;
     try {
@@ -112,6 +172,10 @@ export function cargarCatalogos(dir) {
       problemas.push(`${archivo}: ${errores.join('; ')}`);
       continue;
     }
+    if (c.vista) {
+      vistas.push(c);
+      continue;
+    }
     const { entidades, errores: deEntidades } = prepararEntidades(c);
     if (deEntidades.length) {
       problemas.push(`${archivo}: ${deEntidades.slice(0, 5).join('; ')}`);
@@ -119,13 +183,18 @@ export function cargarCatalogos(dir) {
     }
     const catalogo = { ...c, entidades };
     Object.assign(catalogo, resolverColisiones(entidades));
-    catalogo.valores = valoresDe(catalogo);
-    catalogo.completos = completos(catalogo);
-    // Percentil de popularidad de cada entidad dentro de su catálogo (0 = la menos conocida, 1 = la más).
-    const orden = [...entidades].sort((a, b) => a.popularidad - b.popularidad);
-    const percentiles = new Map(orden.map((e, i) => [e.id, entidades.length > 1 ? i / (entidades.length - 1) : 1]));
-    catalogo.percentil = (e) => percentiles.get(e.id) ?? 0;
-    catalogos.set(c.id, catalogo);
+    catalogos.set(c.id, prepararCatalogo(catalogo));
+  }
+  // Las vistas, después de sus catálogos base (una vista de una vista no está permitida).
+  for (const c of vistas) {
+    const base = catalogos.get(c.vista.catalogo);
+    if (!base || base.base) {
+      problemas.push(`${c.id}.json: la vista necesita el catálogo «${c.vista.catalogo}», que no está disponible`);
+      continue;
+    }
+    const { vista, errores } = armarVista(c, base);
+    if (errores) problemas.push(`${c.id}.json: ${errores.join('; ')}`);
+    else catalogos.set(c.id, vista);
   }
   const resultado = { catalogos, problemas };
   cache.set(dir, { huella, resultado });

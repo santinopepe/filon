@@ -8,3 +8,4 @@ capturas/
 test-results/
 playwright-report/
 cobertura/
+.cache/

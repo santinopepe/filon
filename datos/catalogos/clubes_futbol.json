@@ -1,0 +1,211 @@
+{
+  "id": "clubes_futbol",
+  "nombre": "Clubes campeones continentales",
+  "descripcion": "Campeones de Libertadores, Sudamericana y Champions hasta 2025, por edición verificada.",
+  "version": "2026-10-08.c4e45ed4a8",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia: finales Copa Libertadores",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1375300496",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: finales Copa Sudamericana",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1346389925",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: finales Champions",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1378911096",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "UEFA: FCSB facts, historial oficial",
+      "url": "https://www.uefa.com/uefaconferenceleague/news/0278-15f61fdeb728-2304d29ff95f-1000--club-facts-fcsb/",
+      "licencia": "Datos factuales de títulos; texto y marcas UEFA reservados, no reproducidos."
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Ganadores de Libertadores 1960–2025, Sudamericana 2002–2025 y Copa de Europa/Champions 1956–2025. Títulos verificados por año entre Wikidata y la lista de finales. Excluye el campeonato argentino.",
+    "verificacion": [
+      "Copa Libertadores: 66 ediciones sin huecos; faltan ",
+      "Copa Libertadores: clubes enlazados",
+      "Copa Libertadores: ediciones enlazadas a Wikidata",
+      "Copa Libertadores: 61/66 ganadores coinciden con P1346 de las ediciones enlazadas",
+      "Copa Sudamericana: 24 ediciones sin huecos; faltan ",
+      "Copa Sudamericana: clubes enlazados",
+      "Copa Sudamericana: ediciones enlazadas a Wikidata",
+      "Copa Sudamericana: 19/24 ganadores coinciden con P1346 de las ediciones enlazadas",
+      "Champions: 70 ediciones sin huecos; faltan ",
+      "Champions: clubes enlazados",
+      "Champions: ediciones enlazadas a Wikidata",
+      "UEFA: FCSB (históricamente Steaua) campeón 1986; ficha oficial contrastada manualmente al 2026-10-08",
+      "Champions: 69/70 ganadores coinciden con P1346 de las ediciones enlazadas"
+    ]
+  },
+  "atributos": {
+    "pais": {
+      "tipo": "lista",
+      "etiqueta": "país"
+    },
+    "ciudad": {
+      "tipo": "lista",
+      "etiqueta": "ciudad"
+    },
+    "fundacion": {
+      "tipo": "numero",
+      "etiqueta": "año de fundación"
+    },
+    "titulos": {
+      "tipo": "lista",
+      "etiqueta": "competición y edición"
+    },
+    "competiciones": {
+      "tipo": "lista",
+      "etiqueta": "competición"
+    },
+    "libertadores": {
+      "tipo": "lista_numeros",
+      "etiqueta": "años de Libertadores"
+    },
+    "sudamericana": {
+      "tipo": "lista_numeros",
+      "etiqueta": "años de Sudamericana"
+    },
+    "champions": {
+      "tipo": "lista_numeros",
+      "etiqueta": "años de Champions"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Copa Libertadores 1991",
+      "detalle": "ganador: Colo-Colo (Q207373); Wikidata: Q719338",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1375300496); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Libertadores 1993",
+      "detalle": "ganador: São Paulo FC (Q38568); Wikidata: Q62012771",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1375300496); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Libertadores 1997",
+      "detalle": "ganador: Cruzeiro Esporte Clube (Q188277); Wikidata: Q604581",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1375300496); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Libertadores 1998",
+      "detalle": "ganador: CR Vasco da Gama (Q5014111); Wikidata: Q757418",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1375300496); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Libertadores 2018",
+      "detalle": "ganador: Club Atlético River Plate (Q15799); Wikidata: Q170703",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1375300496); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Sudamericana 2017",
+      "detalle": "ganador: Club Atlético Independiente (Q214978); Wikidata: sin ganador",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1346389925); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Sudamericana 2022",
+      "detalle": "ganador: Independiente del Valle (Q249648); Wikidata: sin ganador",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1346389925); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Sudamericana 2023",
+      "detalle": "ganador: L.D.U. Quito (Q249643); Wikidata: sin ganador",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1346389925); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Sudamericana 2024",
+      "detalle": "ganador: Racing Club de Avellaneda (Q276533); Wikidata: sin ganador",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1346389925); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Copa Sudamericana 2025",
+      "detalle": "ganador: Club Atlético Lanús (Q324589); Wikidata: sin ganador",
+      "motivo": "Fila concreta de finales inspeccionada (https://en.wikipedia.org/w/index.php?oldid=1346389925); se conserva el dato de la lista y su revisión, sin modificar Wikidata."
+    },
+    {
+      "entidad": "Champions 1986",
+      "detalle": "Se usa FCSB / Steaua histórico (Q179658), no CSA Steaua creado en 2017 al que enlaza la tabla.",
+      "motivo": "Discrepancia inspeccionada y resuelta con el historial oficial UEFA: https://www.uefa.com/uefaconferenceleague/news/0278-15f61fdeb728-2304d29ff95f-1000--club-facts-fcsb/. Criterio deportivo de UEFA, no adjudicación de la disputa jurídica."
+    }
+  ],
+  "entidades": [
+    {"id":"Q1024338","nombre":"Club Social y Deportivo Defensa y Justicia","alias":["Defensa y Justicia","El Halcón de Varela"],"popularidad":29,"atributos":{"pais":["Argentina"],"ciudad":["Florencio Varela"],"fundacion":1935,"titulos":["Copa Sudamericana 2020"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2020],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q1024338"},
+    {"id":"Q1130849","nombre":"Liverpool Fútbol Club","alias":["Liverpool F. C.","Los Rojos","The Reds"],"popularidad":133,"atributos":{"pais":["Reino Unido"],"ciudad":["Liverpool"],"fundacion":1892,"titulos":["Champions 1977","Champions 1978","Champions 1981","Champions 1984","Champions 2005","Champions 2019"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1977,1978,1981,1984,2005,2019]},"fuente":"https://www.wikidata.org/wiki/Q1130849"},
+    {"id":"Q11938","nombre":"PSV Eindhoven","alias":["Eindhoven Fútbol Club","Philips Sport Vereniging"],"popularidad":84,"atributos":{"pais":["Países Bajos"],"ciudad":["Eindhoven"],"fundacion":1913,"titulos":["Champions 1988"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1988]},"fuente":"https://www.wikidata.org/wiki/Q11938"},
+    {"id":"Q128446","nombre":"Fútbol Club Oporto","alias":["F.C. Oporto","F.C. Porto","FC Oporto","FC Porto","Futebol Clube Porto","Futebol Clube do Porto"],"popularidad":94,"atributos":{"pais":["Portugal"],"ciudad":["Oporto"],"fundacion":1893,"titulos":["Champions 1987","Champions 2004"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1987,2004]},"fuente":"https://www.wikidata.org/wiki/Q128446"},
+    {"id":"Q131499","nombre":"Sport Lisboa e Benfica","alias":["Benfica","Benfica de Lisboa","Las Águilas","S. L. Benfica","SL Benfica"],"popularidad":92,"atributos":{"pais":["Portugal"],"ciudad":["Lisboa"],"fundacion":1904,"titulos":["Champions 1961","Champions 1962"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1961,1962]},"fuente":"https://www.wikidata.org/wiki/Q131499"},
+    {"id":"Q132885","nombre":"Olympique de Marsella","alias":["Olympique Marsella","Olympique de Marseille"],"popularidad":85,"atributos":{"pais":["Francia"],"ciudad":null,"fundacion":1899,"titulos":["Champions 1993"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1993]},"fuente":"https://www.wikidata.org/wiki/Q132885"},
+    {"id":"Q134241","nombre":"Feyenoord Rotterdam","alias":["Feyenoord","Feyenord"],"popularidad":85,"atributos":{"pais":["Países Bajos"],"ciudad":["Róterdam"],"fundacion":1908,"titulos":["Champions 1970"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1970]},"fuente":"https://www.wikidata.org/wiki/Q134241"},
+    {"id":"Q1422","nombre":"Juventus","alias":["Juventus de Turín","Juventus FC"],"popularidad":133,"atributos":{"pais":["Reino de Italia","Italia"],"ciudad":["Turín"],"fundacion":1897,"titulos":["Champions 1985","Champions 1996"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1985,1996]},"fuente":"https://www.wikidata.org/wiki/Q1422"},
+    {"id":"Q1424072","nombre":"Independiente Santa Fe","alias":["Club Independiente Santa Fe","El Expreso Rojo","Santa Fe CD","Santa Fe Corporación Deportiva"],"popularidad":35,"atributos":{"pais":["Colombia"],"ciudad":["Bogotá"],"fundacion":1941,"titulos":["Copa Sudamericana 2015"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2015],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q1424072"},
+    {"id":"Q1543","nombre":"A.C. Milan","alias":["A.C.M.","ACMilan","Associazione Calcio Milan","Milan","AC Milan"],"popularidad":126,"atributos":{"pais":["Italia"],"ciudad":["Milán"],"fundacion":1899,"titulos":["Champions 1963","Champions 1969","Champions 1989","Champions 1990","Champions 1994","Champions 2003","Champions 2007"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1963,1969,1989,1990,1994,2003,2007]},"fuente":"https://www.wikidata.org/wiki/Q1543"},
+    {"id":"Q15789","nombre":"F. C. Bayern Múnich","alias":["Bayern","FC Bayern","FC Múnich","FC Bayern Munich"],"popularidad":124,"atributos":{"pais":["Alemania"],"ciudad":["Säbener Straße","Múnich"],"fundacion":1900,"titulos":["Champions 1974","Champions 1975","Champions 1976","Champions 2001","Champions 2013","Champions 2020"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1974,1975,1976,2001,2013,2020]},"fuente":"https://www.wikidata.org/wiki/Q15789"},
+    {"id":"Q15799","nombre":"Club Atlético River Plate","alias":["C.A. River Plate","C.A.R.P.","CA River Plate","River","River Plate","RiverPlate"],"popularidad":78,"atributos":{"pais":["Argentina"],"ciudad":["Buenos Aires"],"fundacion":1901,"titulos":["Copa Libertadores 1986","Copa Libertadores 1996","Copa Libertadores 2015","Copa Libertadores 2018","Copa Sudamericana 2014"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[1986,1996,2015,2018],"sudamericana":[2014],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q15799"},
+    {"id":"Q16320","nombre":"Club Atlético Peñarol","alias":["CA Peñarol","Peñarol","Peñarol Montevideo"],"popularidad":62,"atributos":{"pais":["Uruguay"],"ciudad":["Montevideo"],"fundacion":1891,"titulos":["Copa Libertadores 1960","Copa Libertadores 1961","Copa Libertadores 1966","Copa Libertadores 1982","Copa Libertadores 1987"],"competiciones":["Copa Libertadores"],"libertadores":[1960,1961,1966,1982,1987],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q16320"},
+    {"id":"Q170703","nombre":"Boca Juniors","popularidad":82,"atributos":{"pais":["Argentina"],"ciudad":["Buenos Aires"],"fundacion":1905,"titulos":["Copa Libertadores 1977","Copa Libertadores 1978","Copa Libertadores 2000","Copa Libertadores 2001","Copa Libertadores 2003","Copa Libertadores 2007","Copa Sudamericana 2004","Copa Sudamericana 2005"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[1977,1978,2000,2001,2003,2007],"sudamericana":[2004,2005],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q170703"},
+    {"id":"Q173009","nombre":"Estrella Roja de Belgrado","alias":["Crvena Zvezda Beograd","Estrella Roja Belgrado","FK Crvena Zvezda","FK Crvena Zvezda Beograd","FK Estrella Roja","FK Red Star","Red Star Belgrade"],"popularidad":73,"atributos":{"pais":["Serbia"],"ciudad":["Belgrado"],"fundacion":null,"titulos":["Champions 1991"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1991]},"fuente":"https://www.wikidata.org/wiki/Q173009"},
+    {"id":"Q17479","nombre":"Clube de Regatas do Flamengo","popularidad":91,"atributos":{"pais":["Brasil"],"ciudad":["Río de Janeiro"],"fundacion":1895,"titulos":["Copa Libertadores 1981","Copa Libertadores 2019","Copa Libertadores 2022","Copa Libertadores 2025"],"competiciones":["Copa Libertadores"],"libertadores":[1981,2019,2022,2025],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q17479"},
+    {"id":"Q179658","nombre":"Steaua de Bucarest","alias":["CCA Bucarest","CCA Bucureşti","CSCA Bucarest","FC Steaua Bucarest","FC Steaua Bucurest","FC Steaua București","Fotbal Club FCSB","Fotbal Club Steaua Bucuresti","Steaua București"],"popularidad":70,"atributos":{"pais":["Rumania"],"ciudad":["Bucarest"],"fundacion":1947,"titulos":["Champions 1986"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1986]},"fuente":"https://www.wikidata.org/wiki/Q179658"},
+    {"id":"Q18656","nombre":"Manchester United Football Club","alias":["Manchester United","Manchester United F.C."],"popularidad":148,"atributos":{"pais":["Reino Unido"],"ciudad":["Mánchester"],"fundacion":1878,"titulos":["Champions 1968","Champions 1999","Champions 2008"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1968,1999,2008]},"fuente":"https://www.wikidata.org/wiki/Q18656"},
+    {"id":"Q18711","nombre":"Aston Villa Football Club","alias":["Aston Villa","Aston Villa FC","El villa","Los villanos","Villa","Aston Villa F.C."],"popularidad":103,"atributos":{"pais":["Reino Unido"],"ciudad":["Aston"],"fundacion":1874,"titulos":["Champions 1982"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1982]},"fuente":"https://www.wikidata.org/wiki/Q18711"},
+    {"id":"Q188277","nombre":"Cruzeiro Esporte Clube","alias":["Cruzeiro E C","Cruzeiro EC","Cruzeiro de Belo Horizonte"],"popularidad":57,"atributos":{"pais":["Brasil"],"ciudad":["Belo Horizonte"],"fundacion":1921,"titulos":["Copa Libertadores 1976","Copa Libertadores 1997"],"competiciones":["Copa Libertadores"],"libertadores":[1976,1997],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q188277"},
+    {"id":"Q19490","nombre":"Nottingham Forest Football Club","alias":["Foresters","Los rojos","Nottingham Forest","Nottingham Forest F.C.","Nottingham Forest FC","Tricky Trees"],"popularidad":80,"atributos":{"pais":["Reino Unido"],"ciudad":["West Bridgford"],"fundacion":1865,"titulos":["Champions 1979","Champions 1980"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1979,1980]},"fuente":"https://www.wikidata.org/wiki/Q19490"},
+    {"id":"Q19593","nombre":"Celtic Football Club","alias":["Celtic F C","Celtic FC","Celtic Glasgow","Celtic de Glasgow","Glasgow Celtic","The Celtic Football Club"],"popularidad":81,"atributos":{"pais":["Reino Unido"],"ciudad":["Glasgow"],"fundacion":1887,"titulos":["Champions 1967"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1967]},"fuente":"https://www.wikidata.org/wiki/Q19593"},
+    {"id":"Q207373","nombre":"Club Social y Deportivo Colo-Colo","alias":["Colo Colo"],"popularidad":91,"atributos":{"pais":["Chile"],"ciudad":["Santiago de Chile"],"fundacion":1925,"titulos":["Copa Libertadores 1991"],"competiciones":["Copa Libertadores"],"libertadores":[1991],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q207373"},
+    {"id":"Q214940","nombre":"Club Estudiantes de La Plata","alias":["Estudiantes de La Plata"],"popularidad":52,"atributos":{"pais":["Argentina"],"ciudad":["La Plata"],"fundacion":1905,"titulos":["Copa Libertadores 1968","Copa Libertadores 1969","Copa Libertadores 1970","Copa Libertadores 2009"],"competiciones":["Copa Libertadores"],"libertadores":[1968,1969,1970,2009],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q214940"},
+    {"id":"Q214978","nombre":"Club Atlético Independiente","popularidad":58,"atributos":{"pais":["Argentina"],"ciudad":["Avellaneda"],"fundacion":1905,"titulos":["Copa Libertadores 1964","Copa Libertadores 1965","Copa Libertadores 1972","Copa Libertadores 1973","Copa Libertadores 1974","Copa Libertadores 1975","Copa Libertadores 1984","Copa Sudamericana 2010","Copa Sudamericana 2017"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[1964,1965,1972,1973,1974,1975,1984],"sudamericana":[2010,2017],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q214978"},
+    {"id":"Q215163","nombre":"Club Atlético Vélez Sarsfield","popularidad":51,"atributos":{"pais":["Argentina"],"ciudad":["Buenos Aires"],"fundacion":1910,"titulos":["Copa Libertadores 1994"],"competiciones":["Copa Libertadores"],"libertadores":[1994],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q215163"},
+    {"id":"Q218282","nombre":"Club Atlético San Lorenzo de Almagro","alias":["CA San Lorenzo","CA San Lorenzo de Almagro","CASLA","San Lorenzo","San Lorenzo de Almagro"],"popularidad":55,"atributos":{"pais":["Argentina"],"ciudad":["Buenos Aires"],"fundacion":1908,"titulos":["Copa Libertadores 2014","Copa Sudamericana 2002"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[2014],"sudamericana":[2002],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q218282"},
+    {"id":"Q220621","nombre":"Asociación Atlética Argentinos Juniors","alias":["Argentinos Juniors"],"popularidad":47,"atributos":{"pais":["Argentina"],"ciudad":["Buenos Aires"],"fundacion":1904,"titulos":["Copa Libertadores 1985"],"competiciones":["Copa Libertadores"],"libertadores":[1985],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q220621"},
+    {"id":"Q221695","nombre":"Grêmio Foot-Ball Porto Alegrense","alias":["Gremio","Grêmio F.B.P.A.","Grêmio FBPA"],"popularidad":60,"atributos":{"pais":["Brasil"],"ciudad":["Porto Alegre"],"fundacion":1903,"titulos":["Copa Libertadores 1983","Copa Libertadores 1995","Copa Libertadores 2017"],"competiciones":["Copa Libertadores"],"libertadores":[1983,1995,2017],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q221695"},
+    {"id":"Q249643","nombre":"Liga Deportiva Universitaria de Quito","alias":["LDU Quito","Liga Deportiva Universitaria","Liga de Quito"],"popularidad":41,"atributos":{"pais":["Ecuador"],"ciudad":["Quito"],"fundacion":1930,"titulos":["Copa Libertadores 2008","Copa Sudamericana 2009","Copa Sudamericana 2023"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[2008],"sudamericana":[2009,2023],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q249643"},
+    {"id":"Q249648","nombre":"Independiente del Valle","popularidad":30,"atributos":{"pais":["Ecuador"],"ciudad":["Quito"],"fundacion":1958,"titulos":["Copa Sudamericana 2019","Copa Sudamericana 2022"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2019,2022],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q249648"},
+    {"id":"Q2536715","nombre":"Chapecoense","alias":["Associacao Chapecoense de Futebol","Chape"],"popularidad":43,"atributos":{"pais":["Brasil"],"ciudad":["Chapecó"],"fundacion":1973,"titulos":["Copa Sudamericana 2016"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2016],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q2536715"},
+    {"id":"Q270995","nombre":"Clube Atlético Mineiro","alias":["Atletico Mineiro"],"popularidad":59,"atributos":{"pais":["Brasil"],"ciudad":["Belo Horizonte"],"fundacion":1908,"titulos":["Copa Libertadores 2013"],"competiciones":["Copa Libertadores"],"libertadores":[2013],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q270995"},
+    {"id":"Q276533","nombre":"Racing Club","alias":["Racing","Racing Club de Avellaneda"],"popularidad":55,"atributos":{"pais":["Argentina"],"ciudad":["Avellaneda"],"fundacion":1903,"titulos":["Copa Libertadores 1967","Copa Sudamericana 2024"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[1967],"sudamericana":[2024],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q276533"},
+    {"id":"Q324589","nombre":"Club Atlético Lanús","popularidad":42,"atributos":{"pais":["Argentina"],"ciudad":["Lanús"],"fundacion":1915,"titulos":["Copa Sudamericana 2013","Copa Sudamericana 2025"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2013,2025],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q324589"},
+    {"id":"Q332605","nombre":"Atlético Nacional","alias":["Atlético Municipal","Atlético Nacional S.A.","Atlético Nacional de Medellín","Club Atlético Nacional","Corporación Deportiva Atlético Club Nacional","Corporación Deportiva Atlético Nacional","Corporación Deportiva Club Atletico Nacional","Corporación Deportiva Nacional Atlético Club","El verde verde","El verdolaga","Rey de Copas"],"popularidad":46,"atributos":{"pais":["Colombia"],"ciudad":["Medellín"],"fundacion":1947,"titulos":["Copa Libertadores 1989","Copa Libertadores 2016"],"competiciones":["Copa Libertadores"],"libertadores":[1989,2016],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q332605"},
+    {"id":"Q35933","nombre":"Sport Club Corinthians Paulista","alias":["Corinthians","SC Corinthians","S.C. Corinthians Paulista"],"popularidad":104,"atributos":{"pais":["Brasil"],"ciudad":["São Paulo"],"fundacion":1910,"titulos":["Copa Libertadores 2012"],"competiciones":["Copa Libertadores"],"libertadores":[2012],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q35933"},
+    {"id":"Q38568","nombre":"São Paulo Futebol Clube","alias":["Sao Paulo FC"],"popularidad":95,"atributos":{"pais":["Brasil"],"ciudad":["São Paulo"],"fundacion":1930,"titulos":["Copa Libertadores 1992","Copa Libertadores 1993","Copa Libertadores 2005","Copa Sudamericana 2012"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[1992,1993,2005],"sudamericana":[2012],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q38568"},
+    {"id":"Q41420","nombre":"Borussia Dortmund","alias":["BVB Dortmund","Ballspiel-Verein Borussia 1909 Dortmund","Dortmund","FC Dortmund"],"popularidad":99,"atributos":{"pais":["Alemania"],"ciudad":["Dortmund"],"fundacion":1909,"titulos":["Champions 1997"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1997]},"fuente":"https://www.wikidata.org/wiki/Q41420"},
+    {"id":"Q47533","nombre":"Once Caldas","alias":["Corporacion Deportiva Once Caldas","Cristal Caldas","Deportes Caldas","Once Deportivo"],"popularidad":36,"atributos":{"pais":["Colombia"],"ciudad":["Manizales"],"fundacion":1947,"titulos":["Copa Libertadores 2004"],"competiciones":["Copa Libertadores"],"libertadores":[2004],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q47533"},
+    {"id":"Q476836","nombre":"Arsenal Fútbol Club","alias":["Arsenal de Sarandí"],"popularidad":36,"atributos":{"pais":["Argentina"],"ciudad":["Sarandí"],"fundacion":1957,"titulos":["Copa Sudamericana 2007"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2007],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q476836"},
+    {"id":"Q483020","nombre":"Paris Saint-Germain FC","popularidad":103,"atributos":{"pais":["Francia"],"ciudad":["París"],"fundacion":1970,"titulos":["Champions 2025"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[2025]},"fuente":"https://www.wikidata.org/wiki/Q483020"},
+    {"id":"Q499616","nombre":"Club Nacional de Football","alias":["Albos","Bolso","Decano","La Blanca","Rey De Copas","Tricolores"],"popularidad":75,"atributos":{"pais":["Uruguay"],"ciudad":["Montevideo"],"fundacion":1899,"titulos":["Copa Libertadores 1971","Copa Libertadores 1980","Copa Libertadores 1988"],"competiciones":["Copa Libertadores"],"libertadores":[1971,1980,1988],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q499616"},
+    {"id":"Q5014111","nombre":"Club de Regatas Vasco da Gama","alias":["C.R. Vasco da Gama","CR Vasco da Gama","Vasco","Vasco da Gama"],"popularidad":52,"atributos":{"pais":["Brasil"],"ciudad":["Río de Janeiro"],"fundacion":1898,"titulos":["Copa Libertadores 1998"],"competiciones":["Copa Libertadores"],"libertadores":[1998],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q5014111"},
+    {"id":"Q50602","nombre":"Manchester City Football Club","alias":["Ardwick Association Football Club","Citizens","City","Man City","Manchester City Club de Fútbol","Manchester City F. C.","Manchester City FC","St. Mark's","St. Mark's (West Gorton)"],"popularidad":118,"atributos":{"pais":["Reino Unido"],"ciudad":["Mánchester"],"fundacion":1894,"titulos":["Champions 2023"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[2023]},"fuente":"https://www.wikidata.org/wiki/Q50602"},
+    {"id":"Q506832","nombre":"Clube Atlético Paranaense","alias":["Club Athletico Paranaense"],"popularidad":53,"atributos":{"pais":["Brasil"],"ciudad":["Curitiba"],"fundacion":1924,"titulos":["Copa Sudamericana 2018","Copa Sudamericana 2021"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2018,2021],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q506832"},
+    {"id":"Q51974","nombre":"Hamburgo S.V.","alias":["Club Deportivo Hamburgo","Hamburger Sport-Verein","Hamburgo SV","Hamburger SV"],"popularidad":77,"atributos":{"pais":["Alemania"],"ciudad":["Hamburgo"],"fundacion":1887,"titulos":["Champions 1983"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1983]},"fuente":"https://www.wikidata.org/wiki/Q51974"},
+    {"id":"Q602482","nombre":"Club Cienciano","alias":["Cienciano","Cienciano del Cusco","Cienciano del Cuzco","Club Sportivo Cienciano"],"popularidad":23,"atributos":{"pais":["Perú"],"ciudad":["Cusco"],"fundacion":1901,"titulos":["Copa Sudamericana 2003"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2003],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q602482"},
+    {"id":"Q604589","nombre":"Club Olimpia","alias":["Club Olimpia De Paraguay","Olimpia","Olimpia Asuncion","Olimpia de Asuncion"],"popularidad":49,"atributos":{"pais":["Paraguay"],"ciudad":["Asunción"],"fundacion":1902,"titulos":["Copa Libertadores 1979","Copa Libertadores 1990","Copa Libertadores 2002"],"competiciones":["Copa Libertadores"],"libertadores":[1979,1990,2002],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q604589"},
+    {"id":"Q631","nombre":"Inter de Milán","alias":["FC Internazionale Milano","Inter","Inter Milano","Internazionale","Internazionale Milano","Inter Milan"],"popularidad":123,"atributos":{"pais":["Italia"],"ciudad":["Milán"],"fundacion":1908,"titulos":["Champions 1964","Champions 1965","Champions 2010"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1964,1965,2010]},"fuente":"https://www.wikidata.org/wiki/Q631"},
+    {"id":"Q7156","nombre":"Fútbol Club Barcelona","alias":["Barcelona FC","F.C. Barcelona","FC Barcelona"],"popularidad":153,"atributos":{"pais":["España"],"ciudad":["Barcelona"],"fundacion":1899,"titulos":["Champions 1992","Champions 2006","Champions 2009","Champions 2011","Champions 2015"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1992,2006,2009,2011,2015]},"fuente":"https://www.wikidata.org/wiki/Q7156"},
+    {"id":"Q736937","nombre":"Club de Fútbol Pachuca","alias":["C.F. Pachuca","CF Pachuca","Pachuca","Pachuca CF","Pachuca Club de Futbol","Tuzos","Tuzos de Pachuca","Tuzos del Pachuca"],"popularidad":47,"atributos":{"pais":["México"],"ciudad":["Pachuca de Soto"],"fundacion":1901,"titulos":["Copa Sudamericana 2006"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2006],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q736937"},
+    {"id":"Q737753","nombre":"Club Universidad de Chile","popularidad":39,"atributos":{"pais":["Chile"],"ciudad":["Santiago de Chile"],"fundacion":1927,"titulos":["Copa Sudamericana 2011"],"competiciones":["Copa Sudamericana"],"libertadores":[],"sudamericana":[2011],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q737753"},
+    {"id":"Q80845","nombre":"Sport Club Internacional","alias":["Internacional","Internacional Porto Alegre","Internacional de Porto Alegre","S.C. Internacional","SC Internacional","SC Internacional Porto Alegre","Sport Club Internacional de Porto Alegre"],"popularidad":61,"atributos":{"pais":["Brasil"],"ciudad":["Porto Alegre"],"fundacion":1909,"titulos":["Copa Libertadores 2006","Copa Libertadores 2010","Copa Sudamericana 2008"],"competiciones":["Copa Libertadores","Copa Sudamericana"],"libertadores":[2006,2010],"sudamericana":[2008],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q80845"},
+    {"id":"Q80955","nombre":"Santos Futebol Clube","alias":["Santos F.C."],"popularidad":75,"atributos":{"pais":["Brasil"],"ciudad":["Santos"],"fundacion":1912,"titulos":["Copa Libertadores 1962","Copa Libertadores 1963","Copa Libertadores 2011"],"competiciones":["Copa Libertadores"],"libertadores":[1962,1963,2011],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q80955"},
+    {"id":"Q80958","nombre":"Botafogo de Futebol e Regatas","alias":["Botafogo","Botafogo FR","Botafogo F.R."],"popularidad":62,"atributos":{"pais":["Brasil"],"ciudad":["Río de Janeiro"],"fundacion":1904,"titulos":["Copa Libertadores 2024"],"competiciones":["Copa Libertadores"],"libertadores":[2024],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q80958"},
+    {"id":"Q80964","nombre":"Sociedade Esportiva Palmeiras","alias":["Palmeiras"],"popularidad":76,"atributos":{"pais":["Brasil"],"ciudad":["São Paulo"],"fundacion":1914,"titulos":["Copa Libertadores 1999","Copa Libertadores 2020","Copa Libertadores 2021"],"competiciones":["Copa Libertadores"],"libertadores":[1999,2020,2021],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q80964"},
+    {"id":"Q80987","nombre":"Fluminense Football Club","alias":["Fluminense F.C."],"popularidad":71,"atributos":{"pais":["Brasil"],"ciudad":["Río de Janeiro"],"fundacion":1902,"titulos":["Copa Libertadores 2023"],"competiciones":["Copa Libertadores"],"libertadores":[2023],"sudamericana":[],"champions":[]},"fuente":"https://www.wikidata.org/wiki/Q80987"},
+    {"id":"Q81888","nombre":"Ajax de Ámsterdam","alias":["Ajax","Ajax Amsterdam","Ajax FC","Amsterdamsche Football Club Ajax","AFC Ajax"],"popularidad":107,"atributos":{"pais":["Países Bajos"],"ciudad":["Ámsterdam"],"fundacion":1900,"titulos":["Champions 1971","Champions 1972","Champions 1973","Champions 1995"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1971,1972,1973,1995]},"fuente":"https://www.wikidata.org/wiki/Q81888"},
+    {"id":"Q8682","nombre":"Real Madrid Club de Fútbol","alias":["Real Madrid","Real Madrid CF"],"popularidad":151,"atributos":{"pais":["España"],"ciudad":["Madrid"],"fundacion":1902,"titulos":["Champions 1956","Champions 1957","Champions 1958","Champions 1959","Champions 1960","Champions 1966","Champions 1998","Champions 2000","Champions 2002","Champions 2014","Champions 2016","Champions 2017","Champions 2018","Champions 2022","Champions 2024"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[1956,1957,1958,1959,1960,1966,1998,2000,2002,2014,2016,2017,2018,2022,2024]},"fuente":"https://www.wikidata.org/wiki/Q8682"},
+    {"id":"Q9616","nombre":"Chelsea Football Club","alias":["Chelsea","Chelsea F.C.","Chelsea FC","Chelsea Fútbol Club","Los Blues","Los Pensionistas"],"popularidad":127,"atributos":{"pais":["Reino Unido"],"ciudad":["Londres"],"fundacion":1905,"titulos":["Champions 2012","Champions 2021"],"competiciones":["Champions"],"libertadores":[],"sudamericana":[],"champions":[2012,2021]},"fuente":"https://www.wikidata.org/wiki/Q9616"}
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "bandas_argentinas",
+  "nombre": "Bandas argentinas",
+  "descripcion": "Las bandas argentinas del catálogo «artistas_musicales» (vista filtrada).",
+  "vista": {
+    "catalogo": "artistas_musicales",
+    "filtro": {
+      "y": [
+        {
+          "op": "es",
+          "campo": "tipo",
+          "valores": [
+            "banda"
+          ]
+        },
+        {
+          "op": "es",
+          "campo": "paises",
+          "valores": [
+            "Argentina"
+          ]
+        }
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "parcial",
+    "criterio": "Las bandas argentinas de «artistas_musicales»: para cada integrante de una banda semilla (y cada solista semilla), todas las bandas en las que tocó (MusicBrainz). La cobertura es la del catálogo base."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "configuracion": {
+    "modo": "geografia",
+    "inicio": "2026-10-09",
+    "dias": 180,
+    "ventana": 60,
+    "diasRotacion": 5,
+    "pesoRotacion": 0.6,
+    "semilla": "simulacion",
+    "maxRespuestas": 15000,
+    "completarConReserva": true
+  },
+  "versiones": {
+    "plantillas": "5",
+    "filtros": "1",
+    "texto": "1",
+    "generador": "3",
+    "catalogos": "albumes@2026-10-08.e093cbc54a,albumes_en_vivo@2026-10-08.e093cbc54a+a0b39055,albumes_estudio@2026-10-08.e093cbc54a+c3045cdb,animales@2026-10-08.a603ea7e0b,artistas_musicales@2026-10-08.dd958e6dce,autores@2026-10-08.7a7dd4ad3c,bandas_argentinas@2026-10-08.dd958e6dce+f4009c65,campeones_champions@2026-10-08.7a38b4f047,campeones_f1@2026-10-07.90409629d1,campeones_mundial@2026-10-07.e2fb5e1d19,canciones@2026-10-08.e58b54c601,capitales@2026-10-08.7e9e0c0563,capitales_argentinas@2026-10-08.fff2cdb70b,capitales_subdivisiones@2026-10-08.13bb724409,cientificos@2026-10-08.dd08985014,ciudades@2026-10-08.f7e3c8164f,clubes_futbol@2026-10-08.c4e45ed4a8,codigos_http@2026-10-08.b2205ac544,comidas@2026-10-08.8fa14f913f,componentes_pc@2026-10-08.ea22698adc,conectores@2026-10-08.665ce82a69,constelaciones@2026-10-08.0e2bcf45d6,departamentos_argentinos@2026-10-08.bca142c1bb,deportistas@2026-10-08.62a3fabc13,elementos@2026-10-07.2478c7cfe5,elementos_html@2026-10-08.952b78834e,formatos_archivo@2026-10-08.3bee844b34,frutas_verduras@2026-10-08.30a66d133a,idiomas@2026-10-08.02ef86a2f8,instrumentos_musicales@2026-10-08.5df0284fdc,lenguajes_programacion@2026-10-08.ecd17602e5,libros@2026-10-08.805f4159f5,monedas@2026-10-08.9ac1342af6,mundial_femenino@2026-10-08.cfc40cb5d5,nobel_literatura@2026-10-07.c520ee6d3d,obras_arte@2026-10-08.6ad93abb3c,oscar_pelicula@2026-10-07.60d8fa3c74,paises@2026-10-08.950396e5c0,palabras@2026-10-07.6878729ca3,papas@2026-10-07.506fbe85da,parques_nacionales_argentinos@2026-10-08.8d76e96af7,peliculas@2026-10-08.f1a95513b6,peliculas_argentinas@2026-10-08.f1a95513b6+fd08d945,perifericos@2026-10-08.d50cf2a6db,personajes_ficcion@2026-10-08.892fbad6b5,pokemon@2026-10-08.6c683accd7,premio_cervantes@2026-10-07.f25384a37c,presidentes_argentinos@2026-10-08.4afedbc6c9,presidentes_eeuu@2026-10-07.f17f880472,propiedades_css@2026-10-08.7eca6f8d73,provincias_argentinas@2026-10-08.01f9549869,secretarios_onu@2026-10-07.efbe6c7571,sedes_mundial@2026-10-07.3772ff751a,series@2026-10-08.475d1a5b57,sistema_solar@2026-10-08.aa4e40d562,sistemas_operativos@2026-10-08.8d74bf7737,subdivisiones@2026-10-08.ca2cab215a,videojuegos@2026-10-08.d208ea2a10"
+  },
+  "historialInicial": [],
+  "dias": {
+    "publicadosSoloCatalogos": 180,
+    "mixtos": 0,
+    "soloReserva": 0,
+    "fallos": 0,
+    "programadosDeAntes": 0,
+    "diasConReserva": []
+  },
+  "preguntas": {
+    "generadas": 1260,
+    "deReserva": 0,
+    "consignasDistintas": 551
+  },
+  "topesViolados": 0,
+  "intervalosPorCategoria": {
+    "Geografía": {
+      "diasConPreguntas": 180,
+      "intervaloMedio": 1,
+      "intervaloMaximo": 1,
+      "diasHastaPrimera": 0,
+      "diasDesdeUltima": 0
+    }
+  },
+  "repeticiones": {
+    "otrosUniversosRepetidos": 0,
+    "violacionesDentroDeLaVentana": 0,
+    "consignasReutilizadasDespuesDeLaVentana": 709,
+    "menorDistanciaEntreRepeticiones": 60
+  },
+  "variedad": {
+    "porCategoria": {
+      "Geografía": 1260
+    },
+    "porCatalogo": {
+      "paises": 364,
+      "capitales": 260,
+      "subdivisiones": 230,
+      "ciudades": 143,
+      "departamentos_argentinos": 110,
+      "capitales_subdivisiones": 54,
+      "parques_nacionales_argentinos": 39,
+      "provincias_argentinas": 39,
+      "monedas": 15,
+      "capitales_argentinas": 6
+    },
+    "porFamilia": {
+      "paises-fronteras": 122,
+      "paises-letras": 113,
+      "ciudades-millon": 90,
+      "capitales-fronteras": 83,
+      "paises-region": 69,
+      "capitales": 69,
+      "departamentos-ar": 62,
+      "capitales-letras": 58,
+      "estados": 54,
+      "capitales-idiomas": 50,
+      "ciudades-letras": 50,
+      "partidos": 48,
+      "regiones": 47,
+      "paises-idiomas-geo": 45,
+      "prefecturas": 45,
+      "provincias-mundo": 44,
+      "departamentos-mundo": 40,
+      "parques-nacionales": 39,
+      "capitales-divisiones": 36,
+      "provincias": 33,
+      "capitales-divisiones-letras": 18,
+      "paises-moneda": 15,
+      "monedas": 15,
+      "provincias-letras": 9,
+      "capitales-provinciales": 3,
+      "ciudades-argentina": 3
+    },
+    "porDificultad": {
+      "media": 682,
+      "dificil": 452,
+      "facil": 126
+    },
+    "deLetrasPorDia": {
+      "3 de letras": 127,
+      "2 de letras": 41,
+      "1 de letras": 11,
+      "0 de letras": 1
+    },
+    "categoriasPorDia": {
+      "1 categorías": 180
+    }
+  },
+  "segundos": 75.2
+}

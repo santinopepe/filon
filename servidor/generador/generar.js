@@ -48,10 +48,11 @@ export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFEC
     let anteriores = [];
     if (anterior) {
       detalle.reemplaza = anterior.id;
-      anteriores = await db.all('SELECT id, enunciado, huella, reserva_id AS reservaId, firma, conjunto, generacion FROM preguntas WHERE desafio_id = ?', anterior.id);
-      const canonicas = await db.all('SELECT r.pregunta_id, r.canonica FROM respuestas r JOIN preguntas p ON p.id = r.pregunta_id WHERE p.desafio_id = ? AND (p.firma IS NULL OR r.orden < 500)', anterior.id);
+      anteriores = await db.all('SELECT id, categoria, enunciado, huella, reserva_id AS reservaId, firma, conjunto, generacion FROM preguntas WHERE desafio_id = ?', anterior.id);
+      const canonicas = await db.all('SELECT r.pregunta_id, r.canonica FROM respuestas r JOIN preguntas p ON p.id = r.pregunta_id WHERE p.desafio_id = ?', anterior.id);
       for (const v of anteriores) {
-        recientes.push({ ...v, fecha, claves: canonicas.filter((c) => c.pregunta_id === v.id).map((c) => normalizar(c.canonica)) });
+        v.claves = canonicas.filter(c=>c.pregunta_id===v.id).map(c=>normalizar(c.canonica));
+        recientes.push({ ...v, fecha, claves: v.claves });
       }
     }
 

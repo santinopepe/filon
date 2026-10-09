@@ -1,0 +1,920 @@
+{
+  "modo": "geografia",
+  "ventana": 60,
+  "total": 1160,
+  "sinGramatica": 1160,
+  "aporteVentana": 773,
+  "capacidadVentana": {
+    "necesarias": 420,
+    "cotaConTopes": 420,
+    "compatibleConTopes": true,
+    "alternativasOmitidas": 0,
+    "rotacion": "Preferencia; verificar distribución y ventanas en simular-calendario. La cota no garantiza el reparto diario ni descarta solapamientos."
+  },
+  "porCategoria": [
+    [
+      "geografia",
+      1160
+    ]
+  ],
+  "registrosPorCategoria": [
+    [
+      "geografia",
+      2429
+    ]
+  ],
+  "porCatalogo": [
+    {
+      "catalogo": "paises",
+      "universo": "paises",
+      "registros": 195,
+      "vista": false,
+      "utilizables": 265,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "capitales",
+      "universo": "capitales",
+      "registros": 202,
+      "vista": false,
+      "utilizables": 283,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "provincias_argentinas",
+      "universo": "provincias_argentinas",
+      "registros": 23,
+      "vista": false,
+      "utilizables": 13,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "capitales_argentinas",
+      "universo": "capitales_argentinas",
+      "registros": 23,
+      "vista": false,
+      "utilizables": 2,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "monedas",
+      "universo": "monedas",
+      "registros": 143,
+      "vista": false,
+      "utilizables": 5,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "subdivisiones",
+      "universo": "subdivisiones",
+      "registros": 442,
+      "vista": false,
+      "utilizables": 286,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "capitales_subdivisiones",
+      "universo": "capitales_subdivisiones",
+      "registros": 251,
+      "vista": false,
+      "utilizables": 19,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "departamentos_argentinos",
+      "universo": "departamentos_argentinos",
+      "registros": 514,
+      "vista": false,
+      "utilizables": 217,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "parques_nacionales_argentinos",
+      "universo": "parques_nacionales_argentinos",
+      "registros": 39,
+      "vista": false,
+      "utilizables": 13,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "ciudades",
+      "universo": "ciudades",
+      "registros": 597,
+      "vista": false,
+      "utilizables": 57,
+      "utilizablesViaVistas": 0
+    }
+  ],
+  "porFamilia": [
+    [
+      "capitales-letras",
+      180
+    ],
+    [
+      "paises-letras",
+      165
+    ],
+    [
+      "partidos",
+      163
+    ],
+    [
+      "estados",
+      118
+    ],
+    [
+      "capitales-fronteras",
+      61
+    ],
+    [
+      "paises-fronteras",
+      57
+    ],
+    [
+      "departamentos-ar",
+      54
+    ],
+    [
+      "provincias-mundo",
+      53
+    ],
+    [
+      "departamentos-mundo",
+      49
+    ],
+    [
+      "regiones",
+      46
+    ],
+    [
+      "ciudades-millon",
+      34
+    ],
+    [
+      "paises-region",
+      23
+    ],
+    [
+      "capitales",
+      23
+    ],
+    [
+      "ciudades-letras",
+      22
+    ],
+    [
+      "prefecturas",
+      20
+    ],
+    [
+      "capitales-idiomas",
+      19
+    ],
+    [
+      "paises-idiomas-geo",
+      15
+    ],
+    [
+      "parques-nacionales",
+      13
+    ],
+    [
+      "capitales-divisiones",
+      12
+    ],
+    [
+      "provincias",
+      11
+    ],
+    [
+      "capitales-divisiones-letras",
+      7
+    ],
+    [
+      "paises-moneda",
+      5
+    ],
+    [
+      "monedas",
+      5
+    ],
+    [
+      "provincias-letras",
+      3
+    ],
+    [
+      "capitales-provinciales",
+      1
+    ],
+    [
+      "ciudades-argentina",
+      1
+    ]
+  ],
+  "porPlantilla": [
+    {
+      "plantilla": "paises-region",
+      "familia": "paises-region",
+      "categoria": "geografia",
+      "combinaciones": 22,
+      "utilizables": 18,
+      "descartes": {
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "paises-continente",
+      "familia": "paises-region",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "paises-inicial",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 23,
+      "utilizables": 14,
+      "descartes": {
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "paises-continente-final",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 75,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 64,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "paises-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "paises-palabras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 2,
+      "utilizables": 1,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "capitales-region",
+      "familia": "capitales",
+      "categoria": "geografia",
+      "combinaciones": 22,
+      "utilizables": 18,
+      "descartes": {
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "capitales-continente",
+      "familia": "capitales",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-inicial",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 25,
+      "utilizables": 14,
+      "descartes": {
+        "pocas respuestas": 11
+      }
+    },
+    {
+      "plantilla": "paises-limitrofes",
+      "familia": "paises-fronteras",
+      "categoria": "geografia",
+      "combinaciones": 157,
+      "utilizables": 57,
+      "descartes": {
+        "pocas respuestas": 100
+      }
+    },
+    {
+      "plantilla": "paises-moneda",
+      "familia": "paises-moneda",
+      "categoria": "geografia",
+      "combinaciones": 143,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 138
+      }
+    },
+    {
+      "plantilla": "provincias-limitrofes-pais",
+      "familia": "provincias",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 3
+      }
+    },
+    {
+      "plantilla": "provincias-vecinas",
+      "familia": "provincias",
+      "categoria": "geografia",
+      "combinaciones": 23,
+      "utilizables": 9,
+      "descartes": {
+        "pocas respuestas": 14
+      }
+    },
+    {
+      "plantilla": "provincias-inicial",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "combinaciones": 11,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "capitales-provinciales-inicial",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "combinaciones": 10,
+      "utilizables": 1,
+      "descartes": {
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "capitales-provinciales",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "monedas-continente",
+      "familia": "monedas",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-limitrofes",
+      "familia": "capitales-fronteras",
+      "categoria": "geografia",
+      "combinaciones": 157,
+      "utilizables": 61,
+      "descartes": {
+        "pocas respuestas": 96
+      }
+    },
+    {
+      "plantilla": "capitales-idioma",
+      "familia": "capitales-idiomas",
+      "categoria": "geografia",
+      "combinaciones": 105,
+      "utilizables": 6,
+      "descartes": {
+        "pocas respuestas": 98,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "capitales-moneda",
+      "familia": "capitales-idiomas",
+      "categoria": "geografia",
+      "combinaciones": 143,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 138
+      }
+    },
+    {
+      "plantilla": "paises-continente-inicial",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 115,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 105
+      }
+    },
+    {
+      "plantilla": "capitales-continente-inicial",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 125,
+      "utilizables": 13,
+      "descartes": {
+        "pocas respuestas": 112
+      }
+    },
+    {
+      "plantilla": "estados-pais",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 7,
+      "utilizables": 7,
+      "descartes": {}
+    },
+    {
+      "plantilla": "estados-inicial",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 182,
+      "utilizables": 8,
+      "descartes": {
+        "pocas respuestas": 174
+      }
+    },
+    {
+      "plantilla": "estados-final",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 133,
+      "utilizables": 13,
+      "descartes": {
+        "pocas respuestas": 120
+      }
+    },
+    {
+      "plantilla": "capitales-estados",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-estados-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 115,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 110
+      }
+    },
+    {
+      "plantilla": "departamentos-pais",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 4,
+      "utilizables": 4,
+      "descartes": {}
+    },
+    {
+      "plantilla": "departamentos-inicial",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 104,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 101
+      }
+    },
+    {
+      "plantilla": "departamentos-final",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 76,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 71
+      }
+    },
+    {
+      "plantilla": "capitales-departamentos",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-departamentos-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 69,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 67
+      }
+    },
+    {
+      "plantilla": "regiones-pais",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "regiones-inicial",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 78,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 78
+      }
+    },
+    {
+      "plantilla": "regiones-final",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 57,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 53
+      }
+    },
+    {
+      "plantilla": "capitales-regiones",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-regiones-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 46,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 46
+      }
+    },
+    {
+      "plantilla": "provincias-mundo-pais",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "provincias-mundo-inicial",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 78,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 74
+      }
+    },
+    {
+      "plantilla": "provincias-mundo-final",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 57,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 53
+      }
+    },
+    {
+      "plantilla": "capitales-provincias-mundo",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-provincias-mundo-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 46,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 46
+      }
+    },
+    {
+      "plantilla": "prefecturas-pais",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "prefecturas-inicial",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 26,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 23
+      }
+    },
+    {
+      "plantilla": "prefecturas-final",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 19,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 16
+      }
+    },
+    {
+      "plantilla": "partidos-bonaerenses",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "partidos-inicial",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 24,
+      "utilizables": 11,
+      "descartes": {
+        "pocas respuestas": 13
+      }
+    },
+    {
+      "plantilla": "partidos-final",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 16,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 8,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "departamentos-provincia",
+      "familia": "departamentos-ar",
+      "categoria": "geografia",
+      "combinaciones": 22,
+      "utilizables": 22,
+      "descartes": {}
+    },
+    {
+      "plantilla": "departamentos-provincia-inicial",
+      "familia": "departamentos-ar",
+      "categoria": "geografia",
+      "combinaciones": 528,
+      "utilizables": 8,
+      "descartes": {
+        "pocas respuestas": 520
+      }
+    },
+    {
+      "plantilla": "paises-inicial-una-letra",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 8,
+      "descartes": {
+        "demasiadas respuestas": 15,
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "paises-inicial-dos-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 351,
+      "utilizables": 124,
+      "descartes": {
+        "demasiadas respuestas": 42,
+        "pocas respuestas": 185
+      }
+    },
+    {
+      "plantilla": "capitales-inicial-una-letra",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 7,
+      "descartes": {
+        "demasiadas respuestas": 17,
+        "pocas respuestas": 3
+      }
+    },
+    {
+      "plantilla": "capitales-inicial-dos-letras",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 351,
+      "utilizables": 147,
+      "descartes": {
+        "demasiadas respuestas": 31,
+        "pocas respuestas": 173
+      }
+    },
+    {
+      "plantilla": "partidos-bonaerenses-una-letra",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 9,
+      "descartes": {
+        "demasiadas respuestas": 14,
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "partidos-bonaerenses-dos-letras",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 351,
+      "utilizables": 137,
+      "descartes": {
+        "demasiadas respuestas": 31,
+        "pocas respuestas": 183
+      }
+    },
+    {
+      "plantilla": "estados-pais-una-letra",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 189,
+      "utilizables": 92,
+      "descartes": {
+        "pocas respuestas": 95,
+        "demasiadas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "departamentos-pais-una-letra",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 108,
+      "utilizables": 37,
+      "descartes": {
+        "pocas respuestas": 71
+      }
+    },
+    {
+      "plantilla": "regiones-pais-una-letra",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 81,
+      "utilizables": 39,
+      "descartes": {
+        "pocas respuestas": 42
+      }
+    },
+    {
+      "plantilla": "provincias-mundo-pais-una-letra",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 81,
+      "utilizables": 42,
+      "descartes": {
+        "pocas respuestas": 38,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "prefecturas-pais-una-letra",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 13,
+      "descartes": {
+        "demasiadas respuestas": 2,
+        "pocas respuestas": 12
+      }
+    },
+    {
+      "plantilla": "departamentos-provincia-final",
+      "familia": "departamentos-ar",
+      "categoria": "geografia",
+      "combinaciones": 352,
+      "utilizables": 24,
+      "descartes": {
+        "pocas respuestas": 328
+      }
+    },
+    {
+      "plantilla": "paises-idioma-geografia",
+      "familia": "paises-idiomas-geo",
+      "categoria": "geografia",
+      "combinaciones": 105,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 98
+      }
+    },
+    {
+      "plantilla": "paises-continente-idioma",
+      "familia": "paises-idiomas-geo",
+      "categoria": "geografia",
+      "combinaciones": 525,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 515
+      }
+    },
+    {
+      "plantilla": "capitales-continente-idioma",
+      "familia": "capitales-idiomas",
+      "categoria": "geografia",
+      "combinaciones": 525,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 515
+      }
+    },
+    {
+      "plantilla": "parques-region",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "parques-todos",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "parques-periodo",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 4,
+      "utilizables": 4,
+      "descartes": {}
+    },
+    {
+      "plantilla": "parques-internacional",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "ciudades-pais",
+      "familia": "ciudades-millon",
+      "categoria": "geografia",
+      "combinaciones": 103,
+      "utilizables": 20,
+      "descartes": {
+        "pocas respuestas": 81,
+        "demasiadas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "ciudades-region",
+      "familia": "ciudades-millon",
+      "categoria": "geografia",
+      "combinaciones": 19,
+      "utilizables": 16,
+      "descartes": {
+        "demasiadas respuestas": 2,
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "ciudades-argentina",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "ciudades-inicial",
+      "familia": "ciudades-letras",
+      "categoria": "geografia",
+      "combinaciones": 26,
+      "utilizables": 22,
+      "descartes": {
+        "nombres ambiguos": 3,
+        "pocas respuestas": 1
+      }
+    }
+  ],
+  "problemas": []
+}

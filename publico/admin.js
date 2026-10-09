@@ -358,7 +358,7 @@ function montarCrear(modo) {
   q('formato-ejemplo').textContent = EJEMPLO_JSON(categoria || 'geografia', tematico ? `${modo}-ejemplo` : 'geo-ejemplo');
   q('formato-reglas').textContent = tematico
     ? `Las siete preguntas son de ${NOMBRES_MODO[modo]} y llevan la categoría «${categoria}» (si falta, se completa sola). Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.`
-    : 'Siete preguntas variadas: hasta dos de una misma categoría y al menos cuatro categorías distintas (geografía, historia, ciencia, deportes, cine, música, literatura, gramática, informática, astronomía, videojuegos o idiomas). Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.';
+    : 'Siete preguntas variadas: hasta dos de una misma categoría y al menos cuatro categorías distintas (geografía, historia, ciencia, deportes, cine, música, literatura, gramática, informática, astronomía, videojuegos, idiomas, naturaleza, gastronomía, televisión o arte). Cada pregunta necesita entre 5 y 80 respuestas, al menos tres rarezas y una respuesta diamante.';
   q('imp-json').placeholder = tematico
     ? `{"preguntas":[{"id":"${modo}-ejemplo","categoria":"${categoria}","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}`
     : '{"preguntas":[{"id":"geo-ejemplo","categoria":"geografia","enunciado":"…","alcance":"…","fuentes":[{"url":"https://…","titulo":"…"}],"respuestas":[…],"rechazos":[]}, …]}';
@@ -756,7 +756,7 @@ async function copiarTexto(texto) {
 // ───────── Editor de preguntas (publicadas y de la reserva) ─────────
 
 const CATEGORIAS_MODO = {
-  normal: [['geografia', 'Geografía'], ['historia', 'Historia'], ['ciencia', 'Ciencia'], ['deportes', 'Deportes'], ['cine', 'Cine'], ['musica', 'Música'], ['literatura', 'Literatura'], ['gramatica', 'Gramática'], ['informatica', 'Informática'], ['astronomia', 'Astronomía'], ['videojuegos', 'Videojuegos'], ['idiomas', 'Idiomas']],
+  normal: [['geografia', 'Geografía'], ['historia', 'Historia'], ['ciencia', 'Ciencia'], ['deportes', 'Deportes'], ['cine', 'Cine'], ['musica', 'Música'], ['literatura', 'Literatura'], ['gramatica', 'Gramática'], ['informatica', 'Informática'], ['astronomia', 'Astronomía'], ['videojuegos', 'Videojuegos'], ['idiomas', 'Idiomas'], ['naturaleza', 'Naturaleza'], ['gastronomia', 'Gastronomía'], ['television', 'Televisión'], ['arte', 'Arte']],
   farandula: [['farandula', 'Farándula']],
   geografia: [['geografia', 'Geografía']],
 };

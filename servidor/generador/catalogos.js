@@ -5,6 +5,10 @@ import { cargarPlantillas } from '../catalogos/plantillas.js';
 import { generarLote } from '../catalogos/generador.js';
 import { preguntasRecientes } from '../banco.js';
 import { limitesDeVentana } from '../tiempo.js';
+import { normalizar } from '../normalizar.js';
+
+/** Lo que el generador necesita de una pregunta generada (`g`: su campo `generacion`). */
+const registroDeHistorial = (fecha, p, g) => ({ fecha, firma: p.firma, conjunto: p.conjunto, categoria: p.categoria, familia: g.familia, catalogo: g.universo ?? g.catalogo?.id, minhash: g.minhash, minhashNombres: g.minhashNombres, nombresConjunto: g.nombresConjunto });
 
 /**
  * Preguntas generadas dentro de la ventana (hacia atrás y hacia adelante, por los días ya programados): a
@@ -13,14 +17,23 @@ import { limitesDeVentana } from '../tiempo.js';
 export async function historialGenerado(db, fecha, dias, modo) {
   const [desde, hasta] = limitesDeVentana(fecha, dias);
   const filas = await db.all(
-    `SELECT p.firma, p.conjunto, p.generacion, d.fecha FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
+    `SELECT p.id, p.firma, p.conjunto, p.generacion, p.categoria, d.fecha FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
      WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ? AND p.firma IS NOT NULL`,
     modo, desde, hasta, fecha,
   );
-  return filas.map((f) => {
+  const registros = filas.map((f) => {
     const g = JSON.parse(f.generacion ?? '{}');
-    return { fecha: f.fecha, firma: f.firma, conjunto: f.conjunto, familia: g.familia, catalogo: g.catalogo?.id, minhash: g.minhash };
+    return { ...registroDeHistorial(f.fecha, f, g), preguntaId: f.id };
   });
+  // Compatibilidad: leer las canónicas de preguntas viejas sin reescribir sus firmas ni metadatos.
+  const sinNombres = registros.filter(r => !r.nombresConjunto);
+  for (let i = 0; i < sinNombres.length; i += 400) {
+    const lote = sinNombres.slice(i, i + 400), porId = new Map(lote.map(r => [r.preguntaId, r]));
+    for (const r of lote) r.nombresConjunto = [];
+    const respuestas = await db.all(`SELECT pregunta_id, canonica FROM respuestas WHERE pregunta_id IN (${lote.map(() => '?').join(',')}) ORDER BY orden`, ...porId.keys());
+    for (const r of respuestas) porId.get(r.pregunta_id).nombresConjunto.push(normalizar(r.canonica));
+  }
+  return registros.map(({ preguntaId: _preguntaId, ...registro }) => registro);
 }
 
 /**
@@ -35,7 +48,7 @@ export async function generarConCatalogos({ db, config, fecha, modo, anteriores 
   for (const a of anteriores) {
     if (!a.firma) continue;
     const g = JSON.parse(a.generacion ?? '{}');
-    historial.push({ fecha, firma: a.firma, conjunto: a.conjunto, familia: g.familia, catalogo: g.catalogo?.id, minhash: g.minhash });
+    historial.push({ ...registroDeHistorial(fecha, a, g), nombresConjunto: g.nombresConjunto ?? a.claves });
   }
   const recientes = (await preguntasRecientes(db, fecha, config.catalogos.diasSinRepetir, modo)).filter((r) => !r.firma);
   const r = generarLote({
@@ -47,7 +60,7 @@ export async function generarConCatalogos({ db, config, fecha, modo, anteriores 
     historial,
     recientes,
     dominios: config.fuentes.dominios,
-    opciones: { maxRespuestas: config.catalogos.maxRespuestas, diasSinRepetir: config.catalogos.diasSinRepetir },
+    opciones: { maxRespuestas: config.catalogos.maxRespuestas, diasSinRepetir: config.catalogos.diasSinRepetir, diasRotacion: config.catalogos.diasRotacion, pesoRotacion: config.catalogos.pesoRotacion },
   });
   return { ...r, problemas: [...problemas, ...plantillas.problemas] };
 }

@@ -1,5 +1,5 @@
 {
-  "version": "3",
+  "version": "5",
   "descripcion": "Plantillas del generador por catálogos. Son datos: operadores de una lista cerrada (servidor/catalogos/filtros.js) y parámetros que se calculan desde los catálogos. Ver docs/GENERADOR.md.",
   "plantillas": [
     {
@@ -4288,6 +4288,2568 @@
       "dificultad": 0.45,
       "alcance": "Capitales vigentes de los Estados miembros de la ONU y observadores (si un país tiene varias, valen todas); idiomas oficiales u oficiales de hecho según Unicode CLDR.",
       "explicacion": "{nombre} es capital de {pais} (idiomas oficiales: {idiomas})."
+    },
+    {
+      "id": "css-modulo",
+      "familia": "css-modulo",
+      "categoria": "informatica",
+      "catalogo": "propiedades_css",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una propiedad de CSS",
+      "frases": {
+        "modulos": "del módulo «{valor}»"
+      },
+      "parametros": {
+        "modulo": {
+          "tipo": "valor",
+          "campo": "modulos",
+          "solo": [
+            "Flexbox",
+            "Grid",
+            "animaciones",
+            "transiciones",
+            "transformaciones",
+            "fuentes",
+            "texto",
+            "fondos y bordes",
+            "modelo de caja",
+            "posicionamiento",
+            "columnas múltiples",
+            "listas y contadores",
+            "decoración de texto",
+            "desbordamiento",
+            "alineación de cajas",
+            "tablas",
+            "filtros",
+            "máscaras y recortes",
+            "interfaz de usuario",
+            "scroll snap",
+            "tamaño de cajas",
+            "display",
+            "color"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "modulos",
+        "valores": [
+          "{modulo}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 70
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": false,
+      "alcance": "Propiedades estándar de CSS según MDN (sin prefijos ni obsoletas), agrupadas por el módulo de la especificación al que pertenecen. Se escribe el nombre exacto (por ejemplo, «flex-wrap»).",
+      "explicacion": "{nombre}: módulo {modulos}."
+    },
+    {
+      "id": "css-palabras",
+      "familia": "css-nombre",
+      "categoria": "informatica",
+      "catalogo": "propiedades_css",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una propiedad de CSS",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "n": {
+          "tipo": "numero",
+          "valores": [
+            1,
+            3,
+            4
+          ]
+        }
+      },
+      "filtro": {
+        "op": "palabras",
+        "campo": "nombre",
+        "min": "{n}",
+        "max": "{n}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 150
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Propiedades estándar de CSS según MDN. Las palabras se separan por guiones: «font-size» tiene dos y «border-top-color», tres.",
+      "explicacion": "{nombre}: módulo {modulos}."
+    },
+    {
+      "id": "css-inicial",
+      "familia": "css-nombre",
+      "categoria": "informatica",
+      "catalogo": "propiedades_css",
+      "coincidencia": "exacta",
+      "enunciado": "Nombrá una propiedad de CSS",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.45,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Propiedades estándar de CSS según MDN (sin prefijos ni obsoletas). Se escribe el nombre exacto.",
+      "explicacion": "{nombre}: módulo {modulos}."
+    },
+    {
+      "id": "lenguajes-tiene",
+      "familia": "lenguajes-nombre",
+      "categoria": "informatica",
+      "catalogo": "lenguajes_programacion",
+      "enunciado": "Nombrá un lenguaje de programación",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letras",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 120
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Lenguajes de programación con artículo en al menos 15 ediciones de Wikipedia (Wikidata). Se mira el nombre, sin tildes; los signos no cuentan (por eso C, C++ y C# se escriben igual y no entran juntos).",
+      "explicacion": "{nombre}: lenguaje de programación."
+    },
+    {
+      "id": "lenguajes-inicial",
+      "familia": "lenguajes-nombre",
+      "categoria": "informatica",
+      "catalogo": "lenguajes_programacion",
+      "enunciado": "Nombrá un lenguaje de programación",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Lenguajes de programación con artículo en al menos 15 ediciones de Wikipedia (Wikidata). Se mira el nombre, sin tildes.",
+      "explicacion": "{nombre}: lenguaje de programación."
+    },
+    {
+      "id": "lenguajes-letras",
+      "familia": "lenguajes-nombre",
+      "categoria": "informatica",
+      "catalogo": "lenguajes_programacion",
+      "enunciado": "Nombrá un lenguaje de programación",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "n": {
+          "tipo": "numero",
+          "valores": [
+            2,
+            3,
+            4
+          ]
+        }
+      },
+      "filtro": {
+        "op": "letras",
+        "campo": "nombre",
+        "min": "{n}",
+        "max": "{n}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Lenguajes de programación con artículo en al menos 15 ediciones de Wikipedia (Wikidata). Se cuentan solo las letras: ni los números ni los signos.",
+      "explicacion": "{nombre}: lenguaje de programación."
+    },
+    {
+      "id": "formatos-tipo",
+      "familia": "formatos",
+      "categoria": "informatica",
+      "catalogo": "formatos_archivo",
+      "enunciado": "Nombrá un formato de archivo",
+      "frases": {
+        "tipos": "de {valor}"
+      },
+      "parametros": {
+        "tipo": {
+          "tipo": "valor",
+          "campo": "tipos"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "tipos",
+        "valores": [
+          "{tipo}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 100
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Formatos con un tipo MIME de imagen, audio o video registrado en mime-db (IANA, Apache y nginx). Vale la extensión (por ejemplo, «jpg») o el nombre del formato.",
+      "explicacion": "{nombre}: extensiones {extensiones}; tipo MIME {mime}."
+    },
+    {
+      "id": "so-familia",
+      "familia": "sistemas-operativos",
+      "categoria": "informatica",
+      "catalogo": "sistemas_operativos",
+      "enunciado": "Nombrá un sistema operativo",
+      "frases": {
+        "familias": "de la familia {valor}"
+      },
+      "parametros": {
+        "familia": {
+          "tipo": "valor",
+          "campo": "familias"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "familias",
+        "valores": [
+          "{familia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Sistemas operativos con artículo en al menos 30 ediciones de Wikipedia (Wikidata), incluidas las versiones con artículo propio (por ejemplo, «Windows 7» o «Android Lollipop»).",
+      "explicacion": "{nombre}: familia {familias}; para {dispositivos}."
+    },
+    {
+      "id": "so-dispositivo",
+      "familia": "sistemas-operativos",
+      "categoria": "informatica",
+      "catalogo": "sistemas_operativos",
+      "enunciado": "Nombrá un sistema operativo",
+      "frases": {
+        "dispositivos": "para {valor}"
+      },
+      "parametros": {
+        "dispositivo": {
+          "tipo": "valor",
+          "campo": "dispositivos",
+          "solo": [
+            "celulares y tabletas"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "dispositivos",
+        "valores": [
+          "{dispositivo}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 90
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Sistemas operativos con artículo en al menos 30 ediciones de Wikipedia que Wikidata clasifica como sistema operativo móvil, incluidas sus versiones (por ejemplo, «Android KitKat»).",
+      "explicacion": "{nombre}: familia {familias}; para {dispositivos}."
+    },
+    {
+      "id": "so-inicial",
+      "familia": "sistemas-operativos-nombre",
+      "categoria": "informatica",
+      "catalogo": "sistemas_operativos",
+      "enunciado": "Nombrá un sistema operativo",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 50
+      },
+      "dificultad": 0.45,
+      "prioridad": 1,
+      "rechazos": true,
+      "alcance": "Sistemas operativos (y versiones con artículo propio) con artículo en al menos 30 ediciones de Wikipedia. Se mira el nombre registrado en Wikidata, sin tildes.",
+      "explicacion": "{nombre}: familia {familias}; para {dispositivos}."
+    },
+    {
+      "id": "perifericos-funcion",
+      "familia": "perifericos",
+      "categoria": "informatica",
+      "catalogo": "perifericos",
+      "enunciado": "Nombrá un periférico",
+      "frases": {
+        "funciones": "de {valor}"
+      },
+      "parametros": {
+        "funcion": {
+          "tipo": "valor",
+          "campo": "funciones"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "funciones",
+        "valores": [
+          "{funcion}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.2,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Dispositivos de entrada, de salida y de almacenamiento extraíble de la plantilla «Basic computer components» de Wikipedia en inglés, tal como los agrupa (la tarjeta de sonido figura en entrada y en salida).",
+      "explicacion": "{nombre}: periférico de {funciones}."
+    },
+    {
+      "id": "componentes-todos",
+      "familia": "componentes",
+      "categoria": "informatica",
+      "catalogo": "componentes_pc",
+      "enunciado": "Nombrá un componente interno de una computadora",
+      "todos": true,
+      "filtro": {
+        "y": []
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Los componentes del grupo «gabinete» de la plantilla «Basic computer components» de Wikipedia en inglés (procesador, placa base, memoria, almacenamiento, fuente y tarjetas).",
+      "explicacion": "{nombre}: componente del gabinete."
+    },
+    {
+      "id": "conectores-todos",
+      "familia": "conectores",
+      "categoria": "informatica",
+      "catalogo": "conectores",
+      "enunciado": "Nombrá un puerto de computadora",
+      "todos": true,
+      "filtro": {
+        "y": []
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Los puertos de la plantilla «Basic computer components» de Wikipedia en inglés, actuales y obsoletos (USB, HDMI, VGA, PS/2…).",
+      "explicacion": "{nombre}: puerto {vigencia}."
+    },
+    {
+      "id": "conectores-vigencia",
+      "familia": "conectores",
+      "categoria": "informatica",
+      "catalogo": "conectores",
+      "enunciado": "Nombrá un puerto de computadora",
+      "frases": {
+        "vigencia": "{valor}"
+      },
+      "parametros": {
+        "vigencia": {
+          "tipo": "valor",
+          "campo": "vigencia",
+          "solo": [
+            "obsoleto",
+            "actual"
+          ]
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "vigencia",
+        "valores": [
+          "{vigencia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Los puertos de la plantilla «Basic computer components» de Wikipedia en inglés, que los separa en actuales y obsoletos.",
+      "explicacion": "{nombre}: puerto {vigencia}."
+    },
+    {
+      "id": "instrumentos-familia",
+      "familia": "instrumentos-familia",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "frases": {
+        "familias": "de la familia de los {valor}"
+      },
+      "parametros": {
+        "familia": {
+          "tipo": "valor",
+          "campo": "familias"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "familias",
+        "valores": [
+          "{familia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 130
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Instrumentos con clasificación Hornbostel-Sachs y artículo en al menos 15 Wikipedias (Wikidata). Aerófonos: de viento; cordófonos: de cuerda; membranófonos e idiófonos: de percusión. Un instrumento puede estar en más de una familia.",
+      "explicacion": "{nombre}: {familias} (Hornbostel-Sachs {codigos})."
+    },
+    {
+      "id": "instrumentos-familia-inicial",
+      "familia": "instrumentos-nombre",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "frases": {
+        "familias": "de la familia de los {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "familia": {
+          "tipo": "valor",
+          "campo": "familias",
+          "solo": [
+            "aerófonos",
+            "cordófonos",
+            "idiófonos"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "familias",
+            "valores": [
+              "{familia}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 30
+      },
+      "dificultad": 0.4,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Instrumentos con clasificación Hornbostel-Sachs y artículo en al menos 15 ediciones de Wikipedia (Wikidata). Se mira el nombre en español, sin tildes.",
+      "explicacion": "{nombre}: {familias} (Hornbostel-Sachs {codigos})."
+    },
+    {
+      "id": "presidentes-ar-tipo",
+      "familia": "presidentes-argentinos",
+      "categoria": "historia",
+      "catalogo": "presidentes_argentinos",
+      "enunciado": "Nombrá a quien haya sido presidente",
+      "frases": {
+        "tipos": "{valor} de la Argentina"
+      },
+      "parametros": {
+        "tipo": {
+          "tipo": "valor",
+          "campo": "tipos"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "tipos",
+        "valores": [
+          "{tipo}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Presidentes según el anexo de Wikipedia, por cómo llegaron a cada mandato: elecciones, golpe (de facto) o sucesión y designación (vicepresidentes, Asamblea Legislativa, gobiernos provisionales). Luder, Puerta y Camaño no cuentan.",
+      "explicacion": "{nombre}: {mandatos}."
+    },
+    {
+      "id": "presidentes-ar-periodo",
+      "familia": "presidentes-argentinos",
+      "categoria": "historia",
+      "catalogo": "presidentes_argentinos",
+      "enunciado": "Nombrá a quien haya asumido la presidencia de la Argentina",
+      "frases": {
+        "inicios": "entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "inicios",
+          "ancho": 25,
+          "paso": 25,
+          "origen": 1800
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "inicios",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.45,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Presidentes de la Nación según el anexo de Wikipedia, incluidos los de facto y quienes asumieron por sucesión o designación; cuenta el año en que asumió cada mandato.",
+      "explicacion": "{nombre}: {mandatos}."
+    },
+    {
+      "id": "presidentes-ar-electos-periodo",
+      "familia": "presidentes-argentinos",
+      "categoria": "historia",
+      "catalogo": "presidentes_argentinos",
+      "enunciado": "Nombrá a quien haya asumido la presidencia de la Argentina tras ganar una elección",
+      "frases": {
+        "iniciosElecto": "entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "iniciosElecto",
+          "ancho": 40,
+          "paso": 40,
+          "origen": 1850
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "iniciosElecto",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.5,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Presidentes de la Nación según el anexo de Wikipedia que asumieron un mandato tras una elección presidencial en ese período (no cuentan los de facto ni las sucesiones).",
+      "explicacion": "{nombre}: {mandatos}."
+    },
+    {
+      "id": "parques-region",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "catalogo": "parques_nacionales_argentinos",
+      "enunciado": "Nombrá un parque nacional argentino",
+      "frases": {
+        "regiones": "{valor}"
+      },
+      "parametros": {
+        "region": {
+          "tipo": "valor",
+          "campo": "regiones"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "regiones",
+        "valores": [
+          "{region}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Los 39 parques nacionales de la Argentina (Sistema Nacional de Áreas Protegidas), con las regiones de la Administración de Parques Nacionales según su provincia.",
+      "explicacion": "{nombre}: {provincias}; parque nacional desde {anio}."
+    },
+    {
+      "id": "parques-todos",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "catalogo": "parques_nacionales_argentinos",
+      "enunciado": "Nombrá un parque nacional argentino",
+      "todos": true,
+      "filtro": {
+        "y": []
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.25,
+      "prioridad": 3,
+      "rechazos": false,
+      "alcance": "Los 39 parques nacionales de la Argentina según el Sistema Nacional de Áreas Protegidas (no cuentan las reservas ni los monumentos naturales).",
+      "explicacion": "{nombre}: {provincias}; parque nacional desde {anio}."
+    },
+    {
+      "id": "parques-periodo",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "catalogo": "parques_nacionales_argentinos",
+      "enunciado": "Nombrá un parque nacional argentino",
+      "frases": {
+        "anio": "declarado entre {desde} y {hasta}"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anio",
+          "ancho": 25,
+          "paso": 25,
+          "origen": 1925
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anio",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.6,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Parques nacionales argentinos por el año de la norma que los declaró parque nacional con su nombre actual (fecha de sanción).",
+      "explicacion": "{nombre}: {provincias}; parque nacional desde {anio}."
+    },
+    {
+      "id": "parques-internacional",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "catalogo": "parques_nacionales_argentinos",
+      "enunciado": "Nombrá un parque nacional argentino",
+      "frases": {
+        "internacionales": "que sea {valor}"
+      },
+      "parametros": {
+        "designacion": {
+          "tipo": "valor",
+          "campo": "internacionales"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "internacionales",
+        "valores": [
+          "{designacion}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 25
+      },
+      "dificultad": 0.55,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Parques nacionales argentinos con designación internacional (patrimonio mundial de la UNESCO, sitio Ramsar o reserva de biosfera) según el Sistema Nacional de Áreas Protegidas; basta con que una parte del parque la tenga.",
+      "explicacion": "{nombre}: {internacionales}."
+    },
+    {
+      "id": "ciudades-pais",
+      "familia": "ciudades-millon",
+      "categoria": "geografia",
+      "catalogo": "ciudades",
+      "enunciado": "Nombrá una ciudad",
+      "frases": {
+        "paises": "de {valor}",
+        "tamano": "con {valor} habitantes"
+      },
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "paises"
+        },
+        "tamano": {
+          "tipo": "valor",
+          "campo": "tamano",
+          "solo": [
+            "1.000.000 o más"
+          ]
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "paises",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "tamano",
+            "valores": [
+              "{tamano}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 40
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Ciudades con 1.000.000 de habitantes o más según GeoNames (la cifra de cada ciudad es la que registra GeoNames, de distintos años; en algunas, la del aglomerado).",
+      "explicacion": "{nombre} ({subdivision}, {paises}): {poblacion} habitantes según GeoNames (dato del {fechaPoblacion})."
+    },
+    {
+      "id": "ciudades-region",
+      "familia": "ciudades-millon",
+      "categoria": "geografia",
+      "catalogo": "ciudades",
+      "enunciado": "Nombrá una ciudad",
+      "frases": {
+        "subregion": "de {valor}",
+        "tamano": "con {valor} habitantes"
+      },
+      "parametros": {
+        "region": {
+          "tipo": "valor",
+          "campo": "subregion"
+        },
+        "tamano": {
+          "tipo": "valor",
+          "campo": "tamano",
+          "solo": [
+            "1.000.000 o más"
+          ]
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "subregion",
+            "valores": [
+              "{region}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "tamano",
+            "valores": [
+              "{tamano}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ciudades con 1.000.000 de habitantes o más según GeoNames; regiones según la clasificación M49 de la ONU.",
+      "explicacion": "{nombre} ({subdivision}, {paises}): {poblacion} habitantes según GeoNames (dato del {fechaPoblacion})."
+    },
+    {
+      "id": "ciudades-argentina",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades",
+      "enunciado": "Nombrá una ciudad",
+      "frases": {
+        "paises": "de {valor}",
+        "tamano": "con {valor} habitantes"
+      },
+      "parametros": {
+        "pais": {
+          "tipo": "valor",
+          "campo": "paises",
+          "solo": [
+            "Argentina"
+          ]
+        },
+        "tamano": {
+          "tipo": "valor",
+          "campo": "tamano",
+          "solo": [
+            "100.000 o más"
+          ]
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "paises",
+            "valores": [
+              "{pais}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "tamano",
+            "valores": [
+              "{tamano}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.3,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Localidades argentinas con 100.000 habitantes o más según GeoNames (incluye las del conurbano que GeoNames registra por separado, como Quilmes o Lanús).",
+      "explicacion": "{nombre} ({subdivision}): {poblacion} habitantes según GeoNames (dato del {fechaPoblacion})."
+    },
+    {
+      "id": "ciudades-inicial",
+      "familia": "ciudades-letras",
+      "categoria": "geografia",
+      "catalogo": "ciudades",
+      "enunciado": "Nombrá una ciudad",
+      "frases": {
+        "tamano": "con {valor} habitantes"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "tamano": {
+          "tipo": "valor",
+          "campo": "tamano",
+          "solo": [
+            "1.000.000 o más"
+          ]
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "tamano",
+            "valores": [
+              "{tamano}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 60
+      },
+      "dificultad": 0.35,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Ciudades con 1.000.000 de habitantes o más según GeoNames, con su nombre en español de Wikidata (o el de GeoNames si no tiene). Se mira el nombre sin tildes.",
+      "explicacion": "{nombre} ({subdivision}, {paises}): {poblacion} habitantes según GeoNames (dato del {fechaPoblacion})."
+    },
+    {
+      "id": "expansion-cientificos-disciplina",
+      "familia": "expansion-cientificos-disciplina",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado el Nobel",
+      "frases": {
+        "disciplinas": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "disciplinas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "disciplinas",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Personas laureadas en Física, Química y Medicina o Fisiología en la API oficial del Nobel. Se aceptan todas las personas del conjunto, incluidos los premios compartidos. Datos consultados al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-cientificos-periodo",
+      "familia": "expansion-cientificos-periodo",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado un Nobel científico",
+      "frases": {
+        "anios": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anios",
+          "ancho": 20,
+          "paso": 20,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anios",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Solo Nobel de Física, Química y Medicina o Fisiología; año oficial de concesión, según la API del Nobel. Datos consultados al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-cientificos-nacimiento",
+      "familia": "expansion-cientificos-nacimiento",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado un Nobel científico",
+      "frases": {
+        "pais_nacimiento": "nacido en {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "pais_nacimiento"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "pais_nacimiento",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "País actual del lugar de nacimiento en la API del Nobel, mapeado por Wikidata. Solo Nobel de Física, Química y Medicina o Fisiología; no es nacionalidad. Datos consultados al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-pinturas-autor",
+      "familia": "expansion-pinturas-autor",
+      "categoria": "arte",
+      "catalogo": "obras_arte",
+      "enunciado": "Nombrá una pintura",
+      "frases": {
+        "autores": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "autores"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "autores",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Pinturas clasificadas directamente por Wikidata (P31) con al menos 20 enlaces a ediciones Wikimedia. Autor según P170; solo entra ese conjunto registrado, no toda la obra del autor.",
+      "explicacion": "{nombre}: {autores}. Año: {anio}. Ubicación al importar: {ubicaciones}."
+    },
+    {
+      "id": "expansion-pinturas-periodo",
+      "familia": "expansion-pinturas-periodo",
+      "categoria": "arte",
+      "catalogo": "obras_arte",
+      "enunciado": "Nombrá una pintura",
+      "frases": {
+        "anio": "realizada entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anio",
+          "ancho": 100,
+          "paso": 100,
+          "origen": 1401
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anio",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Pinturas clasificadas directamente por Wikidata con al menos 20 enlaces a ediciones Wikimedia. Solo se habilita si todas tienen año conocido.",
+      "explicacion": "{nombre}: {autores}. Año: {anio}. Ubicación al importar: {ubicaciones}."
+    },
+    {
+      "id": "expansion-pinturas-museo",
+      "familia": "expansion-pinturas-museo",
+      "categoria": "arte",
+      "catalogo": "obras_arte",
+      "enunciado": "Nombrá una pintura",
+      "frases": {
+        "ubicaciones": "de la colección o ubicación «{valor}»",
+        "referencia": "según Wikidata al {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "ubicaciones"
+        },
+        "fecha": {
+          "tipo": "valor",
+          "campo": "referencia"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "ubicaciones",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "referencia",
+            "valores": [
+              "{fecha}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Pinturas clasificadas directamente por Wikidata con al menos 20 enlaces a ediciones Wikimedia; colección (P195) o ubicación (P276) declaradas a la fecha del enunciado. No todas las obras del museo.",
+      "explicacion": "{nombre}: {autores}. Año: {anio}. Ubicación al importar: {ubicaciones}."
+    },
+    {
+      "id": "expansion-deportistas-mundial",
+      "familia": "expansion-deportistas-mundial",
+      "categoria": "deportes",
+      "catalogo": "deportistas",
+      "enunciado": "Nombrá a un futbolista del plantel campeón del",
+      "frases": {
+        "logros": "{valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "logros"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "logros",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Plantel final de Argentina en los Mundiales 1978 (22 convocados), 1986 (22) y 2022 (26). Incluye suplentes y reemplazos finales; no hace falta que haya disputado minutos.",
+      "explicacion": "{nombre}: plantel campeón del {logros}."
+    },
+    {
+      "id": "expansion-peliculas-director",
+      "familia": "expansion-peliculas-director",
+      "categoria": "cine",
+      "catalogo": "peliculas",
+      "enunciado": "Nombrá una película",
+      "frases": {
+        "directores": "dirigida por {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "directores"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "directores",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Obras de directores semilla registradas en Wikidata por P57, con estreno registrado no posterior al 2026-10-08. Incluye cortos y telefilmes; excluye series y episodios.",
+      "explicacion": "{nombre}: dirección de {directores}; estreno: {anio}."
+    },
+    {
+      "id": "expansion-peliculas-director-periodo",
+      "familia": "expansion-peliculas-director",
+      "categoria": "cine",
+      "catalogo": "peliculas",
+      "enunciado": "Nombrá una película",
+      "frases": {
+        "directores": "dirigida por {valor}",
+        "anio": "estrenada entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "directores"
+        },
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anio",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "directores",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "entre",
+            "campo": "anio",
+            "desde": "{periodo.desde}",
+            "hasta": "{periodo.hasta}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Filmografías semilla en Wikidata; cortos y telefilmes incluidos. Fecha de estreno registrada; solo se habilitan tramos con años completos en la filmografía.",
+      "explicacion": "{nombre}: dirección de {directores}; estreno: {anio}."
+    },
+    {
+      "id": "expansion-peliculas-argentinas-director",
+      "familia": "expansion-peliculas-argentinas-director",
+      "categoria": "cine",
+      "catalogo": "peliculas_argentinas",
+      "enunciado": "Nombrá una película argentina",
+      "frases": {
+        "directores": "dirigida por {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "directores"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "directores",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Obras de directores semilla registradas en Wikidata por P57, con estreno registrado no posterior al 2026-10-08. Incluye cortos y telefilmes; excluye series y episodios.",
+      "explicacion": "{nombre}: dirección de {directores}; estreno: {anio}."
+    },
+    {
+      "id": "expansion-peliculas-argentinas-director-periodo",
+      "familia": "expansion-peliculas-argentinas-director",
+      "categoria": "cine",
+      "catalogo": "peliculas_argentinas",
+      "enunciado": "Nombrá una película argentina",
+      "frases": {
+        "directores": "dirigida por {valor}",
+        "anio": "estrenada entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "directores"
+        },
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anio",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "directores",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "entre",
+            "campo": "anio",
+            "desde": "{periodo.desde}",
+            "hasta": "{periodo.hasta}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Filmografías semilla en Wikidata; cortos y telefilmes incluidos. Fecha de estreno registrada; solo se habilitan tramos con años completos en la filmografía.",
+      "explicacion": "{nombre}: dirección de {directores}; estreno: {anio}."
+    },
+    {
+      "id": "expansion-series-emmy",
+      "familia": "expansion-series-emmy",
+      "categoria": "television",
+      "catalogo": "series",
+      "enunciado": "Nombrá una serie que haya ganado el",
+      "frases": {
+        "premios": "{valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "premios"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "premios",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ganadoras del Emmy a serie de drama y comedia entre 1966 y 2025; tabla verificada por edición. El período anterior y 2026 quedan fuera.",
+      "explicacion": "{nombre}: {premios}. Drama: {anios_drama}; comedia: {anios_comedia}."
+    },
+    {
+      "id": "expansion-series-emmy-drama",
+      "familia": "expansion-series-emmy-drama",
+      "categoria": "television",
+      "catalogo": "series",
+      "enunciado": "Nombrá una serie ganadora del Emmy de drama",
+      "frases": {
+        "anios_drama": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anios_drama",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1960
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anios_drama",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Premios Emmy a serie de drama, ediciones 1966–2025. Año del premio, no año de estreno de la serie.",
+      "explicacion": "{nombre}: {premios}. Drama: {anios_drama}; comedia: {anios_comedia}."
+    },
+    {
+      "id": "expansion-series-emmy-comedia",
+      "familia": "expansion-series-emmy-comedia",
+      "categoria": "television",
+      "catalogo": "series",
+      "enunciado": "Nombrá una serie ganadora del Emmy de comedia",
+      "frases": {
+        "anios_comedia": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anios_comedia",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1960
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "anios_comedia",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Premios Emmy a serie de comedia, ediciones 1966–2025. Año del premio, no año de estreno de la serie.",
+      "explicacion": "{nombre}: {premios}. Drama: {anios_drama}; comedia: {anios_comedia}."
+    },
+    {
+      "id": "expansion-videojuegos-saga",
+      "familia": "expansion-videojuegos-saga",
+      "categoria": "videojuegos",
+      "catalogo": "videojuegos",
+      "enunciado": "Nombrá un videojuego",
+      "frases": {
+        "franquicias": "de la saga {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "franquicias"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "franquicias",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Juegos de las sagas admitidas por P179/P8345 en Wikidata, con lanzamiento registrado hasta el 2026-10-08. Incluye derivados y reediciones; se verificaron las entregas principales como anclas.",
+      "explicacion": "{nombre}: {franquicias}; lanzamiento: {anio}."
+    },
+    {
+      "id": "expansion-libros-autor",
+      "familia": "expansion-libros-autor",
+      "categoria": "literatura",
+      "catalogo": "libros",
+      "enunciado": "Nombrá un libro",
+      "frases": {
+        "autores": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "autores"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "autores",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Obras (no ediciones) con título registrado en es/mul o P1476 en español, clasificadas por Wikidata como novela (también corta), colección de cuentos o poemario (P31/P136/P7937). Autores semilla; no cuentos sueltos ni bibliografías fuera de ese conjunto.",
+      "explicacion": "{nombre}: {autores}; primera publicación: {anio}."
+    },
+    {
+      "id": "expansion-autores-premio",
+      "familia": "expansion-autores-premio",
+      "categoria": "literatura",
+      "catalogo": "autores",
+      "enunciado": "Nombrá a un autor ganador del",
+      "frases": {
+        "premios": "{valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "premios"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "premios",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Personas de los catálogos verificados Nobel de Literatura y Premio Cervantes del repositorio. Se bloquean conjuntos equivalentes a las consignas de esos catálogos.",
+      "explicacion": "{nombre}: {premios}."
+    },
+    {
+      "id": "expansion-animales-grupo",
+      "familia": "expansion-animales-grupo",
+      "categoria": "naturaleza",
+      "catalogo": "animales",
+      "enunciado": "Nombrá una especie",
+      "frases": {
+        "grupos": "del grupo «{valor}»"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "grupos"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "grupos",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Especies de los grupos seleccionados en Wikidata con evaluación UICN no extinta e identidad exacta en GBIF. Un taxón aceptado, una respuesta; nombres comunes españoles documentados. Incluye cérvidos (ciervos, alces y renos); no todas las especies vivientes.",
+      "explicacion": "{nombre}: {cientifico}; {grupos}. Estado UICN: {estado}."
+    },
+    {
+      "id": "expansion-caa-categoria",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre",
+      "frases": {
+        "categorias": "de la categoría «{valor}» del CAA"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "categorias"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "categorias",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Tablas completas seleccionadas del Código Alimentario Argentino XI (12/2025). Incluye nombres regionales; excluye coles, cucúrbitas y «otras frutas». Se toman filas, no todas las especies comestibles.",
+      "explicacion": "{nombre}: {categorias}. Nombre taxonómico del CAA: {cientifico}."
+    },
+    {
+      "id": "expansion-caa-categoria-empieza",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre",
+      "frases": {
+        "categorias": "de la categoría «{valor}» del CAA"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "categorias"
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "categorias",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "empieza",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Filas de las tablas seleccionadas del CAA XI (12/2025); nombres regionales aceptados. Se mira el nombre canónico mostrado en el juego.",
+      "explicacion": "{nombre}: {categorias}. Nombre taxonómico del CAA: {cientifico}."
+    },
+    {
+      "id": "expansion-caa-categoria-termina",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre",
+      "frases": {
+        "categorias": "de la categoría «{valor}» del CAA"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "categorias"
+        },
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "categorias",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "termina",
+            "campo": "nombre",
+            "textos": [
+              "{letra}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Filas de las tablas seleccionadas del CAA XI (12/2025); nombres regionales aceptados. Se mira el nombre canónico mostrado en el juego.",
+      "explicacion": "{nombre}: {categorias}. Nombre taxonómico del CAA: {cientifico}."
+    },
+    {
+      "id": "expansion-ficcion-comunidad",
+      "familia": "expansion-ficcion-comunidad",
+      "categoria": "literatura",
+      "catalogo": "personajes_ficcion",
+      "enunciado": "Nombrá a un integrante",
+      "frases": {
+        "grupo": "de la {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "grupo"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "grupo",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Los nueve miembros originales de la Comunidad del Anillo. Solo ese plantel cerrado; no todos los personajes de Tolkien.",
+      "explicacion": "{nombre}: integrante de la {grupo}."
+    },
+    {
+      "id": "expansion-clubes-competicion",
+      "familia": "expansion-clubes-competicion",
+      "categoria": "deportes",
+      "catalogo": "clubes_futbol",
+      "enunciado": "Nombrá un club campeón de la",
+      "frases": {
+        "competiciones": "{valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "competiciones"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "competiciones",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ganadores por edición: Libertadores 1960–2025, Sudamericana 2002–2025 y Copa de Europa/Champions 1956–2025. Listas de finales contrastadas con Wikidata; excluye el campeonato argentino.",
+      "explicacion": "{nombre}: títulos continentales registrados: {titulos}."
+    },
+    {
+      "id": "expansion-clubes-libertadores",
+      "familia": "expansion-clubes-libertadores",
+      "categoria": "deportes",
+      "catalogo": "clubes_futbol",
+      "enunciado": "Nombrá un club campeón de la Copa Libertadores",
+      "frases": {
+        "libertadores": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "libertadores",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1950
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "libertadores",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ediciones completas verificadas de la Copa Libertadores hasta 2025. Se toma el año de la final; para Champions incluye Copa de Europa.",
+      "explicacion": "{nombre}: títulos continentales registrados: {titulos}."
+    },
+    {
+      "id": "expansion-clubes-sudamericana",
+      "familia": "expansion-clubes-sudamericana",
+      "categoria": "deportes",
+      "catalogo": "clubes_futbol",
+      "enunciado": "Nombrá un club campeón de la Copa Sudamericana",
+      "frases": {
+        "sudamericana": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "sudamericana",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1950
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "sudamericana",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ediciones completas verificadas de la Copa Sudamericana hasta 2025. Se toma el año de la final; para Champions incluye Copa de Europa.",
+      "explicacion": "{nombre}: títulos continentales registrados: {titulos}."
+    },
+    {
+      "id": "expansion-clubes-champions",
+      "familia": "expansion-clubes-champions",
+      "categoria": "deportes",
+      "catalogo": "clubes_futbol",
+      "enunciado": "Nombrá un club campeón de la Champions",
+      "frases": {
+        "champions": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "champions",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1950
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "champions",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Ediciones completas verificadas de la Champions hasta 2025. Se toma el año de la final; para Champions incluye Copa de Europa.",
+      "explicacion": "{nombre}: títulos continentales registrados: {titulos}."
+    },
+    {
+      "id": "expansion-albumes-estudio",
+      "familia": "expansion-albumes-artista",
+      "categoria": "musica",
+      "catalogo": "albumes_estudio",
+      "enunciado": "Nombrá un álbum de estudio",
+      "frases": {
+        "artistas": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "artistas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "artistas",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Grupos de lanzamientos Album de artistas semilla en la vista predeterminada de MusicBrainz, según sus tipos secundarios. Incluye ediciones regionales y reediciones registradas como grupos; no solo la discografía del país de origen.",
+      "explicacion": "{nombre}: álbum de {artistas}; {tipo}, año {anio}."
+    },
+    {
+      "id": "expansion-albumes-en-vivo",
+      "familia": "expansion-albumes-artista",
+      "categoria": "musica",
+      "catalogo": "albumes_en_vivo",
+      "enunciado": "Nombrá un álbum en vivo",
+      "frases": {
+        "artistas": "de {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "artistas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "artistas",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Grupos de lanzamientos Album de artistas semilla en la vista predeterminada de MusicBrainz, según sus tipos secundarios. Incluye ediciones regionales y reediciones registradas como grupos; no solo la discografía del país de origen.",
+      "explicacion": "{nombre}: álbum de {artistas}; {tipo}, año {anio}."
+    },
+    {
+      "id": "expansion-integrantes-banda",
+      "familia": "expansion-integrantes-banda",
+      "categoria": "musica",
+      "catalogo": "artistas_musicales",
+      "enunciado": "Nombrá a alguien",
+      "frases": {
+        "bandas": "que haya integrado {valor} en algún momento"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "bandas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "bandas",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Integrantes de las bandas semilla registrados en MusicBrainz («member of band»), incluidos exintegrantes. No afirma todas las personas que colaboraron o tocaron como invitados.",
+      "explicacion": "{nombre}: integró {bandas}. Períodos: {periodos}."
+    },
+    {
+      "id": "expansion-bandas-persona",
+      "familia": "expansion-bandas-persona",
+      "categoria": "musica",
+      "catalogo": "bandas_argentinas",
+      "enunciado": "Nombrá una banda argentina",
+      "frases": {
+        "miembros": "en la que haya tocado {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "miembros"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "miembros",
+        "valores": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Vista de bandas argentinas: pertenencias documentadas como «member of band» en MusicBrainz para los músicos semilla y sus integrantes. No incluye participaciones como invitados sin esa relación.",
+      "explicacion": "{nombre}: {miembros}. Períodos: {periodos}."
+    },
+    {
+      "id": "expansion-comidas-empieza",
+      "familia": "expansion-comidas-nombre",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "inicial"
+        }
+      },
+      "filtro": {
+        "op": "empieza",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.15,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Ítems clasificados directamente como plato o postre en Wikidata, con nombre español y al menos 20 enlaces a ediciones Wikimedia. No todas las comidas del mundo; se mira el nombre canónico.",
+      "explicacion": "{nombre}: plato o postre del conjunto definido en Wikidata."
+    },
+    {
+      "id": "expansion-comidas-termina",
+      "familia": "expansion-comidas-nombre",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "letra": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{letra}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.15,
+      "prioridad": 2,
+      "rechazos": true,
+      "alcance": "Ítems clasificados directamente como plato o postre en Wikidata, con nombre español y al menos 20 enlaces a ediciones Wikimedia. No todas las comidas del mundo; se mira el nombre canónico.",
+      "explicacion": "{nombre}: plato o postre del conjunto definido en Wikidata."
+    },
+    {
+      "id": "expansion-cientificos-phy-periodo",
+      "familia": "expansion-cientificos-phy-periodo",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado el Nobel de Física",
+      "frases": {
+        "premios_phy": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "premios_phy",
+          "ancho": 20,
+          "paso": 20,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "premios_phy",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Solo Nobel de Física, Química y Medicina o Fisiología; año oficial de concesión, según la API del Nobel. Datos consultados al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-cientificos-che-periodo",
+      "familia": "expansion-cientificos-che-periodo",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado el Nobel de Química",
+      "frases": {
+        "premios_che": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "premios_che",
+          "ancho": 20,
+          "paso": 20,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "premios_che",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Solo Nobel de Física, Química y Medicina o Fisiología; año oficial de concesión, según la API del Nobel. Datos consultados al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-cientificos-med-periodo",
+      "familia": "expansion-cientificos-med-periodo",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado el Nobel de Medicina o Fisiología",
+      "frases": {
+        "premios_med": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "premios_med",
+          "ancho": 20,
+          "paso": 20,
+          "origen": 1900
+        }
+      },
+      "filtro": {
+        "op": "entre",
+        "campo": "premios_med",
+        "desde": "{periodo.desde}",
+        "hasta": "{periodo.hasta}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Solo Nobel de Física, Química y Medicina o Fisiología; año oficial de concesión, según la API del Nobel. Datos consultados al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-cientificos-disciplina-nacimiento",
+      "familia": "expansion-cientificos-nacimiento",
+      "categoria": "ciencia",
+      "catalogo": "cientificos",
+      "enunciado": "Nombrá a alguien que haya ganado el Nobel",
+      "frases": {
+        "disciplinas": "de {valor}",
+        "pais_nacimiento": "nacido en {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "disciplinas"
+        },
+        "pais": {
+          "tipo": "valor",
+          "campo": "pais_nacimiento"
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "disciplinas",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "es",
+            "campo": "pais_nacimiento",
+            "valores": [
+              "{pais}"
+            ]
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Laureados científicos de la API Nobel; país actual del lugar de nacimiento (no nacionalidad). Solo disciplinas donde el país es conocido para todos sus laureados, al 2026-10-08.",
+      "explicacion": "{nombre}: Nobel de {disciplinas}; años: {anios}. Motivación oficial en inglés en la fuente Nobel."
+    },
+    {
+      "id": "expansion-pinturas-autor-siglo",
+      "familia": "expansion-pinturas-autor",
+      "categoria": "arte",
+      "catalogo": "obras_arte",
+      "enunciado": "Nombrá una pintura",
+      "frases": {
+        "autores": "de {valor}",
+        "anio": "realizada entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "valor",
+          "campo": "autores"
+        },
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anio",
+          "ancho": 100,
+          "paso": 100,
+          "origen": 1
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "autores",
+            "valores": [
+              "{valor}"
+            ]
+          },
+          {
+            "op": "entre",
+            "campo": "anio",
+            "desde": "{periodo.desde}",
+            "hasta": "{periodo.hasta}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Pinturas P31 con al menos 20 enlaces Wikimedia y autor declarado en Wikidata. Tramos de siglo (1801–1900, etc.), habilitados solo si todas las pinturas de ese autor en el universo tienen año.",
+      "explicacion": "{nombre}: {autores}. Año: {anio}. Ubicación al importar: {ubicaciones}."
+    },
+    {
+      "id": "expansion-peliculas-saga",
+      "familia": "expansion-peliculas-saga",
+      "categoria": "cine",
+      "catalogo": "peliculas",
+      "enunciado": "Nombrá una película",
+      "frases": {
+        "sagas": "de la saga {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "saga": {
+          "tipo": "valor",
+          "campo": "sagas"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "sagas",
+        "valores": [
+          "{saga}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Sagas declaradas completas del catálogo: las ocho películas de Harry Potter, contrastadas con la colección oficial. No incluye Animales fantásticos, series ni proyectos sin estrenar.",
+      "explicacion": "{nombre}: {sagas}, dirección de {directores}, estreno {anio}."
+    },
+    {
+      "id": "expansion-series-franquicia",
+      "familia": "expansion-series-franquicia",
+      "categoria": "television",
+      "catalogo": "series",
+      "enunciado": "Nombrá una serie",
+      "frases": {
+        "franquicias": "de la franquicia {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "franquicia": {
+          "tipo": "valor",
+          "campo": "franquicias"
+        }
+      },
+      "filtro": {
+        "op": "es",
+        "campo": "franquicias",
+        "valores": [
+          "{franquicia}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Planteles verificados: 13 series de Star Trek (con Short Treks), 6 de CSI (con The Real CSI: Miami) y 7 estrenadas de NCIS. Se excluyen promociones y proyectos sin período confirmado en la lista.",
+      "explicacion": "{nombre}: {franquicias}."
+    },
+    {
+      "id": "expansion-deportistas-balon",
+      "familia": "expansion-deportistas-balon",
+      "categoria": "deportes",
+      "catalogo": "deportistas",
+      "enunciado": "Nombrá a un futbolista",
+      "frases": {
+        "premios": "que haya ganado el {valor}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {},
+      "filtro": {
+        "op": "es",
+        "campo": "premios",
+        "valores": [
+          "Balón de Oro"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Balón de Oro masculino 1956–2025, incluidas las ediciones FIFA Ballon d’Or 2010–2015. Son 69 premios adjudicados; 2020 se canceló. Cada jugador cuenta una vez.",
+      "explicacion": "{nombre}: años de Balón de Oro: {anios_balon}."
+    },
+    {
+      "id": "expansion-deportistas-balon-decada",
+      "familia": "expansion-deportistas-balon-decada",
+      "categoria": "deportes",
+      "catalogo": "deportistas",
+      "enunciado": "Nombrá a un futbolista",
+      "frases": {
+        "premios": "ganador del {valor}",
+        "anios_balon": "entre {desde} y {hasta}"
+      },
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "periodo": {
+          "tipo": "periodo",
+          "campo": "anios_balon",
+          "ancho": 10,
+          "paso": 10,
+          "origen": 1950
+        }
+      },
+      "filtro": {
+        "y": [
+          {
+            "op": "es",
+            "campo": "premios",
+            "valores": [
+              "Balón de Oro"
+            ]
+          },
+          {
+            "op": "entre",
+            "campo": "anios_balon",
+            "desde": "{periodo.desde}",
+            "hasta": "{periodo.hasta}"
+          }
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.12,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Balón de Oro masculino 1956–2025, incluidas las ediciones FIFA Ballon d’Or 2010–2015. Son 69 premios adjudicados; 2020 se canceló. Cada jugador cuenta una vez.",
+      "explicacion": "{nombre}: años de Balón de Oro: {anios_balon}."
     }
   ]
 }

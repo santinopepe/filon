@@ -7,13 +7,13 @@ import { generadorConSemilla } from '../azar.js';
 import { CATEGORIAS, CATEGORIAS_NORMAL, PREGUNTAS_POR_DESAFIO, VARIEDAD_NORMAL } from '../dominio.js';
 import { formasRegistrables, normalizar } from '../normalizar.js';
 import { validarPregunta } from '../validacion.js';
-import { validarFiltro, evaluar, describir, explicarFalla, claveDeFiltro, VERSION_FILTROS } from './filtros.js';
+import { validarFiltro, evaluar, describir, explicarFalla, claveDeFiltro, unirFiltros, VERSION_FILTROS } from './filtros.js';
 import { combinaciones, instanciar } from './plantillas.js';
 import { VERSION_TEXTO } from './texto.js';
-import { dentroDeVentana } from '../tiempo.js';
-import { versionDeCatalogos } from './catalogos.js';
+import { dentroDeVentana, diasEntre } from '../tiempo.js';
+import { versionDeCatalogos, tieneDato } from './catalogos.js';
 
-export const VERSION_GENERADOR = '2';
+export const VERSION_GENERADOR = '3';
 const QUINTILES = ['grava', 'cobre', 'plata', 'oro', 'diamante'];
 const CENTRO = { facil: 0.2, media: 0.45, dificil: 0.7 };
 const MINHASH = 64;
@@ -32,6 +32,14 @@ export const POR_OMISION = Object.freeze({
   maxPorFamilia: 1,
   // Topes por categoría más bajos que el general (Gramática: una por día, para que el lote sea variado).
   maxPorCategoria: { gramatica: 1 },
+  // Rotación de categorías (solo en los modos con varias): cuantos más días pasaron desde la última vez que
+  // salió una categoría (hasta `diasRotacion`), más se la prefiere. Así todas aparecen a lo largo de los días
+  // aunque haya más categorías que preguntas por día. Es una preferencia, no un turno fijo.
+  diasRotacion: 5,
+  pesoRotacion: 0.6,
+  // Conjuntos casi iguales (≥ 90 % de los nombres) en catálogos distintos («Nobel de Literatura» y «autores
+  // con Nobel») son la misma consigna: se bloquean dentro de la ventana.
+  solapamientoOtroUniverso: 0.9,
 });
 
 /**
@@ -39,7 +47,7 @@ export const POR_OMISION = Object.freeze({
  * Geografía: siete de geografía, variadas por familia y por catálogo. Los demás modos no tienen generador.
  */
 export const REGLAS_LOTE = Object.freeze({
-  normal: { categorias: CATEGORIAS_NORMAL, minCategorias: VARIEDAD_NORMAL.minCategorias, maxPorCategoria: VARIEDAD_NORMAL.maxPorCategoria, maxPorCatalogo: 2 },
+  normal: { categorias: CATEGORIAS_NORMAL, minCategorias: VARIEDAD_NORMAL.minCategorias, maxPorCategoria: VARIEDAD_NORMAL.maxPorCategoria, maxPorCatalogo: 2, rotacion: true },
   // Geografía: se prefieren como mucho 3 de las 7 con condiciones sobre las letras del nombre (empieza,
   // termina, tiene…) y nunca más de 5, para que el día no sea un juego de palabras.
   geografia: { categorias: ['geografia'], minCategorias: 1, maxPorCategoria: PREGUNTAS_POR_DESAFIO, maxPorCatalogo: 3, letrasPreferidas: 3, maxDeLetras: 5 },
@@ -64,7 +72,7 @@ export function minhash(ids) {
 }
 export const jaccardEstimado = (a, b) => (a && b ? a.filter((x, i) => x === b[i]).length / MINHASH : 0);
 
-function jaccard(a, b) {
+export function jaccard(a, b) {
   const A = new Set(a);
   const B = new Set(b);
   let inter = 0;
@@ -80,11 +88,13 @@ const nivel = (d) => (d < 0.35 ? 'facil' : d < 0.6 ? 'media' : 'dificil');
  * poco conocidas dentro de su catálogo, si hay más de una condición y si el conjunto es chico. Un conjunto
  * grande no la baja por sí solo: importa qué tan conocidas son sus mejores respuestas.
  */
-function estimarDificultad(plantilla, catalogo, entidades, filtro) {
+function estimarDificultad(plantilla, catalogo, entidades, filtro, familiaridad = null) {
   const percentiles = entidades.map((e) => catalogo.percentil(e)).sort((a, b) => b - a);
   const top = percentiles.slice(0, 5);
   const conocimiento = top.reduce((s, x) => s + x, 0) / top.length;
-  const d = plantilla.dificultad + 0.4 * (1 - conocimiento) + 0.1 * Math.max(0, filtro.y.length - 1) + (entidades.length < 8 ? 0.1 : 0);
+  // Un tema poco familiar (un director de culto) es más difícil que uno muy conocido (Spielberg).
+  const tema = familiaridad === null ? 0 : 0.1 * (2 - familiaridad);
+  const d = plantilla.dificultad + 0.4 * (1 - conocimiento) + 0.1 * Math.max(0, filtro.y.length - 1) + (entidades.length < 8 ? 0.1 : 0) + tema;
   const valor = Math.round(Math.min(1, Math.max(0, d)) * 100) / 100;
   return { valor, nivel: nivel(valor) };
 }
@@ -99,25 +109,77 @@ export function asignarRarezas(entidades) {
   return new Map(orden.map((e, i) => [e.id, QUINTILES[Math.min(4, Math.floor((i * 5) / orden.length))]]));
 }
 
-/** ¿El catálogo cubre lo que promete el filtro? Devuelve el motivo si no alcanza, o null. */
-export function problemaDeCobertura(catalogo, filtro) {
-  for (const c of filtro.y) {
-    if (c.campo !== 'nombre' && !catalogo.completos.has(c.campo)) return `al atributo «${c.campo}» le faltan datos en algunas entidades`;
-  }
+/**
+ * Grupos completos de un catálogo parcial: `completoPor` puede ser un atributo («disco»: cada disco tiene
+ * su lista entera), varios, o un objeto { atributo: [valores] } cuando solo algunos valores lo están (la
+ * filmografía de Spielberg está completa; la de quien codirigió una película con él, no).
+ */
+export function gruposCompletos(cobertura) {
+  const g = cobertura.completoPor;
+  if (!g) return {};
+  if (typeof g === 'string') return { [g]: true };
+  if (Array.isArray(g)) return Object.fromEntries(g.map((x) => [x, true]));
+  return g;
+}
+
+/**
+ * Entidades sobre las que el catálogo garantiza estar completo para este filtro: todas (catálogo
+ * completo), las de un grupo completo que el filtro pide («de Spielberg») o las de un tramo completo. Null
+ * si el filtro sale de lo que el catálogo tiene completo.
+ */
+function universoDeCobertura(catalogo, filtro) {
   const cob = catalogo.cobertura;
-  if (cob.tipo === 'completa') return null;
-  if (cob.completoPor && filtro.y.some((c) => c.op === 'es' && c.campo === cob.completoPor && c.valores.length === 1)) return null;
-  for (const tramo of cob.completoEn ?? []) {
-    if (filtro.y.some((c) => c.op === 'entre' && c.campo === tramo.campo && c.desde >= tramo.desde && c.hasta <= tramo.hasta)) return null;
+  if (cob.tipo === 'completa') {
+    // Una condición con datos completos puede acotar con certeza el universo antes de revisar otro
+    // atributo incompleto. Nunca se usa el propio atributo desconocido para esconder sus null.
+    const conocidas = filtro.y.filter(c => c.campo === 'nombre' || catalogo.completos.has(c.campo));
+    return conocidas.length ? catalogo.entidades.filter(e => evaluar({ y: conocidas }, e)) : catalogo.entidades;
   }
-  return `el catálogo es parcial (${cob.criterio}) y la condición sale de lo que tiene completo`;
+  const grupos = gruposCompletos(cob);
+  const grupo = filtro.y.find((c) => c.op === 'es' && !c.no && grupos[c.campo] && (grupos[c.campo] === true || c.valores.every((v) => grupos[c.campo].includes(v))));
+  if (grupo) return catalogo.entidades.filter((e) => evaluar({ y: [grupo] }, e));
+  for (const tramo of cob.completoEn ?? []) {
+    const c = filtro.y.find((x) => x.op === 'entre' && !x.no && x.campo === tramo.campo && x.desde >= tramo.desde && x.hasta <= tramo.hasta);
+    if (c) return catalogo.entidades.filter((e) => evaluar({ y: [c] }, e));
+  }
+  return null;
+}
+
+/**
+ * ¿El catálogo cubre lo que promete el filtro? Devuelve el motivo si no alcanza, o null. Hace falta que el
+ * filtro caiga dentro de lo que el catálogo tiene completo y que ninguna entidad de ese universo tenga
+ * desconocido un atributo que el filtro mira (si no, una respuesta correcta podría quedar afuera). En una
+ * vista, se mira el catálogo base con la condición de la vista sumada.
+ */
+export function problemaDeCobertura(catalogo, filtro) {
+  if (catalogo.base) return problemaDeCobertura(catalogo.base, unirFiltros(catalogo.filtroVista, filtro));
+  const universo = universoDeCobertura(catalogo, filtro);
+  const campos = [...new Set(filtro.y.map((c) => c.campo).filter((c) => c !== 'nombre'))];
+  for (const campo of campos) {
+    const completo = universo === catalogo.entidades || !universo ? catalogo.completos.has(campo) : universo.every((e) => tieneDato(e.atributos[campo]));
+    if (!completo && (universo || catalogo.cobertura.tipo === 'completa')) return `al atributo «${campo}» le faltan datos en algunas entidades`;
+  }
+  if (!universo) return `el catálogo es parcial (${catalogo.cobertura.criterio}) y la condición sale de lo que tiene completo`;
+  return null;
+}
+
+/**
+ * Familiaridad editorial del tema de una consigna (1 poco conocido, 3 muy conocido), según `temas` del
+ * catálogo: { atributo: { valor: 1–3 } }. Solo orienta la elección de consignas accesibles; nunca quita
+ * respuestas de una pregunta. Null si el catálogo no valora el tema.
+ */
+function familiaridadDe(catalogo, filtro) {
+  const temas = catalogo.temas ?? {};
+  const notas = filtro.y.filter((c) => c.op === 'es' && temas[c.campo]).flatMap((c) => c.valores.map((v) => temas[c.campo][v] ?? 2));
+  return notas.length ? Math.min(...notas) : null;
 }
 
 function llenarExplicacion(molde, e) {
   const texto = molde
     .replace(/\{(\w+)\}/g, (_, k) => {
       const v = k === 'nombre' ? e.nombre : e.atributos[k];
-      if (v === null || v === undefined || (Array.isArray(v) && !v.length)) return 'sin dato en la fuente';
+      if (v === null || v === undefined) return 'sin dato en la fuente';
+      if (Array.isArray(v) && !v.length) return 'ninguno';
       return Array.isArray(v) ? v.join(', ') : String(v);
     })
     .replace(/\s+/g, ' ')
@@ -134,6 +196,11 @@ function llenarExplicacion(molde, e) {
  */
 export const firmaDe = (catalogoId, filtro) => sha(JSON.stringify({ catalogo: catalogoId, filtro: claveDeFiltro(filtro) })).slice(0, 32);
 const conjuntoDe = (catalogoId, ids) => sha(`${catalogoId}|${[...ids].sort().join('\u0001')}`).slice(0, 32);
+/**
+ * Firma de una consigna sobre un catálogo o una vista: el universo (el catálogo base) y la condición
+ * completa (la de la vista más la de la consigna). En un catálogo propio es la firma de siempre.
+ */
+export const firmaDeConsigna = (catalogo, filtro) => firmaDe(catalogo.universo ?? catalogo.id, catalogo.base ? unirFiltros(catalogo.filtroVista, filtro) : filtro);
 
 /**
  * Motivo por el que un candidato es la misma consigna que un registro (del historial dentro de la ventana
@@ -151,12 +218,15 @@ export function repeticion(candidato, registros) {
   return null;
 }
 
-/** Mayor solapamiento estimado (Jaccard por MinHash) con registros del mismo catálogo. */
+/** Mayor solapamiento estimado (Jaccard por MinHash) con registros del mismo catálogo (o universo). */
 function solapamiento(candidato, registros) {
   let maximo = 0;
-  for (const r of registros) if (r.minhash && r.catalogo === candidato.catalogo.id) maximo = Math.max(maximo, jaccardEstimado(r.minhash, candidato.minhash));
+  for (const r of registros) if (r.minhash && r.catalogo === candidato.catalogo.universo) maximo = Math.max(maximo, jaccardEstimado(r.minhash, candidato.minhash));
   return maximo;
 }
+
+/** Firma MinHash de los nombres (normalizados) de un conjunto: compara conjuntos de catálogos distintos. */
+const minhashDeNombres = (entidades) => minhash(entidades.map((e) => normalizar(e.nombre)));
 
 // ───── Candidatos ─────
 /**
@@ -193,7 +263,7 @@ const LIMITE_EVALUACIONES = 3_000_000;
 export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxRespuestas = POR_OMISION.maxRespuestas, validar = false, completo = false, semilla = '', intentos = POR_OMISION.intentosPorPlantilla } = {}) {
   const combos = combinaciones(plantilla, catalogo);
   const enorme = combos.length * catalogo.entidades.length > LIMITE_EVALUACIONES;
-  const clave = `${catalogo.id}@${catalogo.version}|${JSON.stringify(plantilla)}|${maxRespuestas}|${validar}`;
+  const clave = `${catalogo.id}@${catalogo.version}|${JSON.stringify([catalogo.cobertura, catalogo.temas, catalogo.atributos, dominios])}|${JSON.stringify(plantilla)}|${maxRespuestas}|${validar}`;
   if (!enorme || completo) {
     const guardado = preparados.get(clave);
     if (guardado) return guardado;
@@ -219,7 +289,7 @@ export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxResp
       descartar('filtro inválido');
       continue;
     }
-    const firma = firmaDe(catalogo.id, filtro);
+    const firma = firmaDeConsigna(catalogo, filtro);
     if (vistos.has(firma)) continue; // la misma condición desde otra combinación
     vistos.add(firma);
     const entidades = catalogo.entidades.filter((e) => evaluar(filtro, e));
@@ -235,6 +305,7 @@ export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxResp
       descartar('nombres ambiguos');
       continue;
     }
+    const familiaridad = familiaridadDe(catalogo, filtro);
     const c = {
       plantilla,
       catalogo,
@@ -245,8 +316,9 @@ export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxResp
       enunciado: describir(filtro, plantilla, combo.vistas),
       entidades,
       firma,
-      conjunto: conjuntoDe(catalogo.id, entidades.map((e) => e.id)),
-      dificultad: estimarDificultad(plantilla, catalogo, entidades, filtro),
+      conjunto: conjuntoDe(catalogo.universo, entidades.map((e) => e.id)),
+      familiaridad,
+      dificultad: estimarDificultad(plantilla, catalogo, entidades, filtro, familiaridad),
     };
     if (validar && !armarPregunta(c, { dominios, opciones: { ...POR_OMISION, maxRespuestas }, modo: 'normal', semilla: '', versiones: {} }).ok) {
       descartar('no pasa la validación');
@@ -308,6 +380,7 @@ function armarPregunta(c, ctx) {
         plantilla: c.plantilla.id,
         familia: c.familia,
         catalogo: { id: c.catalogo.id, version: c.catalogo.version },
+        ...(c.catalogo.universo !== c.catalogo.id ? { universo: c.catalogo.universo } : {}),
         filtro: c.filtro,
         parametros: c.valores,
         semilla: ctx.semilla,
@@ -315,6 +388,9 @@ function armarPregunta(c, ctx) {
         dificultad: c.dificultad,
         respuestas: c.entidades.length,
         minhash: c.minhash,
+        minhashNombres: c.minhashNombres,
+        nombresConjunto: c.entidades.map(e => normalizar(e.nombre)).sort(),
+        ...(c.familiaridad !== null && c.familiaridad !== undefined ? { familiaridad: c.familiaridad } : {}),
       },
     },
   };
@@ -344,6 +420,10 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
   const historialVentana = historial.filter(enVentana);
   const recientesVentana = recientes.filter(enVentana);
   const pool = [];
+  const capacidadPorCategoria = new Map();
+  // Dos plantillas que llegan al mismo conjunto de respuestas del mismo universo («películas de X» y
+  // «películas argentinas de X» cuando todas son argentinas) aportan una sola consigna.
+  const conjuntosEnPool = new Set();
   for (const p of plantillas.lista.filter((x) => reglas.categorias.includes(x.categoria) && (!x.modos || x.modos.includes(modo)))) {
     const catalogo = catalogos.get(p.catalogo);
     if (!catalogo) {
@@ -351,12 +431,19 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
       continue;
     }
     const preparado = prepararCandidatos(p, catalogo, { dominios, maxRespuestas: op.maxRespuestas, semilla, intentos: op.intentosPorPlantilla });
+    const conjuntos = capacidadPorCategoria.get(p.categoria) ?? new Set();
+    preparado.candidatos.forEach(c => conjuntos.add(c.conjunto));
+    capacidadPorCategoria.set(p.categoria, conjuntos);
     for (const [motivo, n] of Object.entries(preparado.descartes)) descartes.push({ plantilla: p.id, enunciado: null, motivo, cantidad: n });
     const frescos = [];
     for (const c of preparado.candidatos) {
       const motivo = repeticion(c, historialVentana);
       if (motivo) descartar(p.id, c.enunciado, `repetida: ${motivo}`);
-      else frescos.push(c);
+      else if (conjuntosEnPool.has(c.conjunto)) descartar(p.id, c.enunciado, 'mismo conjunto que la consigna de otra plantilla');
+      else {
+        conjuntosEnPool.add(c.conjunto);
+        frescos.push(c);
+      }
     }
     // Orden reproducible (semilla del día y plantilla); los candidatos preparados no se modifican.
     const azarPlantilla = generadorConSemilla(`${semilla}|${p.id}`);
@@ -367,6 +454,28 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
     for (const c of frescos.slice(0, op.candidatosPorPlantilla)) pool.push({ ...c, sorteo: azarPlantilla(), usado: false });
   }
   const minhashDe = (c) => (c.minhash ??= minhash(c.entidades.map((e) => e.id)));
+  const minhashNombresDe = (c) => (c.minhashNombres ??= minhashDeNombres(c.entidades));
+
+  // Rotación de categorías: días desde la última aparición de cada una (preguntas generadas y cargadas a
+  // mano, solo hacia atrás y hasta `diasRotacion`). Las que no salieron hace más tiempo se prefieren.
+  const deudaDeCategoria = new Map();
+  const esperaDeCategoria = new Map();
+  if (reglas.rotacion) {
+    const ultima = new Map();
+    for (const r of [...historial, ...recientes]) {
+      if (!r.categoria || !r.fecha || r.fecha >= fecha) continue;
+      const d = diasEntre(r.fecha, fecha);
+      ultima.set(r.categoria, Math.min(ultima.get(r.categoria) ?? Infinity, d));
+    }
+    for (const c of reglas.categorias) {
+      // Tres consignas sostienen una aparición cada ~20 días, no cada cinco: dosificar categorías chicas.
+      const capacidad = capacidadPorCategoria.get(c)?.size ?? 0;
+      const horizonte = Math.max(op.diasRotacion, Math.ceil(op.diasSinRepetir / Math.max(1, capacidad)));
+      deudaDeCategoria.set(c, Math.min(ultima.get(c) ?? horizonte + 1, horizonte + 1) / (horizonte + 1));
+      const intervalo = Math.floor(op.diasSinRepetir / Math.max(1, capacidad));
+      esperaDeCategoria.set(c, intervalo > 1 ? Math.max(0, 1 - (ultima.get(c) ?? Infinity) / intervalo) : 0);
+    }
+  }
 
   // 2) Siete preguntas variadas: dificultades mezcladas, sin repetir familia, con tope por categoría y
   // por catálogo y al menos `minCategorias` categorías distintas.
@@ -387,7 +496,7 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
     // Preferencias (no bloqueos): dificultad cercana al objetivo, consignas conocidas, familias que no
     // salieron hace poco y conjuntos que no se parezcan mucho a uno reciente del mismo catálogo.
     const puntaje = (c) =>
-      Math.abs(c.dificultad.valor - objetivo) - 0.06 * c.plantilla.prioridad + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0) + 0.1 * c.sorteo;
+      Math.abs(c.dificultad.valor - objetivo) - 0.06 * c.plantilla.prioridad - 0.03 * (c.familiaridad ?? 2) - op.pesoRotacion * (deudaDeCategoria.get(c.categoria) ?? 0) + op.pesoRotacion * (esperaDeCategoria.get(c.categoria) ?? 0) + (categorias.has(c.categoria) && (capacidadPorCategoria.get(c.categoria)?.size ?? 0) < op.diasSinRepetir ? op.pesoRotacion : 0) + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0) + 0.1 * c.sorteo;
     const ordenados = pool.filter((c) => !c.usado).sort((a, b) => puntaje(a) - puntaje(b));
     for (const c of ordenados) {
       if (++intentos > op.intentosTotales) break;
@@ -395,7 +504,7 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
       if (porCategoria >= (op.maxPorCategoria[c.categoria] ?? reglas.maxPorCategoria)) continue;
       if (exigirNueva && categorias.has(c.categoria)) continue;
       if (elegidas.filter((e) => e.candidato.familia === c.familia).length >= op.maxPorFamilia) continue;
-      if (elegidas.filter((e) => e.candidato.catalogo.id === c.catalogo.id).length >= op.maxPorCatalogo) continue;
+      if (elegidas.filter((e) => e.candidato.catalogo.universo === c.catalogo.universo).length >= op.maxPorCatalogo) continue;
       if (reglas.maxDeLetras !== undefined && deLetras(c) && elegidas.filter((e) => deLetras(e.candidato)).length >= reglas.maxDeLetras) continue;
       const enLote = repeticion(c, elegidas.map((e) => ({ firma: e.candidato.firma, conjunto: e.candidato.conjunto })));
       if (enLote) {
@@ -412,6 +521,18 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
         descartar(c.plantilla.id, c.enunciado, `repetida: casi el mismo conjunto que «${parecida.enunciado}» (${parecida.fecha})`);
         continue;
       }
+      // Otro catálogo con casi las mismas respuestas dentro de la ventana («autores con Nobel» y «ganadores
+      // del Nobel de Literatura»): es la misma consigna aunque cambien el catálogo y la condición.
+      const otroUniverso = historialVentana.find((r) => r.catalogo !== c.catalogo.universo && (
+        r.nombresConjunto
+          ? Math.min(claves.length, r.nombresConjunto.length) / Math.max(claves.length, r.nombresConjunto.length) >= op.solapamientoOtroUniverso && jaccard(claves, r.nombresConjunto) >= op.solapamientoOtroUniverso
+          : r.minhashNombres && jaccardEstimado(r.minhashNombres, minhashNombresDe(c)) >= op.solapamientoOtroUniverso
+      ));
+      if (otroUniverso) {
+        c.usado = true;
+        descartar(c.plantilla.id, c.enunciado, `repetida: casi el mismo conjunto de respuestas que el ${otroUniverso.fecha} (otro catálogo)`);
+        continue;
+      }
       const enLoteNombres = elegidas.find((e) => jaccard(claves, e.claves) >= 0.5);
       if (enLoteNombres) {
         c.usado = true;
@@ -419,6 +540,7 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
         continue;
       }
       minhashDe(c);
+      minhashNombresDe(c);
       const armada = armarPregunta(c, ctx);
       c.usado = true;
       if (!armada.ok) {

@@ -105,14 +105,32 @@ export function validarFiltro(entrada, catalogo) {
     }
     canonicas.push(k);
   }
-  const clave = (c) => `${ORDEN.indexOf(c.op)}|${c.campo}|${JSON.stringify(c)}`;
-  canonicas.sort((a, b) => (clave(a) < clave(b) ? -1 : 1));
+  canonicas.sort(compararCondiciones);
   if (new Set(canonicas.map((c) => JSON.stringify(c))).size !== canonicas.length) errores.push('Condiciones repetidas.');
   return { ok: errores.length === 0, errores, filtro: { y: canonicas } };
 }
 
+const claveOrden = (c) => `${ORDEN.indexOf(c.op)}|${c.campo}|${JSON.stringify(c)}`;
+const compararCondiciones = (a, b) => (claveOrden(a) < claveOrden(b) ? -1 : 1);
+
 /** Clave canónica (texto) de un filtro ya validado: base de la firma semántica. */
 export const claveDeFiltro = (filtro) => JSON.stringify(filtro.y);
+
+/**
+ * Conjunción de dos filtros ya canónicos, también canónica (sin repetir condiciones). Sirve para la
+ * identidad de una consigna sobre una vista: «películas argentinas de X» = «películas» ∧ «de Argentina» ∧
+ * «de X», la misma consigna que la condición equivalente sobre el catálogo base.
+ */
+export function unirFiltros(a, b) {
+  const vistas = new Set();
+  const y = [];
+  for (const c of [...a.y, ...b.y]) {
+    const k = JSON.stringify(c);
+    if (!vistas.has(k)) y.push(c);
+    vistas.add(k);
+  }
+  return { y: y.sort(compararCondiciones) };
+}
 
 // ───── Evaluación ─────
 
@@ -294,8 +312,14 @@ export function interpretar(enunciado, plantilla, catalogo) {
     const una = fraseRegex(frase, valoresOrdenados(campo));
     const m = resto.match(new RegExp(`^ (${una}(?: o ${una})*)`));
     if (!m) continue;
-    const valores = [...m[1].matchAll(new RegExp(una, 'g'))].map((x) => x[1]);
-    condiciones.push({ op: 'es', campo, valores });
+    if (frase.includes('{desde}')) {
+      const tramo = m[1].match(new RegExp(`^${una}$`));
+      if (!tramo) return null;
+      condiciones.push({ op: 'entre', campo, desde: Number(tramo[1]), hasta: Number(tramo[2]) });
+    } else {
+      const valores = [...m[1].matchAll(new RegExp(una, 'g'))].map((x) => x[1]);
+      condiciones.push({ op: 'es', campo, valores });
+    }
     resto = resto.slice(m[0].length);
   }
   if (!resto) return { y: condiciones };

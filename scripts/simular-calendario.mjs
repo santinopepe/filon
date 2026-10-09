@@ -18,6 +18,8 @@ import { asegurarDesafio } from '../servidor/generador/generar.js';
 import { CATEGORIAS } from '../servidor/dominio.js';
 import { diasEntre, fechaLocal, sumarDias } from '../servidor/tiempo.js';
 
+import { POR_OMISION, jaccard, jaccardEstimado } from '../servidor/catalogos/generador.js';
+
 const args = process.argv.slice(2);
 const valor = (f, def) => (args.includes(f) ? args[args.indexOf(f) + 1] : def);
 const dir = mkdtempSync(join(tmpdir(), 'filon-calendario-'));
@@ -28,6 +30,8 @@ const config = cargarConfig({
     CATALOGOS_SEMILLA: valor('--semilla', 'simulacion'),
     CATALOGOS_DIAS_SIN_REPETIR: valor('--ventana', '60'),
     CATALOGOS_COMPLETAR_CON_RESERVA: '1',
+    CATALOGOS_DIAS_ROTACION: valor('--rotacion-dias', String(POR_OMISION.diasRotacion)),
+    CATALOGOS_PESO_ROTACION: valor('--rotacion-peso', String(POR_OMISION.pesoRotacion)),
   },
 });
 const dias = Number(valor('--dias', 180));
@@ -93,9 +97,27 @@ for (const clave of ['firma', 'conjunto']) {
     }
   }
 }
+let topesViolados = 0;
+const porDia = new Map();
+for (const p of generadas) (porDia.get(p.fecha) ?? porDia.set(p.fecha, []).get(p.fecha)).push(p);
+for (const ps of porDia.values()) {
+  const categorias = contar(ps, p => p.categoria), universos = contar(ps, p => p.g.universo ?? p.g.catalogo.id), familias = contar(ps, p => p.g.familia);
+  if (Object.entries(categorias).some(([c,n]) => n > (modo === 'geografia' ? 7 : c === 'gramatica' ? 1 : 2)) || Object.values(universos).some(n => n > (modo === 'geografia' ? 3 : 2)) || Object.values(familias).some(n => n > 1)) topesViolados++;
+}
+let otrosUniversosRepetidos = 0;
+for (let i = 0; i < generadas.length; i++) for (let j = i - 1; j >= 0; j--) {
+  const a = generadas[i], b = generadas[j];
+  if (diasEntre(b.fecha, a.fecha) >= ventana) break;
+  if ((a.g.universo ?? a.g.catalogo.id) !== (b.g.universo ?? b.g.catalogo.id) && (a.g.nombresConjunto && b.g.nombresConjunto ? Math.min(a.g.nombresConjunto.length,b.g.nombresConjunto.length)/Math.max(a.g.nombresConjunto.length,b.g.nombresConjunto.length) >= POR_OMISION.solapamientoOtroUniverso && jaccard(a.g.nombresConjunto,b.g.nombresConjunto) >= POR_OMISION.solapamientoOtroUniverso : jaccardEstimado(a.g.minhashNombres,b.g.minhashNombres) >= POR_OMISION.solapamientoOtroUniverso)) otrosUniversosRepetidos++;
+}
+const intervalosPorCategoria = Object.fromEntries([...new Set(generadas.map(p=>p.categoria))].map(c => {
+  const fechas = [...new Set(generadas.filter(p=>p.categoria===c).map(p=>p.fecha))];
+  const distancias = fechas.slice(1).map((f,i)=>diasEntre(fechas[i],f));
+  return [CATEGORIAS[c] ?? c, { diasConPreguntas: fechas.length, intervaloMedio: distancias.length ? Math.round(distancias.reduce((s,n)=>s+n,0)/distancias.length*10)/10 : null, intervaloMaximo: distancias.length ? Math.max(...distancias) : null, diasHastaPrimera: diasEntre(inicio, fechas[0]), diasDesdeUltima: diasEntre(fechas.at(-1), sumarDias(inicio,dias-1)) }];
+}));
 const generados = resultados.filter((r) => !r.programado);
 const informe = {
-  configuracion: { modo, inicio, dias, ventana, semilla: config.catalogos.semilla, maxRespuestas: config.catalogos.maxRespuestas, completarConReserva: config.catalogos.completarConReserva },
+  configuracion: { modo, inicio, dias, ventana, diasRotacion: config.catalogos.diasRotacion, pesoRotacion: config.catalogos.pesoRotacion, semilla: config.catalogos.semilla, maxRespuestas: config.catalogos.maxRespuestas, completarConReserva: config.catalogos.completarConReserva },
   versiones: generadas[0]?.g.versiones ?? null,
   historialInicial,
   dias: {
@@ -107,7 +129,8 @@ const informe = {
     diasConReserva: generados.filter((r) => r.origen !== 'catalogo').map((r) => r.fecha),
   },
   preguntas: { generadas: generadas.length, deReserva: preguntas.length - generadas.length, consignasDistintas: new Set(generadas.map((p) => p.firma)).size },
-  repeticiones: { violacionesDentroDeLaVentana: violaciones, consignasReutilizadasDespuesDeLaVentana: reutilizadas, menorDistanciaEntreRepeticiones: Number.isFinite(menorDistancia) ? menorDistancia : null },
+  topesViolados, intervalosPorCategoria,
+  repeticiones: { otrosUniversosRepetidos, violacionesDentroDeLaVentana: violaciones, consignasReutilizadasDespuesDeLaVentana: reutilizadas, menorDistanciaEntreRepeticiones: Number.isFinite(menorDistancia) ? menorDistancia : null },
   variedad: {
     porCategoria: contar(generadas, (p) => CATEGORIAS[p.categoria] ?? p.categoria),
     porCatalogo: contar(generadas, (p) => p.g.catalogo.id),
@@ -131,4 +154,4 @@ if (d.diasConReserva.length) console.log(`  usaron la reserva: ${d.diasConReserv
 console.log(`Preguntas generadas: ${informe.preguntas.generadas} (${informe.preguntas.consignasDistintas} consignas distintas) · de la reserva: ${informe.preguntas.deReserva}`);
 console.log(`Repeticiones: ${informe.repeticiones.violacionesDentroDeLaVentana} dentro de la ventana · ${informe.repeticiones.consignasReutilizadasDespuesDeLaVentana} reutilizadas después · menor distancia ${informe.repeticiones.menorDistanciaEntreRepeticiones ?? '—'} días`);
 for (const [titulo, m] of Object.entries(informe.variedad)) console.log(`${titulo}: ${Object.entries(m).map(([k, v]) => `${k} ${v}`).join(' · ')}`);
-process.exit(informe.repeticiones.violacionesDentroDeLaVentana || d.fallos ? 1 : 0);
+process.exit(informe.repeticiones.violacionesDentroDeLaVentana || otrosUniversosRepetidos || topesViolados || d.fallos ? 1 : 0);

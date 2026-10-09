@@ -1,0 +1,19 @@
+{
+  "id": "albumes_en_vivo",
+  "nombre": "Álbumes en vivo",
+  "descripcion": "Vista por tipo de los álbumes del catálogo base.",
+  "vista": {
+    "catalogo": "albumes",
+    "filtro": {
+      "op": "es",
+      "campo": "tipo",
+      "valores": [
+        "en vivo"
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "parcial",
+    "criterio": "Hereda la cobertura por artista del catálogo de álbumes; solo este tipo de álbum."
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "id": "deportistas",
+  "nombre": "Campeones argentinos y ganadores del Balón de Oro",
+  "descripcion": "Planteles finales argentinos de 1978, 1986 y 2022, y ganadores del Balón de Oro masculino 1956–2025.",
+  "version": "2026-10-08.62a3fabc13",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia: planteles 1978",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1379066239",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: planteles 1986",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1377303845",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: planteles 2022",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1378721370",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: Balón de Oro masculino, 1956–2025",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1378663373",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "parcial",
+    "criterio": "Planteles argentinos campeones 1978, 1986 y 2022 (22, 22 y 26), y 69 ediciones adjudicadas del Balón de Oro masculino 1956–2025, incluidas las seis FIFA Ballon d’Or 2010–2015. 2020 cancelada; no son todos los logros de los jugadores.",
+    "completoPor": {
+      "logros": [
+        "Mundial 1978 con Argentina",
+        "Mundial 1986 con Argentina",
+        "Mundial 2022 con Argentina"
+      ],
+      "premios": [
+        "Balón de Oro"
+      ]
+    },
+    "verificacion": [
+      "sección Argentina 1978",
+      "Argentina 1978: 22 convocados finales",
+      "sección Argentina 1986",
+      "Argentina 1986: 22 convocados finales",
+      "sección Argentina 2022",
+      "Argentina 2022: 26 convocados finales",
+      "tabla de ganadores del Balón de Oro",
+      "69 ediciones adjudicadas 1956–2025; 2020 cancelada, 2026 aún no adjudicada",
+      "todos los jugadores enlazados a Wikidata",
+      "Messi en el plantel campeón 2022",
+      "Messi: ocho Balones de Oro; Cristiano Ronaldo: cinco"
+    ]
+  },
+  "atributos": {
+    "deporte": {
+      "tipo": "texto",
+      "etiqueta": "deporte"
+    },
+    "nacionalidades": {
+      "tipo": "lista",
+      "etiqueta": "nacionalidad"
+    },
+    "logros": {
+      "tipo": "lista",
+      "etiqueta": "competición y edición"
+    },
+    "premios": {
+      "tipo": "lista",
+      "etiqueta": "premio"
+    },
+    "anios_balon": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año del Balón de Oro"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q102027","nombre":"Fabio Cannavaro","alias":["Cannavaro"],"popularidad":84,"atributos":{"deporte":"fútbol","nacionalidades":["Italia"],"logros":["Balón de Oro 2006"],"premios":["Balón de Oro"],"anios_balon":[2006]},"fuente":"https://www.wikidata.org/wiki/Q102027"},
+    {"id":"Q10855654","nombre":"Ángel Correa","alias":["Angel Martin Correa Martinez"],"popularidad":47,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q10855654"},
+    {"id":"Q11571","nombre":"Cristiano Ronaldo","popularidad":214,"atributos":{"deporte":"fútbol","nacionalidades":["Portugal"],"logros":["Balón de Oro 2008","Balón de Oro 2013","Balón de Oro 2014","Balón de Oro 2016","Balón de Oro 2017"],"premios":["Balón de Oro"],"anios_balon":[2008,2013,2014,2016,2017]},"fuente":"https://www.wikidata.org/wiki/Q11571"},
+    {"id":"Q123118","nombre":"Raymond Kopa","popularidad":57,"atributos":{"deporte":"fútbol","nacionalidades":["Polonia","Francia"],"logros":["Balón de Oro 1958"],"premios":["Balón de Oro"],"anios_balon":[1958]},"fuente":"https://www.wikidata.org/wiki/Q123118"},
+    {"id":"Q128829","nombre":"Michael Owen","alias":["Michael James Owen"],"popularidad":80,"atributos":{"deporte":"fútbol","nacionalidades":["Reino Unido"],"logros":["Balón de Oro 2001"],"premios":["Balón de Oro"],"anios_balon":[2001]},"fuente":"https://www.wikidata.org/wiki/Q128829"},
+    {"id":"Q13494","nombre":"Jean-Pierre Papin","popularidad":57,"atributos":{"deporte":"fútbol","nacionalidades":["Francia"],"logros":["Balón de Oro 1991"],"premios":["Balón de Oro"],"anios_balon":[1991]},"fuente":"https://www.wikidata.org/wiki/Q13494"},
+    {"id":"Q1355097","nombre":"Héctor Zelada","alias":["\"camino de tierra\"","Hector Miguel Zelada","Héctor Miguel Zelada Bertoqui"],"popularidad":24,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q1355097"},
+    {"id":"Q140319","nombre":"Ubaldo Fillol","popularidad":41,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q140319"},
+    {"id":"Q152832","nombre":"Kevin Keegan","alias":["Keegan"],"popularidad":73,"atributos":{"deporte":"fútbol","nacionalidades":["Reino Unido"],"logros":["Balón de Oro 1978","Balón de Oro 1979"],"premios":["Balón de Oro"],"anios_balon":[1978,1979]},"fuente":"https://www.wikidata.org/wiki/Q152832"},
+    {"id":"Q152871","nombre":"Karl-Heinz Rummenigge","alias":["Rummenigge"],"popularidad":65,"atributos":{"deporte":"fútbol","nacionalidades":["Alemania"],"logros":["Balón de Oro 1980","Balón de Oro 1981"],"premios":["Balón de Oro"],"anios_balon":[1980,1981]},"fuente":"https://www.wikidata.org/wiki/Q152871"},
+    {"id":"Q153463","nombre":"Allan Simonsen","alias":["Allan Rodenkam Simonsen"],"popularidad":49,"atributos":{"deporte":"fútbol","nacionalidades":["Reino de Dinamarca"],"logros":["Balón de Oro 1977"],"premios":["Balón de Oro"],"anios_balon":[1977]},"fuente":"https://www.wikidata.org/wiki/Q153463"},
+    {"id":"Q15802","nombre":"Daniel Passarella","alias":["Daniel Alberto Passarella"],"popularidad":57,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina","Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q15802"},
+    {"id":"Q162043","nombre":"Eusébio da Silva Ferreira","alias":["Eusebio","Eusebio Ferreira da Silva"],"popularidad":95,"atributos":{"deporte":"fútbol","nacionalidades":["Portugal"],"logros":["Balón de Oro 1965"],"premios":["Balón de Oro"],"anios_balon":[1965]},"fuente":"https://www.wikidata.org/wiki/Q162043"},
+    {"id":"Q164521","nombre":"George Best","popularidad":88,"atributos":{"deporte":"fútbol","nacionalidades":["Reino Unido"],"logros":["Balón de Oro 1968"],"premios":["Balón de Oro"],"anios_balon":[1968]},"fuente":"https://www.wikidata.org/wiki/Q164521"},
+    {"id":"Q164546","nombre":"Alfredo Di Stéfano","popularidad":90,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","Colombia","España"],"logros":["Balón de Oro 1957","Balón de Oro 1959"],"premios":["Balón de Oro"],"anios_balon":[1957,1959]},"fuente":"https://www.wikidata.org/wiki/Q164546"},
+    {"id":"Q166317","nombre":"Paulo Dybala","alias":["Paulo Bruno Exequiel Dybala"],"popularidad":79,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","Italia"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q166317"},
+    {"id":"Q167828","nombre":"Lev Yashin","alias":["''La araña negra''","Arana negra","Araña negra","Lev Ivanovich Yashin","pantera negra"],"popularidad":88,"atributos":{"deporte":"fútbol","nacionalidades":["Unión Soviética"],"logros":["Balón de Oro 1963"],"premios":["Balón de Oro"],"anios_balon":[1963]},"fuente":"https://www.wikidata.org/wiki/Q167828"},
+    {"id":"Q171295","nombre":"Pavel Nedvěd","alias":["Nedved"],"popularidad":65,"atributos":{"deporte":"fútbol","nacionalidades":["República Checa"],"logros":["Balón de Oro 2003"],"premios":["Balón de Oro"],"anios_balon":[2003]},"fuente":"https://www.wikidata.org/wiki/Q171295"},
+    {"id":"Q171583","nombre":"Bobby Charlton","alias":["Robert Charlton","Sir Bobby Charlton"],"popularidad":83,"atributos":{"deporte":"fútbol","nacionalidades":["Reino Unido"],"logros":["Balón de Oro 1966"],"premios":["Balón de Oro"],"anios_balon":[1966]},"fuente":"https://www.wikidata.org/wiki/Q171583"},
+    {"id":"Q17163","nombre":"Johan Cruyff","popularidad":128,"atributos":{"deporte":"fútbol","nacionalidades":["Reino de los Países Bajos"],"logros":["Balón de Oro 1971","Balón de Oro 1973","Balón de Oro 1974"],"premios":["Balón de Oro"],"anios_balon":[1971,1973,1974]},"fuente":"https://www.wikidata.org/wiki/Q17163"},
+    {"id":"Q173139","nombre":"George Weah","alias":["George Tawlon Manneh Oppong Ousman Weah","Weah"],"popularidad":94,"atributos":{"deporte":"fútbol","nacionalidades":["Liberia","Francia"],"logros":["Balón de Oro 1995"],"premios":["Balón de Oro"],"anios_balon":[1995]},"fuente":"https://www.wikidata.org/wiki/Q173139"},
+    {"id":"Q173972","nombre":"Ruud Gullit","popularidad":75,"atributos":{"deporte":"fútbol","nacionalidades":["Reino de los Países Bajos"],"logros":["Balón de Oro 1987"],"premios":["Balón de Oro"],"anios_balon":[1987]},"fuente":"https://www.wikidata.org/wiki/Q173972"},
+    {"id":"Q17462635","nombre":"Marcos Acuña","alias":["Marcos Javier Acuña"],"popularidad":43,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q17462635"},
+    {"id":"Q17515","nombre":"Diego Maradona","alias":["Maradó"],"popularidad":175,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q17515"},
+    {"id":"Q178628","nombre":"Paolo Rossi","popularidad":71,"atributos":{"deporte":"fútbol","nacionalidades":["Italia"],"logros":["Balón de Oro 1982"],"premios":["Balón de Oro"],"anios_balon":[1982]},"fuente":"https://www.wikidata.org/wiki/Q178628"},
+    {"id":"Q180649","nombre":"Mario Kempes","alias":["Alberto Kempes","Kempes","Mario Alberto Kempes","Mario Alberto Kempes Chiodi"],"popularidad":70,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q180649"},
+    {"id":"Q182063","nombre":"Nicolás Otamendi","alias":["Nicolas Hernan Gonzalo Otamendi","Nicolas Hernan Otamendi","Otamendi"],"popularidad":62,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q182063"},
+    {"id":"Q18224850","nombre":"Guido Rodríguez","popularidad":40,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q18224850"},
+    {"id":"Q1835","nombre":"Zinedine Zidane","alias":["Zidane","Zizou"],"popularidad":146,"atributos":{"deporte":"fútbol","nacionalidades":["Francia"],"logros":["Balón de Oro 1998"],"premios":["Balón de Oro"],"anios_balon":[1998]},"fuente":"https://www.wikidata.org/wiki/Q1835"},
+    {"id":"Q186691","nombre":"Oleh Blojín","alias":["Blokhin","Oleg Blochine","Oleg Blojín","Oleg Blokhin","Oleh Blokhin"],"popularidad":66,"atributos":{"deporte":"fútbol","nacionalidades":["Unión Soviética","Ucrania"],"logros":["Balón de Oro 1975"],"premios":["Balón de Oro"],"anios_balon":[1975]},"fuente":"https://www.wikidata.org/wiki/Q186691"},
+    {"id":"Q187125","nombre":"Hristo Stoichkov","alias":["Hristo Stoichkov Stoichkov","Hristo Stoitchkov","Stoichkov","Stoitchkov","Xristo Stoiçkov","Христо Стоичков"],"popularidad":71,"atributos":{"deporte":"fútbol","nacionalidades":["Bulgaria"],"logros":["Balón de Oro 1994"],"premios":["Balón de Oro"],"anios_balon":[1994]},"fuente":"https://www.wikidata.org/wiki/Q187125"},
+    {"id":"Q1912","nombre":"Karim Benzema","popularidad":107,"atributos":{"deporte":"fútbol","nacionalidades":["Francia"],"logros":["Balón de Oro 2022"],"premios":["Balón de Oro"],"anios_balon":[2022]},"fuente":"https://www.wikidata.org/wiki/Q1912"},
+    {"id":"Q19345715","nombre":"Exequiel Palacios","alias":["Exequiel Alejandro Palacios"],"popularidad":48,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q19345715"},
+    {"id":"Q201534","nombre":"Flórián Albert","alias":["Albert Florian"],"popularidad":54,"atributos":{"deporte":"fútbol","nacionalidades":["Hungría"],"logros":["Balón de Oro 1967"],"premios":["Balón de Oro"],"anios_balon":[1967]},"fuente":"https://www.wikidata.org/wiki/Q201534"},
+    {"id":"Q20851003","nombre":"Ousmane Dembélé","popularidad":87,"atributos":{"deporte":"fútbol","nacionalidades":["Francia"],"logros":["Balón de Oro 2025"],"premios":["Balón de Oro"],"anios_balon":[2025]},"fuente":"https://www.wikidata.org/wiki/Q20851003"},
+    {"id":"Q20994118","nombre":"Rodri Hernández","alias":["Rodri futbolista","Rodrigo Hernández Cascante","Rodrigo futbol","Rodrigo futbolista","Rodri"],"popularidad":74,"atributos":{"deporte":"fútbol","nacionalidades":["España"],"logros":["Balón de Oro 2024"],"premios":["Balón de Oro"],"anios_balon":[2024]},"fuente":"https://www.wikidata.org/wiki/Q20994118"},
+    {"id":"Q21484126","nombre":"Lautaro Martínez","popularidad":65,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q21484126"},
+    {"id":"Q216140","nombre":"Stanley Matthews","popularidad":58,"atributos":{"deporte":"fútbol","nacionalidades":["Reino Unido"],"logros":["Balón de Oro 1956"],"premios":["Balón de Oro"],"anios_balon":[1956]},"fuente":"https://www.wikidata.org/wiki/Q216140"},
+    {"id":"Q220700","nombre":"Omar Sívori","popularidad":57,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Balón de Oro 1961"],"premios":["Balón de Oro"],"anios_balon":[1961]},"fuente":"https://www.wikidata.org/wiki/Q220700"},
+    {"id":"Q22082590","nombre":"Nahuel Molina Lucero","alias":["Nahuel Molina"],"popularidad":49,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q22082590"},
+    {"id":"Q223158","nombre":"Josef Masopust","alias":["Joseph Masopust"],"popularidad":49,"atributos":{"deporte":"fútbol","nacionalidades":["República Checa","Checoslovaquia"],"logros":["Balón de Oro 1962"],"premios":["Balón de Oro"],"anios_balon":[1962]},"fuente":"https://www.wikidata.org/wiki/Q223158"},
+    {"id":"Q230046","nombre":"Gianni Rivera","alias":["Giovanni Rivera"],"popularidad":55,"atributos":{"deporte":"fútbol","nacionalidades":["Italia"],"logros":["Balón de Oro 1969"],"premios":["Balón de Oro"],"anios_balon":[1969]},"fuente":"https://www.wikidata.org/wiki/Q230046"},
+    {"id":"Q233565","nombre":"Denis Law","popularidad":56,"atributos":{"deporte":"fútbol","nacionalidades":["Reino Unido"],"logros":["Balón de Oro 1964"],"premios":["Balón de Oro"],"anios_balon":[1964]},"fuente":"https://www.wikidata.org/wiki/Q233565"},
+    {"id":"Q251683","nombre":"Ángel Di María","alias":["Angel Fabian Di Maria Hernandez","Di Maria","El Fideo"],"popularidad":85,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","Italia"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q251683"},
+    {"id":"Q26255087","nombre":"Gonzalo Montiel","alias":["Gonzalo Ariel Montiel","Gonzalo Ariel Montiel Gerez"],"popularidad":44,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q26255087"},
+    {"id":"Q270367","nombre":"Luis Suárez","alias":["Luis Suárez Miramontes"],"popularidad":50,"atributos":{"deporte":"fútbol","nacionalidades":["España"],"logros":["Balón de Oro 1960"],"premios":["Balón de Oro"],"anios_balon":[1960]},"fuente":"https://www.wikidata.org/wiki/Q270367"},
+    {"id":"Q28058687","nombre":"Cuti Romero","alias":["Cristian Gabriel Romero","Cristian Romero"],"popularidad":48,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q28058687"},
+    {"id":"Q281512","nombre":"Sergio Omar Almirón","alias":["Sergio Almirón"],"popularidad":24,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q281512"},
+    {"id":"Q298305","nombre":"Jorge Valdano","popularidad":54,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","España"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q298305"},
+    {"id":"Q29841260","nombre":"Juan Foyth","alias":["Juan Marcos Foyth"],"popularidad":43,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q29841260"},
+    {"id":"Q30881092","nombre":"Lisandro Martínez","popularidad":53,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q30881092"},
+    {"id":"Q310373","nombre":"Osvaldo Ardiles","alias":["Osvaldo Cesar Ardiles"],"popularidad":55,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q310373"},
+    {"id":"Q311410","nombre":"Íhor Belánov","alias":["Ígor Belánov"],"popularidad":46,"atributos":{"deporte":"fútbol","nacionalidades":["Unión Soviética","Ucrania"],"logros":["Balón de Oro 1986"],"premios":["Balón de Oro"],"anios_balon":[1986]},"fuente":"https://www.wikidata.org/wiki/Q311410"},
+    {"id":"Q313774","nombre":"Jorge Burruchaga","alias":["Burruchaga","Jorge Luis Burruchaga","Jose Serrizuela"],"popularidad":47,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q313774"},
+    {"id":"Q318195","nombre":"Sergio Batista","alias":["Checho Batista","Sergio Daniel Batista"],"popularidad":37,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q318195"},
+    {"id":"Q318304","nombre":"Ricardo Enrique Bochini","alias":["Bochini","El Bocha","Ricardo Bochini"],"popularidad":36,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q318304"},
+    {"id":"Q3275904","nombre":"Emiliano Martínez","alias":["Damian Emiliano Martinez","Damian Martinez","Dibu","E. Martínez"],"popularidad":63,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q3275904"},
+    {"id":"Q33297140","nombre":"Alexis Mac Allister","popularidad":57,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q33297140"},
+    {"id":"Q346942","nombre":"Oscar Ruggeri","alias":["Oscar Alfredo Ruggeri"],"popularidad":42,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q346942"},
+    {"id":"Q36386","nombre":"Lothar Matthäus","popularidad":85,"atributos":{"deporte":"fútbol","nacionalidades":["Alemania Occidental","Alemania"],"logros":["Balón de Oro 1990"],"premios":["Balón de Oro"],"anios_balon":[1990]},"fuente":"https://www.wikidata.org/wiki/Q36386"},
+    {"id":"Q368633","nombre":"Miguel Oviedo","popularidad":25,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q368633"},
+    {"id":"Q372086","nombre":"Leopoldo Jacinto Luque","alias":["Leopoldo Luque"],"popularidad":45,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q372086"},
+    {"id":"Q3761173","nombre":"Germán Pezzella","alias":["German Alejo Pezzella","Pezzella"],"popularidad":41,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q3761173"},
+    {"id":"Q3876530","nombre":"Nicolás Tagliafico","alias":["Tagliafico"],"popularidad":49,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q3876530"},
+    {"id":"Q39444","nombre":"Ronaldinho","alias":["Ronaldinho Gaucho","Ronaldino","Ronaldiño","Ronaldo De Assis Moreira","Ronaldo de Assis"],"popularidad":114,"atributos":{"deporte":"fútbol","nacionalidades":["España","Brasil"],"logros":["Balón de Oro 2005"],"premios":["Balón de Oro"],"anios_balon":[2005]},"fuente":"https://www.wikidata.org/wiki/Q39444"},
+    {"id":"Q41244","nombre":"Andriy Shevchenko","alias":["Andrei Shevchenko","Andriy Mykolayovych Shevchenko"],"popularidad":88,"atributos":{"deporte":"fútbol","nacionalidades":["Ucrania"],"logros":["Balón de Oro 2004"],"premios":["Balón de Oro"],"anios_balon":[2004]},"fuente":"https://www.wikidata.org/wiki/Q41244"},
+    {"id":"Q4261","nombre":"Michel Platini","popularidad":104,"atributos":{"deporte":"fútbol","nacionalidades":["Francia"],"logros":["Balón de Oro 1983","Balón de Oro 1984","Balón de Oro 1985"],"premios":["Balón de Oro"],"anios_balon":[1983,1984,1985]},"fuente":"https://www.wikidata.org/wiki/Q4261"},
+    {"id":"Q43744","nombre":"Gerd Müller","popularidad":91,"atributos":{"deporte":"fútbol","nacionalidades":["Alemania"],"logros":["Balón de Oro 1970"],"premios":["Balón de Oro"],"anios_balon":[1970]},"fuente":"https://www.wikidata.org/wiki/Q43744"},
+    {"id":"Q4457","nombre":"Franz Beckenbauer","alias":["Kaiser"],"popularidad":116,"atributos":{"deporte":"fútbol","nacionalidades":["Alemania Occidental","Alemania"],"logros":["Balón de Oro 1972","Balón de Oro 1976"],"premios":["Balón de Oro"],"anios_balon":[1972,1976]},"fuente":"https://www.wikidata.org/wiki/Q4457"},
+    {"id":"Q446923","nombre":"Daniel Bertoni un crack","alias":["Daniel Ricardo Bertoni","Ricardo Daniel Bertoni","Ricardo Daniel Bertoni Bucke","Daniel Bertoni"],"popularidad":39,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q446923"},
+    {"id":"Q455135","nombre":"Alberto Tarantini","alias":["Alberto Cesar Tarantini"],"popularidad":34,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q455135"},
+    {"id":"Q461838","nombre":"Nery Pumpido","alias":["Carlos Nery Alberto Pumpido","Nery Alberto Pumpido Barrinat"],"popularidad":36,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q461838"},
+    {"id":"Q463492","nombre":"René Houseman","alias":["Houseman","Rene Orlando Houseman"],"popularidad":36,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q463492"},
+    {"id":"Q465487","nombre":"Américo Gallego","alias":["Americo Ruben Gallego","Tolo Gallego"],"popularidad":37,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q465487"},
+    {"id":"Q483145","nombre":"Luís Figo","popularidad":80,"atributos":{"deporte":"fútbol","nacionalidades":["Portugal"],"logros":["Balón de Oro 2000"],"premios":["Balón de Oro"],"anios_balon":[2000]},"fuente":"https://www.wikidata.org/wiki/Q483145"},
+    {"id":"Q483577","nombre":"Rivaldo","alias":["Vitor Barbosa Ferreira","Vitor Borba Ferreira","Vitor Borba Ferreira Gomez"],"popularidad":79,"atributos":{"deporte":"fútbol","nacionalidades":["España","Brasil"],"logros":["Balón de Oro 1999"],"premios":["Balón de Oro"],"anios_balon":[1999]},"fuente":"https://www.wikidata.org/wiki/Q483577"},
+    {"id":"Q483629","nombre":"Marco van Basten","alias":["Marcel van Basten","Van Basten"],"popularidad":89,"atributos":{"deporte":"fútbol","nacionalidades":["Reino de los Países Bajos"],"logros":["Balón de Oro 1988","Balón de Oro 1989","Balón de Oro 1992"],"premios":["Balón de Oro"],"anios_balon":[1988,1989,1992]},"fuente":"https://www.wikidata.org/wiki/Q483629"},
+    {"id":"Q483837","nombre":"Luka Modrić","popularidad":113,"atributos":{"deporte":"fútbol","nacionalidades":["Croacia"],"logros":["Balón de Oro 2018"],"premios":["Balón de Oro"],"anios_balon":[2018]},"fuente":"https://www.wikidata.org/wiki/Q483837"},
+    {"id":"Q504399","nombre":"Ricardo La Volpe","alias":["El Sam Bigotes","La Volpe","Pasamos Caminando"],"popularidad":31,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q504399"},
+    {"id":"Q516743","nombre":"Héctor Enrique","alias":["Hector Adolfo Enrique"],"popularidad":29,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q516743"},
+    {"id":"Q516805","nombre":"Claudio Borghi","alias":["Bichi","Bichi Borghi","Claudio Daniel Borghi Bidos"],"popularidad":31,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q516805"},
+    {"id":"Q516892","nombre":"Julio Olarticoechea","alias":["Olarticoechea"],"popularidad":31,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q516892"},
+    {"id":"Q516971","nombre":"Jorge Olguín","alias":["Jorge Mario Olguin"],"popularidad":32,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q516971"},
+    {"id":"Q529207","nombre":"Ronaldo","alias":["Ronaldo Luis Nazario de Lima"],"popularidad":124,"atributos":{"deporte":"fútbol","nacionalidades":["Brasil"],"logros":["Balón de Oro 1997","Balón de Oro 2002"],"premios":["Balón de Oro"],"anios_balon":[1997,2002]},"fuente":"https://www.wikidata.org/wiki/Q529207"},
+    {"id":"Q531814","nombre":"Kaká","alias":["Ricardo Izecson","Ricardo Izecson dos Santos","Ricardo dos Santos Leite"],"popularidad":100,"atributos":{"deporte":"fútbol","nacionalidades":["Italia","Brasil"],"logros":["Balón de Oro 2007"],"premios":["Balón de Oro"],"anios_balon":[2007]},"fuente":"https://www.wikidata.org/wiki/Q531814"},
+    {"id":"Q541353","nombre":"José Luis Cuciuffo","popularidad":34,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q541353"},
+    {"id":"Q5484508","nombre":"Franco Daniel Armani","alias":["Franco Armani"],"popularidad":45,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q5484508"},
+    {"id":"Q552167","nombre":"Luis Galván","alias":["Luis Adolfo Galván"],"popularidad":37,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q552167"},
+    {"id":"Q553084","nombre":"Héctor Baley","alias":["Héctor Rodolfo Baley"],"popularidad":28,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q553084"},
+    {"id":"Q561402","nombre":"Oscar Alberto Ortiz","alias":["Oscar Ortiz"],"popularidad":29,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q561402"},
+    {"id":"Q561621","nombre":"José Daniel Valencia","alias":["Daniel Valencia","Jose Valencia"],"popularidad":26,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q561621"},
+    {"id":"Q57183","nombre":"Matthias Sammer","popularidad":53,"atributos":{"deporte":"fútbol","nacionalidades":["Alemania Oriental","Alemania"],"logros":["Balón de Oro 1996"],"premios":["Balón de Oro"],"anios_balon":[1996]},"fuente":"https://www.wikidata.org/wiki/Q57183"},
+    {"id":"Q57293140","nombre":"Thiago Almada","popularidad":39,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q57293140"},
+    {"id":"Q5879014","nombre":"Gerónimo Rulli","popularidad":49,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q5879014"},
+    {"id":"Q59381180","nombre":"Julián Alvarez","popularidad":64,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","Italia"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q59381180"},
+    {"id":"Q6110670","nombre":"Rodrigo De Paul","alias":["Rodrigo Javier de Paul"],"popularidad":54,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","Italia"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q6110670"},
+    {"id":"Q615","nombre":"Lionel Messi","popularidad":225,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina","España","Italia"],"logros":["Mundial 2022 con Argentina","Balón de Oro 2009","Balón de Oro 2010","Balón de Oro 2011","Balón de Oro 2012","Balón de Oro 2015","Balón de Oro 2019","Balón de Oro 2021","Balón de Oro 2023"],"premios":["Balón de Oro"],"anios_balon":[2009,2010,2011,2012,2015,2019,2021,2023]},"fuente":"https://www.wikidata.org/wiki/Q615"},
+    {"id":"Q630170","nombre":"Leandro Paredes","popularidad":55,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q630170"},
+    {"id":"Q67964","nombre":"Roberto Baggio","popularidad":91,"atributos":{"deporte":"fútbol","nacionalidades":["Italia"],"logros":["Balón de Oro 1993"],"premios":["Balón de Oro"],"anios_balon":[1993]},"fuente":"https://www.wikidata.org/wiki/Q67964"},
+    {"id":"Q688933","nombre":"Néstor Clausen","popularidad":28,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q688933"},
+    {"id":"Q705946","nombre":"Ricardo Julio Villa","alias":["Julio Ricardo Villa","Julio Villa","Ricardo Villa","Ricky Villa"],"popularidad":27,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q705946"},
+    {"id":"Q709739","nombre":"Omar Larrosa","alias":["Omar Rubén Larrosa"],"popularidad":31,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q709739"},
+    {"id":"Q714530","nombre":"Rubén Pagnanini","alias":["Rubén Oscar Pagnanini"],"popularidad":25,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q714530"},
+    {"id":"Q714544","nombre":"Daniel Killer","alias":["Daniel Pedro Killer"],"popularidad":27,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q714544"},
+    {"id":"Q721974","nombre":"Oscar Garré","popularidad":26,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q721974"},
+    {"id":"Q721996","nombre":"Ricardo Giusti","alias":["Ricardo Omar Giusti"],"popularidad":32,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q721996"},
+    {"id":"Q721998","nombre":"José Luis Brown","alias":["Tata Brown"],"popularidad":36,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q721998"},
+    {"id":"Q923286","nombre":"Rubén Galván","popularidad":31,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q923286"},
+    {"id":"Q923318","nombre":"Luis Islas","popularidad":28,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q923318"},
+    {"id":"Q932459","nombre":"Pedro Pasculli","popularidad":26,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q932459"},
+    {"id":"Q94949","nombre":"Norberto Alonso","alias":["Beto Alonso","Norberto Osvaldo Alonso"],"popularidad":33,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1978 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q94949"},
+    {"id":"Q96105248","nombre":"Enzo Fernández","alias":["Enzo Jeremías Fernández"],"popularidad":59,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q96105248"},
+    {"id":"Q965846","nombre":"Papu Gómez","alias":["Alejandro Darío Gómez","Alejandro Gómez"],"popularidad":44,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 2022 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q965846"},
+    {"id":"Q983591","nombre":"Carlos Daniel Tapia","alias":["Carlos Tapia"],"popularidad":24,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q983591"},
+    {"id":"Q983728","nombre":"Marcelo Trobbiani","alias":["Marcelo Antonio Trobbiani","Marcelo Antonio Trobbiani Ughetto","Trobbiani"],"popularidad":26,"atributos":{"deporte":"fútbol","nacionalidades":["Argentina"],"logros":["Mundial 1986 con Argentina"],"premios":[],"anios_balon":[]},"fuente":"https://www.wikidata.org/wiki/Q983728"}
+  ]
+}

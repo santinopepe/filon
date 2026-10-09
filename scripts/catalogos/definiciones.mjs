@@ -5,28 +5,11 @@ import { sparql, etiquetas, propiedad, qid, anio, urlEntidad } from './wikidata.
 import { descargar, capitalizar, limpiarAlias, sinParentesis, sha } from './comun.mjs';
 import { normalizar } from '../../servidor/normalizar.js';
 import { leerAfijos, expandir } from './hunspell.mjs';
+import { WIKIDATA, POPULARIDAD_WIKIPEDIA, exigir, iguales, rango, nombreYAlias, wikitexto, plano } from './ayudas.mjs';
+import { NUEVAS } from './nuevos.mjs';
 
 const CLDR = '48.2.3';
 const CLDR_URL = `https://raw.githubusercontent.com/unicode-org/cldr-json/${CLDR}/cldr-json`;
-const WIKIDATA = { nombre: 'Wikidata', url: 'https://www.wikidata.org', licencia: 'CC0 1.0' };
-const POPULARIDAD_WIKIPEDIA = {
-  criterio: 'Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.',
-  nota: 'Es una medida de notoriedad, no una estadística de jugadores.',
-};
-
-function exigir(condicion, mensaje, verificacion) {
-  if (!condicion) throw new Error(`Verificación fallida: ${mensaje}`);
-  verificacion.push(mensaje);
-}
-const iguales = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
-const rango = (desde, hasta, menos = []) => Array.from({ length: hasta - desde + 1 }, (_, i) => desde + i).filter((a) => !menos.includes(a));
-
-/** Nombre y alias desde Wikidata (etiqueta en español; si no hay, se informa y no se importa). */
-function nombreYAlias(e, { capital = false, extras = [] } = {}) {
-  if (!e?.es) return null;
-  const nombre = capital ? capitalizar(e.es) : e.es;
-  return { nombre, alias: limpiarAlias(nombre, [...extras, ...e.alias.map((a) => (capital ? capitalizar(a) : a))]) };
-}
 
 // ───────────────────────── Geografía ─────────────────────────
 
@@ -585,7 +568,7 @@ const DISCOS = [
   ['ABBA', 'Arrival'], ['Linkin Park', 'Hybrid Theory'], ['Green Day', 'American Idiot'], ['Billie Eilish', 'When We All Fall Asleep, Where Do We Go?'],
 ];
 const MB = 'https://musicbrainz.org/ws/2';
-const mb = (ruta) => descargar(`${MB}/${ruta}${ruta.includes('?') ? '&' : '?'}fmt=json`, { json: true, pausa: 1500, cabeceras: { accept: 'application/json' } });
+const mb = (ruta) => descargar(`${MB}/${ruta}${ruta.includes('?') ? '&' : '?'}fmt=json`, { json: true, cabeceras: { accept: 'application/json' } });
 
 /** Variantes de un título con paréntesis: «I Want You (She's So Heavy)» → «I Want You», «She's So Heavy». */
 function aliasDeTitulo(titulo) {
@@ -881,20 +864,6 @@ const idiomas = {
 const IAU = 'And Ant Aps Aqr Aql Ara Ari Aur Boo Cae Cam Cnc CVn CMa CMi Cap Car Cas Cen Cep Cet Cha Cir Col Com CrA CrB Crv Crt Cru Cyg Del Dor Dra Equ Eri For Gem Gru Her Hor Hya Hyi Ind Lac Leo LMi Lep Lib Lup Lyn Lyr Men Mic Mon Mus Nor Oct Oph Ori Pav Peg Per Phe Pic Psc PsA Pup Pyx Ret Sge Sgr Sco Scl Sct Ser Sex Tau Tel Tri TrA Tuc UMa UMi Vel Vir Vol Vul'.split(' ');
 const ZODIACO = ['Ari', 'Tau', 'Gem', 'Cnc', 'Leo', 'Vir', 'Lib', 'Sco', 'Sgr', 'Cap', 'Aqr', 'Psc'];
 
-/** Wikitexto de una página de Wikipedia en español, con su número de revisión. */
-async function wikitexto(pagina) {
-  const d = await descargar(`https://es.wikipedia.org/w/api.php?${new URLSearchParams({ action: 'parse', page: pagina, prop: 'wikitext|revid', format: 'json', formatversion: '2' })}`, { json: true });
-  return { texto: d.parse.wikitext, revision: d.parse.revid };
-}
-/** Texto plano de una celda de wikitexto: sin enlaces, cursivas, plantillas ni referencias. */
-const plano = (celda) =>
-  celda
-    .replace(/^\s*(?:rowspan|colspan|style|class|align)[^|[\]]*\|\s*/, '') // atributos de la celda («rowspan=3| Ser»)
-    .replace(/<ref[^>]*\/>|<ref[\s\S]*?<\/ref>/g, '')
-    .replace(/\{\{[^}]*\}\}/g, '')
-    .replace(/\[\[(?:[^|\]]*\|)?([^\]]*)\]\]/g, '$1')
-    .replace(/'{2,}/g, '')
-    .trim();
 
 const constelaciones = {
   id: 'constelaciones',
@@ -1531,4 +1500,4 @@ const pokemon = {
   },
 };
 
-export const DEFINICIONES = [paises, capitales, elementos, papas, presidentesEeuu, secretariosOnu, campeonesMundial, sedesMundial, campeonesF1, oscarPelicula, canciones, nobelLiteratura, cervantes, palabras, idiomas, pokemon, constelaciones, sistemaSolar, campeonesChampions, mundialFemenino, provinciasArgentinas, capitalesArgentinas, subdivisiones, capitalesSubdivisiones, departamentosArgentinos, elementosHtml, codigosHttp, monedas];
+export const DEFINICIONES = [paises, capitales, elementos, papas, presidentesEeuu, secretariosOnu, campeonesMundial, sedesMundial, campeonesF1, oscarPelicula, canciones, nobelLiteratura, cervantes, palabras, idiomas, pokemon, constelaciones, sistemaSolar, campeonesChampions, mundialFemenino, provinciasArgentinas, capitalesArgentinas, subdivisiones, capitalesSubdivisiones, departamentosArgentinos, elementosHtml, codigosHttp, monedas, ...NUEVAS];

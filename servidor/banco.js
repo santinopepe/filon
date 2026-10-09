@@ -438,7 +438,7 @@ export async function evaluarTexto(db, preguntaId, texto) {
 export async function preguntasRecientes(db, fecha, dias, modo = MODO_POR_DEFECTO) {
   const [desde, hasta] = limitesDeVentana(fecha, dias);
   const filas = await db.all(
-    `SELECT p.id, p.enunciado, p.huella, p.reserva_id AS reservaId, p.firma, d.fecha
+    `SELECT p.id, p.categoria, p.enunciado, p.huella, p.reserva_id AS reservaId, p.firma, d.fecha
      FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
      WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? AND d.fecha <> ?`,
     modo, desde, hasta, fecha,
