@@ -1,0 +1,68 @@
+{
+  "id": "componentes_pc",
+  "nombre": "Componentes internos de una computadora",
+  "descripcion": "Los componentes del grupo «Computer case» de la plantilla «Basic computer components» de Wikipedia.",
+  "version": "2026-10-08.ea22698adc",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia en inglés, «Template:Basic computer components» (revisión 1360093171)",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1360093171",
+      "licencia": "CC BY-SA 4.0",
+      "detalle": "lista y grupos"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "nombres en español, alias y popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Los artículos del grupo «Computer case» de la plantilla de navegación «Basic computer components» de Wikipedia en inglés (con sus subelementos).",
+    "verificacion": [
+      "artículos sin enlace a Wikidata, resueltos por etiqueta: IEEE 1394 → Q181693",
+      "la plantilla tiene el grupo «Computer case» (18 artículos)",
+      "todos tienen nombre en español (sin traducir: ninguno)",
+      "18 componentes"
+    ]
+  },
+  "atributos": {
+    "ubicacion": {
+      "tipo": "lista",
+      "etiqueta": "ubicación"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Q570553",
+      "detalle": "nombre «MOSFET de potencia» (en Wikidata solo «power MOSFET», que queda como alias)",
+      "motivo": "Wikidata no tiene etiqueta en español: se traduce el nombre."
+    }
+  ],
+  "entidades": [
+    {"id":"Q1023883","nombre":"BIOS","alias":["RAM-CMOS","CMOS RAM","nonvolatile BIOS memory"],"popularidad":15,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q1023883"},
+    {"id":"Q1143962","nombre":"SSHD","alias":["disco rígido híbrido","hybrid drive"],"popularidad":21,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q1143962"},
+    {"id":"Q165233","nombre":"tarjeta de red","alias":["Network Interface Card (NIC)","Tarjeta de interfaz de red","adaptador LAN","adaptador de red","interfaz de red física","placa de red","network interface controller"],"popularidad":59,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q165233"},
+    {"id":"Q210793","nombre":"MOSFET","popularidad":48,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q210793"},
+    {"id":"Q216158","nombre":"tarjeta de expansión","alias":["placa de expansion","tarjetas de expansion","expansion card"],"popularidad":43,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q216158"},
+    {"id":"Q3972","nombre":"fuente de alimentación","alias":["power supply unit","Power supply"],"popularidad":47,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q3972"},
+    {"id":"Q4321","nombre":"placa base","alias":["placa madre","placa principal","tarjeta madre","motherboard"],"popularidad":101,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q4321"},
+    {"id":"Q4439","nombre":"HDD","alias":["disco duro","hard disk"],"popularidad":132,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q4439"},
+    {"id":"Q487343","nombre":"SSD","alias":["unidad de estado sólido","disco de estado solido","disco solido","discos de estado solido","solid-state drive","unidades de estado solido"],"popularidad":64,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q487343"},
+    {"id":"Q5295","nombre":"RAM","alias":["memoria de acceso aleatorio","random-access memory"],"popularidad":110,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q5295"},
+    {"id":"Q5297","nombre":"microprocesador","alias":["microprocessor"],"popularidad":84,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q5297"},
+    {"id":"Q5300","nombre":"unidad central de procesamiento","alias":["unidad de procesamiento central","central processing unit"],"popularidad":123,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q5300"},
+    {"id":"Q5438850","nombre":"Módem Fax","alias":["Fax modem"],"popularidad":8,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q5438850"},
+    {"id":"Q570553","nombre":"MOSFET de potencia","alias":["power MOSFET"],"popularidad":14,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q570553"},
+    {"id":"Q5830907","nombre":"memoria informática","alias":["memoria de computadora","memoria principal","computer memory","Memory"],"popularidad":62,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q5830907"},
+    {"id":"Q587008","nombre":"SMPS","alias":["fuente conmutada","switched-mode power supply"],"popularidad":37,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q587008"},
+    {"id":"Q66221","nombre":"memoria","alias":["almacenamiento","memoria informatica","computer storage media","Data storage"],"popularidad":67,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q66221"},
+    {"id":"Q949101","nombre":"VRM","alias":["voltage regulator module"],"popularidad":13,"atributos":{"ubicacion":["gabinete"]},"fuente":"https://www.wikidata.org/wiki/Q949101"}
+  ]
+}

@@ -1,0 +1,2654 @@
+{
+  "modo": "normal",
+  "ventana": 60,
+  "total": 4765,
+  "sinGramatica": 2292,
+  "aporteVentana": 1667,
+  "capacidadVentana": {
+    "necesarias": 420,
+    "cotaConTopes": 946,
+    "compatibleConTopes": true,
+    "alternativasOmitidas": 7,
+    "rotacion": "Preferencia; verificar distribución y ventanas en simular-calendario. La cota no garantiza el reparto diario ni descarta solapamientos."
+  },
+  "porCategoria": [
+    [
+      "gramatica",
+      2473
+    ],
+    [
+      "geografia",
+      1153
+    ],
+    [
+      "musica",
+      336
+    ],
+    [
+      "videojuegos",
+      262
+    ],
+    [
+      "informatica",
+      128
+    ],
+    [
+      "cine",
+      75
+    ],
+    [
+      "ciencia",
+      68
+    ],
+    [
+      "historia",
+      54
+    ],
+    [
+      "gastronomia",
+      52
+    ],
+    [
+      "deportes",
+      49
+    ],
+    [
+      "arte",
+      37
+    ],
+    [
+      "literatura",
+      32
+    ],
+    [
+      "television",
+      14
+    ],
+    [
+      "astronomia",
+      13
+    ],
+    [
+      "idiomas",
+      12
+    ],
+    [
+      "naturaleza",
+      7
+    ]
+  ],
+  "registrosPorCategoria": [
+    [
+      "gramatica",
+      47611
+    ],
+    [
+      "geografia",
+      2429
+    ],
+    [
+      "musica",
+      7993
+    ],
+    [
+      "videojuegos",
+      1085
+    ],
+    [
+      "informatica",
+      1268
+    ],
+    [
+      "cine",
+      532
+    ],
+    [
+      "ciencia",
+      782
+    ],
+    [
+      "historia",
+      370
+    ],
+    [
+      "gastronomia",
+      334
+    ],
+    [
+      "deportes",
+      267
+    ],
+    [
+      "arte",
+      330
+    ],
+    [
+      "literatura",
+      692
+    ],
+    [
+      "television",
+      93
+    ],
+    [
+      "astronomia",
+      101
+    ],
+    [
+      "idiomas",
+      300
+    ],
+    [
+      "naturaleza",
+      151
+    ]
+  ],
+  "porCatalogo": [
+    {
+      "catalogo": "paises",
+      "universo": "paises",
+      "registros": 195,
+      "vista": false,
+      "utilizables": 265,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "capitales",
+      "universo": "capitales",
+      "registros": 202,
+      "vista": false,
+      "utilizables": 283,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "elementos",
+      "universo": "elementos",
+      "registros": 118,
+      "vista": false,
+      "utilizables": 37,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "papas",
+      "universo": "papas",
+      "registros": 265,
+      "vista": false,
+      "utilizables": 35,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "presidentes_eeuu",
+      "universo": "presidentes_eeuu",
+      "registros": 45,
+      "vista": false,
+      "utilizables": 4,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "secretarios_onu",
+      "universo": "secretarios_onu",
+      "registros": 9,
+      "vista": false,
+      "utilizables": 1,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "campeones_mundial",
+      "universo": "campeones_mundial",
+      "registros": 8,
+      "vista": false,
+      "utilizables": 1,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "sedes_mundial",
+      "universo": "sedes_mundial",
+      "registros": 19,
+      "vista": false,
+      "utilizables": 6,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "campeones_f1",
+      "universo": "campeones_f1",
+      "registros": 35,
+      "vista": false,
+      "utilizables": 5,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "oscar_pelicula",
+      "universo": "oscar_pelicula",
+      "registros": 98,
+      "vista": false,
+      "utilizables": 20,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "canciones",
+      "universo": "canciones",
+      "registros": 781,
+      "vista": false,
+      "utilizables": 67,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "nobel_literatura",
+      "universo": "nobel_literatura",
+      "registros": 122,
+      "vista": false,
+      "utilizables": 13,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "premio_cervantes",
+      "universo": "premio_cervantes",
+      "registros": 51,
+      "vista": false,
+      "utilizables": 3,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "palabras",
+      "universo": "palabras",
+      "registros": 47611,
+      "vista": false,
+      "utilizables": 2473,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "provincias_argentinas",
+      "universo": "provincias_argentinas",
+      "registros": 23,
+      "vista": false,
+      "utilizables": 13,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "capitales_argentinas",
+      "universo": "capitales_argentinas",
+      "registros": 23,
+      "vista": false,
+      "utilizables": 2,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "idiomas",
+      "universo": "idiomas",
+      "registros": 105,
+      "vista": false,
+      "utilizables": 5,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "monedas",
+      "universo": "monedas",
+      "registros": 143,
+      "vista": false,
+      "utilizables": 5,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "constelaciones",
+      "universo": "constelaciones",
+      "registros": 88,
+      "vista": false,
+      "utilizables": 11,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "sistema_solar",
+      "universo": "sistema_solar",
+      "registros": 13,
+      "vista": false,
+      "utilizables": 2,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "pokemon",
+      "universo": "pokemon",
+      "registros": 1025,
+      "vista": false,
+      "utilizables": 259,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "elementos_html",
+      "universo": "elementos_html",
+      "registros": 113,
+      "vista": false,
+      "utilizables": 11,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "codigos_http",
+      "universo": "codigos_http",
+      "registros": 60,
+      "vista": false,
+      "utilizables": 4,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "campeones_champions",
+      "universo": "campeones_champions",
+      "registros": 24,
+      "vista": false,
+      "utilizables": 8,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "mundial_femenino",
+      "universo": "mundial_femenino",
+      "registros": 5,
+      "vista": false,
+      "utilizables": 1,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "subdivisiones",
+      "universo": "subdivisiones",
+      "registros": 442,
+      "vista": false,
+      "utilizables": 286,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "capitales_subdivisiones",
+      "universo": "capitales_subdivisiones",
+      "registros": 251,
+      "vista": false,
+      "utilizables": 19,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "departamentos_argentinos",
+      "universo": "departamentos_argentinos",
+      "registros": 514,
+      "vista": false,
+      "utilizables": 217,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "propiedades_css",
+      "universo": "propiedades_css",
+      "registros": 492,
+      "vista": false,
+      "utilizables": 42,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "lenguajes_programacion",
+      "universo": "lenguajes_programacion",
+      "registros": 217,
+      "vista": false,
+      "utilizables": 43,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "formatos_archivo",
+      "universo": "formatos_archivo",
+      "registros": 163,
+      "vista": false,
+      "utilizables": 3,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "sistemas_operativos",
+      "universo": "sistemas_operativos",
+      "registros": 157,
+      "vista": false,
+      "utilizables": 18,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "perifericos",
+      "universo": "perifericos",
+      "registros": 34,
+      "vista": false,
+      "utilizables": 3,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "componentes_pc",
+      "universo": "componentes_pc",
+      "registros": 18,
+      "vista": false,
+      "utilizables": 1,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "conectores",
+      "universo": "conectores",
+      "registros": 14,
+      "vista": false,
+      "utilizables": 3,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "instrumentos_musicales",
+      "universo": "instrumentos_musicales",
+      "registros": 359,
+      "vista": false,
+      "utilizables": 22,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "presidentes_argentinos",
+      "universo": "presidentes_argentinos",
+      "registros": 51,
+      "vista": false,
+      "utilizables": 14,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "parques_nacionales_argentinos",
+      "universo": "parques_nacionales_argentinos",
+      "registros": 39,
+      "vista": false,
+      "utilizables": 13,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "ciudades",
+      "universo": "ciudades",
+      "registros": 597,
+      "vista": false,
+      "utilizables": 57,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "cientificos",
+      "universo": "cientificos",
+      "registros": 664,
+      "vista": false,
+      "utilizables": 31,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "obras_arte",
+      "universo": "obras_arte",
+      "registros": 330,
+      "vista": false,
+      "utilizables": 37,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "deportistas",
+      "universo": "deportistas",
+      "registros": 115,
+      "vista": false,
+      "utilizables": 9,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "peliculas",
+      "universo": "peliculas",
+      "registros": 434,
+      "vista": false,
+      "utilizables": 52,
+      "utilizablesViaVistas": 4
+    },
+    {
+      "catalogo": "peliculas_argentinas",
+      "universo": "peliculas",
+      "registros": 28,
+      "vista": true,
+      "utilizables": 4,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "series",
+      "universo": "series",
+      "registros": 93,
+      "vista": false,
+      "utilizables": 14,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "videojuegos",
+      "universo": "videojuegos",
+      "registros": 60,
+      "vista": false,
+      "utilizables": 3,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "libros",
+      "universo": "libros",
+      "registros": 340,
+      "vista": false,
+      "utilizables": 13,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "autores",
+      "universo": "autores",
+      "registros": 170,
+      "vista": false,
+      "utilizables": 2,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "animales",
+      "universo": "animales",
+      "registros": 151,
+      "vista": false,
+      "utilizables": 7,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "frutas_verduras",
+      "universo": "frutas_verduras",
+      "registros": 175,
+      "vista": false,
+      "utilizables": 29,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "personajes_ficcion",
+      "universo": "personajes_ficcion",
+      "registros": 9,
+      "vista": false,
+      "utilizables": 1,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "clubes_futbol",
+      "universo": "clubes_futbol",
+      "registros": 61,
+      "vista": false,
+      "utilizables": 19,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "albumes_estudio",
+      "universo": "albumes",
+      "registros": 1728,
+      "vista": true,
+      "utilizables": 112,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "albumes_en_vivo",
+      "universo": "albumes",
+      "registros": 2793,
+      "vista": true,
+      "utilizables": 56,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "artistas_musicales",
+      "universo": "artistas_musicales",
+      "registros": 2332,
+      "vista": false,
+      "utilizables": 71,
+      "utilizablesViaVistas": 8
+    },
+    {
+      "catalogo": "bandas_argentinas",
+      "universo": "artistas_musicales",
+      "registros": 165,
+      "vista": true,
+      "utilizables": 8,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "comidas",
+      "universo": "comidas",
+      "registros": 159,
+      "vista": false,
+      "utilizables": 23,
+      "utilizablesViaVistas": 0
+    },
+    {
+      "catalogo": "albumes",
+      "universo": "albumes",
+      "registros": 9683,
+      "vista": false,
+      "utilizables": 0,
+      "utilizablesViaVistas": 168
+    }
+  ],
+  "porFamilia": [
+    [
+      "palabras-letras",
+      1888
+    ],
+    [
+      "palabras-bordes",
+      292
+    ],
+    [
+      "palabras-secuencia",
+      292
+    ],
+    [
+      "capitales-letras",
+      180
+    ],
+    [
+      "expansion-albumes-artista",
+      168
+    ],
+    [
+      "paises-letras",
+      165
+    ],
+    [
+      "partidos",
+      163
+    ],
+    [
+      "pokemon-tipos",
+      139
+    ],
+    [
+      "estados",
+      118
+    ],
+    [
+      "pokemon-letras",
+      93
+    ],
+    [
+      "expansion-integrantes-banda",
+      71
+    ],
+    [
+      "canciones-disco",
+      67
+    ],
+    [
+      "capitales-fronteras",
+      61
+    ],
+    [
+      "paises-fronteras",
+      57
+    ],
+    [
+      "departamentos-ar",
+      54
+    ],
+    [
+      "provincias-mundo",
+      53
+    ],
+    [
+      "expansion-peliculas-director",
+      51
+    ],
+    [
+      "departamentos-mundo",
+      49
+    ],
+    [
+      "regiones",
+      46
+    ],
+    [
+      "lenguajes-nombre",
+      43
+    ],
+    [
+      "papas",
+      35
+    ],
+    [
+      "ciudades-millon",
+      34
+    ],
+    [
+      "expansion-caa-categoria",
+      29
+    ],
+    [
+      "paises-region",
+      23
+    ],
+    [
+      "capitales",
+      23
+    ],
+    [
+      "css-modulo",
+      23
+    ],
+    [
+      "expansion-comidas-nombre",
+      23
+    ],
+    [
+      "ciudades-letras",
+      22
+    ],
+    [
+      "oscar",
+      20
+    ],
+    [
+      "prefecturas",
+      20
+    ],
+    [
+      "capitales-idiomas",
+      19
+    ],
+    [
+      "css-nombre",
+      19
+    ],
+    [
+      "instrumentos-nombre",
+      19
+    ],
+    [
+      "expansion-pinturas-autor",
+      19
+    ],
+    [
+      "pokemon-tipo",
+      18
+    ],
+    [
+      "expansion-pinturas-museo",
+      18
+    ],
+    [
+      "elementos-nombre",
+      16
+    ],
+    [
+      "presidentes-argentinos",
+      14
+    ],
+    [
+      "nobel-literatura",
+      13
+    ],
+    [
+      "parques-nacionales",
+      13
+    ],
+    [
+      "expansion-libros-autor",
+      13
+    ],
+    [
+      "elementos-numero",
+      12
+    ],
+    [
+      "capitales-divisiones",
+      12
+    ],
+    [
+      "provincias",
+      11
+    ],
+    [
+      "html",
+      11
+    ],
+    [
+      "sistemas-operativos-nombre",
+      11
+    ],
+    [
+      "elementos-simbolo",
+      9
+    ],
+    [
+      "pokemon-legendarios",
+      9
+    ],
+    [
+      "champions",
+      8
+    ],
+    [
+      "paises-idiomas-geo",
+      8
+    ],
+    [
+      "expansion-bandas-persona",
+      8
+    ],
+    [
+      "mundial",
+      7
+    ],
+    [
+      "paises-idiomas",
+      7
+    ],
+    [
+      "capitales-divisiones-letras",
+      7
+    ],
+    [
+      "sistemas-operativos",
+      7
+    ],
+    [
+      "expansion-cientificos-periodo",
+      7
+    ],
+    [
+      "expansion-animales-grupo",
+      7
+    ],
+    [
+      "expansion-clubes-champions",
+      7
+    ],
+    [
+      "expansion-cientificos-phy-periodo",
+      7
+    ],
+    [
+      "expansion-cientificos-che-periodo",
+      7
+    ],
+    [
+      "expansion-cientificos-med-periodo",
+      7
+    ],
+    [
+      "constelaciones-letras",
+      6
+    ],
+    [
+      "expansion-clubes-libertadores",
+      6
+    ],
+    [
+      "f1",
+      5
+    ],
+    [
+      "paises-moneda",
+      5
+    ],
+    [
+      "idiomas",
+      5
+    ],
+    [
+      "monedas",
+      5
+    ],
+    [
+      "constelaciones-origen",
+      5
+    ],
+    [
+      "expansion-series-emmy-drama",
+      5
+    ],
+    [
+      "expansion-series-emmy-comedia",
+      5
+    ],
+    [
+      "expansion-deportistas-balon-decada",
+      5
+    ],
+    [
+      "presidentes-eeuu",
+      4
+    ],
+    [
+      "http",
+      4
+    ],
+    [
+      "cervantes",
+      3
+    ],
+    [
+      "provincias-letras",
+      3
+    ],
+    [
+      "formatos",
+      3
+    ],
+    [
+      "perifericos",
+      3
+    ],
+    [
+      "conectores",
+      3
+    ],
+    [
+      "instrumentos-familia",
+      3
+    ],
+    [
+      "expansion-cientificos-disciplina",
+      3
+    ],
+    [
+      "expansion-deportistas-mundial",
+      3
+    ],
+    [
+      "expansion-peliculas-argentinas-director",
+      3
+    ],
+    [
+      "expansion-videojuegos-saga",
+      3
+    ],
+    [
+      "expansion-clubes-competicion",
+      3
+    ],
+    [
+      "expansion-clubes-sudamericana",
+      3
+    ],
+    [
+      "sistema-solar",
+      2
+    ],
+    [
+      "expansion-series-emmy",
+      2
+    ],
+    [
+      "expansion-autores-premio",
+      2
+    ],
+    [
+      "expansion-series-franquicia",
+      2
+    ],
+    [
+      "secretarios-onu",
+      1
+    ],
+    [
+      "palabras-vocales",
+      1
+    ],
+    [
+      "capitales-provinciales",
+      1
+    ],
+    [
+      "mundial-femenino",
+      1
+    ],
+    [
+      "componentes",
+      1
+    ],
+    [
+      "ciudades-argentina",
+      1
+    ],
+    [
+      "expansion-ficcion-comunidad",
+      1
+    ],
+    [
+      "expansion-peliculas-saga",
+      1
+    ],
+    [
+      "expansion-deportistas-balon",
+      1
+    ]
+  ],
+  "porPlantilla": [
+    {
+      "plantilla": "paises-region",
+      "familia": "paises-region",
+      "categoria": "geografia",
+      "combinaciones": 22,
+      "utilizables": 18,
+      "descartes": {
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "paises-continente",
+      "familia": "paises-region",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "paises-inicial",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 23,
+      "utilizables": 14,
+      "descartes": {
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "paises-continente-final",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 75,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 64,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "paises-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "paises-palabras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 2,
+      "utilizables": 1,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "capitales-region",
+      "familia": "capitales",
+      "categoria": "geografia",
+      "combinaciones": 22,
+      "utilizables": 18,
+      "descartes": {
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "capitales-continente",
+      "familia": "capitales",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-inicial",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 25,
+      "utilizables": 14,
+      "descartes": {
+        "pocas respuestas": 11
+      }
+    },
+    {
+      "plantilla": "elementos-inicial",
+      "familia": "elementos-nombre",
+      "categoria": "ciencia",
+      "combinaciones": 24,
+      "utilizables": 13,
+      "descartes": {
+        "pocas respuestas": 11
+      }
+    },
+    {
+      "plantilla": "elementos-final",
+      "familia": "elementos-nombre",
+      "categoria": "ciencia",
+      "combinaciones": 16,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 12,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "elementos-simbolo-una-letra",
+      "familia": "elementos-simbolo",
+      "categoria": "ciencia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "elementos-simbolo-inicial",
+      "familia": "elementos-simbolo",
+      "categoria": "ciencia",
+      "combinaciones": 24,
+      "utilizables": 12,
+      "descartes": {
+        "pocas respuestas": 12
+      }
+    },
+    {
+      "plantilla": "elementos-numero",
+      "familia": "elementos-numero",
+      "categoria": "ciencia",
+      "combinaciones": 12,
+      "utilizables": 12,
+      "descartes": {}
+    },
+    {
+      "plantilla": "papas-siglo",
+      "familia": "papas",
+      "categoria": "historia",
+      "combinaciones": 21,
+      "utilizables": 20,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "papas-nombre",
+      "familia": "papas",
+      "categoria": "historia",
+      "combinaciones": 82,
+      "utilizables": 15,
+      "descartes": {
+        "pocas respuestas": 67
+      }
+    },
+    {
+      "plantilla": "presidentes-eeuu-periodo",
+      "familia": "presidentes-eeuu",
+      "categoria": "historia",
+      "combinaciones": 6,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "secretarios-onu",
+      "familia": "secretarios-onu",
+      "categoria": "historia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "campeones-mundial",
+      "familia": "mundial",
+      "categoria": "deportes",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "sedes-mundial",
+      "familia": "mundial",
+      "categoria": "deportes",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "sedes-mundial-periodo",
+      "familia": "mundial",
+      "categoria": "deportes",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "campeones-f1-periodo",
+      "familia": "f1",
+      "categoria": "deportes",
+      "combinaciones": 8,
+      "utilizables": 5,
+      "descartes": {
+        "cobertura insuficiente": 2,
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "oscar-periodo",
+      "familia": "oscar",
+      "categoria": "cine",
+      "combinaciones": 11,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "oscar-titulo",
+      "familia": "oscar",
+      "categoria": "cine",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "oscar-inicial",
+      "familia": "oscar",
+      "categoria": "cine",
+      "combinaciones": 22,
+      "utilizables": 9,
+      "descartes": {
+        "pocas respuestas": 13
+      }
+    },
+    {
+      "plantilla": "canciones-disco",
+      "familia": "canciones-disco",
+      "categoria": "musica",
+      "combinaciones": 3551,
+      "utilizables": 67,
+      "descartes": {
+        "pocas respuestas": 3484
+      }
+    },
+    {
+      "plantilla": "nobel-literatura-periodo",
+      "familia": "nobel-literatura",
+      "categoria": "literatura",
+      "combinaciones": 13,
+      "utilizables": 13,
+      "descartes": {}
+    },
+    {
+      "plantilla": "cervantes-pais",
+      "familia": "cervantes",
+      "categoria": "literatura",
+      "combinaciones": 15,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 13
+      }
+    },
+    {
+      "plantilla": "cervantes",
+      "familia": "cervantes",
+      "categoria": "literatura",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "palabras-dos-letras",
+      "familia": "palabras-letras",
+      "categoria": "gramatica",
+      "combinaciones": 351,
+      "utilizables": 277,
+      "descartes": {
+        "demasiadas respuestas": 11,
+        "pocas respuestas": 63
+      }
+    },
+    {
+      "plantilla": "palabras-tres-letras",
+      "familia": "palabras-letras",
+      "categoria": "gramatica",
+      "combinaciones": 2925,
+      "utilizables": 1627,
+      "descartes": {
+        "pocas respuestas": 1298
+      }
+    },
+    {
+      "plantilla": "palabras-cinco-vocales",
+      "familia": "palabras-vocales",
+      "categoria": "gramatica",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "palabras-final",
+      "familia": "palabras-bordes",
+      "categoria": "gramatica",
+      "combinaciones": 1317,
+      "utilizables": 233,
+      "descartes": {
+        "pocas respuestas": 1084
+      }
+    },
+    {
+      "plantilla": "palabras-inicio-largo",
+      "familia": "palabras-bordes",
+      "categoria": "gramatica",
+      "combinaciones": 81,
+      "utilizables": 59,
+      "descartes": {
+        "pocas respuestas": 22
+      }
+    },
+    {
+      "plantilla": "palabras-secuencia",
+      "familia": "palabras-secuencia",
+      "categoria": "gramatica",
+      "combinaciones": 445,
+      "utilizables": 293,
+      "descartes": {
+        "pocas respuestas": 152
+      }
+    },
+    {
+      "plantilla": "paises-limitrofes",
+      "familia": "paises-fronteras",
+      "categoria": "geografia",
+      "combinaciones": 157,
+      "utilizables": 57,
+      "descartes": {
+        "pocas respuestas": 100
+      }
+    },
+    {
+      "plantilla": "paises-moneda",
+      "familia": "paises-moneda",
+      "categoria": "geografia",
+      "combinaciones": 143,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 138
+      }
+    },
+    {
+      "plantilla": "provincias-limitrofes-pais",
+      "familia": "provincias",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 3
+      }
+    },
+    {
+      "plantilla": "provincias-vecinas",
+      "familia": "provincias",
+      "categoria": "geografia",
+      "combinaciones": 23,
+      "utilizables": 9,
+      "descartes": {
+        "pocas respuestas": 14
+      }
+    },
+    {
+      "plantilla": "provincias-inicial",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "combinaciones": 11,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "capitales-provinciales-inicial",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "combinaciones": 10,
+      "utilizables": 1,
+      "descartes": {
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "capitales-provinciales",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "paises-idioma",
+      "familia": "paises-idiomas",
+      "categoria": "idiomas",
+      "combinaciones": 105,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 98
+      }
+    },
+    {
+      "plantilla": "idiomas-continente",
+      "familia": "idiomas",
+      "categoria": "idiomas",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "monedas-continente",
+      "familia": "monedas",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "constelaciones-inicial",
+      "familia": "constelaciones-letras",
+      "categoria": "astronomia",
+      "combinaciones": 21,
+      "utilizables": 6,
+      "descartes": {
+        "pocas respuestas": 15
+      }
+    },
+    {
+      "plantilla": "constelaciones-autor",
+      "familia": "constelaciones-origen",
+      "categoria": "astronomia",
+      "combinaciones": 6,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "constelaciones-zodiaco",
+      "familia": "constelaciones-origen",
+      "categoria": "astronomia",
+      "combinaciones": 2,
+      "utilizables": 1,
+      "descartes": {
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "sistema-solar",
+      "familia": "sistema-solar",
+      "categoria": "astronomia",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "pokemon-tipo-generacion",
+      "familia": "pokemon-tipos",
+      "categoria": "videojuegos",
+      "combinaciones": 162,
+      "utilizables": 139,
+      "descartes": {
+        "pocas respuestas": 23
+      }
+    },
+    {
+      "plantilla": "pokemon-tipo",
+      "familia": "pokemon-tipo",
+      "categoria": "videojuegos",
+      "combinaciones": 18,
+      "utilizables": 18,
+      "descartes": {}
+    },
+    {
+      "plantilla": "pokemon-inicial-generacion",
+      "familia": "pokemon-letras",
+      "categoria": "videojuegos",
+      "combinaciones": 234,
+      "utilizables": 93,
+      "descartes": {
+        "pocas respuestas": 141
+      }
+    },
+    {
+      "plantilla": "pokemon-especial",
+      "familia": "pokemon-legendarios",
+      "categoria": "videojuegos",
+      "combinaciones": 27,
+      "utilizables": 9,
+      "descartes": {
+        "demasiadas respuestas": 9,
+        "pocas respuestas": 9
+      }
+    },
+    {
+      "plantilla": "html-inicial",
+      "familia": "html",
+      "categoria": "informatica",
+      "combinaciones": 21,
+      "utilizables": 11,
+      "descartes": {
+        "pocas respuestas": 10
+      }
+    },
+    {
+      "plantilla": "http-clase",
+      "familia": "http",
+      "categoria": "informatica",
+      "combinaciones": 5,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "champions-periodo",
+      "familia": "champions",
+      "categoria": "deportes",
+      "combinaciones": 8,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "champions",
+      "familia": "champions",
+      "categoria": "deportes",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "mundial-femenino",
+      "familia": "mundial-femenino",
+      "categoria": "deportes",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-limitrofes",
+      "familia": "capitales-fronteras",
+      "categoria": "geografia",
+      "combinaciones": 157,
+      "utilizables": 61,
+      "descartes": {
+        "pocas respuestas": 96
+      }
+    },
+    {
+      "plantilla": "capitales-idioma",
+      "familia": "capitales-idiomas",
+      "categoria": "geografia",
+      "combinaciones": 105,
+      "utilizables": 6,
+      "descartes": {
+        "pocas respuestas": 98,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "capitales-moneda",
+      "familia": "capitales-idiomas",
+      "categoria": "geografia",
+      "combinaciones": 143,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 138
+      }
+    },
+    {
+      "plantilla": "paises-continente-inicial",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 115,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 105
+      }
+    },
+    {
+      "plantilla": "capitales-continente-inicial",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 125,
+      "utilizables": 13,
+      "descartes": {
+        "pocas respuestas": 112
+      }
+    },
+    {
+      "plantilla": "estados-pais",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 7,
+      "utilizables": 7,
+      "descartes": {}
+    },
+    {
+      "plantilla": "estados-inicial",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 182,
+      "utilizables": 8,
+      "descartes": {
+        "pocas respuestas": 174
+      }
+    },
+    {
+      "plantilla": "estados-final",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 133,
+      "utilizables": 13,
+      "descartes": {
+        "pocas respuestas": 120
+      }
+    },
+    {
+      "plantilla": "capitales-estados",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-estados-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 115,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 110
+      }
+    },
+    {
+      "plantilla": "departamentos-pais",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 4,
+      "utilizables": 4,
+      "descartes": {}
+    },
+    {
+      "plantilla": "departamentos-inicial",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 104,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 101
+      }
+    },
+    {
+      "plantilla": "departamentos-final",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 76,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 71
+      }
+    },
+    {
+      "plantilla": "capitales-departamentos",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-departamentos-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 69,
+      "utilizables": 2,
+      "descartes": {
+        "pocas respuestas": 67
+      }
+    },
+    {
+      "plantilla": "regiones-pais",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "regiones-inicial",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 78,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 78
+      }
+    },
+    {
+      "plantilla": "regiones-final",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 57,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 53
+      }
+    },
+    {
+      "plantilla": "capitales-regiones",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-regiones-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 46,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 46
+      }
+    },
+    {
+      "plantilla": "provincias-mundo-pais",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "provincias-mundo-inicial",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 78,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 74
+      }
+    },
+    {
+      "plantilla": "provincias-mundo-final",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 57,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 53
+      }
+    },
+    {
+      "plantilla": "capitales-provincias-mundo",
+      "familia": "capitales-divisiones",
+      "categoria": "geografia",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "capitales-provincias-mundo-inicial",
+      "familia": "capitales-divisiones-letras",
+      "categoria": "geografia",
+      "combinaciones": 46,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 46
+      }
+    },
+    {
+      "plantilla": "prefecturas-pais",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "prefecturas-inicial",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 26,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 23
+      }
+    },
+    {
+      "plantilla": "prefecturas-final",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 19,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 16
+      }
+    },
+    {
+      "plantilla": "partidos-bonaerenses",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "partidos-inicial",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 24,
+      "utilizables": 11,
+      "descartes": {
+        "pocas respuestas": 13
+      }
+    },
+    {
+      "plantilla": "partidos-final",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 16,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 8,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "departamentos-provincia",
+      "familia": "departamentos-ar",
+      "categoria": "geografia",
+      "combinaciones": 22,
+      "utilizables": 22,
+      "descartes": {}
+    },
+    {
+      "plantilla": "departamentos-provincia-inicial",
+      "familia": "departamentos-ar",
+      "categoria": "geografia",
+      "combinaciones": 528,
+      "utilizables": 8,
+      "descartes": {
+        "pocas respuestas": 520
+      }
+    },
+    {
+      "plantilla": "paises-inicial-una-letra",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 8,
+      "descartes": {
+        "demasiadas respuestas": 15,
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "paises-inicial-dos-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "combinaciones": 351,
+      "utilizables": 124,
+      "descartes": {
+        "demasiadas respuestas": 42,
+        "pocas respuestas": 185
+      }
+    },
+    {
+      "plantilla": "capitales-inicial-una-letra",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 7,
+      "descartes": {
+        "demasiadas respuestas": 17,
+        "pocas respuestas": 3
+      }
+    },
+    {
+      "plantilla": "capitales-inicial-dos-letras",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "combinaciones": 351,
+      "utilizables": 147,
+      "descartes": {
+        "demasiadas respuestas": 31,
+        "pocas respuestas": 173
+      }
+    },
+    {
+      "plantilla": "partidos-bonaerenses-una-letra",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 9,
+      "descartes": {
+        "demasiadas respuestas": 14,
+        "pocas respuestas": 4
+      }
+    },
+    {
+      "plantilla": "partidos-bonaerenses-dos-letras",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "combinaciones": 351,
+      "utilizables": 137,
+      "descartes": {
+        "demasiadas respuestas": 31,
+        "pocas respuestas": 183
+      }
+    },
+    {
+      "plantilla": "estados-pais-una-letra",
+      "familia": "estados",
+      "categoria": "geografia",
+      "combinaciones": 189,
+      "utilizables": 92,
+      "descartes": {
+        "pocas respuestas": 95,
+        "demasiadas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "departamentos-pais-una-letra",
+      "familia": "departamentos-mundo",
+      "categoria": "geografia",
+      "combinaciones": 108,
+      "utilizables": 37,
+      "descartes": {
+        "pocas respuestas": 71
+      }
+    },
+    {
+      "plantilla": "regiones-pais-una-letra",
+      "familia": "regiones",
+      "categoria": "geografia",
+      "combinaciones": 81,
+      "utilizables": 39,
+      "descartes": {
+        "pocas respuestas": 42
+      }
+    },
+    {
+      "plantilla": "provincias-mundo-pais-una-letra",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "combinaciones": 81,
+      "utilizables": 42,
+      "descartes": {
+        "pocas respuestas": 38,
+        "demasiadas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "prefecturas-pais-una-letra",
+      "familia": "prefecturas",
+      "categoria": "geografia",
+      "combinaciones": 27,
+      "utilizables": 13,
+      "descartes": {
+        "demasiadas respuestas": 2,
+        "pocas respuestas": 12
+      }
+    },
+    {
+      "plantilla": "departamentos-provincia-final",
+      "familia": "departamentos-ar",
+      "categoria": "geografia",
+      "combinaciones": 352,
+      "utilizables": 24,
+      "descartes": {
+        "pocas respuestas": 328
+      }
+    },
+    {
+      "plantilla": "paises-continente-idioma",
+      "familia": "paises-idiomas-geo",
+      "categoria": "geografia",
+      "combinaciones": 525,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 515
+      }
+    },
+    {
+      "plantilla": "capitales-continente-idioma",
+      "familia": "capitales-idiomas",
+      "categoria": "geografia",
+      "combinaciones": 525,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 515
+      }
+    },
+    {
+      "plantilla": "css-modulo",
+      "familia": "css-modulo",
+      "categoria": "informatica",
+      "combinaciones": 23,
+      "utilizables": 23,
+      "descartes": {}
+    },
+    {
+      "plantilla": "css-palabras",
+      "familia": "css-nombre",
+      "categoria": "informatica",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "css-inicial",
+      "familia": "css-nombre",
+      "categoria": "informatica",
+      "combinaciones": 24,
+      "utilizables": 16,
+      "descartes": {
+        "demasiadas respuestas": 1,
+        "pocas respuestas": 7
+      }
+    },
+    {
+      "plantilla": "lenguajes-tiene",
+      "familia": "lenguajes-nombre",
+      "categoria": "informatica",
+      "combinaciones": 27,
+      "utilizables": 24,
+      "descartes": {
+        "nombres ambiguos": 1,
+        "pocas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "lenguajes-inicial",
+      "familia": "lenguajes-nombre",
+      "categoria": "informatica",
+      "combinaciones": 24,
+      "utilizables": 16,
+      "descartes": {
+        "nombres ambiguos": 1,
+        "pocas respuestas": 7
+      }
+    },
+    {
+      "plantilla": "lenguajes-letras",
+      "familia": "lenguajes-nombre",
+      "categoria": "informatica",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "formatos-tipo",
+      "familia": "formatos",
+      "categoria": "informatica",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "so-familia",
+      "familia": "sistemas-operativos",
+      "categoria": "informatica",
+      "combinaciones": 6,
+      "utilizables": 6,
+      "descartes": {}
+    },
+    {
+      "plantilla": "so-dispositivo",
+      "familia": "sistemas-operativos",
+      "categoria": "informatica",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "so-inicial",
+      "familia": "sistemas-operativos-nombre",
+      "categoria": "informatica",
+      "combinaciones": 23,
+      "utilizables": 11,
+      "descartes": {
+        "pocas respuestas": 12
+      }
+    },
+    {
+      "plantilla": "perifericos-funcion",
+      "familia": "perifericos",
+      "categoria": "informatica",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "componentes-todos",
+      "familia": "componentes",
+      "categoria": "informatica",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "conectores-todos",
+      "familia": "conectores",
+      "categoria": "informatica",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "conectores-vigencia",
+      "familia": "conectores",
+      "categoria": "informatica",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "instrumentos-familia",
+      "familia": "instrumentos-familia",
+      "categoria": "musica",
+      "combinaciones": 5,
+      "utilizables": 3,
+      "descartes": {
+        "nombres ambiguos": 2
+      }
+    },
+    {
+      "plantilla": "instrumentos-familia-inicial",
+      "familia": "instrumentos-nombre",
+      "categoria": "musica",
+      "combinaciones": 78,
+      "utilizables": 19,
+      "descartes": {
+        "pocas respuestas": 57,
+        "nombres ambiguos": 2
+      }
+    },
+    {
+      "plantilla": "presidentes-ar-tipo",
+      "familia": "presidentes-argentinos",
+      "categoria": "historia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "presidentes-ar-periodo",
+      "familia": "presidentes-argentinos",
+      "categoria": "historia",
+      "combinaciones": 8,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "presidentes-ar-electos-periodo",
+      "familia": "presidentes-argentinos",
+      "categoria": "historia",
+      "combinaciones": 6,
+      "utilizables": 4,
+      "descartes": {
+        "pocas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "parques-region",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 5,
+      "utilizables": 5,
+      "descartes": {}
+    },
+    {
+      "plantilla": "parques-todos",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "parques-periodo",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 4,
+      "utilizables": 4,
+      "descartes": {}
+    },
+    {
+      "plantilla": "parques-internacional",
+      "familia": "parques-nacionales",
+      "categoria": "geografia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "ciudades-pais",
+      "familia": "ciudades-millon",
+      "categoria": "geografia",
+      "combinaciones": 103,
+      "utilizables": 20,
+      "descartes": {
+        "pocas respuestas": 81,
+        "demasiadas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "ciudades-region",
+      "familia": "ciudades-millon",
+      "categoria": "geografia",
+      "combinaciones": 19,
+      "utilizables": 16,
+      "descartes": {
+        "demasiadas respuestas": 2,
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "ciudades-argentina",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "ciudades-inicial",
+      "familia": "ciudades-letras",
+      "categoria": "geografia",
+      "combinaciones": 26,
+      "utilizables": 22,
+      "descartes": {
+        "nombres ambiguos": 3,
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "expansion-cientificos-disciplina",
+      "familia": "expansion-cientificos-disciplina",
+      "categoria": "ciencia",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-cientificos-periodo",
+      "familia": "expansion-cientificos-periodo",
+      "categoria": "ciencia",
+      "combinaciones": 7,
+      "utilizables": 7,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-cientificos-nacimiento",
+      "familia": "expansion-cientificos-nacimiento",
+      "categoria": "ciencia",
+      "combinaciones": 53,
+      "utilizables": 0,
+      "descartes": {
+        "cobertura insuficiente": 19,
+        "pocas respuestas": 34
+      }
+    },
+    {
+      "plantilla": "expansion-pinturas-autor",
+      "familia": "expansion-pinturas-autor",
+      "categoria": "arte",
+      "combinaciones": 98,
+      "utilizables": 19,
+      "descartes": {
+        "pocas respuestas": 79
+      }
+    },
+    {
+      "plantilla": "expansion-pinturas-periodo",
+      "familia": "expansion-pinturas-periodo",
+      "categoria": "arte",
+      "combinaciones": 10,
+      "utilizables": 0,
+      "descartes": {
+        "pocas respuestas": 4,
+        "cobertura insuficiente": 6
+      }
+    },
+    {
+      "plantilla": "expansion-pinturas-museo",
+      "familia": "expansion-pinturas-museo",
+      "categoria": "arte",
+      "combinaciones": 131,
+      "utilizables": 18,
+      "descartes": {
+        "pocas respuestas": 111,
+        "nombres ambiguos": 2
+      }
+    },
+    {
+      "plantilla": "expansion-deportistas-mundial",
+      "familia": "expansion-deportistas-mundial",
+      "categoria": "deportes",
+      "combinaciones": 72,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 69
+      }
+    },
+    {
+      "plantilla": "expansion-peliculas-director",
+      "familia": "expansion-peliculas-director",
+      "categoria": "cine",
+      "combinaciones": 135,
+      "utilizables": 15,
+      "descartes": {
+        "pocas respuestas": 120
+      }
+    },
+    {
+      "plantilla": "expansion-peliculas-director-periodo",
+      "familia": "expansion-peliculas-director",
+      "categoria": "cine",
+      "combinaciones": 1485,
+      "utilizables": 36,
+      "descartes": {
+        "pocas respuestas": 1449
+      }
+    },
+    {
+      "plantilla": "expansion-peliculas-argentinas-director",
+      "familia": "expansion-peliculas-argentinas-director",
+      "categoria": "cine",
+      "combinaciones": 24,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 21
+      }
+    },
+    {
+      "plantilla": "expansion-peliculas-argentinas-director-periodo",
+      "familia": "expansion-peliculas-argentinas-director",
+      "categoria": "cine",
+      "combinaciones": 144,
+      "utilizables": 1,
+      "descartes": {
+        "pocas respuestas": 143
+      }
+    },
+    {
+      "plantilla": "expansion-series-emmy",
+      "familia": "expansion-series-emmy",
+      "categoria": "television",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-series-emmy-drama",
+      "familia": "expansion-series-emmy-drama",
+      "categoria": "television",
+      "combinaciones": 7,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "expansion-series-emmy-comedia",
+      "familia": "expansion-series-emmy-comedia",
+      "categoria": "television",
+      "combinaciones": 7,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 2
+      }
+    },
+    {
+      "plantilla": "expansion-videojuegos-saga",
+      "familia": "expansion-videojuegos-saga",
+      "categoria": "videojuegos",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-libros-autor",
+      "familia": "expansion-libros-autor",
+      "categoria": "literatura",
+      "combinaciones": 50,
+      "utilizables": 13,
+      "descartes": {
+        "cobertura insuficiente": 1,
+        "pocas respuestas": 36
+      }
+    },
+    {
+      "plantilla": "expansion-autores-premio",
+      "familia": "expansion-autores-premio",
+      "categoria": "literatura",
+      "combinaciones": 2,
+      "utilizables": 2,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-animales-grupo",
+      "familia": "expansion-animales-grupo",
+      "categoria": "naturaleza",
+      "combinaciones": 8,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "expansion-caa-categoria",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "combinaciones": 12,
+      "utilizables": 12,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-caa-categoria-empieza",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "combinaciones": 264,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 257
+      }
+    },
+    {
+      "plantilla": "expansion-caa-categoria-termina",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "combinaciones": 144,
+      "utilizables": 10,
+      "descartes": {
+        "pocas respuestas": 134
+      }
+    },
+    {
+      "plantilla": "expansion-ficcion-comunidad",
+      "familia": "expansion-ficcion-comunidad",
+      "categoria": "literatura",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-clubes-competicion",
+      "familia": "expansion-clubes-competicion",
+      "categoria": "deportes",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-clubes-libertadores",
+      "familia": "expansion-clubes-libertadores",
+      "categoria": "deportes",
+      "combinaciones": 7,
+      "utilizables": 6,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "expansion-clubes-sudamericana",
+      "familia": "expansion-clubes-sudamericana",
+      "categoria": "deportes",
+      "combinaciones": 3,
+      "utilizables": 3,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-clubes-champions",
+      "familia": "expansion-clubes-champions",
+      "categoria": "deportes",
+      "combinaciones": 8,
+      "utilizables": 7,
+      "descartes": {
+        "pocas respuestas": 1
+      }
+    },
+    {
+      "plantilla": "expansion-albumes-estudio",
+      "familia": "expansion-albumes-artista",
+      "categoria": "musica",
+      "combinaciones": 141,
+      "utilizables": 112,
+      "descartes": {
+        "pocas respuestas": 20,
+        "nombres ambiguos": 9
+      }
+    },
+    {
+      "plantilla": "expansion-albumes-en-vivo",
+      "familia": "expansion-albumes-artista",
+      "categoria": "musica",
+      "combinaciones": 132,
+      "utilizables": 56,
+      "descartes": {
+        "pocas respuestas": 57,
+        "nombres ambiguos": 15,
+        "no pasa la validación": 4
+      }
+    },
+    {
+      "plantilla": "expansion-integrantes-banda",
+      "familia": "expansion-integrantes-banda",
+      "categoria": "musica",
+      "combinaciones": 1541,
+      "utilizables": 71,
+      "descartes": {
+        "pocas respuestas": 1442,
+        "cobertura insuficiente": 28
+      }
+    },
+    {
+      "plantilla": "expansion-bandas-persona",
+      "familia": "expansion-bandas-persona",
+      "categoria": "musica",
+      "combinaciones": 462,
+      "utilizables": 8,
+      "descartes": {
+        "pocas respuestas": 450,
+        "cobertura insuficiente": 4
+      }
+    },
+    {
+      "plantilla": "expansion-comidas-empieza",
+      "familia": "expansion-comidas-nombre",
+      "categoria": "gastronomia",
+      "combinaciones": 21,
+      "utilizables": 14,
+      "descartes": {
+        "pocas respuestas": 7
+      }
+    },
+    {
+      "plantilla": "expansion-comidas-termina",
+      "familia": "expansion-comidas-nombre",
+      "categoria": "gastronomia",
+      "combinaciones": 17,
+      "utilizables": 9,
+      "descartes": {
+        "pocas respuestas": 8
+      }
+    },
+    {
+      "plantilla": "expansion-cientificos-phy-periodo",
+      "familia": "expansion-cientificos-phy-periodo",
+      "categoria": "ciencia",
+      "combinaciones": 7,
+      "utilizables": 7,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-cientificos-che-periodo",
+      "familia": "expansion-cientificos-che-periodo",
+      "categoria": "ciencia",
+      "combinaciones": 7,
+      "utilizables": 7,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-cientificos-med-periodo",
+      "familia": "expansion-cientificos-med-periodo",
+      "categoria": "ciencia",
+      "combinaciones": 7,
+      "utilizables": 7,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-cientificos-disciplina-nacimiento",
+      "familia": "expansion-cientificos-nacimiento",
+      "categoria": "ciencia",
+      "combinaciones": 159,
+      "utilizables": 0,
+      "descartes": {
+        "cobertura insuficiente": 31,
+        "pocas respuestas": 128
+      }
+    },
+    {
+      "plantilla": "expansion-pinturas-autor-siglo",
+      "familia": "expansion-pinturas-autor",
+      "categoria": "arte",
+      "combinaciones": 980,
+      "utilizables": 3,
+      "descartes": {
+        "pocas respuestas": 966,
+        "cobertura insuficiente": 11
+      }
+    },
+    {
+      "plantilla": "expansion-peliculas-saga",
+      "familia": "expansion-peliculas-saga",
+      "categoria": "cine",
+      "combinaciones": 14,
+      "utilizables": 1,
+      "descartes": {
+        "pocas respuestas": 12,
+        "cobertura insuficiente": 1
+      }
+    },
+    {
+      "plantilla": "expansion-series-franquicia",
+      "familia": "expansion-series-franquicia",
+      "categoria": "television",
+      "combinaciones": 3,
+      "utilizables": 2,
+      "descartes": {
+        "nombres ambiguos": 1
+      }
+    },
+    {
+      "plantilla": "expansion-deportistas-balon",
+      "familia": "expansion-deportistas-balon",
+      "categoria": "deportes",
+      "combinaciones": 1,
+      "utilizables": 1,
+      "descartes": {}
+    },
+    {
+      "plantilla": "expansion-deportistas-balon-decada",
+      "familia": "expansion-deportistas-balon-decada",
+      "categoria": "deportes",
+      "combinaciones": 8,
+      "utilizables": 5,
+      "descartes": {
+        "pocas respuestas": 3
+      }
+    }
+  ],
+  "problemas": []
+}

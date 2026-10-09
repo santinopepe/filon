@@ -24,12 +24,16 @@ export const CATEGORIAS = Object.freeze({
   astronomia: 'Astronomía',
   videojuegos: 'Videojuegos',
   idiomas: 'Idiomas',
+  naturaleza: 'Naturaleza',
+  gastronomia: 'Gastronomía',
+  television: 'Televisión',
+  arte: 'Arte',
 });
 
 /** Las siete categorías clásicas: la reserva de Normal arma el día con una pregunta de cada una. */
 export const CLAVES_CATEGORIAS = ['geografia', 'historia', 'ciencia', 'deportes', 'cine', 'musica', 'literatura'];
 /** Categorías que admite Normal: las clásicas, Gramática (preguntas sobre palabras) y las del generador. */
-export const CATEGORIAS_NORMAL = [...CLAVES_CATEGORIAS, 'gramatica', 'informatica', 'astronomia', 'videojuegos', 'idiomas'];
+export const CATEGORIAS_NORMAL = [...CLAVES_CATEGORIAS, 'gramatica', 'informatica', 'astronomia', 'videojuegos', 'idiomas', 'naturaleza', 'gastronomia', 'television', 'arte'];
 /**
  * Normal son siete preguntas generales: variadas, pero no hace falta una por categoría. Ninguna categoría
  * puede tener más de `maxPorCategoria` y tiene que haber al menos `minCategorias` distintas.

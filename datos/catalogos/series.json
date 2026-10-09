@@ -1,0 +1,173 @@
+{
+  "id": "series",
+  "nombre": "Series premiadas y planteles de franquicias",
+  "descripcion": "Ganadoras de Emmy y planteles completos de Star Trek, CSI y NCIS.",
+  "version": "2026-10-08.475d1a5b57",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia: Emmy drama",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1377769840",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: Emmy comedia",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1376822481",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: series de Star Trek",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1376469105",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: franquicia CSI",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1378862855",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikipedia: franquicia NCIS",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1379171624",
+      "licencia": "CC BY-SA 4.0; revisión registrada"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todas las ganadoras de serie dramática y comedia entre 1966 y 2025 en las tablas de Wikipedia verificadas por año. Premios: 1966–2025. Se agregan 13 series de Star Trek, 6 de CSI (incluida The Real CSI) y 7 estrenadas de NCIS de las listas verificadas; no proyectos sin período.",
+    "verificacion": [
+      "drama: 60 ediciones 1966–2025 sin huecos",
+      "drama: 60 premios, incluidos los empates",
+      "comedia: 60 ediciones 1966–2025 sin huecos",
+      "comedia: 60 premios, incluidos los empates",
+      "Star Trek: 13 series con período emitido (incluye Short Treks; no promociones ni proyectos sin período)",
+      "CSI: seis series del campo TV, incluida la documental The Real CSI: Miami",
+      "NCIS: siete series con período emitido; New York sin período confirmado queda fuera",
+      "ganadoras enlazadas a Wikidata",
+      "Breaking Bad: Emmy drama 2014",
+      "Friends: Emmy comedia 2002"
+    ]
+  },
+  "atributos": {
+    "franquicias": {
+      "tipo": "lista",
+      "etiqueta": "franquicia de los planteles admitidos"
+    },
+    "premios": {
+      "tipo": "lista",
+      "etiqueta": "premio"
+    },
+    "anios_drama": {
+      "tipo": "lista_numeros",
+      "etiqueta": "años de Emmy drama"
+    },
+    "anios_comedia": {
+      "tipo": "lista_numeros",
+      "etiqueta": "años de Emmy comedia"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q1031053","nombre":"The Monkees","popularidad":14,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1967]},"fuente":"https://www.wikidata.org/wiki/Q1031053"},
+    {"id":"Q1048856","nombre":"All in the Family","popularidad":31,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1971,1972,1973,1978]},"fuente":"https://www.wikidata.org/wiki/Q1048856"},
+    {"id":"Q106623987","nombre":"NCIS: Hawaiʻi","popularidad":21,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q106623987"},
+    {"id":"Q106819328","nombre":"Hacks","popularidad":24,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2024]},"fuente":"https://www.wikidata.org/wiki/Q106819328"},
+    {"id":"Q106910380","nombre":"CSI: Vegas","popularidad":17,"atributos":{"franquicias":["CSI"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q106910380"},
+    {"id":"Q1077","nombre":"Star Trek: la serie original","alias":["Star Trek: The Original Series"],"popularidad":56,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1077"},
+    {"id":"Q1079","nombre":"Breaking Bad","popularidad":103,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2013,2014],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1079"},
+    {"id":"Q108774","nombre":"Star Trek: Deep Space Nine","alias":["Star Trek Deep Space 9","Star Trek Espacio Profundo Nueve","Star Trek Espacio profundo 9"],"popularidad":48,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q108774"},
+    {"id":"Q111133839","nombre":"NCIS: Sydney","popularidad":15,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q111133839"},
+    {"id":"Q112761982","nombre":"The Bear","popularidad":34,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2023]},"fuente":"https://www.wikidata.org/wiki/Q112761982"},
+    {"id":"Q1132439","nombre":"The Practice","alias":["El Abogado","Los Practicantes"],"popularidad":23,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1998,1999],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1132439"},
+    {"id":"Q11598","nombre":"Arrested Development","popularidad":33,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2004]},"fuente":"https://www.wikidata.org/wiki/Q11598"},
+    {"id":"Q1168760","nombre":"Upstairs, Downstairs","alias":["Arriba y Abajo","Arriba y abajo (serie)"],"popularidad":19,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1974,1975,1977],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1168760"},
+    {"id":"Q117350388","nombre":"Star Trek: Academia de la Flota Estelar","alias":["Star Trek: Starfleet Academy"],"popularidad":16,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q117350388"},
+    {"id":"Q117396","nombre":"CSI: Vegas","alias":["CSI Crime Scene Investigation","CSI Las Vegas"],"popularidad":61,"atributos":{"franquicias":["CSI"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q117396"},
+    {"id":"Q1247212","nombre":"L. A. Law","alias":["LA Law","La ley de Los Angeles","Se hara justicia"],"popularidad":20,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1987,1989,1990,1991],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1247212"},
+    {"id":"Q1247241","nombre":"Hill Street Blues","alias":["Cancion Triste de Hill Street"],"popularidad":26,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1981,1982,1983,1984],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1247241"},
+    {"id":"Q1247248","nombre":"Picket Fences","popularidad":19,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1993,1994],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1247248"},
+    {"id":"Q1247268","nombre":"Superagente 86","alias":["El Super agente 86","Get Smart"],"popularidad":22,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1968,1969]},"fuente":"https://www.wikidata.org/wiki/Q1247268"},
+    {"id":"Q1247510","nombre":"Thirtysomething","popularidad":15,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1988],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1247510"},
+    {"id":"Q1248656","nombre":"Marcus Welby, M.D.","popularidad":10,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1970],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1248656"},
+    {"id":"Q1248840","nombre":"My World and Welcome to It","popularidad":3,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1970]},"fuente":"https://www.wikidata.org/wiki/Q1248840"},
+    {"id":"Q125178220","nombre":"NCIS: Origins","popularidad":13,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q125178220"},
+    {"id":"Q125185497","nombre":"The Studio","popularidad":21,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2025]},"fuente":"https://www.wikidata.org/wiki/Q125185497"},
+    {"id":"Q125899005","nombre":"NCIS: Tony & Ziva","alias":["NCIS Ziva y Tony, NCIS Tiva, Tiva, Tony y Ziva"],"popularidad":10,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q125899005"},
+    {"id":"Q126909045","nombre":"The Real CSI: Miami","popularidad":1,"atributos":{"franquicias":["CSI"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q126909045"},
+    {"id":"Q1278399","nombre":"Elizabeth R","popularidad":12,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1972],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q1278399"},
+    {"id":"Q131431817","nombre":"The Pitt","popularidad":26,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2025],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q131431817"},
+    {"id":"Q137034","nombre":"El fugitivo","alias":["The Fugitive"],"popularidad":21,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1966],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q137034"},
+    {"id":"Q156329","nombre":"Star Trek: Voyager","popularidad":52,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q156329"},
+    {"id":"Q16290","nombre":"Star Trek: The Next Generation","popularidad":56,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q16290"},
+    {"id":"Q16756","nombre":"Familia Moderna","alias":["Modern Family"],"popularidad":63,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2010,2011,2012,2013,2014]},"fuente":"https://www.wikidata.org/wiki/Q16756"},
+    {"id":"Q16802335","nombre":"NCIS: New Orleans","popularidad":34,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q16802335"},
+    {"id":"Q16868648","nombre":"Fleabag","popularidad":37,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2019]},"fuente":"https://www.wikidata.org/wiki/Q16868648"},
+    {"id":"Q16919551","nombre":"CSI: Cyber","popularidad":29,"atributos":{"franquicias":["CSI"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q16919551"},
+    {"id":"Q17111973","nombre":"Schitt's Creek","popularidad":32,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2020]},"fuente":"https://www.wikidata.org/wiki/Q17111973"},
+    {"id":"Q189350","nombre":"30 Rock","popularidad":40,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2007,2008,2009]},"fuente":"https://www.wikidata.org/wiki/Q189350"},
+    {"id":"Q189411","nombre":"CSI: Miami","alias":["C S I Miami"],"popularidad":48,"atributos":{"franquicias":["CSI"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q189411"},
+    {"id":"Q192259","nombre":"CSI: Nueva York","alias":["CSI NY","CSI New York"],"popularidad":49,"atributos":{"franquicias":["CSI"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q192259"},
+    {"id":"Q20707362","nombre":"The Crown","popularidad":57,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2021],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q20707362"},
+    {"id":"Q208568","nombre":"Everybody Loves Raymond","alias":["Todo el mundo quiere a Raymond"],"popularidad":42,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2003,2005]},"fuente":"https://www.wikidata.org/wiki/Q208568"},
+    {"id":"Q20922","nombre":"Star Trek: La serie animada","alias":["Star Trek: The Animated Series","The Animated Adventures of Gene Roddenberry's Star Trek"],"popularidad":36,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q20922"},
+    {"id":"Q209282","nombre":"Frasier","popularidad":46,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1994,1995,1996,1997,1998]},"fuente":"https://www.wikidata.org/wiki/Q209282"},
+    {"id":"Q212135","nombre":"Will & Grace","alias":["Will and Grace"],"popularidad":48,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2000]},"fuente":"https://www.wikidata.org/wiki/Q212135"},
+    {"id":"Q21296543","nombre":"Star Trek: Discovery","popularidad":41,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q21296543"},
+    {"id":"Q217364","nombre":"ER","popularidad":32,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1996],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q217364"},
+    {"id":"Q223977","nombre":"Mad Men","popularidad":52,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2008,2009,2010,2011],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q223977"},
+    {"id":"Q23567","nombre":"Lost","alias":["Desaparecidos","Perdidos"],"popularidad":90,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2005],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q23567"},
+    {"id":"Q23572","nombre":"Juego de Tronos","alias":["Game of Thrones"],"popularidad":139,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2015,2016,2018,2019],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q23572"},
+    {"id":"Q23594","nombre":"Homeland","alias":["Prisionero de guerra"],"popularidad":41,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2012],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q23594"},
+    {"id":"Q23628","nombre":"Los Soprano","alias":["The Sopranos"],"popularidad":75,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2004,2007],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q23628"},
+    {"id":"Q23733","nombre":"Seinfeld","popularidad":57,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1993]},"fuente":"https://www.wikidata.org/wiki/Q23733"},
+    {"id":"Q23831","nombre":"The Office","popularidad":84,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2006]},"fuente":"https://www.wikidata.org/wiki/Q23831"},
+    {"id":"Q244803","nombre":"Ally McBeal","popularidad":44,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1999]},"fuente":"https://www.wikidata.org/wiki/Q244803"},
+    {"id":"Q2471116","nombre":"M*A*S*H","popularidad":8,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1974]},"fuente":"https://www.wikidata.org/wiki/Q2471116"},
+    {"id":"Q25207350","nombre":"El cuento de la criada","alias":["El cuento de la criada (serie de televisión)","The Handmaid's Tale","The Handmaid's Tale (serie de televisión)"],"popularidad":45,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2017],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q25207350"},
+    {"id":"Q283660","nombre":"The Rockford Files","popularidad":17,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1978],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q283660"},
+    {"id":"Q301345","nombre":"Doctor en Alaska","alias":["La última frontera","Northern Exposure"],"popularidad":25,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1992],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q301345"},
+    {"id":"Q30599007","nombre":"Succession","popularidad":43,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2020,2022,2023],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q30599007"},
+    {"id":"Q30634329","nombre":"La maravillosa Señora Maisel","alias":["The Marvelous Mrs. Maisel"],"popularidad":30,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2018]},"fuente":"https://www.wikidata.org/wiki/Q30634329"},
+    {"id":"Q321423","nombre":"Law & Order","alias":["L&O","La ley y el orden","Law & Order: New York","Law and Order","Ley y orden"],"popularidad":43,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1997],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q321423"},
+    {"id":"Q3577037","nombre":"El ala oeste de la Casa Blanca","alias":["The West Wing"],"popularidad":47,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2000,2001,2002,2003],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q3577037"},
+    {"id":"Q35791","nombre":"Sex and the City","alias":["Sexo en NY","Sexo en Nueva York","Sexo en la ciudad"],"popularidad":67,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2001]},"fuente":"https://www.wikidata.org/wiki/Q35791"},
+    {"id":"Q369111","nombre":"Misión imposible","alias":["Mission: Impossible"],"popularidad":33,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1967,1968],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q369111"},
+    {"id":"Q380519","nombre":"Star Trek: Enterprise","popularidad":46,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q380519"},
+    {"id":"Q3869487","nombre":"NET Playhouse","popularidad":3,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1969],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q3869487"},
+    {"id":"Q398302","nombre":"24","popularidad":33,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2006],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q398302"},
+    {"id":"Q398945","nombre":"Police Story","popularidad":10,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1976],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q398945"},
+    {"id":"Q421733","nombre":"Lou Grant","popularidad":15,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1979,1980],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q421733"},
+    {"id":"Q427529","nombre":"Taxi","popularidad":23,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1979,1980,1981]},"fuente":"https://www.wikidata.org/wiki/Q427529"},
+    {"id":"Q4525","nombre":"NCIS","alias":["NCIS: Criminología Naval","Navy: Investigación criminal"],"popularidad":59,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q4525"},
+    {"id":"Q463999","nombre":"The Cosby Show","alias":["La hora de Bill Cosby"],"popularidad":38,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1985]},"fuente":"https://www.wikidata.org/wiki/Q463999"},
+    {"id":"Q48777","nombre":"The Waltons","popularidad":20,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1973],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q48777"},
+    {"id":"Q521718","nombre":"Murphy Brown","popularidad":25,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1990,1992]},"fuente":"https://www.wikidata.org/wiki/Q521718"},
+    {"id":"Q527916","nombre":"Cagney & Lacey","popularidad":16,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1985,1986],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q527916"},
+    {"id":"Q530706","nombre":"The Dick Van Dyke Show","popularidad":18,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1966]},"fuente":"https://www.wikidata.org/wiki/Q530706"},
+    {"id":"Q56276181","nombre":"Shōgun","popularidad":36,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[2024],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q56276181"},
+    {"id":"Q56816581","nombre":"Star Trek: Short Treks","popularidad":15,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q56816581"},
+    {"id":"Q6084","nombre":"NCIS: Los Ángeles","popularidad":44,"atributos":{"franquicias":["NCIS"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q6084"},
+    {"id":"Q609274","nombre":"NYPD Blue","popularidad":32,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1995],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q609274"},
+    {"id":"Q615944","nombre":"The Mary Tyler Moore Show","alias":["Mary Tyler Moore","Mary Tyler Moore Show"],"popularidad":20,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1975,1976,1977]},"fuente":"https://www.wikidata.org/wiki/Q615944"},
+    {"id":"Q62573305","nombre":"Star Trek: Picard","popularidad":33,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q62573305"},
+    {"id":"Q62573569","nombre":"Star Trek: Lower Decks","alias":["Star Trek: cubiertas inferiores"],"popularidad":24,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q62573569"},
+    {"id":"Q65250765","nombre":"Star Trek: Prodigy","popularidad":20,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q65250765"},
+    {"id":"Q691581","nombre":"The Wonder Years","alias":["Aquellos maravillosos años","Kevin, Creciendo con Amor","Los años maravillosos"],"popularidad":26,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1988]},"fuente":"https://www.wikidata.org/wiki/Q691581"},
+    {"id":"Q732063","nombre":"Cheers","popularidad":42,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1983,1984,1989,1991]},"fuente":"https://www.wikidata.org/wiki/Q732063"},
+    {"id":"Q74801","nombre":"Veep","popularidad":38,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2015,2016,2017]},"fuente":"https://www.wikidata.org/wiki/Q74801"},
+    {"id":"Q7719044","nombre":"The Bold Ones: The Senator","popularidad":4,"atributos":{"franquicias":[],"premios":["Emmy a serie de drama"],"anios_drama":[1971],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q7719044"},
+    {"id":"Q79784","nombre":"Friends","alias":["Amigos"],"popularidad":111,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2002]},"fuente":"https://www.wikidata.org/wiki/Q79784"},
+    {"id":"Q808487","nombre":"Barney Miller","popularidad":12,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1982]},"fuente":"https://www.wikidata.org/wiki/Q808487"},
+    {"id":"Q912467","nombre":"The Golden Girls","alias":["Las Chicas de Oro","Los Anos Dorados","Los Años Dorados"],"popularidad":37,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[1986,1987]},"fuente":"https://www.wikidata.org/wiki/Q912467"},
+    {"id":"Q94527193","nombre":"Star Trek: Strange New Worlds","popularidad":27,"atributos":{"franquicias":["Star Trek"],"premios":[],"anios_drama":[],"anios_comedia":[]},"fuente":"https://www.wikidata.org/wiki/Q94527193"},
+    {"id":"Q96407897","nombre":"Ted Lasso","popularidad":34,"atributos":{"franquicias":[],"premios":["Emmy a serie de comedia"],"anios_drama":[],"anios_comedia":[2021,2022]},"fuente":"https://www.wikidata.org/wiki/Q96407897"}
+  ]
+}

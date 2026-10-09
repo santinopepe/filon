@@ -3,19 +3,20 @@
 // datos/catalogos; las muestras sintéticas están marcadas como tales.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { prepararEntorno } from './ayuda.js';
 import { rasgos } from '../servidor/catalogos/texto.js';
-import { validarFiltro, evaluar, describir, interpretar, claveDeFiltro, explicarFalla } from '../servidor/catalogos/filtros.js';
+import { validarFiltro, evaluar, describir, interpretar, claveDeFiltro, explicarFalla, unirFiltros } from '../servidor/catalogos/filtros.js';
 import { cargarCatalogos } from '../servidor/catalogos/catalogos.js';
 import { cargarPlantillas, combinaciones, instanciar, validarPlantilla } from '../servidor/catalogos/plantillas.js';
-import { generarLote, asignarRarezas, repeticion, minhash, problemaDeCobertura, firmaDe, prepararCandidatos, POR_OMISION } from '../servidor/catalogos/generador.js';
+import { generarLote, asignarRarezas, repeticion, minhash, problemaDeCobertura, firmaDe, firmaDeConsigna, prepararCandidatos, POR_OMISION } from '../servidor/catalogos/generador.js';
 import { cargarConfig } from '../servidor/config.js';
 import { CATEGORIAS, CATEGORIAS_NORMAL } from '../servidor/dominio.js';
-import { normalizar } from '../servidor/normalizar.js';
+import { crearIndice, buscarEnIndice, normalizar } from '../servidor/normalizar.js';
 import { dentroDeVentana, diasEntre, fechaLocal, limitesDeVentana, sumarDias } from '../servidor/tiempo.js';
+import { historialGenerado } from '../servidor/generador/catalogos.js';
 import { asegurarDesafio } from '../servidor/generador/generar.js';
 import { crearJuego } from '../servidor/juego.js';
 import { validarLote } from '../servidor/validacion.js';
@@ -30,7 +31,7 @@ const ent = (catalogoId, id) => cat(catalogoId).entidades.find((e) => e.id === i
 const nombres = (filtro, c) => c.entidades.filter((e) => evaluar(filtro, e)).map((e) => e.nombre).sort();
 const DOMINIOS = cargarConfig({ sinArchivoEnv: true, env: {} }).fuentes.dominios;
 // Las preguntas de un lote como historial de otra fecha (lo que lee historialGenerado de la base).
-const comoHistorial = (lote, fecha) => lote.preguntas.map((p) => ({ fecha, firma: p.firma, conjunto: p.conjunto, familia: p.generacion.familia, catalogo: p.generacion.catalogo.id, minhash: p.generacion.minhash }));
+const comoHistorial = (lote, fecha) => lote.preguntas.map((p) => ({ fecha, firma: p.firma, conjunto: p.conjunto, familia: p.generacion.familia, categoria: p.categoria, catalogo: p.generacion.universo ?? p.generacion.catalogo.id, nombresConjunto: p.generacion.nombresConjunto, minhashNombres: p.generacion.minhashNombres, minhash: p.generacion.minhash }));
 
 test('reglas de texto: sin tildes ni mayúsculas, ñ distinta de n, guiones y espacios separan palabras', () => {
   assert.deepEqual(rasgos('Guinea-Bisáu'), { ...rasgos('Guinea-Bisáu'), forma: 'guinea bisau', letras: 'guineabisau', nLetras: 11, nPalabras: 2, inicial: 'g', final: 'u' });
@@ -374,13 +375,16 @@ test('sin candidatos suficientes: se completa con la reserva o no se publica nad
 
 test('juego: en las preguntas de palabras vale solo la palabra escrita (sin autocompletar fragmentos)', async () => {
   const e = await prepararEntorno();
-  // El primer día con una pregunta de Gramática (no todos los días tienen una).
-  const lista = { version: plantillas.version, lista: plantillas.lista };
-  let fecha = '2026-10-05';
-  while (!generarLote({ catalogos, plantillas: lista, fecha, semillaBase: e.config.catalogos.semilla, dominios: e.config.fuentes.dominios }).preguntas.some((p) => p.categoria === 'gramatica')) fecha = sumarDias(fecha, 1);
-  assert.ok(diasEntre('2026-10-05', fecha) < 30, 'en un mes sale Gramática');
+  // Esta prueba verifica coincidencia exacta, sin depender del sorteo de un calendario sin historial.
+  const dir = mkdtempSync(join(tmpdir(), 'filon-palabras-'));
+  // Los otros tres tipos de categoría pueden aportar como máximo seis preguntas: la séptima es Gramática.
+  const lista = { version: plantillas.version, plantillas: PL.plantillas.filter(p=>(p.id==='palabras-cinco-vocales' || ['geografia','ciencia','videojuegos'].includes(p.categoria)) && !p.id.startsWith('expansion-')) };
+  const ruta = join(dir,'plantillas.json');writeFileSync(ruta,JSON.stringify(lista));e.config.catalogos.rutaPlantillas=ruta;
+  const fecha='2026-10-05';
   e.reloj.fijar(`${fecha}T15:00:00-03:00`);
-  await asegurarDesafio({ db: e.db, config: e.config, fecha, reserva: e.reserva, reservas: e.reservas, ahora: e.reloj.ahora, generador: 'catalogos' });
+  const publicacion = await asegurarDesafio({ db:e.db, config:e.config, fecha, reserva:e.reserva, reservas:e.reservas, ahora:e.reloj.ahora, generador:'catalogos' });
+  assert.equal(publicacion.origen,'catalogo',JSON.stringify(publicacion));
+  rmSync(dir,{recursive:true,force:true});
   assert.equal((await e.db.get("SELECT coincidencia FROM preguntas WHERE categoria = 'gramatica'"))?.coincidencia, 'exacta');
   const juego = crearJuego({ db: e.db, config: e.config, ahora: e.reloj.ahora });
   const yo = '11111111-2222-4333-8444-555555555555';
@@ -535,4 +539,126 @@ test('nombres repetidos en el catálogo: solo es ambigua la pregunta que los inc
   const r = prepararCandidatos(sintetica, deptos, { dominios: DOMINIOS });
   assert.equal(r.candidatos.length, 0);
   assert.equal(r.descartes['nombres ambiguos'], 1);
+});
+
+// Muestras sintéticas exclusivas de pruebas: no se importan al banco del juego.
+function catalogosDePrueba(t) {
+  const dir=mkdtempSync(join(tmpdir(),'filon-vistas-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+  const entidades=Array.from({length:8},(_,i)=>({id:`p${i}`,nombre:`Obra sintética ${i}`,popularidad:10+i,atributos:{paises:i<6?['Argentina']:['Uruguay'],directores:i<6?['Directora A',...(i===0?['Director B']:[])]:['Director B'],anio:i<6?2000+i:null,familias:i===0?['cordófonos','electrófonos']:['cordófonos']}}));
+  const base={id:'sintetico',nombre:'Base sintética',version:'1',importado:'2026-10-08',fuentes:[{nombre:'Fuente de prueba',url:'https://www.wikidata.org',licencia:'CC0'}],cobertura:{tipo:'parcial',criterio:'Solo Directora A es un grupo completo en esta muestra.',completoPor:{directores:['Directora A']}},atributos:{paises:{tipo:'lista'},directores:{tipo:'lista'},anio:{tipo:'numero'},familias:{tipo:'lista'}},entidades};
+  writeFileSync(join(dir,'sintetico.json'),JSON.stringify(base));
+  writeFileSync(join(dir,'vista.json'),JSON.stringify({id:'vista',vista:{catalogo:'sintetico',filtro:{op:'es',campo:'paises',valores:['Argentina']}},cobertura:{tipo:'parcial',criterio:'Vista sintética, hereda cobertura.'}}));
+  const r=cargarCatalogos(dir);assert.deepEqual(r.problemas,[]);return r.catalogos;
+}
+const plantillaSintetica=(catalogo='sintetico')=>({id:`prueba-${catalogo}`,familia:'prueba-director',categoria:'cine',catalogo,enunciado:'Nombrá una obra sintética',frases:{directores:'de {valor}',paises:'de {valor}',anio:'entre {desde} y {hasta}'},sujetos:{nombre:'cuyo nombre'},parametros:{},filtro:{op:'es',campo:'directores',valores:['Directora A']},respuestas:{min:5,max:100},dificultad:0.2,prioridad:3,rechazos:true,alcance:'Universo sintético exclusivamente para esta prueba.',explicacion:'{nombre}: dirección de {directores}.'});
+
+test('vistas: entidades compartidas, firma semántica y cobertura heredada',t=>{
+ const cs=catalogosDePrueba(t),base=cs.get('sintetico'),vista=cs.get('vista');const f=validarFiltro(plantillaSintetica().filtro,base).filtro;
+ assert.equal(vista.entidades.length,6);assert.equal(vista.entidades[0],base.entidades[0]);assert.equal(vista.universo,base.id);assert.deepEqual(vista.cobertura.completoPor,base.cobertura.completoPor);
+ assert.equal(firmaDeConsigna(vista,f),firmaDe(base.id,unirFiltros(vista.filtroVista,f)));
+ assert.equal(problemaDeCobertura(vista,f),null);
+ const p=plantillaSintetica('vista');const c=prepararCandidatos(p,vista,{validar:true,completo:true,dominios:DOMINIOS}).candidatos[0];assert.equal(c.entidades.length,6);
+});
+
+test('completoPor: solo valores declarados; negaciones no prueban completitud y null no es lista vacía',t=>{
+ const base=catalogosDePrueba(t).get('sintetico'), filtro=(valores,no=false)=>validarFiltro({op:'es',campo:'directores',valores,...(no?{no:true}:{})},base).filtro;
+ assert.equal(problemaDeCobertura(base,filtro(['Directora A'])),null);
+ assert.match(problemaDeCobertura(base,filtro(['Director B'])),/parcial/);
+ assert.match(problemaDeCobertura(base,filtro(['Directora A','Director B'])),/parcial/);
+ assert.match(problemaDeCobertura(base,filtro(['Directora A'],true)),/parcial/);
+ const completo={...base,cobertura:{tipo:'completa'},completos:new Set(['paises','directores','familias'])};
+ assert.match(problemaDeCobertura(completo,validarFiltro({op:'entre',campo:'anio',desde:2000,hasta:2005},base).filtro),/faltan datos/);
+ const grupo=unirFiltros(filtro(['Directora A']),validarFiltro({op:'entre',campo:'anio',desde:2000,hasta:2005},base).filtro);
+ assert.equal(problemaDeCobertura(base,grupo),null,'el año está completo dentro del grupo garantizado');
+});
+
+test('atributos múltiples: se conserva cada familia y cada codirector',t=>{
+ const base=catalogosDePrueba(t).get('sintetico'),e=base.entidades[0];
+ for(const [campo,valores]of [['familias',['cordófonos','electrófonos']],['directores',['Directora A','Director B']]])for(const valor of valores)assert.ok(evaluar(validarFiltro({op:'es',campo,valores:[valor]},base).filtro,e));
+});
+
+test('alias reales: JPG y parlantes llegan a la respuesta canónica sin sumar entidades',()=>{
+ for(const [id,alias]of [['formatos_archivo','JPG'],['perifericos','parlantes']]){
+  const c=cat(id), e=c.entidades.find(e=>e.alias.some(a=>normalizar(a)===normalizar(alias)) || normalizar(e.nombre)===normalizar(alias));assert.ok(e,`${alias} está registrado`);
+  const indice=crearIndice(c.entidades.flatMap(e=>[e.nombre,...e.alias].map(a=>({respuestaId:e.id,normalizada:normalizar(a)}))));assert.equal(buscarEnIndice(indice,alias),e.id);
+ }
+});
+
+test('repetición entre base y vista: se bloquea a 59 días y se permite a 60',t=>{
+ const cs=catalogosDePrueba(t),p=plantillaSintetica('vista');const opciones={catalogos:cs,plantillas:{version:'sintética',lista:[p]},dominios:DOMINIOS,limite:1};
+ const inicial=generarLote({...opciones,fecha:'2026-10-08'});assert.ok(inicial.ok);
+ const q=inicial.preguntas[0],h={fecha:'2026-10-08',categoria:'cine',firma:q.firma,conjunto:q.conjunto,catalogo:'sintetico',familia:p.familia,minhash:q.generacion.minhash,minhashNombres:q.generacion.minhashNombres};
+ const equivalente={...plantillaSintetica(),filtro:unirFiltros(cs.get('vista').filtroVista,validarFiltro(p.filtro,cs.get('sintetico')).filtro)};
+ const generar=distancia=>generarLote({...opciones,plantillas:{version:'sintética',lista:[equivalente]},fecha:sumarDias('2026-10-08',distancia),historial:[h]});
+ assert.equal(generar(59).ok,false);assert.equal(generar(60).ok,true);assert.equal(generar(60).preguntas[0].firma,q.firma);
+});
+
+test('otro catálogo: bloquea un conjunto casi igual por nombres, incluso con ids distintos',t=>{
+ const cs=catalogosDePrueba(t),base=cs.get('sintetico'),p=plantillaSintetica();
+ base.version='casi-igual';base.entidades=Array.from({length:100},(_,i)=>({...base.entidades[0],id:`casi-${i}`,nombre:`Obra sintética ${i}`}));base.percentil=()=>0.5;
+ const c=prepararCandidatos(p,base).candidatos[0];
+ const parecido=[...c.entidades.slice(0,99).map(e=>normalizar(e.nombre)),'otra obra'];
+ const h={fecha:'2026-10-07',catalogo:'otro',nombresConjunto:parecido,minhashNombres:minhash(parecido),categoria:'cine'};
+ const r=generarLote({catalogos:cs,plantillas:{version:'sintética',lista:[p]},fecha:'2026-10-08',historial:[h],dominios:DOMINIOS,limite:1});assert.equal(r.ok,false);assert.ok(r.descartes.some(d=>d.motivo.includes('otro catálogo')));
+});
+
+test('rotación: usa días previos, ignora futuros y favorece una categoría que hace tiempo no aparece',t=>{
+ const cs=catalogosDePrueba(t),base=cs.get('sintetico');const copia={...base,id:'otros',universo:'otros',version:'otra',entidades:base.entidades.map(e=>({...e,id:'otro-'+e.id,nombre:'Otra '+e.nombre})),percentil:base.percentil};cs.set(copia.id,copia);
+ const a=plantillaSintetica(),b={...plantillaSintetica('otros'),id:'prueba-naturaleza',familia:'prueba-naturaleza',categoria:'naturaleza'};
+ const args={catalogos:cs,plantillas:{version:'sintética',lista:[a,b]},fecha:'2026-10-08',dominios:DOMINIOS,limite:1,opciones:{pesoRotacion:10}};
+ const h=[{fecha:'2026-10-07',categoria:'cine'}];assert.equal(generarLote({...args,historial:h}).preguntas[0].categoria,'naturaleza');
+ assert.deepEqual(generarLote({...args,historial:h}),generarLote({...args,historial:[...h,{fecha:'2026-10-09',categoria:'naturaleza'}]}));
+});
+
+test('las firmas de los catálogos viejos conservan el algoritmo y su contenido',()=>{
+ const fixture=JSON.parse(readFileSync(new URL('./firmas-catalogos-viejos.json',import.meta.url),'utf8'));
+ for(const f of fixture)assert.equal(firmaDeConsigna(cat(f.catalogo),validarFiltro(f.filtro,cat(f.catalogo)).filtro),f.firma,`${f.catalogo}: firma histórica`);
+});
+
+test('CAA: ocho frutas secas, castaña y nuez de Pará distintas; los descriptores no son alias',()=>{
+ const c=cat('frutas_verduras'),secas=c.entidades.filter(e=>e.atributos.categorias.includes('frutas secas'));
+ assert.equal(secas.length,8);const castana=secas.find(e=>e.nombre==='Castaña'),para=secas.find(e=>e.nombre==='Nuez de Pará');
+ assert.ok(castana&&para);assert.notEqual(castana.id,para.id);assert.ok(castana.atributos.cientifico[0].includes('Castanea'));assert.ok(para.atributos.cientifico[0].includes('Bertholletia'));
+ assert.ok(c.entidades.some(e=>e.nombre==='Chile Habanero'));assert.ok(!c.entidades.some(e=>e.alias.includes('(arbustiva)')));
+});
+
+test('Nobel: dos disciplinas y años relacionados correctamente; lista vacía significa ningún premio de esa disciplina',()=>{
+ const c=cat('cientificos'),curie=c.entidades.find(e=>e.nombre==='Marie Curie');
+ assert.deepEqual(curie.atributos.premios_phy,[1903]);assert.deepEqual(curie.atributos.premios_che,[1911]);assert.deepEqual(curie.atributos.premios_med,[]);assert.ok(c.completos.has('premios_med'));
+ assert.ok(!evaluar(validarFiltro({op:'entre',campo:'premios_phy',desde:1911,hasta:1911},c).filtro,curie));
+});
+
+test('deportistas: 69 ediciones del Balón de Oro, años unidos al premio y planteles finales preservados',()=>{
+ const es=cat('deportistas').entidades;
+ assert.equal(es.flatMap(e=>e.atributos.anios_balon).length,69);
+ assert.equal(new Set(es.flatMap(e=>e.atributos.anios_balon)).size,69);
+ assert.ok(es.every(e=>!e.atributos.anios_balon.includes(2020)));
+ assert.equal(es.find(e=>e.nombre==='Lionel Messi').atributos.anios_balon.length,8);
+ assert.equal(es.find(e=>e.nombre==='Cristiano Ronaldo').atributos.anios_balon.length,5);
+ for(const [a,n] of [[1978,22],[1986,22],[2022,26]])assert.equal(es.filter(e=>e.atributos.logros.includes(`Mundial ${a} con Argentina`)).length,n);
+});
+
+test('libros: novelas cortas incluidas y títulos duplicados identificados sin perder alias',()=>{
+ const es=cat('libros').entidades;
+ for(const nombre of ['Cien años de soledad','El hobbit','El viejo y el mar'])assert.ok(es.some(e=>e.nombre===nombre||e.alias.includes(nombre)));
+ assert.equal(new Set(es.map(e=>normalizar(e.nombre))).size,es.length);
+});
+
+test('taxonomía: una respuesta por taxón GBIF, ocho osos y alias comunes en español',()=>{
+ const c=cat('animales');assert.equal(new Set(c.entidades.map(e=>e.atributos.taxon)).size,c.entidades.length);assert.equal(c.entidades.filter(e=>e.atributos.grupos.includes('osos')).length,8);
+ assert.ok(c.entidades.some(e=>[e.nombre,...e.alias].some(n=>normalizar(n)==='oso polar')));assert.ok(c.entidades.every(e=>e.atributos.habitat===null&&e.atributos.alimentacion===null));
+});
+
+test('historial viejo: recupera nombres completos para bloquear otros catálogos sin reescribir preguntas',async()=>{
+ const e=await prepararEntorno();
+ try {
+  const pub=await asegurarDesafio({db:e.db,config:e.config,fecha:'2026-10-05',reserva:e.reserva,reservas:e.reservas,generador:'catalogos'});assert.equal(pub.origen,'catalogo');
+  const p=await e.db.get('SELECT id, generacion, firma FROM preguntas WHERE desafio_id=? ORDER BY posicion LIMIT 1',pub.desafioId);
+  const g=JSON.parse(p.generacion);delete g.nombresConjunto;
+  await e.db.run('UPDATE preguntas SET generacion=? WHERE id=?',JSON.stringify(g),p.id);
+  const h=await historialGenerado(e.db,'2026-10-06',60,'normal'),r=h.find(r=>r.firma===p.firma);
+  const canonicas=await e.db.all('SELECT canonica FROM respuestas WHERE pregunta_id=? ORDER BY orden',p.id);
+  assert.deepEqual(r.nombresConjunto,canonicas.map(r=>normalizar(r.canonica)));
+  assert.equal(JSON.parse((await e.db.get('SELECT generacion FROM preguntas WHERE id=?',p.id)).generacion).nombresConjunto,undefined,'la recuperación fue de solo lectura');
+ } finally {e.db.close();}
 });

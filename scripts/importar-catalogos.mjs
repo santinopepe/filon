@@ -12,6 +12,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { DEFINICIONES } from './catalogos/definiciones.mjs';
 import { armarCatalogo } from './catalogos/comun.mjs';
+import { fechaLocal } from '../servidor/tiempo.js';
 import { RAIZ } from '../servidor/config.js';
 
 const DIR = resolve(RAIZ, 'datos/catalogos');
@@ -24,7 +25,7 @@ if (desconocidos.length) {
   process.exit(1);
 }
 mkdirSync(DIR, { recursive: true });
-const hoy = new Date().toISOString().slice(0, 10);
+const hoy = fechaLocal(Date.now(), 'America/Argentina/Buenos_Aires');
 const catalogos = {};
 const cargarGuardado = (id) => {
   const ruta = join(DIR, `${id}.json`);
@@ -43,6 +44,16 @@ let fallas = 0;
 for (const def of DEFINICIONES) {
   const elegido = !pedidos.length || pedidos.includes(def.id);
   if (!elegido) continue;
+  // Una vista no se importa: es un filtro sobre otro catálogo que se aplica al cargar.
+  if (def.vista) {
+    const { id, nombre, descripcion, vista, cobertura } = def;
+    // No dejar una vista huérfana si falló la importación de su base.
+    try { catalogos[vista.catalogo] ??= cargarGuardado(vista.catalogo); }
+    catch (e) { fallas++; console.error(`✗ ${id}: ${e.message}`); continue; }
+    if (!seco) writeFileSync(join(DIR, `${id}.json`), `${JSON.stringify({ id, nombre, descripcion, vista, cobertura }, null, 2)}\n`);
+    console.log(`✓ ${id}: vista de «${vista.catalogo}»`);
+    continue;
+  }
   for (const dep of def.depende ?? []) catalogos[dep] ??= cargarGuardado(dep);
   const inicio = Date.now();
   try {

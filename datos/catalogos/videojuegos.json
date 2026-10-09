@@ -1,0 +1,123 @@
+{
+  "id": "videojuegos",
+  "nombre": "Videojuegos de sagas verificadas",
+  "descripcion": "Sagas de Wikidata con miembros lanzados y anclas verificadas; sin prometer todos los juegos de Mario.",
+  "version": "2026-10-08.d208ea2a10",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "parcial",
+    "criterio": "Juegos lanzados con fecha registrada en Wikidata y relación P179/P8345 a las sagas admitidas. Se verifican las entregas principales como anclas y se conservan también derivados; no todas las franquicias.",
+    "completoPor": {
+      "franquicias": [
+        "Uncharted",
+        "Mass Effect",
+        "Age of Empires"
+      ]
+    },
+    "verificacion": [
+      "Uncharted: 12 juegos lanzados, 4 anclas presentes",
+      "Mass Effect: 18 juegos lanzados, 4 anclas presentes",
+      "Age of Empires: 30 juegos lanzados, 4 anclas presentes",
+      "al menos una saga verificada"
+    ],
+    "sinVerificarManualmente": [
+      "BioShock: 0 miembros; no están todas las 3 entregas ancla. Saga descartada."
+    ]
+  },
+  "atributos": {
+    "franquicias": {
+      "tipo": "lista",
+      "etiqueta": "franquicia"
+    },
+    "anio": {
+      "tipo": "numero",
+      "etiqueta": "año de lanzamiento"
+    },
+    "desarrolladoras": {
+      "tipo": "lista",
+      "etiqueta": "desarrolladora"
+    },
+    "generos": {
+      "tipo": "lista",
+      "etiqueta": "género"
+    },
+    "plataformas": {
+      "tipo": "lista",
+      "etiqueta": "plataforma"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q101246186","nombre":"Mass Effect Legendary Edition","popularidad":11,"atributos":{"franquicias":["Mass Effect"],"anio":2021,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 4","Xbox One"]},"fuente":"https://www.wikidata.org/wiki/Q101246186"},
+    {"id":"Q102280642","nombre":"Mass Effect: Pinnacle Station","popularidad":1,"atributos":{"franquicias":["Mass Effect"],"anio":2009,"desarrolladoras":["Demiurge Studios"],"generos":null,"plataformas":["Microsoft Windows","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q102280642"},
+    {"id":"Q104211860","nombre":"Age of Empires II: Definitive Edition - Lords of the West","popularidad":2,"atributos":{"franquicias":["Age of Empires"],"anio":2021,"desarrolladoras":null,"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q104211860"},
+    {"id":"Q106695023","nombre":"Age of Empires III: Definitive Edition - United States Civilization","popularidad":1,"atributos":{"franquicias":["Age of Empires"],"anio":2021,"desarrolladoras":["Forgotten Empires","Tantalus Media"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q106695023"},
+    {"id":"Q107300310","nombre":"Age of Empires II: Definitive Edition – Dawn of the Dukes","popularidad":1,"atributos":{"franquicias":["Age of Empires"],"anio":2021,"desarrolladoras":null,"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q107300310"},
+    {"id":"Q107655581","nombre":"Age of Empires III: Definitive Edition - The African Royals","popularidad":1,"atributos":{"franquicias":["Age of Empires"],"anio":2021,"desarrolladoras":["Forgotten Empires","Tantalus Media"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q107655581"},
+    {"id":"Q108479466","nombre":"Uncharted 4: A Thief's End Remastered","popularidad":0,"atributos":{"franquicias":["Uncharted"],"anio":2022,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura"],"plataformas":["Microsoft Windows","PlayStation 5"]},"fuente":"https://www.wikidata.org/wiki/Q108479466"},
+    {"id":"Q108482649","nombre":"Uncharted: Colección Legado de los Ladrones","alias":["Uncharted: Colección Legado de Ladrones","Uncharted: Legacy of Thieves Collection"],"popularidad":5,"atributos":{"franquicias":["Uncharted"],"anio":2022,"desarrolladoras":["Naughty Dog","Iron Galaxy Studios"],"generos":["acción-aventura"],"plataformas":["Microsoft Windows","PlayStation 5"]},"fuente":"https://www.wikidata.org/wiki/Q108482649"},
+    {"id":"Q108482681","nombre":"Uncharted: The Lost Legacy Remastered","popularidad":0,"atributos":{"franquicias":["Uncharted"],"anio":2022,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura"],"plataformas":["Microsoft Windows","PlayStation 5"]},"fuente":"https://www.wikidata.org/wiki/Q108482681"},
+    {"id":"Q109678047","nombre":"Age of Empires III: Definitive Edition - Mexico Civilization","popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2021,"desarrolladoras":["Forgotten Empires","Tantalus Media"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q109678047"},
+    {"id":"Q111605710","nombre":"Age of Empires II: Definitive Edition – Dynasties Of India","popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2022,"desarrolladoras":null,"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q111605710"},
+    {"id":"Q111977368","nombre":"Age of Empires III: Definitive Edition - Knights of the Mediterranean","popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2022,"desarrolladoras":["Forgotten Empires","Tantalus Media"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q111977368"},
+    {"id":"Q114869986","nombre":"Age of Empires II: Definitive Edition - Return of Rome","popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2023,"desarrolladoras":null,"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q114869986"},
+    {"id":"Q1156718","nombre":"Uncharted: El abismo de oro","alias":["Uncharted: Golden Abyss"],"popularidad":20,"atributos":{"franquicias":["Uncharted"],"anio":2011,"desarrolladoras":["SCE Bend Studio"],"generos":["acción-aventura","videojuego de plataformas"],"plataformas":["PlayStation Vita"]},"fuente":"https://www.wikidata.org/wiki/Q1156718"},
+    {"id":"Q117841582","nombre":"Age of Mythology: Extended Edition","popularidad":2,"atributos":{"franquicias":["Age of Empires"],"anio":2014,"desarrolladoras":["Ensemble Studios","Skybox Labs"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q117841582"},
+    {"id":"Q123120502","nombre":"Age of Empires II: Definitive Edition – The Mountain Royals","popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2023,"desarrolladoras":null,"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows","Xbox Series X|S","Xbox One"]},"fuente":"https://www.wikidata.org/wiki/Q123120502"},
+    {"id":"Q123337841","nombre":"Age of Empires II Deluxe Mobile","popularidad":1,"atributos":{"franquicias":["Age of Empires"],"anio":2006,"desarrolladoras":null,"generos":null,"plataformas":null},"fuente":"https://www.wikidata.org/wiki/Q123337841"},
+    {"id":"Q123466979","nombre":"Age of Empires IV: The Sultans Ascend","popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2023,"desarrolladoras":["Relic Entertainment","Forgotten Empires","World's Edge"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q123466979"},
+    {"id":"Q12813511","nombre":"Age of Empires II HD: The Forgotten","popularidad":12,"atributos":{"franquicias":["Age of Empires"],"anio":2013,"desarrolladoras":["Forgotten Empires","Skybox Labs"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q12813511"},
+    {"id":"Q16267378","nombre":"Mass Effect Trilogy","popularidad":0,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":["BioWare"],"generos":["videojuego de rol de acción"],"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q16267378"},
+    {"id":"Q16267640","nombre":"Mass Effect 2: Overlord","popularidad":2,"atributos":{"franquicias":["Mass Effect"],"anio":2010,"desarrolladoras":["BioWare"],"generos":["videojuego de rol de acción","videojuego de ciencia ficción"],"plataformas":["Microsoft Windows","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q16267640"},
+    {"id":"Q16267701","nombre":"Mass Effect 2: Kasumi - Stolen Memory","popularidad":1,"atributos":{"franquicias":["Mass Effect"],"anio":2010,"desarrolladoras":["BioWare"],"generos":["videojuego de rol de acción","videojuego de ciencia ficción"],"plataformas":["Microsoft Windows","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q16267701"},
+    {"id":"Q16267780","nombre":"Age of Empires II: HD Edition","popularidad":6,"atributos":{"franquicias":["Age of Empires"],"anio":2013,"desarrolladoras":["Ensemble Studios","Hidden Path Entertainment"],"generos":["estrategia en tiempo real","videojuego de estrategia","videojuego de táctica en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q16267780"},
+    {"id":"Q16681843","nombre":"Uncharted 4: El desenlace del ladrón","popularidad":36,"atributos":{"franquicias":["Uncharted"],"anio":2016,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura","disparos en tercera persona","videojuego de plataformas"],"plataformas":["PlayStation 4"]},"fuente":"https://www.wikidata.org/wiki/Q16681843"},
+    {"id":"Q17138","nombre":"Uncharted 3: La traición de Drake","alias":["Uncharted 3: Drake's Deception"],"popularidad":35,"atributos":{"franquicias":["Uncharted"],"anio":2011,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura","disparos en tercera persona","videojuego de plataformas"],"plataformas":["PlayStation 3"]},"fuente":"https://www.wikidata.org/wiki/Q17138"},
+    {"id":"Q17146","nombre":"Uncharted 2: El reino de los ladrones","popularidad":40,"atributos":{"franquicias":["Uncharted"],"anio":2009,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura","disparos en tercera persona","videojuego de plataformas"],"plataformas":["PlayStation 3"]},"fuente":"https://www.wikidata.org/wiki/Q17146"},
+    {"id":"Q17150","nombre":"Uncharted: El tesoro de Drake","alias":["Uncharted: Drake's Fortune"],"popularidad":35,"atributos":{"franquicias":["Uncharted"],"anio":2007,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura","disparos en tercera persona","videojuego de plataformas"],"plataformas":["PlayStation 3"]},"fuente":"https://www.wikidata.org/wiki/Q17150"},
+    {"id":"Q18119586","nombre":"Age of Empires: Castle Siege","popularidad":10,"atributos":{"franquicias":["Age of Empires"],"anio":2014,"desarrolladoras":["Xbox Game Studios","Smoking Gun Interactive"],"generos":["videojuego multijugador masivo en línea","defensa de torres"],"plataformas":["Microsoft Windows","Android","iOS","Windows Phone"]},"fuente":"https://www.wikidata.org/wiki/Q18119586"},
+    {"id":"Q20059613","nombre":"Uncharted: The Nathan Drake Collection","popularidad":13,"atributos":{"franquicias":["Uncharted"],"anio":2015,"desarrolladoras":null,"generos":["acción-aventura"],"plataformas":["PlayStation 4"]},"fuente":"https://www.wikidata.org/wiki/Q20059613"},
+    {"id":"Q20113552","nombre":"Mass Effect: Andromeda","popularidad":24,"atributos":{"franquicias":["Mass Effect"],"anio":2017,"desarrolladoras":["BioWare"],"generos":["disparos en tercera persona","videojuego de rol de acción","videojuego de ciencia ficción","videojuego con personajes LGBT"],"plataformas":["Microsoft Windows","PlayStation 4","Xbox One"]},"fuente":"https://www.wikidata.org/wiki/Q20113552"},
+    {"id":"Q21059471","nombre":"Age of Empires II: The African Kingdoms","alias":["Age of Empires II HD: The African Kingdoms"],"popularidad":10,"atributos":{"franquicias":["Age of Empires"],"anio":2015,"desarrolladoras":["Forgotten Empires","Skybox Labs"],"generos":["estrategia en tiempo real","videojuego de estrategia"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q21059471"},
+    {"id":"Q220767","nombre":"Age of Empires","alias":["AoE1","AoEI","Aoe","Edad de Imperios","Roggan"],"popularidad":49,"atributos":{"franquicias":["Age of Empires"],"anio":1997,"desarrolladoras":["Ensemble Studios"],"generos":["estrategia en tiempo real","videojuego histórico"],"plataformas":["Microsoft Windows","macOS","Mac OS Classic"]},"fuente":"https://www.wikidata.org/wiki/Q220767"},
+    {"id":"Q2666688","nombre":"Mass Effect Galaxy","popularidad":14,"atributos":{"franquicias":["Mass Effect"],"anio":2009,"desarrolladoras":["BioWare"],"generos":["videojuego de rol","videojuego de ciencia ficción"],"plataformas":["iOS"]},"fuente":"https://www.wikidata.org/wiki/Q2666688"},
+    {"id":"Q275960","nombre":"Mass Effect","popularidad":43,"atributos":{"franquicias":["Mass Effect"],"anio":2007,"desarrolladoras":["BioWare","Demiurge Studios","Edge of Reality"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360","PlayStation 4","Xbox One"]},"fuente":"https://www.wikidata.org/wiki/Q275960"},
+    {"id":"Q28036752","nombre":"Age of Empires II: Rise of the Rajas","alias":["Age of Empires II HD: Rise of the Rajas"],"popularidad":9,"atributos":{"franquicias":["Age of Empires"],"anio":2016,"desarrolladoras":["Forgotten Empires","Skybox Labs"],"generos":["estrategia en tiempo real","videojuego de estrategia"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q28036752"},
+    {"id":"Q28088198","nombre":"Uncharted: The Lost Legacy","alias":["Uncharted: El Legado Perdido"],"popularidad":24,"atributos":{"franquicias":["Uncharted"],"anio":2017,"desarrolladoras":["Naughty Dog"],"generos":["acción-aventura","disparos en tercera persona"],"plataformas":["PlayStation 4"]},"fuente":"https://www.wikidata.org/wiki/Q28088198"},
+    {"id":"Q28678072","nombre":"Uncharted: Fortune Hunter","popularidad":4,"atributos":{"franquicias":["Uncharted"],"anio":2016,"desarrolladoras":null,"generos":["videojuego de lógica"],"plataformas":["Android","iOS"]},"fuente":"https://www.wikidata.org/wiki/Q28678072"},
+    {"id":"Q34852","nombre":"Age of Empires II: The Age of Kings","popularidad":54,"atributos":{"franquicias":["Age of Empires"],"anio":1999,"desarrolladoras":["Ensemble Studios","Hidden Path Entertainment"],"generos":["estrategia en tiempo real","videojuego histórico"],"plataformas":["Microsoft Windows","PlayStation 2"]},"fuente":"https://www.wikidata.org/wiki/Q34852"},
+    {"id":"Q34869","nombre":"Age of Empires III","popularidad":43,"atributos":{"franquicias":["Age of Empires"],"anio":2005,"desarrolladoras":["Ensemble Studios","Robot Entertainment","Glu Mobile","Big Huge Games","MacSoft Games"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows","macOS","Windows Mobile","N-Gage"]},"fuente":"https://www.wikidata.org/wiki/Q34869"},
+    {"id":"Q34920","nombre":"Age of Empires Online","popularidad":22,"atributos":{"franquicias":["Age of Empires"],"anio":2011,"desarrolladoras":["Wargaming Seattle","Robot Entertainment"],"generos":["videojuego de estrategia en tiempo real multijugador masivo en línea"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q34920"},
+    {"id":"Q37673361","nombre":"Age of Empires: Definitive Edition","popularidad":5,"atributos":{"franquicias":["Age of Empires"],"anio":2018,"desarrolladoras":["Forgotten Empires"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q37673361"},
+    {"id":"Q3850855","nombre":"Mass Effect Infiltrator","popularidad":9,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":null,"generos":["videojuego de rol","videojuego de ciencia ficción"],"plataformas":["Android","iOS"]},"fuente":"https://www.wikidata.org/wiki/Q3850855"},
+    {"id":"Q515876","nombre":"Age of Empires: The Rise of Rome","alias":["Age of Empires El Auge de Roma","Age of Empires The Rise of Rome Expansion"],"popularidad":27,"atributos":{"franquicias":["Age of Empires"],"anio":1998,"desarrolladoras":["Ensemble Studios"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q515876"},
+    {"id":"Q51929202","nombre":"Mass Effect 3: Leviathan","popularidad":1,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q51929202"},
+    {"id":"Q51929525","nombre":"Mass Effect 3: De las cenizas","alias":["Mass Effect 3: From Ashes"],"popularidad":1,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":["BioWare"],"generos":["disparos en tercera persona","videojuego de rol de acción"],"plataformas":["PlayStation 3","Xbox 360","Nintendo Wii U"]},"fuente":"https://www.wikidata.org/wiki/Q51929525"},
+    {"id":"Q51929681","nombre":"Mass Effect 3: Citadel","popularidad":2,"atributos":{"franquicias":["Mass Effect"],"anio":2013,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q51929681"},
+    {"id":"Q51930098","nombre":"Mass Effect 3: Extended Cut","popularidad":0,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q51930098"},
+    {"id":"Q51930253","nombre":"Mass Effect 3: Omega","popularidad":1,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q51930253"},
+    {"id":"Q55154676","nombre":"Age of Empires IV","alias":["Age of Empires 4","AoE 4"],"popularidad":26,"atributos":{"franquicias":["Age of Empires"],"anio":2021,"desarrolladoras":["Relic Entertainment"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q55154676"},
+    {"id":"Q615499","nombre":"Age of Empires II: The Conquerors","alias":["Age of Conquerors","Age of Empires II The Conquerors Expansion","Aoe conquerors","Conquerors"],"popularidad":30,"atributos":{"franquicias":["Age of Empires"],"anio":2000,"desarrolladoras":["Ensemble Studios"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows","Mac OS Classic"]},"fuente":"https://www.wikidata.org/wiki/Q615499"},
+    {"id":"Q61959776","nombre":"Age of Empires II: El Mundo Americano","alias":["Age of Empires II: The American World"],"popularidad":0,"atributos":{"franquicias":["Age of Empires"],"anio":2019,"desarrolladoras":null,"generos":["videojuego de estrategia"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q61959776"},
+    {"id":"Q6223902","nombre":"Mass Effect 2: Lair of the Shadow Broker","popularidad":3,"atributos":{"franquicias":["Mass Effect"],"anio":2010,"desarrolladoras":["BioWare"],"generos":["videojuego de rol de acción","videojuego de ciencia ficción"],"plataformas":["Microsoft Windows","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q6223902"},
+    {"id":"Q63463133","nombre":"Age of Empires II: Definitive Edition","popularidad":20,"atributos":{"franquicias":["Age of Empires"],"anio":2019,"desarrolladoras":null,"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows","macOS","Xbox Series X|S","Xbox One"]},"fuente":"https://www.wikidata.org/wiki/Q63463133"},
+    {"id":"Q63464105","nombre":"Age of Empires III: Definitive Edition","popularidad":10,"atributos":{"franquicias":["Age of Empires"],"anio":2020,"desarrolladoras":["Forgotten Empires","Tantalus Media"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows"]},"fuente":"https://www.wikidata.org/wiki/Q63464105"},
+    {"id":"Q648573","nombre":"Uncharted: Lucha por el Tesoro","alias":["Uncharted: Fight for Fortune"],"popularidad":14,"atributos":{"franquicias":["Uncharted"],"anio":2012,"desarrolladoras":["SCE Bend Studio"],"generos":null,"plataformas":["PlayStation Vita"]},"fuente":"https://www.wikidata.org/wiki/Q648573"},
+    {"id":"Q6783995","nombre":"Mass Effect 2: Arrival","popularidad":2,"atributos":{"franquicias":["Mass Effect"],"anio":2011,"desarrolladoras":["BioWare"],"generos":["videojuego de rol de acción","videojuego de ciencia ficción"],"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q6783995"},
+    {"id":"Q725057","nombre":"Mass Effect 2","popularidad":40,"atributos":{"franquicias":["Mass Effect"],"anio":2010,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360"]},"fuente":"https://www.wikidata.org/wiki/Q725057"},
+    {"id":"Q753511","nombre":"Mass Effect 3","popularidad":35,"atributos":{"franquicias":["Mass Effect"],"anio":2012,"desarrolladoras":["BioWare"],"generos":null,"plataformas":["Microsoft Windows","PlayStation 3","Xbox 360","Nintendo Wii U"]},"fuente":"https://www.wikidata.org/wiki/Q753511"},
+    {"id":"Q853074","nombre":"Age of Empires III: The WarChiefs","alias":["Age of Empires III The War Chiefs"],"popularidad":23,"atributos":{"franquicias":["Age of Empires"],"anio":2006,"desarrolladoras":["Ensemble Studios"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows","macOS"]},"fuente":"https://www.wikidata.org/wiki/Q853074"},
+    {"id":"Q862462","nombre":"Age of Empires III: The Asian Dynasties","alias":["Age of Empires The Asian Dynasties"],"popularidad":21,"atributos":{"franquicias":["Age of Empires"],"anio":2007,"desarrolladoras":["Ensemble Studios"],"generos":["estrategia en tiempo real"],"plataformas":["Microsoft Windows","macOS"]},"fuente":"https://www.wikidata.org/wiki/Q862462"}
+  ]
+}

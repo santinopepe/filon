@@ -1,0 +1,65 @@
+{
+  "id": "conectores",
+  "nombre": "Puertos y conectores de computadora",
+  "descripcion": "Los puertos (actuales y obsoletos) de la plantilla «Basic computer components» de Wikipedia.",
+  "version": "2026-10-08.665ce82a69",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia en inglés, «Template:Basic computer components» (revisión 1360093171)",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1360093171",
+      "licencia": "CC BY-SA 4.0",
+      "detalle": "lista y grupos"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "nombres en español, alias y popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Los artículos del grupo «Ports» de la plantilla de navegación «Basic computer components» de Wikipedia en inglés, con su vigencia (actual u obsoleto) tal como los agrupa la plantilla.",
+    "verificacion": [
+      "artículos sin enlace a Wikidata, resueltos por etiqueta: IEEE 1394 → Q181693",
+      "la plantilla tiene el grupo «Current» (6 artículos)",
+      "la plantilla tiene el grupo «Obsolete» (8 artículos)",
+      "todos tienen nombre en español (sin traducir: ninguno)",
+      "6 actuales y 8 obsoletos"
+    ]
+  },
+  "atributos": {
+    "vigencia": {
+      "tipo": "lista",
+      "etiqueta": "vigencia"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Q847473",
+      "detalle": "nombre «PS/2»",
+      "motivo": "La etiqueta en español de Wikidata es «PS/ñ», un error de tipeo del nombre «PS/2»."
+    }
+  ],
+  "entidades": [
+    {"id":"Q1127054","nombre":"puerto de juegos","alias":["game port"],"popularidad":23,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q1127054"},
+    {"id":"Q15052114","nombre":"eSATA","popularidad":6,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q15052114"},
+    {"id":"Q181693","nombre":"FireWire","alias":["IEEE 1394","I Link","Ilink"],"popularidad":49,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q181693"},
+    {"id":"Q184292","nombre":"HDMI","alias":["High-Definition Multimedia Interface"],"popularidad":66,"atributos":{"vigencia":["actual"]},"fuente":"https://www.wikidata.org/wiki/Q184292"},
+    {"id":"Q190440","nombre":"Puerto paralelo","alias":["Interfaz paralelo","parallel port"],"popularidad":39,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q190440"},
+    {"id":"Q329003","nombre":"Thunderbolt","alias":["Light Peak"],"popularidad":40,"atributos":{"vigencia":["actual"]},"fuente":"https://www.wikidata.org/wiki/Q329003"},
+    {"id":"Q337765","nombre":"DVI","alias":["Digital Visual Interface","DVI A","DVI D","DVI DL","DVI I","Digital video interface","Dual Link","Mini DVI"],"popularidad":38,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q337765"},
+    {"id":"Q385390","nombre":"puerto serie","alias":["Interfaz serie","Puerto COM","Puerto de serie","Puerto serial","serial port"],"popularidad":41,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q385390"},
+    {"id":"Q394226","nombre":"Jack","alias":["Conector TRS","Enchufe Audio 3 5mm","Minijack","TRRS","TRRS connector","phone connector","Analog audio jack"],"popularidad":27,"atributos":{"vigencia":["actual"]},"fuente":"https://www.wikidata.org/wiki/Q394226"},
+    {"id":"Q42378","nombre":"USB","alias":["Universal Serial Bus","Bus de Serie Universal","CUS","Puerto USB","Puertos USB"],"popularidad":92,"atributos":{"vigencia":["actual"]},"fuente":"https://www.wikidata.org/wiki/Q42378"},
+    {"id":"Q539719","nombre":"VGA","alias":["Conector VGA","VGA connector"],"popularidad":27,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q539719"},
+    {"id":"Q753452","nombre":"DisplayPort","popularidad":40,"atributos":{"vigencia":["actual"]},"fuente":"https://www.wikidata.org/wiki/Q753452"},
+    {"id":"Q79984","nombre":"Ethernet","alias":["Eternet"],"popularidad":81,"atributos":{"vigencia":["actual"]},"fuente":"https://www.wikidata.org/wiki/Q79984"},
+    {"id":"Q847473","nombre":"PS/2","alias":["PS/2 connector","PS/2 port"],"popularidad":32,"atributos":{"vigencia":["obsoleto"]},"fuente":"https://www.wikidata.org/wiki/Q847473"}
+  ]
+}

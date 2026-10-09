@@ -1,31 +1,27 @@
 // Cliente mínimo de Wikidata (SPARQL) para importar catálogos. Solo se usa al importar: el juego y la
 // generación diaria leen los archivos de datos/catalogos/, nunca la red.
 // Datos de Wikidata: CC0 1.0 (https://www.wikidata.org/wiki/Wikidata:Licensing).
+import { pedir } from './comun.mjs';
+
 const ENDPOINT = 'https://query.wikidata.org/sparql';
-const AGENTE = 'FilonImportador/1.0 (https://filon-five.vercel.app; importación de catálogos CC0)';
 const LOTE = 80;
-const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));
 
 export const qid = (uri) => String(uri).split('/').pop();
 export const urlEntidad = (id) => `https://www.wikidata.org/wiki/${id}`;
 
-/** Ejecuta una consulta SPARQL (con reintentos y una pausa cortés entre consultas). */
+/**
+ * Ejecuta una consulta SPARQL (GET, con caché, intervalo entre consultas y reintentos acotados: un 504 o
+ * un 429 se reintentan; un error de sintaxis, no).
+ */
 export async function sparql(consulta, { intentos = 4 } = {}) {
-  for (let i = 1; ; i++) {
-    try {
-      const res = await fetch(`${ENDPOINT}?${new URLSearchParams({ query: consulta })}`, {
-        headers: { accept: 'application/sparql-results+json', 'user-agent': AGENTE },
-        signal: AbortSignal.timeout(90_000),
-      });
-      if (!res.ok) throw new Error(`Wikidata respondió ${res.status}: ${(await res.text()).slice(0, 200)}`);
-      const datos = await res.json();
-      await esperar(400);
-      return datos.results.bindings.map((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, v.value])));
-    } catch (e) {
-      if (i >= intentos) throw e;
-      await esperar(2000 * i);
-    }
-  }
+  const texto = await pedir(`${ENDPOINT}?${new URLSearchParams({ query: consulta, format: 'json' })}`, {
+    cabeceras: { accept: 'application/sparql-results+json' },
+    intentos,
+    clave: `sparql:${consulta}`,
+    validar: (t) => { if (!Array.isArray(JSON.parse(t)?.results?.bindings)) throw new Error('SPARQL devolvió una respuesta sin bindings'); },
+  });
+  const datos = JSON.parse(texto);
+  return datos.results.bindings.map((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, v.value])));
 }
 
 const valores = (ids) => ids.map((id) => `wd:${id}`).join(' ');
@@ -44,7 +40,7 @@ async function porLotes(ids, armar) {
 export async function etiquetas(ids) {
   const res = new Map(ids.map((id) => [id, { id, es: null, en: null, alias: [], enlaces: 0, deMul: false }]));
   for (const f of await porLotes(ids, (v) => `SELECT ?e ?es ?mul ?en ?n WHERE { VALUES ?e { ${v} }
-      ?e wikibase:sitelinks ?n .
+      OPTIONAL { ?e wikibase:sitelinks ?n }
       OPTIONAL { ?e rdfs:label ?es . FILTER(LANG(?es) = "es") }
       OPTIONAL { ?e rdfs:label ?mul . FILTER(LANG(?mul) = "mul") }
       OPTIONAL { ?e rdfs:label ?en . FILTER(LANG(?en) = "en") } }`)) {
@@ -52,7 +48,7 @@ export async function etiquetas(ids) {
     e.es = f.es ?? f.mul ?? e.es;
     e.deMul = !f.es && Boolean(f.mul);
     e.en = f.en ?? e.en;
-    e.enlaces = Number(f.n);
+    e.enlaces = Number(f.n ?? 0);
   }
   for (const f of await porLotes(ids, (v) => `SELECT ?e ?a WHERE { VALUES ?e { ${v} } ?e skos:altLabel ?a . FILTER(LANG(?a) = "es") }`)) {
     res.get(qid(f.e)).alias.push(f.a);

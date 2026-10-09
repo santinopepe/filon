@@ -1,0 +1,311 @@
+
+> filon@1.0.0 verificar
+> npm run lint && npm run chequear && npm run test:cobertura && npm run validar-reserva && npm audit --omit=dev --audit-level=moderate && npm run test:navegador
+
+
+> filon@1.0.0 lint
+> eslint .
+
+
+> filon@1.0.0 chequear
+> node scripts/chequear-sintaxis.js
+
+107 archivos revisados, 0 errores.
+
+> filon@1.0.0 test:cobertura
+> node --disable-warning=ExperimentalWarning --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include=servidor/**/*.js --test-coverage-include=api/**/*.js --test-coverage-lines=85 --test-coverage-functions=85 --test-coverage-branches=70 pruebas/*.test.js
+
+✔ abrir la página no genera desafíos (53.916416ms)
+✔ identificador anónimo persistente, firmado y una partida por día (38.211416ms)
+✔ el cliente nunca recibe el banco de respuestas de una ronda en juego (28.826959ms)
+✔ el catálogo de respuestas se descarga aparte y solo después de cerrar la ronda (37.034667ms)
+✔ revelado final: versión de caché y limitador se consultan en paralelo sin perder los permisos (59.511792ms)
+✔ validaciones HTTP: JSON obligatorio, rutas inexistentes y administración protegida (31.274334ms)
+✔ tarea diaria por HTTP (Vercel Cron): protegida e idempotente (33.536917ms)
+✔ administración: generar y regenerar días a mano (53.180917ms)
+✔ administración: importa un desafío manual desde JSON (32.712583ms)
+✔ administración: estadísticas de jugadores, distribución y preguntas del día (128.246583ms)
+✔ visitas sin cookie: el registro de jugadores tiene un tope por IP compartido entre instancias (110.710875ms)
+✔ generador por catálogos por HTTP: vista previa, publicación desde el panel, partida y revelado con datos reales (6833.064292ms)
+✔ límite distribuido: dos instancias comparten el contador y la ventana vence (25.562125ms)
+✔ concurrencia: muchos envíos simultáneos no superan el máximo de intentos (197.535625ms)
+✔ doble clic y reintento: la respuesta correcta puntúa una sola vez (133.400125ms)
+✔ el fin de partida suma una sola vez al histograma aunque se consulte en paralelo (135.616916ms)
+✔ numeración: cargar un día anterior al primero renumera todo según la fecha (28.048791ms)
+✔ reportes simultáneos en dos instancias no superan el máximo por partida (134.106ms)
+✔ la tarea es idempotente: una segunda ejecución no duplica ni reemplaza (24.128458ms)
+✔ dos ejecuciones simultáneas publican un solo desafío (15.658375ms)
+✔ la base rechaza publicar dos veces la misma fecha (15.133625ms)
+✔ se publican las 7 preguntas juntas, con sus datos completos (15.499167ms)
+✔ la reserva no repite preguntas en días consecutivos (24.290708ms)
+✔ el programador asegura hoy y prepara mañana recién cerca de medianoche (38.640625ms)
+✔ reglas de texto: sin tildes ni mayúsculas, ñ distinta de n, guiones y espacios separan palabras (1.630417ms)
+✔ filtros: solo operadores permitidos y parámetros validados; nada se ejecuta (0.912917ms)
+✔ coherencia: el enunciado de cada plantilla se lee de vuelta como la misma condición y da el mismo conjunto (2507.750583ms)
+✔ enunciados de condiciones combinadas: el sujeto no se repite y se lee igual (3.897708ms)
+✔ las condiciones miran el nombre canónico: un alias que cumple no hace entrar a otra entidad (0.207666ms)
+✔ alias: colisiones dentro del catálogo se descartan y los alias no inflan el conjunto (0.905833ms)
+✔ rareza: quintiles por popularidad, reproducibles, con las cinco rarezas desde 5 respuestas (0.137917ms)
+✔ lote: siete preguntas variadas, reproducible con la misma semilla, fecha y versiones (12054.55675ms)
+✔ repeticiones: misma firma o mismo conjunto son la misma consigna; compartir respuestas no lo es (5650.236667ms)
+✔ ventana de 60 días calendario: a 59 se rechaza, a 60 y 61 se permite, hacia atrás y hacia adelante (19387.987834ms)
+✔ ventana con cambio de año y en la zona horaria del proyecto (10594.079709ms)
+✔ historial manual o de reserva: bloquea dentro de la ventana solo si las respuestas son casi las mismas (13831.781334ms)
+✔ firma estable: no cambia con la versión del catálogo, el nombre de la plantilla ni la redacción (1.260917ms)
+✔ categorías nuevas: el generador las usa y la validación del lote las acepta (86626.735ms)
+✔ cobertura: no se promete un conjunto completo con datos parciales (0.287875ms)
+✔ plantillas: esquema validado (no admiten claves ni tipos desconocidos) (0.101875ms)
+✔ importación: expansión de afijos Hunspell y limpieza de alias (0.545708ms)
+✔ publicación: el lote generado se guarda entero (o nada), es idempotente y no se pisa en paralelo (5397.166292ms)
+✔ sin candidatos suficientes: se completa con la reserva o no se publica nada (23.960125ms)
+✔ juego: en las preguntas de palabras vale solo la palabra escrita (sin autocompletar fragmentos) (113.046875ms)
+✔ más de 10.000 respuestas (catálogo SINTÉTICO): se genera, valida, publica y revela por páginas (498.71175ms)
+✔ de punta a punta con una categoría nueva: se publica, se juega, se revela y aparece en las estadísticas (5619.668625ms)
+✔ Geografía: siete preguntas de geografía, variadas por familia y catálogo, con pocas de letras (5288.357167ms)
+✔ Geografía se publica con catálogos solo si GENERADOR_GEOGRAFIA=catalogos (131.673125ms)
+✔ plantillas: «solo» limita los valores de un parámetro y «modos» limita dónde se usa la plantilla (16535.37275ms)
+✔ nombres repetidos en el catálogo: solo es ambigua la pregunta que los incluye a los dos (0.437625ms)
+✔ vistas: entidades compartidas, firma semántica y cobertura heredada (2.163916ms)
+✔ completoPor: solo valores declarados; negaciones no prueban completitud y null no es lista vacía (0.855583ms)
+✔ atributos múltiples: se conserva cada familia y cada codirector (0.518791ms)
+✔ alias reales: JPG y parlantes llegan a la respuesta canónica sin sumar entidades (0.897167ms)
+✔ repetición entre base y vista: se bloquea a 59 días y se permite a 60 (1.380333ms)
+✔ otro catálogo: bloquea un conjunto casi igual por nombres, incluso con ids distintos (2.492042ms)
+✔ rotación: usa días previos, ignora futuros y favorece una categoría que hace tiempo no aparece (1.655875ms)
+✔ las firmas de los catálogos viejos conservan el algoritmo y su contenido (0.373291ms)
+✔ CAA: ocho frutas secas, castaña y nuez de Pará distintas; los descriptores no son alias (0.097584ms)
+✔ Nobel: dos disciplinas y años relacionados correctamente; lista vacía significa ningún premio de esa disciplina (0.106125ms)
+✔ deportistas: 69 ediciones del Balón de Oro, años unidos al premio y planteles finales preservados (0.121292ms)
+✔ libros: novelas cortas incluidas y títulos duplicados identificados sin perder alias (0.409458ms)
+✔ taxonomía: una respuesta por taxón GBIF, ocho osos y alias comunes en español (0.322125ms)
+✔ historial viejo: recupera nombres completos para bloquear otros catálogos sin reescribir preguntas (2827.433875ms)
+✔ el historial se inserta en el bloque «Historial reciente» sin tocar el resto del prompt (1.122667ms)
+✔ descarga del historial (JSON y CSV) de los últimos días, solo para administración (71.18825ms)
+✔ flujo completo: 7 rondas, puntos por rareza y profundidad (41.068667ms)
+✔ el resultado final calcula ranking y distribución entre partidas terminadas (24.72225ms)
+✔ una respuesta rechazada permite reintentar; la primera aceptada cierra la ronda (19.56425ms)
+✔ las variantes se reescriben y, al confirmarlas, reciben los mismos puntos que la respuesta canónica (19.265167ms)
+✔ un error de tipeo inequívoco se completa y requiere un segundo envío (19.069458ms)
+✔ apellidos y fragmentos se completan sin consumir intentos y se puntúan al confirmar (22.228917ms)
+✔ el tiempo vence en el servidor: 25 s más un margen de red (17.394125ms)
+✔ recargar no reinicia el reloj ni permite repetir rondas (19.550084ms)
+✔ una partida que cruza la medianoche termina con su desafío original (23.660958ms)
+✔ una partida abandonada caduca después del margen para retomar (20.087333ms)
+✔ sin desafío publicado no se puede jugar (y el juego no genera nada) (10.483708ms)
+✔ reportar una respuesta faltante (18.983708ms)
+✔ la partida no hace solicitudes externas (17.340125ms)
+✔ limpieza diaria: retención, sesiones y límites vencidos, conciliación del histograma (48.649625ms)
+✔ una base nueva queda con todas las migraciones registradas, en orden (11.091459ms)
+✔ una base con el esquema anterior (sin control de migraciones) se migra y conserva sus datos (12.255667ms)
+✔ dos instancias que arrancan a la vez (en hilos separados) migran una sola vez sin errores (56.675791ms)
+✔ las migraciones son solo aditivas (compatibles con el código anterior durante un despliegue) (0.38675ms)
+✔ modos de juego: desafios se reconstruye sin perder columnas, filas ni claves foráneas (12.226834ms)
+✔ generador por catálogos: desafios y preguntas se reconstruyen sin perder filas, columnas ni claves foráneas (13.4525ms)
+✔ cada modo tiene una reserva válida con al menos siete preguntas de su categoría (16.511292ms)
+✔ validación: cada modo solo acepta preguntas de su categoría (12.184292ms)
+✔ la reserva temática llena las siete ranuras sin repetir preguntas (11.699291ms)
+✔ cada modo publica su propio desafío del día, numerado por separado (29.132833ms)
+✔ una partida por persona, modo y día: jugar un modo no bloquea los otros (49.991167ms)
+✔ el programador asegura hoy en los tres modos; mañana, recién cerca de medianoche (33.713583ms)
+✔ modos desactivados: Farándula está apagada por omisión; no se publica, no se lista ni admite partidas (31.188167ms)
+✔ API: estado y partidas por modo, con el límite diario independiente (75.069416ms)
+✔ API de administración: carga, historial, prompt y listados separados por modo (107.8215ms)
+✔ tarea diaria por HTTP: hoy y mañana aseguran los tres modos; manana-ia ya no existe (48.762208ms)
+✔ ignora mayúsculas, espacios repetidos y tildes (0.811083ms)
+✔ conserva la ñ: «año» no es «ano» (0.075ms)
+✔ quita puntuación y apóstrofos (0.319041ms)
+✔ registra formas sin artículo inicial (0.471875ms)
+✔ busca por forma exacta, sin artículo y compacta (0.208041ms)
+✔ una forma compacta ambigua no acepta ninguna respuesta (0.063209ms)
+✔ completa errores de tipeo inequívocos sin revelar prefijos cortos (0.614583ms)
+✔ reconoce las mismas palabras en otro orden y agrupa iniciales (0.057708ms)
+✔ no completa una coincidencia difusa ambigua (0.091292ms)
+✔ completa apellidos y palabras omitidas sin exigir variantes registradas (0.090041ms)
+✔ completa subcadenas internas, prefijos y frases compactas suficientemente largas (0.091375ms)
+✔ corrige errores en un apellido o frase dentro de un nombre largo (0.865542ms)
+✔ no desempata fragmentos compartidos por el largo del nombre o sus variantes (0.088833ms)
+✔ las formas exactas y variantes tienen prioridad sobre coincidencias parciales (0.042625ms)
+✔ no completa números solos ni reutiliza una palabra para cubrir dos (0.048459ms)
+✔ variantes y filas duplicadas de una misma respuesta no crean ambigüedad (0.056959ms)
+✔ la reserva completa suma lo de la base, la edición pisa al archivo y las inactivas no se eligen (19.029667ms)
+✔ copiar a la reserva lo ya publicado: sin duplicar lo del archivo y sin repetir al correrlo de nuevo (19.119542ms)
+✔ API: lo cargado a mano queda en la reserva y la reserva se edita y se desactiva (72.096208ms)
+✔ API: editar una pregunta publicada conserva las partidas y no deja quitar respuestas ya dadas (68.928041ms)
+✔ al publicar se prepara el revelado: orden contiguo, forma de búsqueda y conteos por pregunta (28.776084ms)
+✔ revelado de una pregunta chica: orden español, búsqueda con ñ y tildes, filtro de rareza y autorización (27.387209ms)
+✔ más de 10.000 respuestas (sintéticas): páginas, búsqueda y rareza exactas, sin duplicados ni faltantes, en frío y con caché (510.038083ms)
+✔ respuestas del final: una solicitud para las siete preguntas, solo con la partida terminada y para su dueño (42.964834ms)
+✔ el catálogo se invalida cuando cambia la versión del banco (24.151334ms)
+✔ lo publicado sin preparar (instancia anterior o base vieja) se prepara al leerlo, y la migración lo completa (23.781875ms)
+✔ revelado en curso: conserva vencimientos y rechaza rondas activas, pendientes y caducadas (16.548167ms)
+✔ cookies con percent-encoding inválido no rompen nada; IP del cliente sin confiar en encabezados falsos (42.601334ms)
+✔ los logs estructurados ocultan secretos, cookies e IPs (0.174958ms)
+✔ en Vercel la cookie siempre es Secure, aunque se copie COOKIE_SEGURA=0 de un .env local (0.357583ms)
+✔ login: token incorrecto 401; correcto crea una sesión con cookie HttpOnly y SameSite=Strict (55.168875ms)
+✔ logout revoca la sesión en el servidor (la cookie robada deja de servir) (19.790833ms)
+✔ la sesión vence por inactividad, se renueva con actividad y no supera la vida absoluta (29.921166ms)
+✔ login con límite de intentos, chequeo de origen y cookie __Host- con HTTPS (40.824917ms)
+✔ transición: Bearer TOKEN_ADMIN sigue sirviendo para scripts, salvo con ADMIN_PERMITIR_BEARER=0 (25.655292ms)
+✔ rotar el TOKEN_ADMIN invalida las sesiones abiertas con el anterior (también en otra instancia) (28.231458ms)
+✔ las tareas programadas no aceptan la cookie del panel: solo «Authorization: Bearer» (30.802833ms)
+✔ raíces: plurales y conjugaciones cercanas cuentan como la misma palabra (1.748459ms)
+✔ niveles: reformulada = repetida; respuestas en común = parecida; tema distinto = nada (0.638167ms)
+✔ mismo tipo de pregunta con otro conjunto (Mundial masculino / femenino) es «parecida», no «repetida» (0.097041ms)
+✔ dentro del mismo lote también se detectan preguntas parecidas (0.098625ms)
+✔ importación: compara con los últimos días; repetida bloquea, parecida avisa, «solo validar» no publica (77.923ms)
+✔ el día de juego cambia a las 00:00 de Buenos Aires (10.118292ms)
+✔ inicio de fecha y próxima medianoche (0.645625ms)
+✔ aritmética de fechas (0.194666ms)
+✔ una pregunta bien formada pasa y asigna puntos por rareza (2.264084ms)
+✔ sin una respuesta Diamante la pregunta no pasa (el máximo sería inalcanzable) (0.264625ms)
+✔ detecta enunciados subjetivos (0.113959ms)
+✔ descarta duplicados y marca contradicciones de rareza (0.684208ms)
+✔ una variante que apunta a dos respuestas se elimina como contradicción (0.269ms)
+✔ un rechazo que coincide con una respuesta válida se descarta (0.123292ms)
+✔ exige variedad de rarezas, mínimo de respuestas y fuentes permitidas (0.233667ms)
+✔ rechaza preguntas que repiten enunciado o conjunto de respuestas recientes (0.182125ms)
+✔ el banco de reserva completo pasa la validación estricta (2.426833ms)
+✔ el lote de Normal: siete preguntas variadas (hasta dos por categoría y al menos cuatro categorías) (4.893166ms)
+✔ volumen: preguntas de 1.500 respuestas se revelan paginadas y la vista no las carga (251.480709ms)
+✔ volumen: 3.000 partidas terminadas; ranking y estadísticas salen del histograma agregado (104.72225ms)
+✔ límites de tamaño en la carga manual (17.086125ms)
+ℹ tests 154
+ℹ suites 0
+ℹ pass 154
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 199836.369125
+ℹ start of coverage report
+ℹ -----------------------------------------------------------------------------------------------------
+ℹ file              | line % | branch % | funcs % | uncovered lines
+ℹ -----------------------------------------------------------------------------------------------------
+ℹ servidor          |        |          |         |
+ℹ  api.js           |  96.38 |    84.98 |   93.94 | 117-118 205-211 214-217 240-241 510-512 575-578
+ℹ  app.js           |  91.30 |    57.14 |  100.00 | 15-16
+ℹ  azar.js          | 100.00 |   100.00 |  100.00 |
+ℹ  banco.js         |  96.56 |    92.42 |   93.24 | 55-56 60-73 152-154
+ℹ  catalogos        |        |          |         |
+ℹ   catalogos.js    |  93.17 |    76.11 |  100.00 | 153-154 167-169 172-174 181-183 192-194
+ℹ   filtros.js      |  97.43 |    86.00 |   91.67 | 51-53 204 248-250 252 375-376
+ℹ   generador.js    |  96.55 |    94.04 |   98.86 | 289-291 324-326 511-514 538-541 547-549
+ℹ   plantillas.js   |  98.25 |    76.64 |  100.00 | 54-55 142
+ℹ   texto.js        | 100.00 |    75.00 |  100.00 |
+ℹ  config.js        |  92.36 |    87.10 |   88.89 | 9-20
+ℹ  db.js            |  98.28 |    88.37 |   91.49 | 424-426 464 487-488 513-515
+ℹ  dominio.js       |  95.35 |    83.33 |   80.00 | 72-75
+ℹ  estadisticas.js  |  89.81 |    93.18 |   92.59 | 7-11 16-30 46
+ℹ  generador        |        |          |         |
+ℹ   catalogos.js    |  94.87 |    90.48 |  100.00 | 49-52
+ℹ   contexto.js     |  87.50 |    80.00 |   75.00 | 8-9
+ℹ   generar.js      |  90.91 |    90.48 |   86.67 | 43-45 90-93 104-106
+ℹ   reserva.js      |  95.91 |    75.41 |  100.00 | 20 48-50 162-164
+ℹ  historial.js     | 100.00 |    91.67 |  100.00 |
+ℹ  http.js          |  81.00 |    73.13 |   92.86 | 55-58 60-82 98-101 159-160 189-190 200-203 216-218
+ℹ  index.js         |  74.58 |    68.18 |   83.33 | 22-23 26-28 50-59
+ℹ  juego.js         | 100.00 |    94.06 |   97.87 |
+ℹ  limites.js       |  93.75 |    72.73 |   83.33 | 52-55
+ℹ  limpieza.js      | 100.00 |   100.00 |   66.67 |
+ℹ  normalizar.js    |  99.54 |    94.35 |  100.00 | 70
+ℹ  programador.js   |  95.71 |    75.00 |   70.00 | 38 50-51
+ℹ  registro.js      |  97.30 |    73.08 |   71.43 | 18
+ℹ  revelado.js      | 100.00 |    90.91 |  100.00 |
+ℹ  sesiones.js      | 100.00 |   100.00 |   90.00 |
+ℹ  similitud.js     | 100.00 |    87.10 |  100.00 |
+ℹ  tiempo.js        | 100.00 |   100.00 |  100.00 |
+ℹ  validacion.js    |  96.41 |    84.40 |   97.14 | 55-56 175-181 188-189
+ℹ -----------------------------------------------------------------------------------------------------
+ℹ all files         |  95.93 |    87.05 |   94.55 |
+ℹ -----------------------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+> filon@1.0.0 validar-reserva
+> node --disable-warning=ExperimentalWarning scripts/validar-reserva.js
+
+
+Normal: banco de reserva v2 (revisado 2026-10-06)
+  Geografía   3 pregunta(s)
+  Historia    3 pregunta(s)
+  Ciencia     3 pregunta(s)
+  Deportes    3 pregunta(s)
+  Cine        3 pregunta(s)
+  Música      3 pregunta(s)
+  Literatura  3 pregunta(s)
+  Gramática   0 pregunta(s)
+  Informática 0 pregunta(s)
+  Astronomía  0 pregunta(s)
+  Videojuegos 0 pregunta(s)
+  Idiomas     0 pregunta(s)
+  Naturaleza  0 pregunta(s)
+  Gastronomía 0 pregunta(s)
+  Televisión  0 pregunta(s)
+  Arte        0 pregunta(s)
+Válidas: 21 · Inválidas: 0
+
+Farándula Argentina: banco de reserva v1 (revisado 2026-10-06)
+  Farándula   9 pregunta(s)
+Válidas: 9 · Inválidas: 0
+
+Geografía: banco de reserva v1 (revisado 2026-10-06)
+  Geografía   13 pregunta(s)
+Válidas: 13 · Inválidas: 0
+found 0 vulnerabilities
+
+> filon@1.0.0 test:navegador
+> playwright test
+
+[WebServer] (node:19007) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 28 tests using 1 worker
+
+(node:19008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] {"t":"2026-10-09T01:34:19.287Z","nivel":"warn","evento":"admin_no_autorizado","ruta":"/api/admin/desafios","metodo":"GET"}
+[WebServer] {"t":"2026-10-09T01:34:19.292Z","nivel":"warn","evento":"admin_no_autorizado","ruta":"/api/admin/desafios/2030-01-01/generar","metodo":"POST"}
+  ✓   1 [chromium] › pruebas/e2e/admin.spec.js:11:1 › administración sin autenticación: la API rechaza y el panel pide ingresar (259ms)
+[WebServer] {"t":"2026-10-09T01:34:19.617Z","nivel":"warn","evento":"admin_login_fallido","origen":"6UsJ6QiA-RbZHnUKvcveQO5qxl3oo3ys"}
+[WebServer] {"t":"2026-10-09T01:34:19.904Z","nivel":"warn","evento":"admin_no_autorizado","ruta":"/api/admin/desafios","metodo":"GET"}
+  ✓   2 [chromium] › pruebas/e2e/admin.spec.js:19:1 › login y logout: sesión en cookie HttpOnly, nada en el almacenamiento, revocada al salir (474ms)
+[WebServer] {"t":"2026-10-09T01:34:20.268Z","nivel":"warn","evento":"admin_no_autorizado","ruta":"/api/admin/desafios","metodo":"GET"}
+  ✓   3 [chromium] › pruebas/e2e/admin.spec.js:46:1 › logout: si la revocación falla, el panel lo dice y deja reintentar (370ms)
+  ✓   4 [chromium] › pruebas/e2e/admin.spec.js:63:1 › importación JSON: inválida no guarda nada; válida publica el día (642ms)
+  ✓   5 [chromium] › pruebas/e2e/admin.spec.js:100:1 › pestañas del panel por teclado (flechas, Inicio y Fin) (320ms)
+  ✓   6 [chromium] › pruebas/e2e/admin.spec.js:126:1 › generar con otra IA: prompt a mano, descargas del historial y copia con historial (600ms)
+  ✓   7 [chromium] › pruebas/e2e/admin.spec.js:159:1 › crear por modo: pestañas Normal, Farándula y Geografía con prompt e historial propios (489ms)
+  ✓   8 [chromium] › pruebas/e2e/admin.spec.js:195:1 › editar una pregunta publicada y la reserva desde el panel (694ms)
+  ✓   9 [chromium] › pruebas/e2e/admin.spec.js:225:1 › modo desactivado en el panel: sin pestaña en «Crear», marcado en los selectores; Geografía puede usar catálogos (371ms)
+{"t":"2026-10-09T01:34:23.505Z","nivel":"info","evento":"migracion","version":1,"nombre":"esquema_inicial","duracionMs":2}
+{"t":"2026-10-09T01:34:23.506Z","nivel":"info","evento":"migracion","version":2,"nombre":"sesiones_admin","duracionMs":1}
+{"t":"2026-10-09T01:34:23.506Z","nivel":"info","evento":"migracion","version":3,"nombre":"limites_distribuidos","duracionMs":0}
+{"t":"2026-10-09T01:34:23.506Z","nivel":"info","evento":"migracion","version":4,"nombre":"puntajes_agregados","duracionMs":0}
+{"t":"2026-10-09T01:34:23.507Z","nivel":"info","evento":"migracion","version":5,"nombre":"indices_consultas","duracionMs":1}
+{"t":"2026-10-09T01:34:23.507Z","nivel":"info","evento":"migracion","version":6,"nombre":"uso_ia_en_corridas","duracionMs":0}
+{"t":"2026-10-09T01:34:23.508Z","nivel":"info","evento":"migracion","version":7,"nombre":"modos_de_juego","duracionMs":1}
+{"t":"2026-10-09T01:34:23.508Z","nivel":"info","evento":"migracion","version":8,"nombre":"reserva_en_la_base","duracionMs":0}
+{"t":"2026-10-09T01:34:23.509Z","nivel":"info","evento":"migracion","version":9,"nombre":"revelado_preparado","duracionMs":1}
+{"t":"2026-10-09T01:34:23.510Z","nivel":"info","evento":"migracion","version":10,"nombre":"generador_por_catalogos","duracionMs":1}
+[programador] desactivado (PROGRAMADOR_INTERNO=0): usá scripts/generar-desafio.js desde cron.
+[filon] escuchando en http://127.0.0.1:62436
+  ✓  10 [chromium] › pruebas/e2e/catalogos-nuevos.spec.js:12:1 › catálogos nuevos: publicar, jugar, mostrar alcance, revelar y ver estadísticas sin red externa (35.3s)
+  ✓  11 [chromium] › pruebas/e2e/juego.spec.js:5:1 › un fragmento autocompleta el campo y un segundo Enter confirma la respuesta (487ms)
+  ✓  12 [chromium] › pruebas/e2e/juego.spec.js:32:1 › carga inicial: portada, cuenta regresiva y sin errores (213ms)
+  ✓  13 [chromium] › pruebas/e2e/juego.spec.js:47:1 › comienzo de partida, respuesta incorrecta y correcta (451ms)
+  ✓  14 [chromium] › pruebas/e2e/juego.spec.js:70:1 › doble envío: dos respuestas correctas simultáneas puntúan una sola vez (371ms)
+  ✓  15 [chromium] › pruebas/e2e/juego.spec.js:86:1 › recarga durante una partida: la ronda sigue y el reloj no se reinicia (2.9s)
+  ✓  16 [chromium] › pruebas/e2e/juego.spec.js:99:1 › cierre y revelado: al terminar se ven todas las respuestas válidas (7.3s)
+  ✓  17 [chromium] › pruebas/e2e/juego.spec.js:142:1 › móvil y teclado: se juega sin mouse y sin desborde horizontal (230ms)
+  ✓  18 [chromium] › pruebas/e2e/juego.spec.js:160:3 › recorrido de una partida guardada sin descenso (316ms)
+  ✓  19 [chromium] › pruebas/e2e/juego.spec.js:160:3 › recorrido de una partida guardada hasta el fondo (334ms)
+  ✓  20 [chromium] › pruebas/e2e/juego.spec.js:199:1 › mecha apagada: lo que quedó escrito va como último intento (5.1s)
+  ✓  21 [chromium] › pruebas/e2e/juego.spec.js:230:1 › modo desactivado: no aparece en el selector y un enlace viejo abre Normal (289ms)
+  ✓  22 [chromium] › pruebas/e2e/juego.spec.js:251:1 › modos: el menú ☰ abre el selector y cada modo tiene su ambientación y su partida diaria (3.4s)
+  ✓  23 [chromium] › pruebas/e2e/juego.spec.js:315:1 › celular: con el teclado abierto la ronda se compacta sola, sin esperar a que se scrollee (2.5s)
+  ✓  24 [chromium] › pruebas/e2e/revelado.spec.js:25:1 › final: las respuestas se piden solas, una vez, y abrir o cerrar no repite la descarga (477ms)
+  ✓  25 [chromium] › pruebas/e2e/revelado.spec.js:46:1 › abrir mientras se descarga: muestra la carga y usa el mismo pedido (364ms)
+  ✓  26 [chromium] › pruebas/e2e/revelado.spec.js:65:1 › si la descarga falla, el detalle lo dice y deja reintentar sin afectar el final (494ms)
+  ✓  27 [chromium] › pruebas/e2e/revelado.spec.js:90:1 › lista grande: páginas de 100 (nunca más filas montadas), filtros y búsqueda en el servidor, respuestas tardías descartadas (3.0s)
+  ✓  28 [chromium] › pruebas/e2e/revelado.spec.js:157:1 › cambio de desafío: al pasar a otro modo se descartan las respuestas guardadas y se piden las del nuevo (493ms)
+
+  28 passed (1.2m)

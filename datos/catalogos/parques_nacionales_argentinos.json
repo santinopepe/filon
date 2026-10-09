@@ -1,0 +1,107 @@
+{
+  "id": "parques_nacionales_argentinos",
+  "nombre": "Parques nacionales de la Argentina",
+  "descripcion": "Los parques nacionales de la Argentina, con sus provincias, su región, el año de la norma que los declaró parque nacional y sus designaciones internacionales.",
+  "version": "2026-10-08.8d76e96af7",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia en español, «Sistema Nacional de Áreas Protegidas (Argentina)» (revisión 170963602)",
+      "url": "https://es.wikipedia.org/w/index.php?oldid=170963602",
+      "licencia": "CC BY-SA 4.0",
+      "detalle": "parques, norma de creación, provincias y categorías internacionales"
+    },
+    {
+      "nombre": "Ministerio de Ambiente, «Áreas protegidas nacionales» (datos.gob.ar)",
+      "url": "https://ciam.ambiente.gob.ar/dt_csv.php?dt_id=460",
+      "licencia": "CC BY 4.0",
+      "detalle": "región de la APN (contraste)"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "alias y popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todas las áreas de categoría «parque nacional» de la tabla «Parques nacionales» del artículo «Sistema Nacional de Áreas Protegidas (Argentina)» de Wikipedia en español, contrastada con el dataset oficial de áreas protegidas nacionales.",
+    "verificacion": [
+      "39 parques nacionales en la tabla (el anexo de parques nacionales declara 39)",
+      "todos tienen provincia y año de creación",
+      "sin ítem en Wikidata (popularidad 0, fuente: la tabla): Parque nacional Laguna El Palmar",
+      "la región coincide con el dataset oficial en los 36 parques que figuran en él (no figuran: Islote Lobos, Ansenuza, Laguna El Palmar)",
+      "Iguazú es patrimonio mundial y Nahuel Huapi está en Neuquén y Río Negro",
+      "años como parque nacional: Nahuel Huapi 1934, Los Arrayanes 1971, Los Glaciares 1945; Patagonia está solo en Santa Cruz"
+    ]
+  },
+  "atributos": {
+    "categoria": {
+      "tipo": "texto",
+      "etiqueta": "categoría de protección"
+    },
+    "provincias": {
+      "tipo": "lista",
+      "etiqueta": "provincia"
+    },
+    "regiones": {
+      "tipo": "lista",
+      "etiqueta": "región"
+    },
+    "anio": {
+      "tipo": "numero",
+      "etiqueta": "año de su declaración como parque nacional"
+    },
+    "internacionales": {
+      "tipo": "lista",
+      "etiqueta": "designación internacional"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q16622739","nombre":"Patagonia","alias":["Parque Nacional Patagonia","Proyecto parque nacional Patagonia"],"popularidad":6,"atributos":{"categoria":"parque nacional","provincias":["Santa Cruz"],"regiones":["de la Patagonia"],"anio":2014,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q16622739"},
+    {"id":"Q17626186","nombre":"El Impenetrable","alias":["Parque Nacional El Impenetrable","PN El Impenetrable"],"popularidad":6,"atributos":{"categoria":"parque nacional","provincias":["Chaco"],"regiones":["del noreste (NEA)"],"anio":2014,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q17626186"},
+    {"id":"Q215992","nombre":"Los Glaciares","alias":["Parque Nacional Los Glaciares","PN Perito Moreno","Parc national de Los Glaciares"],"popularidad":61,"atributos":{"categoria":"parque nacional","provincias":["Santa Cruz"],"regiones":["de la Patagonia"],"anio":1945,"internacionales":["patrimonio mundial"]},"fuente":"https://www.wikidata.org/wiki/Q215992"},
+    {"id":"Q24789632","nombre":"Islote Lobos","alias":["Parque Nacional Islote Lobos","Area natural protegida Complejo Islote Lobos"],"popularidad":6,"atributos":{"categoria":"parque nacional","provincias":["Río Negro"],"regiones":["de la Patagonia"],"anio":2022,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q24789632"},
+    {"id":"Q398108","nombre":"Talampaya","alias":["Parque Nacional Talampaya","Yacimiento de Talampaya"],"popularidad":41,"atributos":{"categoria":"parque nacional","provincias":["La Rioja"],"regiones":["del centro"],"anio":1997,"internacionales":["patrimonio mundial"]},"fuente":"https://www.wikidata.org/wiki/Q398108"},
+    {"id":"Q41272935","nombre":"Traslasierra","alias":["Parque Nacional Traslasierra","Parque Nacional Pinas"],"popularidad":4,"atributos":{"categoria":"parque nacional","provincias":["Córdoba"],"regiones":["del centro"],"anio":2018,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q41272935"},
+    {"id":"Q474205","nombre":"Iguazú","alias":["Parque Nacional Iguazú","Parque nacional Iguacu","Parque nacional del Iguazu"],"popularidad":51,"atributos":{"categoria":"parque nacional","provincias":["Misiones"],"regiones":["del noreste (NEA)"],"anio":1934,"internacionales":["patrimonio mundial"]},"fuente":"https://www.wikidata.org/wiki/Q474205"},
+    {"id":"Q5723844","nombre":"Ansenuza","alias":["Parque Nacional Ansenuza","Bañados del Río Dulce y Laguna de Mar Chiquita"],"popularidad":3,"atributos":{"categoria":"parque nacional","provincias":["Córdoba"],"regiones":["del centro"],"anio":2022,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q5723844"},
+    {"id":"Q58232743","nombre":"Ciervo de los Pantanos","alias":["Parque Nacional Ciervo de los Pantanos"],"popularidad":5,"atributos":{"categoria":"parque nacional","provincias":["Buenos Aires"],"regiones":["del centro-este"],"anio":2018,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q58232743"},
+    {"id":"Q58233041","nombre":"Aconquija","alias":["Parque Nacional Aconquija","PN Aconquija"],"popularidad":8,"atributos":{"categoria":"parque nacional","provincias":["Tucumán"],"regiones":["del noroeste (NOA)"],"anio":2018,"internacionales":["patrimonio mundial"]},"fuente":"https://www.wikidata.org/wiki/Q58233041"},
+    {"id":"Q59607912","nombre":"Iberá","alias":["Parque Nacional Iberá"],"popularidad":5,"atributos":{"categoria":"parque nacional","provincias":["Corrientes"],"regiones":["del noreste (NEA)"],"anio":2018,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q59607912"},
+    {"id":"Q611989","nombre":"Chaco","alias":["Parque Nacional Chaco","PN Chaco"],"popularidad":22,"atributos":{"categoria":"parque nacional","provincias":["Chaco"],"regiones":["del noreste (NEA)"],"anio":1954,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q611989"},
+    {"id":"Q827817","nombre":"Nahuel Huapi","alias":["Parque Nacional Nahuel Huapi"],"popularidad":34,"atributos":{"categoria":"parque nacional","provincias":["Neuquén","Río Negro"],"regiones":["de la Patagonia"],"anio":1934,"internacionales":["reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q827817"},
+    {"id":"Q827962","nombre":"Perito Moreno","alias":["Parque Nacional Perito Moreno"],"popularidad":21,"atributos":{"categoria":"parque nacional","provincias":["Santa Cruz"],"regiones":["de la Patagonia"],"anio":1945,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q827962"},
+    {"id":"Q828206","nombre":"Lanín","alias":["Parque Nacional Lanín"],"popularidad":22,"atributos":{"categoria":"parque nacional","provincias":["Neuquén"],"regiones":["de la Patagonia"],"anio":1945,"internacionales":["reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q828206"},
+    {"id":"Q828291","nombre":"Los Alerces","alias":["Parque Nacional Los Alerces","Parque nacional de Los Alerces"],"popularidad":34,"atributos":{"categoria":"parque nacional","provincias":["Chubut"],"regiones":["de la Patagonia"],"anio":1945,"internacionales":["patrimonio mundial","reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q828291"},
+    {"id":"Q828353","nombre":"Lago Puelo","alias":["Parque Nacional Lago Puelo","PN Lago Puelo"],"popularidad":22,"atributos":{"categoria":"parque nacional","provincias":["Chubut"],"regiones":["de la Patagonia"],"anio":1971,"internacionales":["reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q828353"},
+    {"id":"Q828531","nombre":"Laguna Blanca","alias":["Parque Nacional Laguna Blanca","PNl Laguna Blanca"],"popularidad":20,"atributos":{"categoria":"parque nacional","provincias":["Neuquén"],"regiones":["de la Patagonia"],"anio":1945,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q828531"},
+    {"id":"Q828601","nombre":"El Rey","alias":["Parque Nacional El Rey","PN El Rey"],"popularidad":21,"atributos":{"categoria":"parque nacional","provincias":["Salta"],"regiones":["del noroeste (NOA)"],"anio":1948,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q828601"},
+    {"id":"Q828642","nombre":"Río Pilcomayo","alias":["Parque Nacional Río Pilcomayo","PN Río Pilcomayo"],"popularidad":21,"atributos":{"categoria":"parque nacional","provincias":["Formosa"],"regiones":["del noreste (NEA)"],"anio":1951,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q828642"},
+    {"id":"Q828709","nombre":"Tierra del Fuego","alias":["Parque Nacional Tierra del Fuego","PN Tierra del Fuego"],"popularidad":31,"atributos":{"categoria":"parque nacional","provincias":["Tierra del Fuego"],"regiones":["de la Patagonia"],"anio":1960,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q828709"},
+    {"id":"Q828918","nombre":"El Palmar","alias":["Parque Nacional El Palmar","PN El Palmar"],"popularidad":26,"atributos":{"categoria":"parque nacional","provincias":["Entre Ríos"],"regiones":["del centro-este"],"anio":1965,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q828918"},
+    {"id":"Q829012","nombre":"Los Arrayanes","alias":["Parque Nacional Los Arrayanes","PN Los Arrayanes"],"popularidad":22,"atributos":{"categoria":"parque nacional","provincias":["Neuquén"],"regiones":["de la Patagonia"],"anio":1971,"internacionales":["reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q829012"},
+    {"id":"Q829128","nombre":"Baritú","alias":["Parque Nacional Baritú"],"popularidad":22,"atributos":{"categoria":"parque nacional","provincias":["Salta"],"regiones":["del noroeste (NOA)"],"anio":1974,"internacionales":["reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q829128"},
+    {"id":"Q829228","nombre":"Lihué Calel","alias":["Parque Nacional Lihué Calel","PN Lihué Calel"],"popularidad":14,"atributos":{"categoria":"parque nacional","provincias":["La Pampa"],"regiones":["de la Patagonia"],"anio":1976,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829228"},
+    {"id":"Q829260","nombre":"Calilegua","alias":["Parque Nacional Calilegua","PN Calilegua"],"popularidad":24,"atributos":{"categoria":"parque nacional","provincias":["Jujuy"],"regiones":["del noroeste (NOA)"],"anio":1979,"internacionales":["reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q829260"},
+    {"id":"Q829305","nombre":"Sierra de las Quijadas","alias":["Parque Nacional Sierra de las Quijadas","PN Sierra de las Quijadas"],"popularidad":25,"atributos":{"categoria":"parque nacional","provincias":["San Luis"],"regiones":["del centro"],"anio":1991,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q829305"},
+    {"id":"Q829341","nombre":"Pre-Delta","alias":["Parque Nacional Pre-Delta","PN Pre-Delta","Parque nacional Predelta"],"popularidad":15,"atributos":{"categoria":"parque nacional","provincias":["Entre Ríos"],"regiones":["del centro-este"],"anio":1991,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q829341"},
+    {"id":"Q829474","nombre":"Los Cardones","alias":["Parque Nacional Los Cardones","PN Los Cardones"],"popularidad":23,"atributos":{"categoria":"parque nacional","provincias":["Salta"],"regiones":["del noroeste (NOA)"],"anio":1996,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829474"},
+    {"id":"Q829609","nombre":"Quebrada del Condorito","alias":["Parque Nacional Quebrada del Condorito","PN Quebrada del Condorito"],"popularidad":13,"atributos":{"categoria":"parque nacional","provincias":["Córdoba"],"regiones":["del centro"],"anio":1996,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829609"},
+    {"id":"Q829648","nombre":"Copo","alias":["Parque Nacional Copo","PN Copo"],"popularidad":15,"atributos":{"categoria":"parque nacional","provincias":["Santiago del Estero"],"regiones":["del noroeste (NOA)"],"anio":2000,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829648"},
+    {"id":"Q829745","nombre":"San Guillermo","alias":["Parque Nacional San Guillermo","PN San Guillermo"],"popularidad":17,"atributos":{"categoria":"parque nacional","provincias":["San Juan"],"regiones":["del centro"],"anio":1998,"internacionales":["patrimonio mundial","reserva de biosfera"]},"fuente":"https://www.wikidata.org/wiki/Q829745"},
+    {"id":"Q829771","nombre":"Mburucuyá","alias":["Parque Nacional Mburucuyá","PN Mburucuyá"],"popularidad":13,"atributos":{"categoria":"parque nacional","provincias":["Corrientes"],"regiones":["del noreste (NEA)"],"anio":2001,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829771"},
+    {"id":"Q829805","nombre":"El Leoncito","alias":["Parque Nacional El Leoncito","PN El Leoncito"],"popularidad":20,"atributos":{"categoria":"parque nacional","provincias":["San Juan"],"regiones":["del centro"],"anio":2002,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829805"},
+    {"id":"Q829872","nombre":"Monte León","alias":["Parque Nacional Monte León","PN Monte León"],"popularidad":17,"atributos":{"categoria":"parque nacional","provincias":["Santa Cruz"],"regiones":["de la Patagonia"],"anio":2004,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q829872"},
+    {"id":"Q829966","nombre":"Campos del Tuyú","alias":["Parque Nacional Campos del Tuyú","PN Campos del Tuyú"],"popularidad":13,"atributos":{"categoria":"parque nacional","provincias":["Buenos Aires"],"regiones":["del centro-este"],"anio":2009,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q829966"},
+    {"id":"Q830022","nombre":"Islas de Santa Fe","alias":["Parque Nacional Islas de Santa Fe","PN Islas de Santa Fe"],"popularidad":12,"atributos":{"categoria":"parque nacional","provincias":["Santa Fe"],"regiones":["del centro-este"],"anio":2010,"internacionales":["sitio Ramsar"]},"fuente":"https://www.wikidata.org/wiki/Q830022"},
+    {"id":"Q830083","nombre":"Bosques Petrificados de Jaramillo","alias":["Parque Nacional Bosques Petrificados de Jaramillo","Monumento natural Bosques Petrificados"],"popularidad":12,"atributos":{"categoria":"parque nacional","provincias":["Santa Cruz"],"regiones":["de la Patagonia"],"anio":2012,"internacionales":[]},"fuente":"https://www.wikidata.org/wiki/Q830083"},
+    {"id":"snap:laguna-el-palmar","nombre":"Laguna El Palmar","alias":["Parque Nacional Laguna El Palmar"],"popularidad":0,"atributos":{"categoria":"parque nacional","provincias":["Chaco"],"regiones":["del noreste (NEA)"],"anio":2023,"internacionales":[]},"fuente":"https://es.wikipedia.org/w/index.php?oldid=170963602"}
+  ]
+}

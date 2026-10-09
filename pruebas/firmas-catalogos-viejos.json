@@ -1,0 +1,46 @@
+[
+  {
+    "catalogo": "paises",
+    "filtro": {
+      "y": [
+        {
+          "op": "es",
+          "campo": "continente",
+          "valores": [
+            "Europa"
+          ]
+        }
+      ]
+    },
+    "firma": "64e5644eb8d9a522a5f7072e46c40c2d"
+  },
+  {
+    "catalogo": "pokemon",
+    "filtro": {
+      "y": [
+        {
+          "op": "es",
+          "campo": "tipos",
+          "valores": [
+            "Agua"
+          ]
+        }
+      ]
+    },
+    "firma": "a2d621ea6e0f319188ebd113b2f34e37"
+  },
+  {
+    "catalogo": "elementos",
+    "filtro": {
+      "y": [
+        {
+          "op": "entre",
+          "campo": "numero",
+          "desde": 1,
+          "hasta": 20
+        }
+      ]
+    },
+    "firma": "de63e8c2aff0a60356be73e4e2ed537b"
+  }
+]

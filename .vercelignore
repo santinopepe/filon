@@ -17,3 +17,4 @@ cobertura
 .github
 playwright.config.js
 eslint.config.js
+.cache

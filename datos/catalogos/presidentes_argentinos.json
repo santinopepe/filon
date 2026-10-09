@@ -1,0 +1,116 @@
+{
+  "id": "presidentes_argentinos",
+  "nombre": "Presidentes de la Nación Argentina",
+  "descripcion": "Quienes fueron presidentes de la Argentina (incluidos los de facto), con cada mandato, su fecha y cómo llegaron al cargo.",
+  "version": "2026-10-08.4afedbc6c9",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia en español, «Anexo:Presidentes de la Nación Argentina» (revisión 175663978)",
+      "url": "https://es.wikipedia.org/w/index.php?oldid=175663978",
+      "licencia": "CC BY-SA 4.0",
+      "detalle": "presidentes, fechas de cada mandato y tipo (de facto, electo, sucesión)"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "alias y popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Todas las personas de la tabla «Presidentes de la Nación Argentina» del anexo de Wikipedia en español (incluye a los presidentes de facto). No incluye a quienes ejercieron el Poder Ejecutivo sin el título de presidente (Luder, Puerta, Camaño, Liendo, Lacoste, Saint-Jean, Pinedo).",
+    "verificacion": [
+      "cada presidente tiene su ítem en Wikidata (sin ítem: ninguno)",
+      "12 presidentes de facto (el anexo declara 12)",
+      "51 personas (el anexo cuenta 50 que gobernaron todo el territorio, más López y Planes, que completó el mandato de Rivadavia)",
+      "Pellegrini y Duhalde llegaron por sucesión o designación; Alfonsín, por elecciones",
+      "Perón asumió en 1946, 1952 y 1973",
+      "el último mandato sigue en curso (Javier Milei, desde 2023-12-10)"
+    ],
+    "sinVerificarManualmente": [
+      "mandato en curso al 2026-10-08: Javier Milei"
+    ]
+  },
+  "atributos": {
+    "tipos": {
+      "tipo": "lista",
+      "etiqueta": "cómo llegó al cargo"
+    },
+    "inicios": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año en que asumió"
+    },
+    "iniciosElecto": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año en que asumió tras ser elegido"
+    },
+    "iniciosDeFacto": {
+      "tipo": "lista_numeros",
+      "etiqueta": "año en que asumió de facto"
+    },
+    "mandatos": {
+      "tipo": "lista",
+      "etiqueta": "mandato"
+    }
+  },
+  "correcciones": [],
+  "entidades": [
+    {"id":"Q124993","nombre":"Leopoldo Fortunato Galtieri","alias":["Leopoldo Fortunato Galtieri Castelli"],"popularidad":55,"atributos":{"tipos":["de facto"],"inicios":[1981],"iniciosElecto":[],"iniciosDeFacto":[1981],"mandatos":["1981-12-22 a 1982-06-18 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q124993"},
+    {"id":"Q170899","nombre":"Néstor Kirchner","alias":["Nestor Carlos","Néstor C. Kirchner","Néstor Carlos Kirchner Ostoić"],"popularidad":83,"atributos":{"tipos":["electo en elecciones"],"inicios":[2003],"iniciosElecto":[2003],"iniciosDeFacto":[],"mandatos":["2003-05-25 a 2007-12-10 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q170899"},
+    {"id":"Q185107","nombre":"Carlos Menem","alias":["Carlos S. Menem","Carlos Saul Menem","Menem","Presidente Menem"],"popularidad":73,"atributos":{"tipos":["electo en elecciones"],"inicios":[1989,1995],"iniciosElecto":[1989,1995],"iniciosDeFacto":[],"mandatos":["1989-07-08 a 1995-07-08 (electo en elecciones)","1995-07-08 a 1999-12-10 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q185107"},
+    {"id":"Q188891","nombre":"Bernardino Rivadavia","alias":["Rivadavia"],"popularidad":40,"atributos":{"tipos":["electo en elecciones"],"inicios":[1826],"iniciosElecto":[1826],"iniciosDeFacto":[],"mandatos":["1826-02-08 a 1827-06-27 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q188891"},
+    {"id":"Q188974","nombre":"Pedro Eugenio Aramburu","alias":["Pedro Eugenio Aramburu Cilveti"],"popularidad":35,"atributos":{"tipos":["de facto"],"inicios":[1955],"iniciosElecto":[],"iniciosDeFacto":[1955],"mandatos":["1955-11-13 a 1958-05-01 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q188974"},
+    {"id":"Q188985","nombre":"Ramón S. Castillo","alias":["Ramón Antonio Castillo","Ramón Castillo"],"popularidad":27,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1942],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1942-06-27 a 1943-06-04 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q188985"},
+    {"id":"Q191014","nombre":"María Estela Martínez de Perón","alias":["Isabel Martínez de Perón","Isabel Perón","Isabelita","Isabelita Perón","María Estela Martínez","María Estela Martínez Cartas","María Estela Martínez Cartas de Perón","María Estela de Perón"],"popularidad":79,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1974],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1974-07-01 a 1976-03-24 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q191014"},
+    {"id":"Q193062","nombre":"Raúl Alfonsín","alias":["Alfonsin","Raul Alfonsin Foulknes","Raul R. Alfonsin","Raul Ricardo Alfonsin"],"popularidad":65,"atributos":{"tipos":["electo en elecciones"],"inicios":[1983],"iniciosElecto":[1983],"iniciosDeFacto":[],"mandatos":["1983-12-10 a 1989-07-08 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q193062"},
+    {"id":"Q2271483","nombre":"Manuel Quintana","alias":["Manuel Pedro Quintana"],"popularidad":28,"atributos":{"tipos":["electo en elecciones"],"inicios":[1904],"iniciosElecto":[1904],"iniciosDeFacto":[],"mandatos":["1904-10-12 a 1906-03-12 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q2271483"},
+    {"id":"Q254041","nombre":"Domingo Faustino Sarmiento","alias":["Domingo F. Sarmiento","Sarmiento"],"popularidad":53,"atributos":{"tipos":["electo en elecciones"],"inicios":[1868],"iniciosElecto":[1868],"iniciosDeFacto":[],"mandatos":["1868-10-12 a 1874-10-12 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q254041"},
+    {"id":"Q2642828","nombre":"Alberto Fernández","alias":["Alberto Angel Fernandez"],"popularidad":78,"atributos":{"tipos":["electo en elecciones"],"inicios":[2019],"iniciosElecto":[2019],"iniciosDeFacto":[],"mandatos":["2019-12-10 a 2023-12-10 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q2642828"},
+    {"id":"Q270348","nombre":"José Evaristo Uriburu","alias":["José Evaristo de Uriburu"],"popularidad":30,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1895],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1895-01-23 a 1898-10-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q270348"},
+    {"id":"Q270368","nombre":"Arturo Umberto Illia","alias":["Arturo Illia"],"popularidad":42,"atributos":{"tipos":["electo en elecciones"],"inicios":[1963],"iniciosElecto":[1963],"iniciosDeFacto":[],"mandatos":["1963-10-12 a 1966-06-28 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q270368"},
+    {"id":"Q270446","nombre":"Carlos Pellegrini","alias":["Carlos Enrique Jose Pellegrini"],"popularidad":31,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1890],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1890-08-06 a 1892-10-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q270446"},
+    {"id":"Q294578","nombre":"Eduardo Duhalde","alias":["Eduardo Alberto Duhalde","El Cabezón"],"popularidad":51,"atributos":{"tipos":["por sucesión o designación"],"inicios":[2002],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["2002-01-02 a 2003-05-25 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q294578"},
+    {"id":"Q295007","nombre":"Fernando de la Rúa","alias":["Chupete","De la Rua","Fernando de la Rua Bruno"],"popularidad":52,"atributos":{"tipos":["electo en elecciones"],"inicios":[1999],"iniciosElecto":[1999],"iniciosDeFacto":[],"mandatos":["1999-12-10 a 2001-12-21 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q295007"},
+    {"id":"Q297134","nombre":"Hipólito Yrigoyen","alias":["Hipolito Hirigoyen","Hipolito Irigoyen","Yrigoyen"],"popularidad":51,"atributos":{"tipos":["electo en elecciones"],"inicios":[1916,1928],"iniciosElecto":[1916,1928],"iniciosDeFacto":[],"mandatos":["1916-10-12 a 1922-10-12 (electo en elecciones)","1928-10-12 a 1930-09-06 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q297134"},
+    {"id":"Q298430","nombre":"Reynaldo Bignone","alias":["Bignone","Reynaldo Benito Antonio Bignone","Reynaldo Benito Bignone"],"popularidad":47,"atributos":{"tipos":["de facto"],"inicios":[1982],"iniciosElecto":[],"iniciosDeFacto":[1982],"mandatos":["1982-07-01 a 1983-12-10 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q298430"},
+    {"id":"Q312358","nombre":"Adolfo Rodríguez Saá","popularidad":42,"atributos":{"tipos":["por sucesión o designación"],"inicios":[2001],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["2001-12-23 a 2001-12-30 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q312358"},
+    {"id":"Q313996","nombre":"Roberto Eduardo Viola","alias":["Roberto Viola"],"popularidad":39,"atributos":{"tipos":["de facto"],"inicios":[1981],"iniciosElecto":[],"iniciosDeFacto":[1981],"mandatos":["1981-03-29 a 1981-12-11 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q313996"},
+    {"id":"Q314362","nombre":"Bartolomé Mitre","alias":["B. Mitre"],"popularidad":47,"atributos":{"tipos":["electo en elecciones","por sucesión o designación"],"inicios":[1861,1862],"iniciosElecto":[1862],"iniciosDeFacto":[],"mandatos":["1861-12-12 a 1862-10-12 (por sucesión o designación)","1862-10-12 a 1868-10-12 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q314362"},
+    {"id":"Q336247","nombre":"Justo José de Urquiza","alias":["General Urquiza"],"popularidad":37,"atributos":{"tipos":["electo en elecciones"],"inicios":[1854],"iniciosElecto":[1854],"iniciosDeFacto":[],"mandatos":["1854-03-05 a 1860-03-05 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q336247"},
+    {"id":"Q345487","nombre":"Alejandro Agustín Lanusse","alias":["Agustín Lanusse","Alejandro A Lanusse"],"popularidad":34,"atributos":{"tipos":["de facto"],"inicios":[1971],"iniciosElecto":[],"iniciosDeFacto":[1971],"mandatos":["1971-03-26 a 1973-05-25 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q345487"},
+    {"id":"Q346658","nombre":"Arturo Frondizi","alias":["Frondizi"],"popularidad":42,"atributos":{"tipos":["electo en elecciones"],"inicios":[1958],"iniciosElecto":[1958],"iniciosDeFacto":[],"mandatos":["1958-05-01 a 1962-03-29 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q346658"},
+    {"id":"Q349261","nombre":"Raúl Alberto Lastiri","alias":["Raul A Lastiri","Raul Lastiri"],"popularidad":29,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1973],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1973-07-13 a 1973-10-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q349261"},
+    {"id":"Q356659","nombre":"Julio Argentino Roca","alias":["Alejo Julio Argentino Roca","El zorro"],"popularidad":41,"atributos":{"tipos":["electo en elecciones"],"inicios":[1880,1898],"iniciosElecto":[1880,1898],"iniciosDeFacto":[],"mandatos":["1880-10-12 a 1886-10-12 (electo en elecciones)","1898-10-12 a 1904-10-12 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q356659"},
+    {"id":"Q356699","nombre":"Edelmiro Julián Farrell","alias":["Edelmiro Farrel","Edelmiro Farrell","Edelmiro J Farrell","Edelmiro J.Farrel","Edelmiro Julian Farrel"],"popularidad":30,"atributos":{"tipos":["de facto"],"inicios":[1944],"iniciosElecto":[],"iniciosDeFacto":[1944],"mandatos":["1944-03-09 a 1946-06-04 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q356699"},
+    {"id":"Q356751","nombre":"Héctor José Cámpora","alias":["Cámpora","Héctor Cámpora","Héctor J. Cámpora"],"popularidad":34,"atributos":{"tipos":["electo en elecciones"],"inicios":[1973],"iniciosElecto":[1973],"iniciosDeFacto":[],"mandatos":["1973-05-25 a 1973-07-13 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q356751"},
+    {"id":"Q363555","nombre":"José Félix Uriburu","alias":["Felix Uriburu","General Uriburu","J F Uriburu","Jose F Uriburu","Jose Uriburu"],"popularidad":33,"atributos":{"tipos":["de facto"],"inicios":[1930],"iniciosElecto":[],"iniciosDeFacto":[1930],"mandatos":["1930-09-06 a 1932-02-20 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q363555"},
+    {"id":"Q363586","nombre":"Marcelo Torcuato de Alvear","alias":["Marcelo T. de Alvear","Máximo Marcelo Torcuato de Alvear y Pacheco"],"popularidad":32,"atributos":{"tipos":["electo en elecciones"],"inicios":[1922],"iniciosElecto":[1922],"iniciosDeFacto":[],"mandatos":["1922-10-12 a 1928-10-12 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q363586"},
+    {"id":"Q365314","nombre":"Pedro Pablo Ramírez","alias":["Pedro P Ramirez"],"popularidad":26,"atributos":{"tipos":["de facto"],"inicios":[1943],"iniciosElecto":[],"iniciosDeFacto":[1943],"mandatos":["1943-06-07 a 1944-03-09 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q365314"},
+    {"id":"Q365326","nombre":"Juan Carlos Onganía","alias":["Carlos Ongania","Dictadura de Ongania","General Ongania","Ongania"],"popularidad":34,"atributos":{"tipos":["de facto"],"inicios":[1966],"iniciosElecto":[],"iniciosDeFacto":[1966],"mandatos":["1966-06-29 a 1970-06-08 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q365326"},
+    {"id":"Q365352","nombre":"Agustín Pedro Justo","alias":["Agustin Justo","Agustin P Justo","Agustín Pedo injusto","General Justo"],"popularidad":33,"atributos":{"tipos":["electo en elecciones"],"inicios":[1932],"iniciosElecto":[1932],"iniciosDeFacto":[],"mandatos":["1932-02-20 a 1938-02-20 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q365352"},
+    {"id":"Q365369","nombre":"Roberto Marcelino Ortiz","alias":["Roberto M Ortiz","Roberto María Ortiz","Roberto Ortiz"],"popularidad":28,"atributos":{"tipos":["electo en elecciones"],"inicios":[1938],"iniciosElecto":[1938],"iniciosDeFacto":[],"mandatos":["1938-02-20 a 1942-06-27 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q365369"},
+    {"id":"Q365431","nombre":"Eduardo Lonardi","alias":["Eduardo A. Lonardi Doucet","Eduardo Ernesto Lonardi","Lonardi"],"popularidad":26,"atributos":{"tipos":["de facto"],"inicios":[1955],"iniciosElecto":[],"iniciosDeFacto":[1955],"mandatos":["1955-09-23 a 1955-11-13 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q365431"},
+    {"id":"Q380980","nombre":"Roberto Marcelo Levingston","alias":["Marcelo Levingston","Roberto Levingston","Roberto M Levingston"],"popularidad":29,"atributos":{"tipos":["de facto"],"inicios":[1970],"iniciosElecto":[],"iniciosDeFacto":[1970],"mandatos":["1970-06-18 a 1971-03-22 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q380980"},
+    {"id":"Q383015","nombre":"Roque Sáenz Peña","alias":["Roque José Antonio del Sagrado Corazón de Jesús Sáenz Peña","Roque Sáenz Peña y Lahitte"],"popularidad":35,"atributos":{"tipos":["electo en elecciones"],"inicios":[1910],"iniciosElecto":[1910],"iniciosDeFacto":[],"mandatos":["1910-10-12 a 1914-08-09 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q383015"},
+    {"id":"Q40649","nombre":"Cristina Fernández de Kirchner","alias":["Cristina Elisabet Fernández","Cristina Elisabet Fernández de Kirchner","Cristina Fernandez"],"popularidad":119,"atributos":{"tipos":["electo en elecciones"],"inicios":[2007,2011],"iniciosElecto":[2007,2011],"iniciosDeFacto":[],"mandatos":["2007-12-10 a 2011-12-10 (electo en elecciones)","2011-12-10 a 2015-12-10 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q40649"},
+    {"id":"Q438892","nombre":"Miguel Juárez Celman","alias":["Miguel Ángel Juárez Celman","Juarez Celman"],"popularidad":25,"atributos":{"tipos":["electo en elecciones"],"inicios":[1886],"iniciosElecto":[1886],"iniciosDeFacto":[],"mandatos":["1886-10-12 a 1890-08-06 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q438892"},
+    {"id":"Q441072","nombre":"Vicente López y Planes","alias":["Alejandro Vicente Lopez y Planes","Vicente Lopez y Planesss"],"popularidad":32,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1827],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1827-07-07 a 1827-08-18 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q441072"},
+    {"id":"Q441371","nombre":"Nicolás Avellaneda","popularidad":35,"atributos":{"tipos":["electo en elecciones"],"inicios":[1874],"iniciosElecto":[1874],"iniciosDeFacto":[],"mandatos":["1874-10-12 a 1880-10-12 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q441371"},
+    {"id":"Q442689","nombre":"Juan Esteban Pedernera","alias":["Esteban Pedernera"],"popularidad":23,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1861],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1861-11-05 a 1861-12-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q442689"},
+    {"id":"Q442729","nombre":"José Figueroa Alcorta","alias":["José María Cornelio del Corazón de Jesús Figueroa Alcorta"],"popularidad":28,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1906],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1906-03-12 a 1910-10-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q442729"},
+    {"id":"Q455709","nombre":"Luis Sáenz Peña","popularidad":29,"atributos":{"tipos":["electo en elecciones"],"inicios":[1892],"iniciosElecto":[1892],"iniciosDeFacto":[],"mandatos":["1892-10-12 a 1895-01-23 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q455709"},
+    {"id":"Q463425","nombre":"Santiago Derqui","popularidad":24,"atributos":{"tipos":["electo en elecciones"],"inicios":[1860],"iniciosElecto":[1860],"iniciosDeFacto":[],"mandatos":["1860-03-05 a 1861-11-05 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q463425"},
+    {"id":"Q470971","nombre":"José María Guido","popularidad":29,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1962],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1962-03-29 a 1963-10-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q470971"},
+    {"id":"Q52395487","nombre":"Javier Milei","alias":["El Javo","El Loco","El Psiquiátrico","Javier Gerardo Milei","Javo"],"popularidad":90,"atributos":{"tipos":["electo en elecciones"],"inicios":[2023],"iniciosElecto":[2023],"iniciosDeFacto":[],"mandatos":["2023-12-10 a hoy (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q52395487"},
+    {"id":"Q561837","nombre":"Mauricio Macri","popularidad":81,"atributos":{"tipos":["electo en elecciones"],"inicios":[2015],"iniciosElecto":[2015],"iniciosDeFacto":[],"mandatos":["2015-12-10 a 2019-12-10 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q561837"},
+    {"id":"Q599235","nombre":"Victorino de la Plaza","popularidad":28,"atributos":{"tipos":["por sucesión o designación"],"inicios":[1914],"iniciosElecto":[],"iniciosDeFacto":[],"mandatos":["1914-08-09 a 1916-10-12 (por sucesión o designación)"]},"fuente":"https://www.wikidata.org/wiki/Q599235"},
+    {"id":"Q75853","nombre":"Jorge Rafael Videla","alias":["Jorge R. Videla","Jorge Videla","Videla","Videla, Jorge Rafael"],"popularidad":76,"atributos":{"tipos":["de facto"],"inicios":[1976],"iniciosElecto":[],"iniciosDeFacto":[1976],"mandatos":["1976-03-29 a 1981-03-29 (de facto)"]},"fuente":"https://www.wikidata.org/wiki/Q75853"},
+    {"id":"Q93330","nombre":"Juan Domingo Perón","alias":["Coronel Perón","El General","El Pocho","General Perón","Gral. Peron","Juan D. Perón","Juan Peron","Peron","el robas"],"popularidad":92,"atributos":{"tipos":["electo en elecciones"],"inicios":[1946,1952,1973],"iniciosElecto":[1946,1952,1973],"iniciosDeFacto":[],"mandatos":["1946-06-04 a 1952-06-04 (electo en elecciones)","1952-06-04 a 1955-09-21 (electo en elecciones)","1973-10-12 a 1974-07-01 (electo en elecciones)"]},"fuente":"https://www.wikidata.org/wiki/Q93330"}
+  ]
+}

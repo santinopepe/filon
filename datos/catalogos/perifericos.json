@@ -1,0 +1,107 @@
+{
+  "id": "perifericos",
+  "nombre": "Periféricos",
+  "descripcion": "Dispositivos de entrada, de salida y de almacenamiento extraíble de la plantilla «Basic computer components» de Wikipedia.",
+  "version": "2026-10-08.d50cf2a6db",
+  "importado": "2026-10-08",
+  "fuentes": [
+    {
+      "nombre": "Wikipedia en inglés, «Template:Basic computer components» (revisión 1360093171)",
+      "url": "https://en.wikipedia.org/w/index.php?oldid=1360093171",
+      "licencia": "CC BY-SA 4.0",
+      "detalle": "lista y grupos"
+    },
+    {
+      "nombre": "Wikidata",
+      "url": "https://www.wikidata.org",
+      "licencia": "CC0 1.0",
+      "detalle": "nombres en español, alias y popularidad"
+    }
+  ],
+  "popularidad": {
+    "criterio": "Cantidad de ediciones de Wikipedia con artículo sobre la entidad (sitelinks de Wikidata) al importar.",
+    "nota": "Es una medida de notoriedad, no una estadística de jugadores."
+  },
+  "cobertura": {
+    "tipo": "completa",
+    "criterio": "Los artículos de los grupos «Input devices», «Output devices» y «Removable data storage» de la plantilla de navegación «Basic computer components» de Wikipedia en inglés (con sus subelementos).",
+    "verificacion": [
+      "artículos sin enlace a Wikidata, resueltos por etiqueta: IEEE 1394 → Q181693",
+      "la plantilla tiene el grupo «Input device» (20 artículos)",
+      "la plantilla tiene el grupo «Output device» (8 artículos)",
+      "la plantilla tiene el grupo «Removable data storage» (9 artículos)",
+      "todos tienen nombre en español (sin traducir: ninguno)",
+      "20 de entrada y 8 de salida",
+      "tarjeta gráfica, línea Braille, tarjeta de sonido: de entrada y de salida a la vez (figuran en los dos grupos)"
+    ]
+  },
+  "atributos": {
+    "funciones": {
+      "tipo": "lista",
+      "etiqueta": "función"
+    }
+  },
+  "correcciones": [
+    {
+      "entidad": "Q364747",
+      "detalle": "nombre «mouse óptico» (en Wikidata solo «optical mouse», que queda como alias)",
+      "motivo": "Wikidata no tiene etiqueta en español: se traduce el nombre."
+    },
+    {
+      "entidad": "Q7098899",
+      "detalle": "nombre «trackpad óptico» (en Wikidata solo «Optical trackpad», que queda como alias)",
+      "motivo": "Wikidata no tiene etiqueta en español: se traduce el nombre."
+    },
+    {
+      "entidad": "Q2286319",
+      "detalle": "nombre «cámara web virtual» (en Wikidata solo «softcam», que queda como alias)",
+      "motivo": "Wikidata no tiene etiqueta en español: se traduce el nombre."
+    },
+    {
+      "entidad": "Q1209975",
+      "detalle": "nombre «parlantes de computadora» (en Wikidata solo «computer speaker», que queda como alias)",
+      "motivo": "Wikidata no tiene etiqueta en español: se traduce el nombre."
+    },
+    {
+      "entidad": "Q5282316",
+      "detalle": "nombre «paquete de discos» (en Wikidata solo «disk pack», que queda como alias)",
+      "motivo": "Wikidata no tiene etiqueta en español: se traduce el nombre."
+    }
+  ],
+  "entidades": [
+    {"id":"Q1209975","nombre":"parlantes de computadora","alias":["parlantes","altavoces","parlante","computer speaker","Speakers"],"popularidad":25,"atributos":{"funciones":["salida"]},"fuente":"https://www.wikidata.org/wiki/Q1209975"},
+    {"id":"Q123530","nombre":"línea Braille","alias":["refreshable braille display"],"popularidad":25,"atributos":{"funciones":["entrada","salida"]},"fuente":"https://www.wikidata.org/wiki/Q123530"},
+    {"id":"Q1418253","nombre":"chip de sonido","alias":["sound chip"],"popularidad":18,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q1418253"},
+    {"id":"Q1647694","nombre":"memoria USB","alias":["USB flash drive"],"popularidad":87,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q1647694"},
+    {"id":"Q165970","nombre":"pantalla táctil","alias":["pantalla capacitiva","pantallas tactiles","telefono movil tactil","touchscreen"],"popularidad":82,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q165970"},
+    {"id":"Q174077","nombre":"memoria flash","alias":["Tarjetero flash","flash EEPROM","flash ROM","memorias flash","flash memory"],"popularidad":66,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q174077"},
+    {"id":"Q183484","nombre":"GPU","alias":["unidad de procesamiento gráfico","Graphics Processing Unit","unidad de procesamiento de graficos","unidad de proceso grafico"],"popularidad":66,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q183484"},
+    {"id":"Q183731","nombre":"tarjeta de memoria","alias":["memory card","memory cards","tarjetas de memoria"],"popularidad":64,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q183731"},
+    {"id":"Q189414","nombre":"tableta digitalizadora","alias":["tabla digitizadora","tableta grafica","graphic tablet","Graphics tablet"],"popularidad":50,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q189414"},
+    {"id":"Q193255","nombre":"plóter","alias":["Plotter","trazador gráfico"],"popularidad":48,"atributos":{"funciones":["salida"]},"fuente":"https://www.wikidata.org/wiki/Q193255"},
+    {"id":"Q20137","nombre":"panel táctil","alias":["touchpad"],"popularidad":46,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q20137"},
+    {"id":"Q20139","nombre":"lápiz óptico","alias":["light pen"],"popularidad":42,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q20139"},
+    {"id":"Q20140","nombre":"trackball","popularidad":38,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q20140"},
+    {"id":"Q20141","nombre":"varita apuntadora","alias":["trackpoint","pointing stick"],"popularidad":25,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q20141"},
+    {"id":"Q2286319","nombre":"cámara web virtual","alias":["softcam"],"popularidad":3,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q2286319"},
+    {"id":"Q234870","nombre":"disco óptico","alias":["Discos opticos","optical disc"],"popularidad":55,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q234870"},
+    {"id":"Q250","nombre":"teclado","alias":["computer keyboard","Keyboard"],"popularidad":131,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q250"},
+    {"id":"Q29576","nombre":"cámara web","alias":["Camaras web","Web cam","Webcam"],"popularidad":74,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q29576"},
+    {"id":"Q34467","nombre":"CD","alias":["disco compacto","cede","compact disc"],"popularidad":112,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q34467"},
+    {"id":"Q364747","nombre":"mouse óptico","alias":["ratón óptico","optical mouse","Optical"],"popularidad":18,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q364747"},
+    {"id":"Q4308","nombre":"tarjeta gráfica","alias":["adaptador de pantalla","adaptador de vídeo","graficadora","placa de vídeo","tarjeta aceleradora de gráficos","tarjeta aceleradora gráfica","tarjeta de vídeo","graphics card"],"popularidad":77,"atributos":{"funciones":["entrada","salida"]},"fuente":"https://www.wikidata.org/wiki/Q4308"},
+    {"id":"Q4343","nombre":"tarjeta de sonido","alias":["sound card"],"popularidad":59,"atributos":{"funciones":["entrada","salida"]},"fuente":"https://www.wikidata.org/wiki/Q4343"},
+    {"id":"Q46384","nombre":"micrófono","alias":["microphone"],"popularidad":112,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q46384"},
+    {"id":"Q47770","nombre":"Disco Blu-ray","alias":["BD","Blu Disc","Blu ray","Blu ray Disc","Blu-ray 3D","Blue Ray","Blueray","Bluray","Rayazul","Rayo Azul"],"popularidad":83,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q47770"},
+    {"id":"Q5282316","nombre":"paquete de discos","alias":["disk pack"],"popularidad":5,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q5282316"},
+    {"id":"Q5290","nombre":"monitor de computadora","alias":["monitor","pantalla","computer monitor"],"popularidad":106,"atributos":{"funciones":["salida"]},"fuente":"https://www.wikidata.org/wiki/Q5290"},
+    {"id":"Q5293","nombre":"disquete","alias":["disco flexible","disquetes","floppy disk"],"popularidad":81,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q5293"},
+    {"id":"Q5294","nombre":"DVD","alias":["Deuvede","Devede","Disco Versátil Digital","Disco de Video Digital"],"popularidad":104,"atributos":{"funciones":["almacenamiento"]},"fuente":"https://www.wikidata.org/wiki/Q5294"},
+    {"id":"Q6021804","nombre":"monitor de video","alias":["electronic visual display","Screen"],"popularidad":35,"atributos":{"funciones":["salida"]},"fuente":"https://www.wikidata.org/wiki/Q6021804"},
+    {"id":"Q7098899","nombre":"trackpad óptico","alias":["Optical trackpad"],"popularidad":5,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q7098899"},
+    {"id":"Q7987","nombre":"mouse","alias":["ratón","ratón de ordenador","computer mouse"],"popularidad":142,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q7987"},
+    {"id":"Q82","nombre":"impresora","alias":["printer"],"popularidad":114,"atributos":{"funciones":["salida"]},"fuente":"https://www.wikidata.org/wiki/Q82"},
+    {"id":"Q82744","nombre":"escáner de computadora","alias":["escáner","escáner de ordenador","escáner óptico","image scanner"],"popularidad":86,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q82744"},
+    {"id":"Q865422","nombre":"controlador de videojuego","alias":["control de juego","controlador de juego","controlador de juegos","video game controller","Game controller"],"popularidad":34,"atributos":{"funciones":["entrada"]},"fuente":"https://www.wikidata.org/wiki/Q865422"}
+  ]
+}

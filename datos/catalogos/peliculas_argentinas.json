@@ -1,0 +1,19 @@
+{
+  "id": "peliculas_argentinas",
+  "nombre": "Películas argentinas",
+  "descripcion": "Vista de películas cuyo país incluye Argentina.",
+  "vista": {
+    "catalogo": "peliculas",
+    "filtro": {
+      "op": "es",
+      "campo": "paises",
+      "valores": [
+        "Argentina"
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "parcial",
+    "criterio": "Filmografías semilla del catálogo base, filtradas por Argentina; no todas las películas argentinas."
+  }
+}
