@@ -9,7 +9,7 @@ import { CLAVES_CATEGORIAS, MODO_POR_DEFECTO, VARIEDAD_NORMAL, ranurasDeModo } f
 import { validarLote } from '../validacion.js';
 import { normalizar } from '../normalizar.js';
 import { mezclar } from '../azar.js';
-import { tomarBloqueo, liberarBloqueo } from '../db.js';
+import { tomarBloqueo, liberarBloqueo, describirError } from '../db.js';
 import { desafioPorFecha, publicarDesafio, preguntasRecientes, usosDeReserva } from '../banco.js';
 import { elegirDeReserva, reservaCompleta } from './reserva.js';
 import { generarConCatalogos, resumirDescartes } from './catalogos.js';
@@ -102,8 +102,9 @@ export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFEC
       : { resultado: 'ya_existia', fecha, modo, corridaId };
   } catch (e) {
     detalle.error = e.stack || e.message;
+    detalle.causa = describirError(e);
     await finalizarCorrida(db, corridaId, 'fallo', detalle, ahora()).catch(() => {});
-    return { resultado: 'fallo', fecha, modo, corridaId, error: e.message };
+    return { resultado: 'fallo', fecha, modo, corridaId, error: describirError(e) };
   } finally {
     await liberarBloqueo(db, nombreBloqueo, titular).catch(() => {});
   }

@@ -194,3 +194,47 @@ test('reportes simultáneos en dos instancias no superan el máximo por partida'
     await cerrar();
   }
 });
+
+test('corte de red con la base remota: las lecturas y la publicación se reintentan; otros errores no', async () => {
+  const { esErrorDeRed, describirError } = await import('../servidor/db.js');
+  const { prepararEntorno } = await import('./ayuda.js');
+  const { asegurarDesafio } = await import('../servidor/generador/generar.js');
+  const corte = () => Object.assign(new TypeError('fetch failed'), { cause: Object.assign(new Error('other side closed'), { code: 'UND_ERR_SOCKET' }) });
+  assert.ok(esErrorDeRed(corte()));
+  assert.ok(!esErrorDeRed(new Error('SQLITE_CONSTRAINT: UNIQUE constraint failed')));
+  assert.equal(describirError(corte()), 'fetch failed ← UND_ERR_SOCKET: other side closed');
+
+  // Como en Vercel: la primera sentencia después de generar encuentra la conexión cerrada.
+  const e = await prepararEntorno();
+  const cliente = e.db.cliente;
+  const fallarUnaVez = (metodo) => {
+    const original = cliente[metodo].bind(cliente);
+    let fallas = 0;
+    cliente[metodo] = (...args) => (fallas++ === 0 ? Promise.reject(corte()) : original(...args));
+    return () => fallas;
+  };
+  const lecturas = fallarUnaVez('execute');
+  assert.equal((await e.db.get('SELECT 1 AS uno')).uno, 1, 'la lectura se repite y funciona');
+  assert.equal(lecturas(), 2);
+  const transacciones = fallarUnaVez('transaction');
+  const r = await asegurarDesafio({ db: e.db, config: e.config, fecha: '2026-10-05', reserva: e.reserva, reservas: e.reservas, ahora: e.reloj.ahora });
+  assert.equal(r.resultado, 'publicado', JSON.stringify(r));
+  assert.ok(transacciones() >= 2, 'la transacción cortada se repitió entera');
+  assert.equal((await e.db.get("SELECT COUNT(*) AS n FROM preguntas WHERE id LIKE '2026-10-05-%'")).n, 7, 'una sola copia del desafío');
+
+  // Un corte que no se recupera termina en una corrida fallida que dice la causa.
+  const original = cliente.transaction.bind(cliente);
+  let usos = 0;
+  cliente.transaction = (...args) => (usos++ === 0 ? original(...args) : Promise.reject(corte())); // el bloqueo sí se toma
+  const fallo = await asegurarDesafio({ db: e.db, config: e.config, fecha: '2026-10-06', reserva: e.reserva, reservas: e.reservas, ahora: e.reloj.ahora });
+  cliente.transaction = original;
+  assert.equal(fallo.resultado, 'fallo');
+  assert.match(fallo.error, /fetch failed ← UND_ERR_SOCKET: other side closed/);
+  // Un error que no es de red no se reintenta.
+  let llamadas = 0;
+  const execute = cliente.execute.bind(cliente);
+  cliente.execute = (...args) => (llamadas++, execute(...args));
+  await assert.rejects(e.db.get('SELECT * FROM tabla_que_no_existe'));
+  assert.equal(llamadas, 1);
+  e.db.close();
+});

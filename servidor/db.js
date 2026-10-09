@@ -130,14 +130,35 @@ CREATE TABLE IF NOT EXISTS reportes (
 );
 `;
 
+/**
+ * ¿Es un corte de red con la base remota (Turso)? En Vercel, la primera sentencia después de varios
+ * segundos de CPU ocupada (generar un desafío) puede encontrar la conexión HTTP cerrada y fallar con
+ * «fetch failed». La siguiente abre una conexión nueva y funciona.
+ */
+export function esErrorDeRed(e) {
+  const textos = [e?.message, e?.code, e?.cause?.message, e?.cause?.code, e?.cause?.cause?.code].filter(Boolean).join(' ');
+  return /fetch failed|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EPIPE|EAI_AGAIN|ENOTFOUND|UND_ERR|other side closed|socket hang up|terminated|network/i.test(textos);
+}
+const INTENTOS_RED = 4;
+
+/** Descripción de la causa de un error (para registrarla: «fetch failed» solo no dice nada). */
+export function describirError(e) {
+  const causas = [];
+  for (let c = e?.cause, n = 0; c && n < 3; c = c.cause, n++) causas.push([c.code, c.message].filter(Boolean).join(': '));
+  return [e?.message ?? String(e), ...causas.filter(Boolean)].join(' ← ');
+}
+
 // libSQL local no espera a que se libere un bloqueo: se reintenta (las sentencias fallidas no aplicaron nada).
+// Un corte de red con la base remota también se reintenta, pocas veces y con espera creciente.
 async function conReintentos(fn) {
   for (let intento = 1; ; intento++) {
     try {
       return await fn();
     } catch (e) {
-      if (!/SQLITE_BUSY/.test(e.code || e.message) || intento >= 50) throw e;
-      await new Promise((ok) => setTimeout(ok, 10 * intento));
+      const ocupada = /SQLITE_BUSY/.test(e.code || e.message);
+      const red = !ocupada && esErrorDeRed(e);
+      if (!(ocupada && intento < 50) && !(red && intento < INTENTOS_RED)) throw e;
+      await new Promise((ok) => setTimeout(ok, red ? 250 * intento : 10 * intento));
     }
   }
 }
@@ -463,8 +484,12 @@ export async function abrirBD(url, { token, registro } = {}) {
           return r;
         } catch (err) {
           await tx.rollback().catch(() => {});
-          if (!/SQLITE_BUSY/.test(err?.code || err?.message || '') || intento >= 30) throw err;
-          await new Promise((ok) => setTimeout(ok, 5 * intento + Math.random() * 10));
+          // Con la base ocupada, o si se cortó la conexión con la base remota, la transacción quedó
+          // revertida: se repite entera. Un corte justo al confirmar puede haber guardado los cambios;
+          // repetirla relee el estado (publicarDesafio ve el día ya publicado y no lo duplica).
+          const ocupada = /SQLITE_BUSY/.test(err?.code || err?.message || '');
+          if (!(ocupada && intento < 30) && !(esErrorDeRed(err) && intento < INTENTOS_RED)) throw err;
+          await new Promise((ok) => setTimeout(ok, ocupada ? 5 * intento + Math.random() * 10 : 250 * intento));
         } finally {
           tx.close();
         }
