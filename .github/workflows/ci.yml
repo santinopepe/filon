@@ -11,6 +11,9 @@ on:
 
 permissions:
   contents: read
+  # Para saber si el mismo código ya pasó «verificar» en su PR (ver el primer paso).
+  checks: read
+  pull-requests: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -26,38 +29,72 @@ jobs:
       TURSO_DATABASE_URL: ''
       BD_URL: ''
     steps:
+      # Un merge a main no cambia el código que ya se probó: la protección de la rama exige que el PR esté
+      # al día con main, así que el árbol de archivos del commit de main es idéntico al que pasó
+      # «verificar» en el PR. En ese caso el check se aprueba sin repetir todo (queda igual registrado
+      # en el commit de main, por si producción espera los checks). Si el árbol difiere o no hay un PR
+      # verificado (un push directo, un PR sin actualizar), corre completo.
+      - name: ¿El mismo código ya pasó «verificar» en su PR?
+        id: previo
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          arbol=$(gh api "repos/$REPO/commits/$SHA" --jq .commit.tree.sha)
+          for pr in $(gh api "repos/$REPO/commits/$SHA/pulls" --jq '.[].head.sha'); do
+            arbol_pr=$(gh api "repos/$REPO/commits/$pr" --jq .commit.tree.sha)
+            ok=$(gh api "repos/$REPO/commits/$pr/check-runs?check_name=verificar" --jq '[.check_runs[] | select(.conclusion == "success")] | length')
+            if [ "$arbol" = "$arbol_pr" ] && [ "$ok" -gt 0 ]; then
+              echo "El árbol $arbol ya pasó «verificar» en el PR (commit $pr): no se repite."
+              echo "verificado=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "No hay un PR verificado con el mismo árbol: se verifica completo."
+
       - uses: actions/checkout@v4
+        if: steps.previo.outputs.verificado != 'true'
 
       - uses: actions/setup-node@v4
+        if: steps.previo.outputs.verificado != 'true'
         with:
           node-version: 24
           cache: npm
 
       - name: Instalar dependencias (npm ci)
+        if: steps.previo.outputs.verificado != 'true'
         run: npm ci
 
       - name: Lint
+        if: steps.previo.outputs.verificado != 'true'
         run: npm run lint
 
       - name: Chequeo estático (sintaxis e imports)
+        if: steps.previo.outputs.verificado != 'true'
         run: npm run chequear
 
-      - name: Pruebas unitarias e integración
-        run: npm test
-
-      - name: Cobertura (con umbrales)
+      # Una sola pasada de las pruebas unitarias y de integración: la de cobertura ejecuta las mismas
+      # pruebas que `npm test` y además exige los umbrales.
+      - name: Pruebas unitarias e integración, con cobertura
+        if: steps.previo.outputs.verificado != 'true'
         run: npm run test:cobertura
 
       - name: Validar banco de reserva
+        if: steps.previo.outputs.verificado != 'true'
         run: npm run validar-reserva
 
       - name: Auditoría de dependencias de producción
+        if: steps.previo.outputs.verificado != 'true'
         run: npm audit --omit=dev --audit-level=moderate
 
       - name: Instalar Chromium para Playwright
+        if: steps.previo.outputs.verificado != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: E2E (Chromium)
+        if: steps.previo.outputs.verificado != 'true'
         run: npm run test:navegador
 
       - name: Reporte de Playwright

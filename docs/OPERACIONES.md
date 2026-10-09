@@ -16,8 +16,15 @@ y protección contra abuso. Infraestructura: **Vercel** (estáticos + una funci�
 ### Regla
 
 **Producción solo promueve commits con CI verde.** El workflow `.github/workflows/ci.yml` (job
-`verificar`) ejecuta, en este orden: `npm ci` · lint · chequeo estático · pruebas · cobertura con
-umbrales · validación de la reserva · `npm audit --omit=dev --audit-level=moderate` · E2E en Chromium.
+`verificar`) ejecuta, en este orden: `npm ci` · lint · chequeo estático · pruebas con cobertura y
+umbrales (una sola pasada) · validación de la reserva · `npm audit --omit=dev --audit-level=moderate` ·
+E2E en Chromium.
+
+Corre completo en cada PR. En el push a `main` que deja el merge, primero compara el árbol de archivos
+del commit con el del PR: como la rama tiene que estar al día con `main` para mergear, son idénticos, y
+si ese PR ya pasó `verificar` el check se aprueba en segundos sin repetir nada. Si el árbol difiere (un
+push directo o un PR sin actualizar), corre completo. Para forzar una corrida completa: *Actions → CI →
+Run workflow*.
 
 ### Hoy Vercel despliega solo cada push a `main` — configurar el bloqueo (pasos manuales)
 
