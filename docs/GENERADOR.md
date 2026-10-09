@@ -19,6 +19,10 @@ Farándula no tiene generador (sigue con su reserva) y está desactivada por omi
 La publicación es la de siempre (`asegurarDesafio`): bloqueo con vencimiento por fecha y modo, una sola
 transacción para las siete preguntas con sus respuestas, variantes y puntajes, y `UNIQUE(modo, fecha)`.
 Dos ejecuciones simultáneas publican un solo desafío y uno ya publicado no se toca (salvo «Rearmar»).
+Las escrituras de preguntas, respuestas, variantes y preparación del revelado se envían agrupadas
+en un batch dentro de esa transacción. El orden se calcula con las respuestas que ya están en memoria,
+para evitar decenas de viajes HTTP a Turso mientras se mantiene el bloqueo. Un fallo revierte todo.
+El panel conserva el resultado fallido y su corrida; solo abre el desafío cuando existe.
 La fecha sale de `ZONA_HORARIA` (America/Argentina/Buenos_Aires): el programador y los crons preparan
 mañana antes de medianoche, así el día nuevo está guardado antes de que empiece cualquier partida.
 

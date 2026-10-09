@@ -335,10 +335,14 @@ export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas,
     // Respuestas y variantes en tandas con ids explícitos (la transacción tiene el bloqueo de escritura):
     // una pregunta de miles de respuestas son decenas de sentencias, no miles de viajes a la base.
     let siguienteId = (await tx.get('SELECT COALESCE(MAX(id), 0) AS m FROM respuestas')).m + 1;
+    // Agrupar las escrituras evita decenas de viajes HTTP dentro del tiempo de vida de Turso.
+    // Siguen dentro de la misma transacción: una sentencia fallida revierte el lote completo.
+    const sentencias = [];
+    const guardar = { async run(sql, ...args) { sentencias.push({ sql, args }); } };
     const enTandas = async (filas, columnas, tabla, tamanio) => {
       for (let i = 0; i < filas.length; i += tamanio) {
         const tanda = filas.slice(i, i + tamanio);
-        await tx.run(
+        await guardar.run(
           `INSERT INTO ${tabla} (${columnas.join(', ')}) VALUES ${tanda.map(() => `(${columnas.map(() => '?').join(', ')})`).join(', ')}`,
           ...tanda.flat(),
         );
@@ -348,7 +352,7 @@ export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas,
     for (const [i, p] of preguntas.entries()) {
       const posicion = i + 1;
       const preguntaId = idDePregunta(fecha, modo, posicion);
-      await tx.run(
+      await guardar.run(
         `INSERT INTO preguntas (id, desafio_id, posicion, categoria, enunciado, alcance, huella, origen, reserva_id, fuentes, rechazos, firma, conjunto, generacion, coincidencia)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         preguntaId,
@@ -369,15 +373,18 @@ export function publicarDesafio(db, { fecha, modo = MODO_POR_DEFECTO, preguntas,
       );
       const respuestas = [];
       const variantes = [];
+      const revelado = [];
       for (const r of p.respuestas) {
         const respuestaId = siguienteId++;
         respuestas.push([respuestaId, preguntaId, r.canonica, r.rareza, r.puntos, r.explicacion, r.fuente?.url ?? p.fuentes[0].url, r.fuente?.titulo ?? p.fuentes[0].titulo, JSON.stringify(r.variantes)]);
+        revelado.push({ id: respuestaId, canonica: r.canonica, rareza: r.rareza, puntos: r.puntos });
         for (const forma of r.formas) variantes.push([preguntaId, forma, respuestaId]);
       }
       await enTandas(respuestas, ['id', 'pregunta_id', 'canonica', 'rareza', 'puntos', 'explicacion', 'fuente_url', 'fuente_titulo', 'variantes'], 'respuestas', 100);
       await enTandas(variantes, ['pregunta_id', 'normalizada', 'respuesta_id'], 'variantes', 300);
-      await prepararRevelado(tx, preguntaId);
+      await prepararRevelado(guardar, preguntaId, revelado);
     }
+    await tx.batch(sentencias);
     return { publicado: true, desafioId: Number(desafioId), numero };
   });
 }

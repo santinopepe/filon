@@ -160,6 +160,9 @@ function envolver(ejecutor, { reintentar = false } = {}) {
       const rs = await ejecutar(sql, args);
       return { changes: rs.rowsAffected, lastInsertRowid: rs.lastInsertRowid == null ? null : Number(rs.lastInsertRowid) };
     },
+    async batch(sentencias) {
+      return ejecutor.batch(sentencias);
+    },
   };
 }
 
