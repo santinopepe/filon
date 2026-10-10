@@ -1,0 +1,18 @@
+{
+  "id": "estados_eeuu",
+  "nombre": "Un estado de estados unidos",
+  "version": "1",
+  "vista": {
+    "catalogo": "subdivisiones",
+    "filtro": {
+      "op": "es",
+      "campo": "pais",
+      "valores": [
+        "Estados Unidos"
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "completa"
+  }
+}

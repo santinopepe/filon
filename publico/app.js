@@ -519,7 +519,6 @@ function mostrarRonda(n) {
   $('ronda-num').textContent = `Pregunta ${n} de 7`;
   $('ronda-categoria').textContent = r.categoria;
   $('ronda-enunciado').textContent = r.enunciado;
-  $('ronda-alcance').textContent = r.alcance;
   $('ronda-mensaje').textContent = '';
   $('ronda-mensaje').classList.remove('error');
   escena.disponer();

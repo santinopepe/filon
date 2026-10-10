@@ -1,0 +1,18 @@
+{
+  "id": "partidos_buenos_aires",
+  "nombre": "Un partido de la provincia de buenos aires",
+  "version": "1",
+  "vista": {
+    "catalogo": "departamentos_argentinos",
+    "filtro": {
+      "op": "es",
+      "campo": "provincia",
+      "valores": [
+        "Buenos Aires"
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "completa"
+  }
+}

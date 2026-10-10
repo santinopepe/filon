@@ -12,11 +12,14 @@ import { combinaciones, instanciar } from './plantillas.js';
 import { VERSION_TEXTO } from './texto.js';
 import { dentroDeVentana, diasEntre } from '../tiempo.js';
 import { versionDeCatalogos, tieneDato } from './catalogos.js';
+import { evaluarAccesibilidad, VERSION_FAMILIARIDAD } from './familiaridad.js';
 
-export const VERSION_GENERADOR = '3';
+export const VERSION_GENERADOR = '4';
 const QUINTILES = ['grava', 'cobre', 'plata', 'oro', 'diamante'];
 const CENTRO = { facil: 0.2, media: 0.45, dificil: 0.7 };
+const TEMAS_COTIDIANOS = new Set(['paises', 'capitales', 'provincias_argentinas', 'capitales_argentinas', 'animales', 'peliculas', 'elementos', 'deportistas', 'clubes_futbol', 'artistas_musicales', 'instrumentos_musicales']);
 const MINHASH = 64;
+const hashesPorId = new Map();
 const sha = (texto) => createHash('sha256').update(texto).digest('hex');
 
 export const POR_OMISION = Object.freeze({
@@ -69,7 +72,14 @@ function fnv32(texto) {
 /** Firma MinHash de un conjunto de ids: estima el solapamiento sin guardar los conjuntos enteros. */
 export function minhash(ids) {
   const firma = new Array(MINHASH).fill(0xffffffff);
-  for (const id of ids) for (let k = 0; k < MINHASH; k++) firma[k] = Math.min(firma[k], fnv32(`${k}:${id}`));
+  for (const id of ids) {
+    let hashes = hashesPorId.get(id);
+    if (!hashes) {
+      hashes = Uint32Array.from({ length: MINHASH }, (_, k) => fnv32(`${k}:${id}`));
+      hashesPorId.set(id, hashes);
+    }
+    for (let k = 0; k < MINHASH; k++) firma[k] = Math.min(firma[k], hashes[k]);
+  }
   return firma;
 }
 export const jaccardEstimado = (a, b) => (a && b ? a.filter((x, i) => x === b[i]).length / MINHASH : 0);
@@ -90,15 +100,24 @@ const nivel = (d) => (d < 0.35 ? 'facil' : d < 0.6 ? 'media' : 'dificil');
  * poco conocidas dentro de su catálogo, si hay más de una condición y si el conjunto es chico. Un conjunto
  * grande no la baja por sí solo: importa qué tan conocidas son sus mejores respuestas.
  */
-function estimarDificultad(plantilla, catalogo, entidades, filtro, familiaridad = null) {
-  const percentiles = entidades.map((e) => catalogo.percentil(e)).sort((a, b) => b - a);
-  const top = percentiles.slice(0, 5);
+function estimarDificultad(plantilla, catalogo, entidades, filtro, familiaridad = null, minFamiliares = 3) {
+  const top = [];
+  for (const e of entidades) {
+    const p = catalogo.percentil(e);
+    if (top.length < 5 || p > top[4]) {
+      top.push(p);
+      top.sort((a,b) => b - a);
+      if (top.length > 5) top.pop();
+    }
+  }
   const conocimiento = top.reduce((s, x) => s + x, 0) / top.length;
   // Un tema poco familiar (un director de culto) es más difícil que uno muy conocido (Spielberg).
   const tema = familiaridad === null ? 0 : 0.1 * (2 - familiaridad);
-  const d = plantilla.dificultad + 0.4 * (1 - conocimiento) + 0.1 * Math.max(0, filtro.y.length - 1) + (entidades.length < 8 ? 0.1 : 0) + tema;
-  const valor = Math.round(Math.min(1, Math.max(0, d)) * 100) / 100;
-  return { valor, nivel: nivel(valor) };
+  const accesibilidad = evaluarAccesibilidad(plantilla, catalogo, entidades, filtro, minFamiliares);
+  const d = plantilla.dificultad + 0.1 * (1 - conocimiento) + 0.12 * Math.max(0, accesibilidad.complejidad - 1) + (entidades.length < 8 ? 0.08 : 0) + tema + (accesibilidad.temporal ? 0.12 : 0) + (accesibilidad.tecnica ? 0.2 : 0);
+  const estimacion = accesibilidad.facil ? Math.min(0.3, d) : Math.max(accesibilidad.familiares ? 0.35 : 0.6, d);
+  const valor = Math.round(Math.min(1, Math.max(0, estimacion)) * 100) / 100;
+  return { valor, nivel: nivel(valor), ...accesibilidad };
 }
 
 /**
@@ -262,10 +281,10 @@ const LIMITE_EVALUACIONES = 3_000_000;
  * { candidatos, combinaciones, descartes: { motivo: cantidad } }. Con `completo: false` y una plantilla
  * enorme, evalúa una muestra de `intentos` combinaciones en el orden de `semilla`.
  */
-export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxRespuestas = POR_OMISION.maxRespuestas, validar = false, completo = false, semilla = '', intentos = POR_OMISION.intentosPorPlantilla } = {}) {
+export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxRespuestas = POR_OMISION.maxRespuestas, validar = false, completo = false, semilla = '', intentos = POR_OMISION.intentosPorPlantilla, minFamiliares = 3 } = {}) {
   const combos = combinaciones(plantilla, catalogo);
   const enorme = combos.length * catalogo.entidades.length > LIMITE_EVALUACIONES;
-  const clave = `${catalogo.id}@${catalogo.version}|${JSON.stringify([catalogo.cobertura, catalogo.temas, catalogo.atributos, dominios])}|${JSON.stringify(plantilla)}|${maxRespuestas}|${validar}`;
+  const clave = `${catalogo.id}@${catalogo.version}|${VERSION_FAMILIARIDAD}|${minFamiliares}|${JSON.stringify([catalogo.cobertura, catalogo.temas, catalogo.atributos, dominios])}|${JSON.stringify(plantilla)}|${maxRespuestas}|${validar}`;
   if (!enorme || completo) {
     const guardado = preparados.get(clave);
     if (guardado) return guardado;
@@ -320,7 +339,7 @@ export function prepararCandidatos(plantilla, catalogo, { dominios = [], maxResp
       firma,
       conjunto: conjuntoDe(catalogo.universo, entidades.map((e) => e.id)),
       familiaridad,
-      dificultad: estimarDificultad(plantilla, catalogo, entidades, filtro, familiaridad),
+      dificultad: estimarDificultad(plantilla, catalogo, entidades, filtro, familiaridad, minFamiliares),
     };
     if (validar && !armarPregunta(c, { dominios, opciones: { ...POR_OMISION, maxRespuestas }, modo: 'normal', semilla: '', versiones: {} }).ok) {
       descartar('no pasa la validación');
@@ -387,10 +406,11 @@ function armarPregunta(c, ctx) {
         parametros: c.valores,
         semilla: ctx.semilla,
         versiones: ctx.versiones,
-        dificultad: c.dificultad,
+        dificultad: { ...c.dificultad },
+        ...(ctx.opciones.planDificultad ? { perfil: 'casual' } : {}),
         respuestas: c.entidades.length,
-        minhash: c.minhash,
-        minhashNombres: c.minhashNombres,
+        minhash: c.minhash ? [...c.minhash] : undefined,
+        minhashNombres: c.minhashNombres ? [...c.minhashNombres] : undefined,
         nombresConjunto: c.entidades.map(e => normalizar(e.nombre)).sort(),
         ...(c.familiaridad !== null && c.familiaridad !== undefined ? { familiaridad: c.familiaridad } : {}),
       },
@@ -409,7 +429,7 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
   const reglas = REGLAS_LOTE[modo];
   if (!reglas) throw new Error(`El modo «${modo}» no tiene generador por catálogos.`);
   const op = { ...POR_OMISION, maxPorCatalogo: reglas.maxPorCatalogo, ...opciones };
-  const versiones = { plantillas: plantillas.version, filtros: VERSION_FILTROS, texto: VERSION_TEXTO, generador: VERSION_GENERADOR, catalogos: versionDeCatalogos(catalogos) };
+  const versiones = { plantillas: plantillas.version, filtros: VERSION_FILTROS, texto: VERSION_TEXTO, generador: VERSION_GENERADOR, familiaridad: VERSION_FAMILIARIDAD, catalogos: versionDeCatalogos(catalogos) };
   const semilla = sha(`${semillaBase}|${fecha}|${modo}|${JSON.stringify(versiones)}`).slice(0, 16);
   const ctx = { semilla, versiones, modo, dominios, opciones: op };
   const azar = generadorConSemilla(semilla);
@@ -425,14 +445,14 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
   const capacidadPorCategoria = new Map();
   // Dos plantillas que llegan al mismo conjunto de respuestas del mismo universo («películas de X» y
   // «películas argentinas de X» cuando todas son argentinas) aportan una sola consigna.
-  const conjuntosEnPool = new Set();
+  const conjuntosEnPool = new Map();
   for (const p of plantillas.lista.filter((x) => reglas.categorias.includes(x.categoria) && (!x.modos || x.modos.includes(modo)))) {
     const catalogo = catalogos.get(p.catalogo);
     if (!catalogo) {
       descartar(p.id, null, `falta el catálogo «${p.catalogo}» (importalo con npm run importar-catalogos)`);
       continue;
     }
-    const preparado = prepararCandidatos(p, catalogo, { dominios, maxRespuestas: op.maxRespuestas, semilla, intentos: op.intentosPorPlantilla });
+    const preparado = prepararCandidatos(p, catalogo, { dominios, maxRespuestas: op.maxRespuestas, semilla, intentos: op.intentosPorPlantilla, minFamiliares: op.minFamiliares });
     const conjuntos = capacidadPorCategoria.get(p.categoria) ?? new Set();
     preparado.candidatos.forEach(c => conjuntos.add(c.conjunto));
     capacidadPorCategoria.set(p.categoria, conjuntos);
@@ -441,9 +461,12 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
     for (const c of preparado.candidatos) {
       const motivo = repeticion(c, historialVentana);
       if (motivo) descartar(p.id, c.enunciado, `repetida: ${motivo}`);
-      else if (conjuntosEnPool.has(c.conjunto)) descartar(p.id, c.enunciado, 'mismo conjunto que la consigna de otra plantilla');
+      else if (conjuntosEnPool.has(c.conjunto) && !(op.planDificultad && c.dificultad.nivel === 'facil' && conjuntosEnPool.get(c.conjunto).dificultad.nivel !== 'facil')) descartar(p.id, c.enunciado, 'mismo conjunto que la consigna de otra plantilla');
       else {
-        conjuntosEnPool.add(c.conjunto);
+        // La formulación simple de una vista cerrada puede reemplazar una consigna compuesta
+        // con exactamente las mismas respuestas. El orden del archivo no debe ocultarla.
+        if (conjuntosEnPool.has(c.conjunto)) for (let i = pool.length - 1; i >= 0; i--) if (pool[i].conjunto === c.conjunto) pool.splice(i, 1);
+        conjuntosEnPool.set(c.conjunto, c);
         frescos.push(c);
       }
     }
@@ -453,10 +476,11 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
       const j = Math.floor(azarPlantilla() * (i + 1));
       [frescos[i], frescos[j]] = [frescos[j], frescos[i]];
     }
-    for (const c of frescos.slice(0, op.candidatosPorPlantilla)) pool.push({ ...c, sorteo: azarPlantilla(), usado: false });
+    const muestra = op.planDificultad ? ['facil','media'].flatMap(n => frescos.filter(c => c.dificultad.nivel === n).slice(0, op.candidatosPorPlantilla)) : frescos.slice(0, op.candidatosPorPlantilla);
+    for (const c of muestra) pool.push({ ...c, preparado: c, sorteo: azarPlantilla(), usado: false });
   }
-  const minhashDe = (c) => (c.minhash ??= minhash(c.entidades.map((e) => e.id)));
-  const minhashNombresDe = (c) => (c.minhashNombres ??= minhashDeNombres(c.entidades));
+  const minhashDe = (c) => (c.minhash ??= (c.preparado.minhash ??= minhash(c.entidades.map((e) => e.id))));
+  const minhashNombresDe = (c) => (c.minhashNombres ??= (c.preparado.minhashNombres ??= minhashDeNombres(c.entidades)));
 
   // Rotación de categorías: días desde la última aparición de cada una (preguntas generadas y cargadas a
   // mano, solo hacia atrás y hasta `diasRotacion`). Las que no salieron hace más tiempo se prefieren.
@@ -482,36 +506,71 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
   // 2) Siete preguntas variadas: dificultades mezcladas, sin repetir familia, con tope por categoría y
   // por catálogo y al menos `minCategorias` categorías distintas.
   // Metas de dificultad del día: tres fáciles, tres medias y una media o, uno de cada cuatro días, difícil.
-  const objetivos = ['facil', 'facil', 'facil', 'media', 'media', 'media', azar() < 0.25 ? 'dificil' : 'media'];
-  for (let i = objetivos.length - 1; i > 0; i--) {
+  const objetivos = op.planDificultad ?? ['facil', 'facil', 'facil', 'media', 'media', 'media', azar() < 0.25 ? 'dificil' : 'media'];
+  for (let i = op.planDificultad ? 0 : objetivos.length - 1; i > 0; i--) {
     const j = Math.floor(azar() * (i + 1));
     [objetivos[i], objetivos[j]] = [objetivos[j], objetivos[i]];
   }
   const familiasRecientes = new Set(historial.filter((h) => h.fecha && dentroDeVentana(fecha, h.fecha, op.diasFamiliaReciente + 1)).map((h) => h.familia));
   const elegidas = [];
   let intentos = 0;
-  for (let slot = 0; slot < limite && intentos < op.intentosTotales; slot++) {
+  function elegir(slot) {
+    if (slot >= limite) return true;
+    if (intentos >= op.intentosTotales) return false;
     const categorias = new Set(elegidas.map((e) => e.candidato.categoria));
+    if (op.planDificultad) {
+      const disponibles = pool.filter(c => !c.usado && !elegidas.some(e => e.candidato.familia === c.familia)
+        && elegidas.filter(e => e.candidato.categoria === c.categoria).length < (op.maxPorCategoria[c.categoria] ?? reglas.maxPorCategoria)
+        && elegidas.filter(e => e.candidato.catalogo.universo === c.catalogo.universo).length < op.maxPorCatalogo);
+      const necesidades = new Map();
+      for (const n of objetivos.slice(slot, limite)) necesidades.set(n, (necesidades.get(n) ?? 0) + 1);
+      let letrasNecesarias = 0;
+      for (const [nivel, n] of necesidades) {
+        const delNivel = disponibles.filter(c => c.dificultad.nivel === nivel);
+        if (new Set(delNivel.map(c => c.familia)).size < n) return false;
+        const porCategoria = new Map();
+        for (const c of delNivel) {
+          if (!porCategoria.has(c.categoria)) porCategoria.set(c.categoria, new Set());
+          porCategoria.get(c.categoria).add(c.catalogo.universo);
+        }
+        let capacidad = 0;
+        for (const [categoria, universos] of porCategoria) {
+          const cuotaCategoria = (op.maxPorCategoria[categoria] ?? reglas.maxPorCategoria) - elegidas.filter(e => e.candidato.categoria === categoria).length;
+          const cuotaUniversos = [...universos].reduce((s,u) => s + op.maxPorCatalogo - elegidas.filter(e => e.candidato.catalogo.universo === u).length, 0);
+          capacidad += Math.min(cuotaCategoria, cuotaUniversos);
+        }
+        if (capacidad < n) return false;
+        letrasNecesarias += Math.max(0, n - new Set(delNivel.filter(c => !deLetras(c)).map(c => c.familia)).size);
+      }
+      if (new Set([...categorias, ...disponibles.map(c => c.categoria)]).size < reglas.minCategorias) return false;
+      if (new Set(disponibles.filter(c => necesidades.has(c.dificultad.nivel)).map(c => c.familia)).size < limite - slot) return false;
+      if (reglas.maxDeLetras !== undefined && letrasNecesarias + elegidas.filter(e => deLetras(e.candidato)).length > reglas.maxDeLetras) return false;
+    }
     const faltanCategorias = reglas.minCategorias - categorias.size;
     const exigirNueva = faltanCategorias > 0 && limite - slot <= faltanCategorias;
     const objetivo = CENTRO[objetivos[slot % objetivos.length]];
     const sobranLetras = reglas.letrasPreferidas !== undefined && elegidas.filter((e) => deLetras(e.candidato)).length >= reglas.letrasPreferidas;
     // Preferencias (no bloqueos): dificultad cercana al objetivo, consignas conocidas, familias que no
     // salieron hace poco y conjuntos que no se parezcan mucho a uno reciente del mismo catálogo.
-    const puntaje = (c) =>
-      Math.abs(c.dificultad.valor - objetivo) - 0.12 * c.plantilla.prioridad - 0.03 * (c.familiaridad ?? 2) - op.pesoRotacion * (deudaDeCategoria.get(c.categoria) ?? 0) + op.pesoRotacion * (esperaDeCategoria.get(c.categoria) ?? 0) + (categorias.has(c.categoria) && (capacidadPorCategoria.get(c.categoria)?.size ?? 0) < op.diasSinRepetir ? op.pesoRotacion : 0) + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0) + 0.1 * c.sorteo;
-    const ordenados = pool.filter((c) => !c.usado).sort((a, b) => puntaje(a) - puntaje(b));
+    const puntaje = (c) => {
+      // Esta parte no cambia al ordenar ni al retroceder: calcularla una vez evita recorrer
+      // todo el historial en cada comparación del sort. Las firmas se reutilizan entre días.
+      c.puntajeBase ??= -0.12 * c.plantilla.prioridad - 0.03 * (c.familiaridad ?? 2) - op.pesoRotacion * (deudaDeCategoria.get(c.categoria) ?? 0) + op.pesoRotacion * (esperaDeCategoria.get(c.categoria) ?? 0) + (familiasRecientes.has(c.familia) ? 0.3 : 0) + (solapamiento({ ...c, minhash: minhashDe(c) }, historialVentana) >= op.solapamientoParecido ? 0.3 : 0) + 0.1 * c.sorteo;
+      const cotidiano = modo === 'normal' && op.planDificultad && c.dificultad.nivel === 'facil' && TEMAS_COTIDIANOS.has(c.catalogo.universo) ? -0.12 : 0;
+      const apertura = modo === 'normal' && op.planDificultad && slot < 2 ? -0.02 * Math.min(c.dificultad.familiares, 6) : 0;
+      return Math.abs(c.dificultad.valor - objetivo) + c.puntajeBase + cotidiano + apertura + (categorias.has(c.categoria) && (capacidadPorCategoria.get(c.categoria)?.size ?? 0) < op.diasSinRepetir ? op.pesoRotacion : 0) + (sobranLetras && deLetras(c) ? 0.4 : 0);
+    };
+    const ordenados = pool.filter((c) => !c.usado && (!op.planDificultad || c.dificultad.nivel === objetivos[slot % objetivos.length])).sort((a, b) => puntaje(a) - puntaje(b));
     for (const c of ordenados) {
-      if (++intentos > op.intentosTotales) break;
       const porCategoria = elegidas.filter((e) => e.candidato.categoria === c.categoria).length;
       if (porCategoria >= (op.maxPorCategoria[c.categoria] ?? reglas.maxPorCategoria)) continue;
       if (exigirNueva && categorias.has(c.categoria)) continue;
       if (elegidas.filter((e) => e.candidato.familia === c.familia).length >= op.maxPorFamilia) continue;
       if (elegidas.filter((e) => e.candidato.catalogo.universo === c.catalogo.universo).length >= op.maxPorCatalogo) continue;
       if (reglas.maxDeLetras !== undefined && deLetras(c) && elegidas.filter((e) => deLetras(e.candidato)).length >= reglas.maxDeLetras) continue;
+      if (++intentos > op.intentosTotales) break;
       const enLote = repeticion(c, elegidas.map((e) => ({ firma: e.candidato.firma, conjunto: e.candidato.conjunto })));
       if (enLote) {
-        c.usado = true;
         descartar(c.plantilla.id, c.enunciado, `repetida: ${enLote}`);
         continue;
       }
@@ -536,24 +595,30 @@ export function generarLote({ catalogos, plantillas, fecha, modo = 'normal', sem
         descartar(c.plantilla.id, c.enunciado, `repetida: casi el mismo conjunto de respuestas que el ${otroUniverso.fecha} (otro catálogo)`);
         continue;
       }
-      const enLoteNombres = elegidas.find((e) => jaccard(claves, e.claves) >= 0.5);
+      const enLoteNombres = elegidas.find((e) => Math.min(claves.length,e.claves.length) / Math.max(claves.length,e.claves.length) >= 0.5 && jaccard(claves, e.claves) >= 0.5);
       if (enLoteNombres) {
-        c.usado = true;
         descartar(c.plantilla.id, c.enunciado, `comparte la mitad de las respuestas con «${enLoteNombres.candidato.enunciado}»`);
         continue;
       }
       minhashDe(c);
       minhashNombresDe(c);
-      const armada = armarPregunta(c, ctx);
+      const armada = (c.armada ??= armarPregunta(c, ctx));
       c.usado = true;
       if (!armada.ok) {
         descartar(c.plantilla.id, c.enunciado, `no pasó la validación: ${armada.errores.join(' ')}`);
         continue;
       }
       elegidas.push({ candidato: c, pregunta: armada.pregunta, claves });
-      break;
+      if (!op.planDificultad || elegir(slot + 1)) return true;
+      elegidas.pop();
+      c.usado = false;
     }
+    return false;
   }
+  // Con un perfil estricto, retrocede si una elección deja sin lugar a otra dificultad o categoría.
+  // Presupuesto acotado; nunca relaja la ventana, la cobertura ni los topes para completar el día.
+  if (op.planDificultad) elegir(0);
+  else for (let slot = 0; slot < limite && intentos < op.intentosTotales; slot++) elegir(slot);
 
   const errores = [];
   if (elegidas.length < limite) errores.push(`Solo se armaron ${elegidas.length} de ${limite} preguntas con los catálogos disponibles.`);

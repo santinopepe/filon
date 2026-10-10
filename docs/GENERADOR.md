@@ -26,13 +26,15 @@ El panel conserva el resultado fallido y su corrida; solo abre el desafío cuand
 La fecha sale de `ZONA_HORARIA` (America/Argentina/Buenos_Aires): el programador y los crons preparan
 mañana antes de medianoche, así el día nuevo está guardado antes de que empiece cualquier partida.
 
+La configuración inicial del perfil casual y su validación con jugadores están en [ACCESIBILIDAD.md](ACCESIBILIDAD.md).
+
 ## Qué pasa si faltan candidatos
 
 1. El generador intenta armar las siete preguntas con los catálogos.
 2. Si no llega (faltan catálogos, todo lo posible se usó hace poco, nada pasa la validación) y
-   `CATALOGOS_COMPLETAR_CON_RESERVA=1` (por omisión), completa **solo lo que falta** con la reserva
+   `CATALOGOS_PERFIL=clasico` y `CATALOGOS_COMPLETAR_CON_RESERVA=1`, completa **solo lo que falta** con la reserva
    verificada, respetando las mismas reglas del lote. El desafío queda con origen `mixto`.
-3. Si tampoco alcanza, **no publica nada**: la corrida queda en `fallo` con el motivo (panel → Corridas,
+3. En el perfil casual no usa el respaldo sin clasificación compatible. Si no alcanza, **no publica nada**: la corrida queda en `fallo` con el motivo (panel → Corridas,
    o `npm run admin -- corridas`). Nunca se publica un lote incompleto ni se inventa contenido.
 
 Cada corrida guarda en `corridas.detalle.catalogos`: la semilla, las versiones, lo elegido y un resumen
@@ -241,11 +243,12 @@ sin ambigüedad) y descarta el resto con su motivo. No se agregan respuestas par
   popularidad es la cantidad de Wikipedias con artículo (sitelinks de Wikidata) o, para palabras, la
   frecuencia en subtítulos. **No son estadísticas de jugadores.** En las canciones sin artículo en Wikipedia
   (popularidad 0) el orden entre ellas es el del id, es decir, arbitrario pero estable.
-- **Dificultad** (estimación editorial): la de la plantilla, más cuánto cuesta conocer las mejores respuestas
-  del conjunto dentro de su catálogo, más condiciones combinadas y conjuntos chicos. Un conjunto grande no
-  baja la dificultad por sí solo. El lote apunta a tres preguntas fáciles, tres medias y una media (uno de
-  cada cuatro días, difícil), y prefiere las plantillas de prioridad alta: cada nivel de prioridad pesa
-  0,12, así una consigna conocida le gana a una de nicho con dificultad parecida.
+- **Dificultad** (hipótesis editorial): combina familiaridad de respuestas reales, complejidad,
+  necesidad de recordar períodos o clasificaciones técnicas, tema, plantilla y tamaño. «Fácil» exige
+  una condición simple y al menos tres respuestas familiares configurables. Las etiquetas editoriales
+  están en `datos/familiaridad.json`; no son datos de jugadores ni recortan las respuestas correctas.
+  El perfil casual exige cinco fáciles y dos medias, con las primeras dos fáciles. El perfil clásico
+  conserva las metas flexibles anteriores. Ver [ACCESIBILIDAD.md](ACCESIBILIDAD.md).
 - **Accesibilidad (prioridad y temas)**: las consignas de nicho (CSS, HTML, constelaciones por letra,
   subdivisiones de otros países, Pokémon por generación, discos en vivo, pinturas por museo…) tienen
   prioridad 1: siguen disponibles, pero salen poco. Las plantillas sobre un tema (pintor, director,
@@ -253,7 +256,7 @@ sin ambigüedad) y descarta el resto con su motivo. No se agregan respuestas par
   editorial de temas conocidos para el público argentino. No se usa la familiaridad automática por
   artículos de Wikipedia para filtrar: subestima los temas argentinos (Soda Stereo, Campanella).
 - **Tamaño**: ninguna plantilla descarta un conjunto por tener menos de 300 respuestas. Un conjunto grande
-  no es un problema técnico (el revelado pagina) y suele ser la consigna más fácil de responder.
+  no es un problema técnico (el revelado pagina), pero no determina por sí solo que la consigna sea fácil.
 - **Coincidencia exacta** (preguntas de palabras): solo vale la palabra escrita, sin importar mayúsculas ni
   tildes. No se completan fragmentos ni se sugieren parecidas («cas» no se convierte en «casa»).
 

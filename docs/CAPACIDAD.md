@@ -1,5 +1,7 @@
 # Capacidad y verificación de la ampliación de Filón
 
+Este informe conserva la medición de la ampliación original (generador v3). El perfil casual v4 y sus comprobaciones se documentan en [ACCESIBILIDAD.md](ACCESIBILIDAD.md).
+
 Informe de cierre del 2026-10-08, con Node **24.19.0**, plantillas **5**, generador **3**, filtros **1** y los catálogos versionados del repositorio. Normal y Geografía usan exactamente el mismo inventario de versiones; el detalle está en los JSON enlazados. El informe se generó antes de publicar los cambios; las pruebas usan bases aisladas y no alteran preguntas o partidas existentes.
 
 **Resultado:** Normal cuenta con **4.765** consignas utilizables y Geografía con **1.160**. Ambos publicaron **180/180 días y 1.260 preguntas**, sin reserva, fallos, violaciones de topes ni repeticiones a menos de 60 días. La distancia mínima de reutilización fue **60 días**.

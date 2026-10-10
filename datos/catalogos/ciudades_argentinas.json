@@ -1,0 +1,18 @@
+{
+  "id": "ciudades_argentinas",
+  "nombre": "Una ciudad argentina de 100.000 habitantes o más según geonames",
+  "version": "1",
+  "vista": {
+    "catalogo": "ciudades",
+    "filtro": {
+      "op": "es",
+      "campo": "paises",
+      "valores": [
+        "Argentina"
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "completa"
+  }
+}

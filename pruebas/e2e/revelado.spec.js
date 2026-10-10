@@ -87,6 +87,55 @@ const ORDEN = ['diamante', 'oro', 'plata', 'cobre', 'grava'];
 const sintetica = Array.from({ length: TOTAL }, (_, i) => ({ canonica: `Sintética ${String(i).padStart(5, '0')}`, rareza: ORDEN[Math.floor((i / TOTAL) * 5)] }));
 const contar = (lista) => Object.fromEntries(ORDEN.map((r) => [r, lista.filter((x) => x.rareza === r).length]));
 
+for (const { nombre, viewport, cierre } of [
+  { nombre: 'escritorio', viewport: { width: 1280, height: 720 }, cierre: 'Escape' },
+  { nombre: 'móvil', viewport: { width: 390, height: 844 }, cierre: 'boton' },
+]) {
+  test(`modal de respuestas en ${nombre}: bloquea el fondo, permite recorrer la lista y restaura el scroll al cerrar`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    const errores = vigilarErrores(page);
+    const partida = await llegarAlFinal(page);
+    await page.route(`**/api/partidas/${partida.id}/respuestas`, async ruta => {
+      const datos = await (await ruta.fetch()).json();
+      const respuestas = sintetica.slice(0, 100);
+      datos.preguntas[0] = { posicion: 1, total: 100, conteos: contar(respuestas), respuestas: respuestas.map(r => [r.canonica, r.rareza]) };
+      await ruta.fulfill({ json: datos });
+    });
+    await page.reload();
+    await page.evaluate(() => document.fonts.ready);
+    const abrir = page.locator('#desglose .respuesta-abrir').first();
+    await abrir.scrollIntoViewIfNeeded();
+    const antes = await page.evaluate(() => scrollY);
+    expect(antes).toBeGreaterThan(0);
+    await abrir.click();
+    const dialogo = page.locator('#dlg-respuestas');
+    await expect(dialogo).toBeVisible();
+    await expect(filas(page)).toHaveCount(100);
+    await page.mouse.move(5, 5);
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(150);
+    expect(await page.evaluate(() => scrollY)).toBe(antes);
+
+    const lista = page.locator('#lista-respuestas');
+    await lista.hover();
+    await page.mouse.wheel(0, 300);
+    await expect.poll(() => lista.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
+    await lista.evaluate(el => { el.scrollTop = el.scrollHeight; });
+    await page.mouse.wheel(0, 900);
+    await page.waitForTimeout(150);
+    expect(await page.evaluate(() => scrollY)).toBe(antes);
+
+    if (cierre === 'Escape') await page.keyboard.press('Escape');
+    else await dialogo.getByRole('button', { name: 'Cerrar', exact: true }).click();
+    await expect(dialogo).toBeHidden();
+    expect(await page.evaluate(() => scrollY)).toBe(antes);
+    await page.mouse.move(5, 5);
+    await page.mouse.wheel(0, -300);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(antes);
+    expect(errores).toEqual([]);
+  });
+}
+
 test('lista grande: páginas de 100 (nunca más filas montadas), filtros y búsqueda en el servidor, respuestas tardías descartadas', async ({ page }) => {
   const errores = vigilarErrores(page);
   const partida = await llegarAlFinal(page);
