@@ -52,6 +52,22 @@ const DOMINIOS_POR_DEFECTO = [
 
 const num = (v, def) => (v === undefined || v === '' || Number.isNaN(Number(v)) ? def : Number(v));
 const bool = (v, def) => (v === undefined || v === '' ? def : ['1', 'true', 'si', 'sí', 'yes'].includes(String(v).toLowerCase()));
+
+function perfilDeDificultad(e) {
+  const perfil = e.CATALOGOS_PERFIL || 'casual';
+  if (!['casual', 'clasico'].includes(perfil)) throw new Error('CATALOGOS_PERFIL debe ser casual o clasico.');
+  const faciles = num(e.CATALOGOS_FACILES, 5), minFamiliares = num(e.CATALOGOS_MIN_FAMILIARES, 3);
+  if (!Number.isInteger(faciles) || faciles < 2 || faciles > 7) throw new Error('CATALOGOS_FACILES debe ser un entero entre 2 y 7.');
+  if (!Number.isInteger(minFamiliares) || minFamiliares < 3 || minFamiliares > 5) throw new Error('CATALOGOS_MIN_FAMILIARES debe ser un entero entre 3 y 5.');
+  const plan = ['facil', 'facil'];
+  let medias = 7 - faciles;
+  for (let i = 2; i < 7; i++) {
+    const media = medias > 0 && (i === 2 || i === 5 || 7 - i <= medias);
+    plan.push(media ? 'media' : 'facil');
+    if (media) medias--;
+  }
+  return { perfil, minFamiliares, planDificultad: perfil === 'casual' ? plan : null };
+}
 // Farándula está desactivada por omisión. MODOS_ACTIVOS=normal,farandula,geografia la vuelve a activar.
 const MODOS_ACTIVOS_POR_DEFECTO = ['normal', 'geografia'];
 function modosActivos(v) {
@@ -132,6 +148,7 @@ export function cargarConfig(sobrescrituras = {}) {
       geografia: e.GENERADOR_GEOGRAFIA === 'catalogos' ? 'catalogos' : 'reserva',
     },
     catalogos: {
+      ...perfilDeDificultad(e),
       dir: resolve(RAIZ, e.CATALOGOS_DIR || 'datos/catalogos'),
       rutaPlantillas: resolve(RAIZ, e.CATALOGOS_PLANTILLAS || 'datos/plantillas.json'),
       semilla: e.CATALOGOS_SEMILLA || 'filon',

@@ -1,0 +1,18 @@
+{
+  "id": "estados_brasil",
+  "nombre": "Un estado de brasil",
+  "version": "1",
+  "vista": {
+    "catalogo": "subdivisiones",
+    "filtro": {
+      "op": "es",
+      "campo": "pais",
+      "valores": [
+        "Brasil"
+      ]
+    }
+  },
+  "cobertura": {
+    "tipo": "completa"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "6",
+  "version": "7",
   "descripcion": "Plantillas del generador por catálogos. Son datos: operadores de una lista cerrada (servidor/catalogos/filtros.js) y parámetros que se calculan desde los catálogos. Ver docs/GENERADOR.md.",
   "plantillas": [
     {
@@ -7195,6 +7195,2554 @@
       "rechazos": true,
       "alcance": "Balón de Oro masculino 1956–2025, incluidas las ediciones FIFA Ballon d’Or 2010–2015. Son 69 premios adjudicados; 2020 se canceló. Cada jugador cuenta una vez.",
       "explicacion": "{nombre}: años de Balón de Oro: {anios_balon}."
+    },
+    {
+      "id": "casual-paises-termina-letra",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-paises-tiene-letras",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-paises-contiene-secuencia",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-paises-termina-secuencia",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-termina-letra",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-tiene-letras",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-contiene-secuencia",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-termina-secuencia",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-argentinas-termina-letra",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-argentinas-tiene-letras",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-argentinas-contiene-secuencia",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-argentinas-termina-secuencia",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-argentinas-termina-letra",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-argentinas-tiene-letras",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-argentinas-contiene-secuencia",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-argentinas-termina-secuencia",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-elementos-termina-letra",
+      "familia": "elementos-letras",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-elementos-tiene-letras",
+      "familia": "elementos-letras",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-elementos-contiene-secuencia",
+      "familia": "elementos-letras",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-elementos-termina-secuencia",
+      "familia": "elementos-letras",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-instrumentos-musicales-termina-letra",
+      "familia": "instrumentos",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-instrumentos-musicales-tiene-letras",
+      "familia": "instrumentos",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-instrumentos-musicales-contiene-secuencia",
+      "familia": "instrumentos",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-instrumentos-musicales-termina-secuencia",
+      "familia": "instrumentos",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-eeuu-termina-letra",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_eeuu",
+      "enunciado": "Nombrá un estado de Estados Unidos",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-eeuu-tiene-letras",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_eeuu",
+      "enunciado": "Nombrá un estado de Estados Unidos",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-eeuu-contiene-secuencia",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_eeuu",
+      "enunciado": "Nombrá un estado de Estados Unidos",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-eeuu-termina-secuencia",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_eeuu",
+      "enunciado": "Nombrá un estado de Estados Unidos",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-brasil-termina-letra",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_brasil",
+      "enunciado": "Nombrá un estado de Brasil",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-brasil-tiene-letras",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_brasil",
+      "enunciado": "Nombrá un estado de Brasil",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-brasil-contiene-secuencia",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_brasil",
+      "enunciado": "Nombrá un estado de Brasil",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-brasil-termina-secuencia",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_brasil",
+      "enunciado": "Nombrá un estado de Brasil",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-espana-termina-letra",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "catalogo": "provincias_espana",
+      "enunciado": "Nombrá una provincia de España",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-espana-tiene-letras",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "catalogo": "provincias_espana",
+      "enunciado": "Nombrá una provincia de España",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-espana-contiene-secuencia",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "catalogo": "provincias_espana",
+      "enunciado": "Nombrá una provincia de España",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-espana-termina-secuencia",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "catalogo": "provincias_espana",
+      "enunciado": "Nombrá una provincia de España",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-partidos-buenos-aires-termina-letra",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "catalogo": "partidos_buenos_aires",
+      "enunciado": "Nombrá un partido de la provincia de Buenos Aires",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-partidos-buenos-aires-tiene-letras",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "catalogo": "partidos_buenos_aires",
+      "enunciado": "Nombrá un partido de la provincia de Buenos Aires",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-partidos-buenos-aires-contiene-secuencia",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "catalogo": "partidos_buenos_aires",
+      "enunciado": "Nombrá un partido de la provincia de Buenos Aires",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-partidos-buenos-aires-termina-secuencia",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "catalogo": "partidos_buenos_aires",
+      "enunciado": "Nombrá un partido de la provincia de Buenos Aires",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-ciudades-argentinas-termina-letra",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades_argentinas",
+      "enunciado": "Nombrá una ciudad argentina de 100.000 habitantes o más según GeoNames",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-ciudades-argentinas-tiene-letras",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades_argentinas",
+      "enunciado": "Nombrá una ciudad argentina de 100.000 habitantes o más según GeoNames",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-ciudades-argentinas-contiene-secuencia",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades_argentinas",
+      "enunciado": "Nombrá una ciudad argentina de 100.000 habitantes o más según GeoNames",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-ciudades-argentinas-termina-secuencia",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades_argentinas",
+      "enunciado": "Nombrá una ciudad argentina de 100.000 habitantes o más según GeoNames",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-paises-termina-letra-sin",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-paises-tiene-letras-sin",
+      "familia": "paises-letras",
+      "categoria": "geografia",
+      "catalogo": "paises",
+      "enunciado": "Nombrá un país",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-termina-letra-sin",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-tiene-letras-sin",
+      "familia": "capitales-letras",
+      "categoria": "geografia",
+      "catalogo": "capitales",
+      "enunciado": "Nombrá una capital nacional",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-argentinas-termina-letra-sin",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-argentinas-tiene-letras-sin",
+      "familia": "provincias-letras",
+      "categoria": "geografia",
+      "catalogo": "provincias_argentinas",
+      "enunciado": "Nombrá una provincia argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-argentinas-termina-letra-sin",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-capitales-argentinas-tiene-letras-sin",
+      "familia": "capitales-provinciales",
+      "categoria": "geografia",
+      "catalogo": "capitales_argentinas",
+      "enunciado": "Nombrá una capital provincial argentina",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-elementos-termina-letra-sin",
+      "familia": "elementos-letras",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-elementos-tiene-letras-sin",
+      "familia": "elementos-letras",
+      "categoria": "ciencia",
+      "catalogo": "elementos",
+      "enunciado": "Nombrá un elemento químico",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-instrumentos-musicales-termina-letra-sin",
+      "familia": "instrumentos",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-instrumentos-musicales-tiene-letras-sin",
+      "familia": "instrumentos",
+      "categoria": "musica",
+      "catalogo": "instrumentos_musicales",
+      "enunciado": "Nombrá un instrumento musical",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-eeuu-termina-letra-sin",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_eeuu",
+      "enunciado": "Nombrá un estado de Estados Unidos",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-eeuu-tiene-letras-sin",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_eeuu",
+      "enunciado": "Nombrá un estado de Estados Unidos",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-brasil-termina-letra-sin",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_brasil",
+      "enunciado": "Nombrá un estado de Brasil",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-estados-brasil-tiene-letras-sin",
+      "familia": "estados",
+      "categoria": "geografia",
+      "catalogo": "estados_brasil",
+      "enunciado": "Nombrá un estado de Brasil",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-espana-termina-letra-sin",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "catalogo": "provincias_espana",
+      "enunciado": "Nombrá una provincia de España",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-provincias-espana-tiene-letras-sin",
+      "familia": "provincias-mundo",
+      "categoria": "geografia",
+      "catalogo": "provincias_espana",
+      "enunciado": "Nombrá una provincia de España",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-partidos-buenos-aires-termina-letra-sin",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "catalogo": "partidos_buenos_aires",
+      "enunciado": "Nombrá un partido de la provincia de Buenos Aires",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-partidos-buenos-aires-tiene-letras-sin",
+      "familia": "partidos",
+      "categoria": "geografia",
+      "catalogo": "partidos_buenos_aires",
+      "enunciado": "Nombrá un partido de la provincia de Buenos Aires",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-ciudades-argentinas-termina-letra-sin",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades_argentinas",
+      "enunciado": "Nombrá una ciudad argentina de 100.000 habitantes o más según GeoNames",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-ciudades-argentinas-tiene-letras-sin",
+      "familia": "ciudades-argentina",
+      "categoria": "geografia",
+      "catalogo": "ciudades_argentinas",
+      "enunciado": "Nombrá una ciudad argentina de 100.000 habitantes o más según GeoNames",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombre registrado en español, sin distinguir tildes ni mayúsculas. Se conserva el conjunto completo del catálogo y su cobertura verificada.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-frutas-verduras-termina-letra",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre del CAA",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-frutas-verduras-tiene-letras",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre del CAA",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-frutas-verduras-contiene-secuencia",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre del CAA",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-frutas-verduras-termina-secuencia",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre del CAA",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-frutas-verduras-termina-letra-sin",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre del CAA",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-frutas-verduras-tiene-letras-sin",
+      "familia": "expansion-caa-categoria",
+      "categoria": "gastronomia",
+      "catalogo": "frutas_verduras",
+      "enunciado": "Nombrá una fruta, hortaliza o legumbre del CAA",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-comidas-termina-letra",
+      "familia": "expansion-comidas",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre registrado en Wikidata",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-comidas-tiene-letras",
+      "familia": "expansion-comidas",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre registrado en Wikidata",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-comidas-contiene-secuencia",
+      "familia": "expansion-comidas",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre registrado en Wikidata",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "cualquiera",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "contiene",
+        "campo": "nombre",
+        "texto": "{valor}"
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-comidas-termina-secuencia",
+      "familia": "expansion-comidas",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre registrado en Wikidata",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "secuencia",
+          "campo": "nombre",
+          "posicion": "final",
+          "largo": 2
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ]
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-comidas-termina-letra-sin",
+      "familia": "expansion-comidas",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre registrado en Wikidata",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letra",
+          "campo": "nombre",
+          "posicion": "final"
+        }
+      },
+      "filtro": {
+        "op": "termina",
+        "campo": "nombre",
+        "textos": [
+          "{valor}"
+        ],
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
+    },
+    {
+      "id": "casual-comidas-tiene-letras-sin",
+      "familia": "expansion-comidas",
+      "categoria": "gastronomia",
+      "catalogo": "comidas",
+      "enunciado": "Nombrá un plato o postre registrado en Wikidata",
+      "sujetos": {
+        "nombre": "cuyo nombre"
+      },
+      "parametros": {
+        "valor": {
+          "tipo": "letras",
+          "campo": "nombre",
+          "cantidad": 1
+        }
+      },
+      "filtro": {
+        "op": "tiene",
+        "campo": "nombre",
+        "letras": "{valor}",
+        "no": true
+      },
+      "respuestas": {
+        "min": 5,
+        "max": 15000
+      },
+      "dificultad": 0.1,
+      "prioridad": 3,
+      "rechazos": true,
+      "alcance": "Nombres en español del catálogo verificado: CAA para frutas, hortalizas y legumbres; clasificación directa como plato/postre y al menos 20 Wikipedias para comidas. Tildes y mayúsculas no importan.",
+      "explicacion": "{nombre} cumple la condición sobre su nombre."
     }
   ]
 }

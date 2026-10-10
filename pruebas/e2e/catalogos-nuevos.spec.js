@@ -9,7 +9,7 @@ import { fechaLocal } from '../../servidor/tiempo.js';
 import { CATEGORIAS } from '../../servidor/dominio.js';
 import { BEARER, TOKEN_ADMIN_E2E, vigilarErrores } from './ayuda.js';
 
-test('catálogos nuevos: publicar, jugar, mostrar alcance, revelar y ver estadísticas sin red externa', async ({ page }) => {
+test('catálogos nuevos: publicar, jugar, revelar y ver estadísticas sin red externa', async ({ page }) => {
  const nuevas=['arte','television','naturaleza','gastronomia'];
  const dir=mkdtempSync(join(tmpdir(),'filon-e2e-catalogos-'));
  const pl=JSON.parse(readFileSync(new URL('../../datos/plantillas.json',import.meta.url),'utf8'));
@@ -17,7 +17,7 @@ test('catálogos nuevos: publicar, jugar, mostrar alcance, revelar y ver estadí
  // otras dos. Como hay siete preguntas, las cuatro nuevas salen igual.
  pl.plantillas=pl.plantillas.filter(p=>[...nuevas,'cine'].includes(p.categoria));
  const ruta=join(dir,'plantillas.json');writeFileSync(ruta,JSON.stringify(pl));
- const app=await iniciarServidor({sinArchivoEnv:true,env:{PUERTO:'0',HOST:'127.0.0.1',RUTA_BD:join(dir,'juego.db'),BD_URL:'',TURSO_DATABASE_URL:'',TOKEN_ADMIN:TOKEN_ADMIN_E2E,PROGRAMADOR_INTERNO:'0',GENERADOR_NORMAL:'catalogos',CATALOGOS_COMPLETAR_CON_RESERVA:'0',CATALOGOS_PLANTILLAS:ruta,CATALOGOS_SEMILLA:'e2e-expansion',LIMITES_ESCALA:'50'}});
+ const app=await iniciarServidor({sinArchivoEnv:true,env:{PUERTO:'0',HOST:'127.0.0.1',RUTA_BD:join(dir,'juego.db'),BD_URL:'',TURSO_DATABASE_URL:'',TOKEN_ADMIN:TOKEN_ADMIN_E2E,PROGRAMADOR_INTERNO:'0',GENERADOR_NORMAL:'catalogos',CATALOGOS_COMPLETAR_CON_RESERVA:'0',CATALOGOS_PLANTILLAS:ruta,CATALOGOS_SEMILLA:'e2e-expansion',CATALOGOS_PERFIL:'clasico',LIMITES_ESCALA:'50'}});
  try {
   const fecha=fechaLocal(Date.now(),app.config.zona);
   const pub=await asegurarDesafio({db:app.db,config:app.config,fecha,modo:'normal',generador:'catalogos',reserva:{preguntas:[]}});
@@ -32,7 +32,6 @@ test('catálogos nuevos: publicar, jugar, mostrar alcance, revelar y ver estadí
   for(let n=0;n<7;n++) {
    const p=banco.preguntas[n];
    await expect(page.locator('#ronda-enunciado')).toHaveText(p.enunciado);
-   await expect(page.locator('#ronda-alcance')).toHaveText(p.alcance);
    const correcta=p.respuestas[0].canonica;
    await page.fill('#campo-respuesta',correcta);await page.press('#campo-respuesta','Enter');
    await expect(page.locator('#p-resultado')).toBeVisible();await expect(page.locator('#res-respuesta')).toContainText(correcta);

@@ -356,7 +356,7 @@ test('sin candidatos suficientes: se completa con la reserva o no se publica nad
   const dir = mkdtempSync(join(tmpdir(), 'filon-plantillas-'));
   const pocas = join(dir, 'plantillas.json');
   writeFileSync(pocas, JSON.stringify({ version: 'prueba', plantillas: PL.plantillas.filter((p) => p.id === 'paises-continente' || p.id === 'elementos-inicial') }));
-  const e = await prepararEntorno();
+  const e = await prepararEntorno({ env: { CATALOGOS_PERFIL: 'clasico' } });
   e.config.catalogos.rutaPlantillas = pocas;
   const args = { db: e.db, config: e.config, reserva: e.reserva, reservas: e.reservas, ahora: e.reloj.ahora, generador: 'catalogos' };
   const mixto = await asegurarDesafio({ ...args, fecha: '2026-10-05' });
@@ -376,7 +376,7 @@ test('sin candidatos suficientes: se completa con la reserva o no se publica nad
 });
 
 test('juego: en las preguntas de palabras vale solo la palabra escrita (sin autocompletar fragmentos)', async () => {
-  const e = await prepararEntorno();
+  const e = await prepararEntorno({ env: { CATALOGOS_PERFIL: 'clasico' } });
   // Esta prueba verifica coincidencia exacta, sin depender del sorteo de un calendario sin historial.
   const dir = mkdtempSync(join(tmpdir(), 'filon-palabras-'));
   // Las otras tres categorías aportan como máximo seis preguntas (dos por categoría, cada una de un
@@ -422,7 +422,7 @@ test('más de 10.000 respuestas (catálogo SINTÉTICO): se genera, valida, publi
   writeFileSync(join(dir, 'catalogos', 'sintetico.json'), JSON.stringify({ id: 'sintetico', nombre: 'SINTÉTICO', version: 'v1', importado: '2026-10-07', fuentes: [{ nombre: 'Prueba', url: 'https://github.com/LibreOffice/dictionaries', licencia: 'prueba' }], cobertura: { tipo: 'completa', criterio: 'sintético' }, atributos: {}, fuenteEntidades: 'https://github.com/LibreOffice/dictionaries', entidades }));
   const plantilla = { ...PL.plantillas.find((p) => p.id === 'palabras-dos-letras'), id: 'sintetica', familia: 'sintetica', catalogo: 'sintetico', parametros: {}, filtro: { op: 'tiene', campo: 'nombre', letras: ['a', 's'] } };
   writeFileSync(join(dir, 'plantillas.json'), JSON.stringify({ version: 'sintetica', plantillas: [plantilla, ...PL.plantillas.filter((p) => p.categoria !== 'gramatica')] }));
-  const e = await prepararEntorno();
+  const e = await prepararEntorno({ env: { CATALOGOS_PERFIL: 'clasico' } });
   Object.assign(e.config.catalogos, { dir: join(dir, 'catalogos'), rutaPlantillas: join(dir, 'plantillas.json') });
   const t0 = Date.now();
   const r = await asegurarDesafio({ db: e.db, config: e.config, fecha: '2026-10-05', reserva: e.reserva, reservas: e.reservas, ahora: e.reloj.ahora, generador: 'catalogos' });
@@ -446,7 +446,7 @@ test('más de 10.000 respuestas (catálogo SINTÉTICO): se genera, valida, publi
 });
 
 test('de punta a punta con una categoría nueva: se publica, se juega, se revela y aparece en las estadísticas', async () => {
-  const e = await prepararEntorno();
+  const e = await prepararEntorno({ env: { CATALOGOS_PERFIL: 'clasico' } });
   const NUEVAS = ['informatica', 'astronomia', 'videojuegos', 'idiomas'];
   let fecha = '2026-10-05';
   while (!generarLote({ catalogos, plantillas, fecha, semillaBase: e.config.catalogos.semilla, dominios: e.config.fuentes.dominios }).preguntas.some((p) => NUEVAS.includes(p.categoria))) fecha = sumarDias(fecha, 1);

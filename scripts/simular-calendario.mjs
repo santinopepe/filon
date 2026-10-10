@@ -74,7 +74,7 @@ const ms = Date.now() - t0;
 
 // ───── Métricas ─────
 const preguntas = await db.all(
-  `SELECT d.fecha, p.categoria, p.origen, p.firma, p.conjunto, p.generacion FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
+  `SELECT d.fecha, p.posicion, p.categoria, p.origen, p.firma, p.conjunto, p.generacion FROM preguntas p JOIN desafios d ON d.id = p.desafio_id
    WHERE d.modo = ? AND d.fecha BETWEEN ? AND ? ORDER BY d.fecha, p.posicion`,
   modo,
   inicio, sumarDias(inicio, dias - 1),
@@ -98,11 +98,13 @@ for (const clave of ['firma', 'conjunto']) {
   }
 }
 let topesViolados = 0;
+let perfilesViolados = 0;
 const porDia = new Map();
 for (const p of generadas) (porDia.get(p.fecha) ?? porDia.set(p.fecha, []).get(p.fecha)).push(p);
 for (const ps of porDia.values()) {
   const categorias = contar(ps, p => p.categoria), universos = contar(ps, p => p.g.universo ?? p.g.catalogo.id), familias = contar(ps, p => p.g.familia);
-  if (Object.entries(categorias).some(([c,n]) => n > (modo === 'geografia' ? 7 : c === 'gramatica' ? 1 : 2)) || Object.values(universos).some(n => n > (modo === 'geografia' ? 3 : 2)) || Object.values(familias).some(n => n > 1)) topesViolados++;
+  if (Object.entries(categorias).some(([c,n]) => n > (modo === 'geografia' ? 7 : c === 'gramatica' ? 1 : 2)) || Object.values(universos).some(n => n > (modo === 'geografia' ? 3 : 1)) || Object.values(familias).some(n => n > 1)) topesViolados++;
+  if (config.catalogos.planDificultad && (ps.length !== 7 || ps.some(p => p.g.dificultad.nivel !== config.catalogos.planDificultad[p.posicion - 1] || (p.g.dificultad.nivel === 'facil' && (!p.g.dificultad.simple || p.g.dificultad.familiares < config.catalogos.minFamiliares))))) perfilesViolados++;
 }
 let otrosUniversosRepetidos = 0;
 for (let i = 0; i < generadas.length; i++) for (let j = i - 1; j >= 0; j--) {
@@ -117,7 +119,7 @@ const intervalosPorCategoria = Object.fromEntries([...new Set(generadas.map(p=>p
 }));
 const generados = resultados.filter((r) => !r.programado);
 const informe = {
-  configuracion: { modo, inicio, dias, ventana, diasRotacion: config.catalogos.diasRotacion, pesoRotacion: config.catalogos.pesoRotacion, semilla: config.catalogos.semilla, maxRespuestas: config.catalogos.maxRespuestas, completarConReserva: config.catalogos.completarConReserva },
+  configuracion: { modo, inicio, dias, ventana, diasRotacion: config.catalogos.diasRotacion, pesoRotacion: config.catalogos.pesoRotacion, semilla: config.catalogos.semilla, maxRespuestas: config.catalogos.maxRespuestas, perfil: config.catalogos.perfil, planDificultad: config.catalogos.planDificultad, minFamiliares: config.catalogos.minFamiliares, completarConReserva: config.catalogos.completarConReserva },
   versiones: generadas[0]?.g.versiones ?? null,
   historialInicial,
   dias: {
@@ -129,7 +131,7 @@ const informe = {
     diasConReserva: generados.filter((r) => r.origen !== 'catalogo').map((r) => r.fecha),
   },
   preguntas: { generadas: generadas.length, deReserva: preguntas.length - generadas.length, consignasDistintas: new Set(generadas.map((p) => p.firma)).size },
-  topesViolados, intervalosPorCategoria,
+  topesViolados, perfilesViolados, intervalosPorCategoria,
   repeticiones: { otrosUniversosRepetidos, violacionesDentroDeLaVentana: violaciones, consignasReutilizadasDespuesDeLaVentana: reutilizadas, menorDistanciaEntreRepeticiones: Number.isFinite(menorDistancia) ? menorDistancia : null },
   variedad: {
     porCategoria: contar(generadas, (p) => CATEGORIAS[p.categoria] ?? p.categoria),
@@ -154,4 +156,4 @@ if (d.diasConReserva.length) console.log(`  usaron la reserva: ${d.diasConReserv
 console.log(`Preguntas generadas: ${informe.preguntas.generadas} (${informe.preguntas.consignasDistintas} consignas distintas) · de la reserva: ${informe.preguntas.deReserva}`);
 console.log(`Repeticiones: ${informe.repeticiones.violacionesDentroDeLaVentana} dentro de la ventana · ${informe.repeticiones.consignasReutilizadasDespuesDeLaVentana} reutilizadas después · menor distancia ${informe.repeticiones.menorDistanciaEntreRepeticiones ?? '—'} días`);
 for (const [titulo, m] of Object.entries(informe.variedad)) console.log(`${titulo}: ${Object.entries(m).map(([k, v]) => `${k} ${v}`).join(' · ')}`);
-process.exit(informe.repeticiones.violacionesDentroDeLaVentana || otrosUniversosRepetidos || topesViolados || d.fallos ? 1 : 0);
+process.exit(informe.repeticiones.violacionesDentroDeLaVentana || otrosUniversosRepetidos || topesViolados || perfilesViolados || d.fallos ? 1 : 0);

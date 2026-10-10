@@ -36,7 +36,7 @@ for (const p of delModo) {
   const conjuntos = propios.get(catalogo.id) ?? new Set();
   candidatos.forEach(c => conjuntos.add(c.conjunto));
   propios.set(catalogo.id, conjuntos);
-  for (const c of candidatos) if (!unicos.has(c.conjunto)) unicos.set(c.conjunto, c);
+  for (const c of candidatos) if (!unicos.has(c.conjunto) || (c.dificultad.nivel === 'facil' && unicos.get(c.conjunto).dificultad.nivel !== 'facil')) unicos.set(c.conjunto, c);
   porPlantilla.push({ plantilla: p.id, familia: p.familia, categoria: p.categoria, combinaciones, utilizables: candidatos.length, descartes });
 }
 
@@ -46,6 +46,7 @@ const resumen = (clave) => {
   return [...m].sort((a, b) => b[1] - a[1]);
 };
 const porCategoria = resumen((c) => c.categoria);
+const porDificultad = resumen(c => c.dificultad.nivel);
 const conectados = new Set([...propios.keys(), ...[...propios.keys()].map(id => catalogos.get(id).universo)]);
 const porCatalogo = [...conectados].map(id => {
   const c = catalogos.get(id), porVistas = new Set();
@@ -92,7 +93,7 @@ while (red.has('inicio') && red.has('fin')) {
 const capacidadVentana = { necesarias: ventana * 7, cotaConTopes: cota, compatibleConTopes: cota >= ventana * 7, alternativasOmitidas, rotacion: 'Preferencia; verificar distribución y ventanas en simular-calendario. La cota no garantiza el reparto diario ni descarta solapamientos.' };
 
 if (process.argv.includes('--json')) {
-  console.log(JSON.stringify({ modo, ventana, total: unicos.size, sinGramatica, aporteVentana, capacidadVentana, porCategoria, registrosPorCategoria, porCatalogo, porFamilia, porPlantilla, problemas: [...problemas, ...plantillas.problemas] }, null, 2));
+  console.log(JSON.stringify({ modo, ventana, total: unicos.size, sinGramatica, aporteVentana, capacidadVentana, porDificultad, porCategoria, registrosPorCategoria, porCatalogo, porFamilia, porPlantilla, problemas: [...problemas, ...plantillas.problemas] }, null, 2));
 } else {
   console.log(`Modo ${modo} · catálogos: ${catalogos.size} · plantillas del modo: ${delModo.length} · ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(`Consignas distintas utilizables: ${unicos.size} (sin Gramática: ${sinGramatica})`);
@@ -100,6 +101,7 @@ if (process.argv.includes('--json')) {
   // Normal: como mucho una de Gramática por día (6 de las 7 son de otras categorías). Geografía: las 7.
   const porDia = modo === 'normal' ? 6 : 7;
   console.log(`Ventana de ${ventana} días: hacen falta ≥ ${ventana * porDia} fuera de Gramática; con una por familia y por día, las familias aportan ${aporteVentana}.`);
+  console.log(`Dificultad editorial: ${porDificultad.map(([n,c]) => `${n} ${c}`).join(' · ')}. El reparto diario se verifica en la simulación.`);
   console.log('\nPor categoría:');
   for (const [c, n] of porCategoria) console.log(`  ${(CATEGORIAS[c] ?? c).padEnd(14)} ${String(n).padStart(5)}`);
   console.log('\nPor catálogo (registros; consignas propias, antes de deduplicar base/vista):');

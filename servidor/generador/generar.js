@@ -63,7 +63,7 @@ export async function asegurarDesafio({ db, config, fecha, modo = MODO_POR_DEFEC
       const g = await generarConCatalogos({ db, config, fecha, modo, anteriores });
       detalle.catalogos = { semilla: g.semilla, versiones: g.versiones, elegidas: g.elegidas, descartes: resumirDescartes(g.descartes), problemas: g.problemas, errores: g.errores };
       preguntas = g.preguntas;
-      if (!g.ok && !config.catalogos.completarConReserva) {
+      if (!g.ok && (!config.catalogos.completarConReserva || config.catalogos.planDificultad)) {
         detalle.errorLote = g.errores;
         await finalizarCorrida(db, corridaId, 'fallo', detalle, ahora());
         return { resultado: 'fallo', fecha, modo, corridaId, errores: g.errores };

@@ -60,7 +60,7 @@ export async function generarConCatalogos({ db, config, fecha, modo, anteriores 
     historial,
     recientes,
     dominios: config.fuentes.dominios,
-    opciones: { maxRespuestas: config.catalogos.maxRespuestas, diasSinRepetir: config.catalogos.diasSinRepetir, diasRotacion: config.catalogos.diasRotacion, pesoRotacion: config.catalogos.pesoRotacion },
+    opciones: { maxRespuestas: config.catalogos.maxRespuestas, diasSinRepetir: config.catalogos.diasSinRepetir, diasRotacion: config.catalogos.diasRotacion, pesoRotacion: config.catalogos.pesoRotacion, planDificultad: config.catalogos.planDificultad, minFamiliares: config.catalogos.minFamiliares },
   });
   return { ...r, problemas: [...problemas, ...plantillas.problemas] };
 }
